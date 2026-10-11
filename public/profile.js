@@ -91,7 +91,7 @@ export const aiModes = {
   full: {
     title: "Full AI content",
     description:
-      "Show AI draft reviews, ratings and suggestions alongside your own reviews. Applying a draft and approving a song remain your decisions.",
+      "Show AI draft song assessments and ratings alongside your own reviews. Applying a draft and approving a song remain your decisions. Worship plans are built by you.",
   },
 };
 const editorialPrinciples =
@@ -145,6 +145,7 @@ export function reviewForDisplay(song, mode = "full") {
   return result;
 }
 export function themesForDisplay(song, mode = "full") {
+  if (song.metadata?.themes) return song.metadata.themes;
   return mode !== "full" && song.review.status === "ai"
     ? song.catalogThemes || []
     : song.themes;

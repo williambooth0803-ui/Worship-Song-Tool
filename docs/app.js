@@ -18,7 +18,17 @@ import {
   themesForDisplay,
 } from "./profile.js";
 import { siteConfig } from "./config.js";
-import { AccountClient } from "./accounts.js";
+import { AccountClient, WorkspaceConflictError } from "./accounts.js";
+import { workspaceSignature, saveLabel } from "./saving.js";
+import {
+  indexFields,
+  indexedValue,
+  filterIndex,
+  indexCSV,
+  indexEntries,
+  indexText,
+} from "./song-index.js";
+import { criteriaEvidence, validateCriteriaResults } from "./criteria.js";
 import {
   defaultProfile,
   dimensions,
@@ -34,6 +44,14 @@ let activeStore = STORE;
 const accounts = new AccountClient(siteConfig);
 let accountReady = !accounts.session;
 let wizardDraft = null;
+let accountSave = { phase: "local", signature: null, remoteAvailable: false };
+let indexQuery = "",
+  indexRules = [],
+  indexSort = "title",
+  indexDescending = false,
+  indexColumn = "scriptures";
+let browseField = "words",
+  browseQuery = "";
 const staticEdition = document.documentElement.dataset.edition === "static";
 const app = document.querySelector("#app"),
   dialog = document.querySelector("#dialog");
@@ -88,6 +106,7 @@ function toast(message) {
 function persist() {
   try {
     localStorage.setItem(activeStore, JSON.stringify(state));
+    updateSaveStrip();
     return true;
   } catch {
     toast(
@@ -234,6 +253,7 @@ function resetSelection() {
   query = themeFilter = approvalFilter = "";
 }
 function switchWorkspace(user = null) {
+  accountSave = { phase: "local", signature: null, remoteAvailable: false };
   activeStore = user ? `faithful-repertoire-user:${user.id}` : STORE;
   try {
     const saved = localStorage.getItem(activeStore);
@@ -266,12 +286,46 @@ async function saveAccountProfile() {
 }
 async function loadAccountProfile() {
   if (!accounts.user) return;
+  const owner = accounts.user.id,
+    store = activeStore;
   const profile = await accounts.loadProfile();
+  if (accounts.user?.id !== owner || activeStore !== store) return;
   if (profile) {
     state.profile = withProfileDefaults(profile);
     persist();
     render();
   }
+  await checkAccountCopy();
+}
+function saveStrip() {
+  if (!accounts.user || activeStore === STORE) return "";
+  return `<div class="account-save-strip" id="account-save-strip"><span role="status">${e(saveLabel(accountSave, state))}</span><div><button class="text-button" data-action="cloud-save" ${["saving", "checking", "conflict"].includes(accountSave.phase) ? "disabled" : ""}>Save to account</button>${accountSave.remoteAvailable ? '<button class="text-button" data-action="cloud-load">Review account copy</button>' : ""}</div></div>`;
+}
+function updateSaveStrip() {
+  const strip = document.querySelector("#account-save-strip");
+  if (strip) strip.outerHTML = saveStrip();
+}
+async function checkAccountCopy() {
+  const owner = accounts.user?.id,
+    store = activeStore;
+  accountSave.phase = "checking";
+  updateSaveStrip();
+  try {
+    const saved = await accounts.loadWorkspace();
+    if (accounts.user?.id !== owner || activeStore !== store) return;
+    const signature = saved
+      ? workspaceSignature(syncCatalog(saved.workspace))
+      : null;
+    accountSave = {
+      phase: "local",
+      signature: signature === workspaceSignature(state) ? signature : null,
+      remoteAvailable: Boolean(saved),
+    };
+  } catch {
+    if (accounts.user?.id === owner && activeStore === store)
+      accountSave.phase = "error";
+  }
+  updateSaveStrip();
 }
 function accountDialog(mode = "signin") {
   if (!accountReady)
@@ -280,7 +334,7 @@ function accountDialog(mode = "signin") {
     );
   if (accounts.user)
     return modal(
-      `<h2>Your account</h2><p>${e(accounts.user.email)}</p><p class="muted">This browser keeps a separate workspace for each signed-in account. Account backups include your profile, AI preference, songs, libraries and plans. Saving replaces the account backup; loading requires confirmation.</p><div class="account-buttons"><button class="button" data-action="sync-profile">Sync my profile</button><button class="button" data-action="copy-browser">Copy browser workspace</button><button class="button primary" data-action="cloud-save">Save account backup</button><button class="button" data-action="cloud-load">Load account backup</button><button class="button" data-action="signout">Sign out</button></div><p id="account-error" role="alert"></p>`,
+      `<h2>Your account</h2><p>${e(accounts.user.email)}</p><p class="muted">This browser keeps a separate workspace for each signed-in account. Account backups include your profile, AI preference, songs, libraries and plans. Save to your account after editing to use this workspace on another device. Newer changes from another device are protected; loading requires confirmation.</p><div class="account-buttons"><button class="button" data-action="sync-profile">Sync my profile</button><button class="button" data-action="copy-browser">Copy browser workspace</button><button class="button primary" data-action="cloud-save">Save account backup</button><button class="button" data-action="cloud-load">Load account backup</button><button class="button" data-action="signout">Sign out</button></div><p id="account-error" role="alert"></p>`,
     );
   const enabled = accounts.configured;
   modal(
@@ -289,13 +343,22 @@ function accountDialog(mode = "signin") {
 }
 function confirmCloudRestore(saved, title = "Load your account backup?") {
   const restored = syncCatalog(saved.workspace);
+  const owner = accounts.user?.id,
+    store = activeStore;
   modal(
     `<h2>${e(title)}</h2><p>${restored.songs.length} songs · ${restored.libraries.length} libraries · ${restored.plans.length} plans</p><p class="muted">This replaces the current account workspace in this browser. Download a backup first if you want to keep it.</p><button class="text-button" data-action="export">Download current workspace</button><p id="account-error" role="alert"></p><div class="form-actions"><button class="button" data-action="close">Cancel</button><button class="button primary" id="apply-cloud">Load this backup</button></div>`,
   );
   document.querySelector("#apply-cloud").onclick = () => {
     try {
+      if (accounts.user?.id !== owner || activeStore !== store)
+        throw new Error("Account changed");
       localStorage.setItem(activeStore, JSON.stringify(restored));
       state = restored;
+      accountSave = {
+        phase: "local",
+        signature: saved.updatedAt ? workspaceSignature(state) : null,
+        remoteAvailable: Boolean(saved.updatedAt),
+      };
       resetSelection();
       dialog.close();
       render();
@@ -309,10 +372,11 @@ function confirmCloudRestore(saved, title = "Load your account backup?") {
 function render() {
   const count = new Set(state.libraries.flatMap((x) => x.songIds)).size;
   app.innerHTML = `<aside class="sidebar"><a class="brand" href="#" data-action="nav" data-view="discover"><span class="brand-mark">✣</span><span>Faithful<br>Repertoire<small>WORDS WORTH SINGING</small></span></a><div class="workspace-label">YOUR WORKSPACE</div><nav aria-label="Main navigation">${[
-    ["discover", "◈", "Discover songs"],
-    ["library", "▤", "Song libraries"],
-    ["plans", "▦", "Worship plans"],
-    ["profile", "◎", "Rating profile"],
+    ["discover", "", "Discover songs"],
+    ["index", "", "Song index"],
+    ["library", "", "Song libraries"],
+    ["plans", "", "Worship plans"],
+    ["profile", "", "Rating profile"],
   ]
     .map(
       ([id, icon, text]) =>
@@ -320,7 +384,7 @@ function render() {
     )
     .join(
       "",
-    )}</nav><div class="sidebar-bottom"><div class="small-heading">A thoughtful repertoire.</div><p>Sound doctrine. Meaningful words.<br>A congregation that can sing.</p><button class="text-button" data-action="export">↓ Export your data</button><div class="local-note">Saved on this browser · no account needed</div></div></aside><main><header class="topbar"><span>Faithful Repertoire <span class="divider">/</span> ${e({ discover: "Discover", library: "Libraries", plans: "Planning", profile: "Preferences" }[view])}</span><div class="topbar-actions"><button class="button" data-action="account">${accounts.user && activeStore !== STORE ? "My account" : "Sign in"}</button><button class="button" data-action="backup">Backup & restore</button><span class="workspace-pill"><span class="dot"></span>Personal workspace</span></div></header><div class="page">${profilePrompt()}${view === "discover" || view === "library" ? songWorkspace() : view === "plans" ? plansPage() : profilePage()}</div><footer>Thoughtful tools for faithful worship. <span>First edition · ${aiConfigured ? "AI drafting available" : "Manual review available"}</span></footer></main>`;
+    )}</nav><div class="sidebar-bottom"><div class="small-heading">A thoughtful repertoire.</div><p>Sound doctrine. Meaningful words.<br>A congregation that can sing.</p><button class="text-button" data-action="export">↓ Export your data</button><div class="local-note">Saved on this browser · no account needed</div></div></aside><main><header class="topbar"><span>Faithful Repertoire <span class="divider">/</span> ${e({ discover: "Discover", index: "Song index", library: "Libraries", plans: "Planning", profile: "Preferences" }[view])}</span><div class="topbar-actions"><button class="button" data-action="account">${accounts.user && activeStore !== STORE ? "My account" : "Sign in"}</button><button class="button" data-action="backup">Backup & restore</button><span class="workspace-pill"><span class="dot"></span>Personal workspace</span></div></header><div class="page">${saveStrip()}${profilePrompt()}${view === "discover" || view === "library" ? songWorkspace() : view === "index" ? indexPage() : view === "plans" ? plansPage() : profilePage()}</div><footer>Thoughtful tools for faithful worship. <span>First edition · ${aiConfigured ? "AI drafting available" : "Manual review available"}</span></footer></main>`;
 }
 function songWorkspace() {
   const isLibrary = view === "library";
@@ -344,7 +408,7 @@ function songWorkspace() {
       (s) => s.id === selected && songs.some((x) => x.id === s.id),
     ) || songs[0];
   if (song) selected = song.id;
-  return `<div class="page-heading"><div><div class="eyebrow">${isLibrary ? "MAKE IT YOUR OWN" : "BUILD A FAITHFUL REPERTOIRE"}</div><h1>${isLibrary ? "Your song libraries" : "Find words worth singing."}</h1><p>${isLibrary ? "The songs you know, the notes you trust, the repertoire you’re building." : "Explore the theology, language, and practical place of every song."}</p></div><button class="button primary" data-action="${isLibrary ? "new-library" : "new-song"}">+ ${isLibrary ? "New library" : "Add a song"}</button></div>${isLibrary ? `<div class="library-tabs">${state.libraries.map((l) => `<button class="${l.id === lib?.id ? "selected" : ""}" data-action="library-select" data-id="${e(l.id)}">${e(l.name)} <span>${l.songIds.length}</span></button>`).join("")}</div>` : `<div class="intro-note"><span>✦</span><div><strong>More than “nothing unbiblical.”</strong><span>Look for substantial truth, clear language, and a meaningful use of time.</span></div><button data-action="nav" data-view="profile">Your rating profile ›</button></div>`}<div class="search-row"><label class="search-box"><span>⌕</span><input id="search" type="search" value="${e(query)}" placeholder="Search by title, writer, or theme…" aria-label="Search songs"></label><span class="result-count">${songs.length} song${songs.length === 1 ? "" : "s"}</span></div>${discoveryControls(pool)}<div class="song-workspace"><section class="song-list" aria-label="Song results">${songs.length ? songs.map((s) => songCard(s, s.id === song.id)).join("") : `<div class="empty"><span>♫</span><h3>${query ? "No matching songs" : "A repertoire starts with one song."}</h3><p>${query ? "Try another title or add a song to review." : "Find a song in Discover and save it here."}</p><button class="button" data-action="${query ? "new-song" : "nav"}" data-view="discover">${query ? "Add a song" : "Discover songs"}</button></div>`}<div class="catalog-note">${isLibrary ? "Library membership does not imply church approval." : `${catalogSongs.length} catalog hymns + your own songs. Catalog assessments are editorial drafts, not verified research.`}</div></section>${song ? songDetail(song, isLibrary ? lib : null) : '<section class="detail-panel empty"><h2>Your next song belongs here.</h2><p>Save an existing song or add one to begin a review.</p></section>'}</div>`;
+  return `<div class="page-heading"><div><div class="eyebrow">${isLibrary ? "MAKE IT YOUR OWN" : "BUILD A FAITHFUL REPERTOIRE"}</div><h1>${isLibrary ? "Your song libraries" : "Find words worth singing."}</h1><p>${isLibrary ? "The songs you know, the notes you trust, the repertoire you’re building." : "Explore the theology, language, and practical place of every song."}</p></div><button class="button primary" data-action="${isLibrary ? "new-library" : "new-song"}">+ ${isLibrary ? "New library" : "Add a song"}</button></div>${isLibrary ? `<div class="library-tabs">${state.libraries.map((l) => `<button class="${l.id === lib?.id ? "selected" : ""}" data-action="library-select" data-id="${e(l.id)}">${e(l.name)} <span>${l.songIds.length}</span></button>`).join("")}</div>` : `<div class="intro-note"><div><strong>More than “nothing unbiblical.”</strong><span>Look for substantial truth, clear language, and a meaningful use of time.</span></div><button data-action="nav" data-view="profile">Your rating profile ›</button></div>`}<div class="search-row"><label class="search-box"><span>⌕</span><input id="search" type="search" value="${e(query)}" placeholder="Search by title, writer, or theme…" aria-label="Search songs"></label><span class="result-count">${songs.length} song${songs.length === 1 ? "" : "s"}</span></div>${discoveryControls(pool)}<div class="song-workspace"><section class="song-list" aria-label="Song results">${songs.length ? songs.map((s) => songCard(s, s.id === song.id)).join("") : `<div class="empty"><span>♫</span><h3>${query ? "No matching songs" : "A repertoire starts with one song."}</h3><p>${query ? "Try another title or add a song to review." : "Find a song in Discover and save it here."}</p><button class="button" data-action="${query ? "new-song" : "nav"}" data-view="discover">${query ? "Add a song" : "Discover songs"}</button></div>`}<div class="catalog-note">${isLibrary ? "Library membership does not imply church approval." : `${catalogSongs.length} catalog hymns + your own songs. Catalog assessments are editorial drafts, not verified research.`}</div></section>${song ? songDetail(song, isLibrary ? lib : null) : '<section class="detail-panel empty"><h2>Your next song belongs here.</h2><p>Save an existing song or add one to begin a review.</p></section>'}</div>`;
 }
 function songCard(s, active) {
   const displayedReview = reviewForDisplay(s, state.profile.aiMode);
@@ -355,7 +419,7 @@ function songDetail(song, lib) {
   const r = reviewForDisplay(song, state.profile.aiMode),
     score = overall(r, state.profile);
   const saved = state.libraries.some((l) => l.songIds.includes(song.id));
-  return `<article class="detail-panel"><div class="detail-header"><span class="eyebrow">SONG SPOTLIGHT</span><span class="status-badge">${e(statusLabel(r))}</span></div><h2>${e(song.title)}</h2><p class="author">${e(song.author)}</p><p class="version">${e(song.version)}</p><div class="detail-actions"><button class="button primary" data-action="save-song" data-id="${e(song.id)}">${saved ? "✓ Saved · manage libraries" : "+ Save to library"}</button><button class="button" data-action="add-to-plan" data-id="${e(song.id)}">Add to plan ›</button></div>${churchDecision(song)}<div class="rating-banner"><div class="overall-score">${score ?? "—"}<span>/10</span></div><div><strong>${e(recommendation(r, state.profile))}</strong><p>${score === null ? "Add an assessment to see a rating." : "Weighted to your theological profile."}</p><small>Unknown dimensions are excluded; this may be a partial score.</small></div></div><div class="score-grid">${Object.entries(
+  return `<article class="detail-panel"><div class="detail-header"><span class="eyebrow">SONG SPOTLIGHT</span><span class="status-badge">${e(statusLabel(r))}</span></div><h2>${e(song.title)}</h2><p class="author">${e(song.author)}</p><p class="version">${e(song.version)}</p><div class="detail-actions"><button class="button primary" data-action="save-song" data-id="${e(song.id)}">${saved ? "✓ Saved · manage libraries" : "+ Save to library"}</button><button class="button" data-action="add-to-plan" data-id="${e(song.id)}">Add to plan ›</button><button class="text-button" data-action="edit-index" data-id="${e(song.id)}">Edit index details</button></div>${churchDecision(song)}<div class="rating-banner"><div class="overall-score">${score ?? "—"}<span>/10</span></div><div><strong>${e(recommendation(r, state.profile))}</strong><p>${score === null ? "Add an assessment to see a rating." : "Weighted to your theological profile."}</p><small>Unknown dimensions are excluded; this may be a partial score.</small></div></div><div class="score-grid">${Object.entries(
     dimensions,
   )
     .map(
@@ -364,7 +428,110 @@ function songDetail(song, lib) {
     )
     .join(
       "",
-    )}</div><div class="review-controls"><button class="text-button" data-action="edit-review" data-id="${e(song.id)}">✎ Edit assessment</button>${state.profile.aiMode === "manual" ? `<span class="muted">Human reviews only</span>` : `<button class="text-button" data-action="ai-review" data-id="${e(song.id)}">✦ ${state.profile.aiMode === "limited" ? "Get limited assistance" : "Draft with AI"}</button>`}</div><section class="detail-section"><h3>The assessment</h3><p>${e(r.summary || "No assessment yet. Start a manual review or draft one with AI.")}</p>${r.updatedAt ? `<small class="muted">Last edited ${e(new Date(r.updatedAt).toLocaleDateString())}${r.model ? ` · ${e(r.model)}` : ""}</small>` : ""}</section><section class="detail-section"><h3>What does it actually say?</h3>${list(r.claims)}</section><div class="detail-columns"><section class="detail-section"><h3>Good places in a service</h3><div class="tags">${tagList(r.uses)}</div></section><section class="detail-section"><h3>Themes</h3><div class="tags">${tagList(themesForDisplay(song, state.profile.aiMode))}</div></section></div><section class="detail-section"><h3>Scripture connections</h3>${list(r.scriptures)}<small class="muted">References are review suggestions; verify their context and the chosen song text.</small></section><section class="detail-section"><h3>Language & meaningful time</h3><p>${e(r.language || "Language not assessed.")}</p><p>${e(r.time || "Arrangement not assessed.")}</p></section><section class="detail-section"><h3>Musical considerations <span class="subtle-badge">${r.musical.startsWith("Not assessed") ? "Not assessed" : "Your notes"}</span></h3><p>${e(r.musical)}</p><div class="metadata"><span>Preferred key <strong>${e(r.key || "Not set")}</strong></span><span>Planning duration <strong>${e(r.minutes)} min</strong></span></div><small class="muted">Duration is a planning estimate, not a verified recording length.</small></section>${r.concerns.length ? `<section class="detail-section concern"><h3>Things to consider</h3>${list(r.concerns)}</section>` : ""}<section class="detail-section"><h3>Your notes</h3><p class="notes-text">${e(r.notes || "Add your thoughts, teaching notes, and arrangement choices in Edit assessment.")}</p></section>${r.assistance ? `<section class="detail-section"><h3>Limited assistance notes</h3><p>${e(r.assistance.summary)}</p><p>${e(r.assistance.language)}</p><p>${e(r.assistance.time)}</p><small class="muted">AI observations · verify against your supplied evidence. These did not change your ratings.</small></section>` : ""}${catalogComparison(song)}<section class="detail-section"><h3>Sources & provenance</h3>${r.sources.length ? `<ul class="source-list">${r.sources.map((s) => `<li>${/^https?:\/\//.test(s.url) ? `<a href="${e(s.url)}" target="_blank" rel="noopener noreferrer">${e(s.label)} ›</a>` : e(s.label)}</li>`).join("")}</ul>` : '<p class="muted">No external sources attached. AI drafts analyze supplied text without browsing.</p>'}<p class="muted">${r.status === "starter" ? "Starter editorial notes; source links are references for your verification, not a claim of live source review." : r.status === "ai" ? "AI-generated draft. Verify claims and Scripture links before church use." : "Your editable assessment; it does not imply independent verification."}</p>${r.previous ? '<small class="muted">Previous assessment preserved in exported data.</small>' : ""}</section>${lib ? `<button class="text-button danger" data-action="remove-library-song" data-id="${e(song.id)}">Remove from ${e(lib.name)}</button>` : ""}</article>`;
+    )}</div><div class="review-controls"><button class="text-button" data-action="edit-review" data-id="${e(song.id)}">✎ Edit assessment</button>${state.profile.aiMode === "manual" ? `<span class="muted">Human reviews only</span>` : `<button class="text-button" data-action="ai-review" data-id="${e(song.id)}">${state.profile.aiMode === "limited" ? "Get limited assistance" : "Draft with AI"}</button>`}</div><section class="detail-section"><h3>The assessment</h3><p>${e(r.summary || "No assessment yet. Start a manual review or draft one with AI.")}</p>${r.updatedAt ? `<small class="muted">Last edited ${e(new Date(r.updatedAt).toLocaleDateString())}${r.model ? ` · ${e(r.model)}` : ""}</small>` : ""}</section><section class="detail-section"><h3>What does it actually say?</h3>${list(r.claims)}</section><div class="detail-columns"><section class="detail-section"><h3>Good places in a service</h3><div class="tags">${tagList(r.uses)}</div></section><section class="detail-section"><h3>Themes</h3><div class="tags">${tagList(themesForDisplay(song, state.profile.aiMode))}</div></section></div><section class="detail-section"><h3>Scripture connections</h3>${list(r.scriptures)}<small class="muted">References are review suggestions; verify their context and the chosen song text.</small></section><section class="detail-section"><h3>Language & meaningful time</h3><p>${e(r.language || "Language not assessed.")}</p><p>${e(r.time || "Arrangement not assessed.")}</p></section><section class="detail-section"><h3>Musical considerations <span class="subtle-badge">${r.musical.startsWith("Not assessed") ? "Not assessed" : "Your notes"}</span></h3><p>${e(r.musical)}</p><div class="metadata"><span>Preferred key <strong>${e(r.key || "Not set")}</strong></span><span>Planning duration <strong>${e(r.minutes)} min</strong></span></div><small class="muted">Duration is a planning estimate, not a verified recording length.</small></section>${r.concerns.length ? `<section class="detail-section concern"><h3>Things to consider</h3>${list(r.concerns)}</section>` : ""}<section class="detail-section"><h3>Your notes</h3><p class="notes-text">${e(r.notes || "Add your thoughts, teaching notes, and arrangement choices in Edit assessment.")}</p></section>${r.assistance ? `<section class="detail-section"><h3>Limited assistance notes</h3><p>${e(r.assistance.summary)}</p><p>${e(r.assistance.language)}</p><p>${e(r.assistance.time)}</p><small class="muted">AI observations · verify against your supplied evidence. These did not change your ratings.</small></section>` : ""}${catalogComparison(song)}<section class="detail-section"><h3>Sources & provenance</h3>${r.sources.length ? `<ul class="source-list">${r.sources.map((s) => `<li>${/^https?:\/\//.test(s.url) ? `<a href="${e(s.url)}" target="_blank" rel="noopener noreferrer">${e(s.label)} ›</a>` : e(s.label)}</li>`).join("")}</ul>` : '<p class="muted">No external sources attached. AI drafts analyze supplied text without browsing.</p>'}<p class="muted">${r.status === "starter" ? "Starter editorial notes; source links are references for your verification, not a claim of live source review." : r.status === "ai" ? "AI-generated draft. Verify claims and Scripture links before church use." : "Your editable assessment; it does not imply independent verification."}</p>${r.previous ? '<small class="muted">Previous assessment preserved in exported data.</small>' : ""}</section>${lib ? `<button class="text-button danger" data-action="remove-library-song" data-id="${e(song.id)}">Remove from ${e(lib.name)}</button>` : ""}</article>`;
+}
+function indexResults() {
+  return filterIndex(
+    state.songs,
+    {
+      query: indexQuery,
+      rules: indexRules,
+      sort: indexSort,
+      descending: indexDescending,
+    },
+    state.profile,
+    state.libraries,
+  );
+}
+function indexPage() {
+  const fields = indexFields(state.songs),
+    songs = indexResults();
+  const fieldOptions = fields
+    .map((f) => `<option value="${e(f.id)}">${e(f.label)}</option>`)
+    .join("");
+  const column = fields.find((f) => f.id === indexColumn) || fields[0];
+  const entries = indexEntries(
+    state.songs,
+    browseField,
+    state.profile,
+    state.libraries,
+  ).filter((entry) => indexText(entry.value).includes(indexText(browseQuery)));
+  const display = (song, field) => {
+    const value = indexedValue(song, field, state.profile, state.libraries);
+    return e(Array.isArray(value) ? value.join(", ") : (value ?? "—"));
+  };
+  return `<div class="page-heading"><div><div class="eyebrow">CATALOG & PERSONAL REPERTOIRE</div><h1>Song index</h1><p>Find songs by their words and recorded details. You choose every song in your service.</p></div><div class="index-heading-actions"><button class="button" data-action="export-index">Export results (CSV)</button><button class="text-button" data-action="criteria-search">AI criteria search · optional</button></div></div><section class="index-tools" aria-label="Index search and filters"><form id="index-search-form"><label>Search across all indexed fields<input name="query" type="search" value="${e(indexQuery)}" placeholder="A word, writer, theme, passage, or note"></label><button class="button primary">Search index</button></form><form id="index-filter-form"><label>Field<select name="field" aria-label="Index field">${fieldOptions}</select></label><label>Match<select name="op" aria-label="Index match">${indexOperators("text")}</select></label><label>Value<input name="value" maxlength="1000" aria-label="Index value" list="index-values" required></label><datalist id="index-values">${indexEntries(
+    state.songs,
+    "title",
+    state.profile,
+    state.libraries,
+  )
+    .slice(0, 200)
+    .map((entry) => `<option value="${e(entry.value)}"></option>`)
+    .join(
+      "",
+    )}</datalist><button class="button">Add filter</button></form><p class="index-help">Every added filter must match. “Whole word” searches actual words; “contains” finds a phrase or partial text. Song words search the opening line when a full text has not been entered.</p>${indexRules.length ? `<ul class="index-rules">${indexRules.map((r, i) => `<li><span>${e(fields.find((f) => f.id === r.field)?.label || r.field)} ${e({ contains: "contains", equals: "equals", word: "has the word", excludes: "does not contain", gte: "≥", lte: "≤", numeric: "=", missing: "is unrecorded", present: "is recorded" }[r.op])} ${["missing", "present"].includes(r.op) ? "" : e(r.value)}</span><button type="button" class="icon-button" data-action="remove-index-filter" data-id="${i}" aria-label="Remove filter ${i + 1}">×</button></li>`).join("")}</ul>` : ""}<details class="index-directory"><summary>Browse words, themes, keys, and other recorded values</summary><form id="index-browse-form"><label>Browse<select name="field" aria-label="Browse index"><option value="words">Words in song text</option>${fields.map((f) => `<option value="${e(f.id)}" ${f.id === browseField ? "selected" : ""}>${e(f.label)}</option>`).join("")}</select></label><label>Find a value<input name="value" type="search" value="${e(browseQuery)}" placeholder="Type part of a word or value"></label><button class="button">Find values</button></form><p class="index-help">Alphabetical list across your whole catalog. Counts show how many songs contain each value. ${browseField === "words" ? `${state.songs.filter((s) => s.metadata?.lyrics).length} songs have full text stored; remaining entries use opening lines.` : ""} Select a value to add it as a filter.${entries.length > 200 ? " Showing the first 200; narrow the value search to see more." : ""}</p><ul class="index-entry-list">${
+    entries
+      .slice(0, 200)
+      .map(
+        (entry) =>
+          `<li><button data-action="index-entry" data-field="${e(browseField)}" data-value="${e(entry.value)}"><span>${e(entry.value)}</span><small>${entry.count}</small></button></li>`,
+      )
+      .join("") || "<li>No recorded values.</li>"
+  }</ul></details><div class="index-toolbar"><span class="result-count" role="status">${songs.length} of ${state.songs.length} songs</span><label>Sort<select id="index-sort" aria-label="Index sort">${fields.map((f) => `<option value="${e(f.id)}" ${f.id === indexSort ? "selected" : ""}>${e(f.label)}</option>`).join("")}</select></label><label>Order<select id="index-order" aria-label="Index order"><option value="asc" ${!indexDescending ? "selected" : ""}>Ascending</option><option value="desc" ${indexDescending ? "selected" : ""}>Descending</option></select></label><label>Additional column<select id="index-column" aria-label="Additional column">${fields.map((f) => `<option value="${e(f.id)}" ${f.id === column.id ? "selected" : ""}>${e(f.label)}</option>`).join("")}</select></label><button class="text-button" data-action="reset-index">Reset index</button></div></section><div class="index-table-wrap" role="region" aria-label="Song index results" tabindex="0"><table class="index-table"><caption>Song index · ${songs.length} results</caption><thead><tr><th scope="col">Song / writer</th><th scope="col">Themes</th><th scope="col">Key</th><th scope="col">Rating</th><th scope="col">${e(column.label)}</th><th scope="col">Details</th></tr></thead><tbody>${songs.map((song) => `<tr><th scope="row"><button class="index-title" data-action="index-open" data-id="${e(song.id)}">${e(song.title)}</button><small>${e(song.author)}</small></th><td>${display(song, "themes")}</td><td>${display(song, "key") || "—"}</td><td>${display(song, "rating")}</td><td class="index-extra">${display(song, column.id) || "—"}</td><td><button class="text-button" data-action="edit-index" data-id="${e(song.id)}" aria-label="Edit index details for ${e(song.title)}">Edit</button></td></tr>`).join("") || '<tr><td colspan="6">No songs match these filters. Remove a filter or enter more song details.</td></tr>'}</tbody></table></div><p class="index-help">Blank values mean unrecorded, not zero. Ratings and assessment fields follow your AI visibility preference. Planning durations are editable estimates. CSV includes all indexed fields for the current results.</p>`;
+}
+function indexOperators(type) {
+  return (
+    type === "number"
+      ? [
+          ["gte", "At least"],
+          ["lte", "At most"],
+          ["numeric", "Equal to"],
+        ]
+      : [
+          ["contains", "Contains"],
+          ["equals", "Exactly matches"],
+          ["word", "Whole word"],
+          ["excludes", "Does not contain"],
+        ]
+  )
+    .concat([
+      ["missing", "Not recorded"],
+      ["present", "Recorded"],
+    ])
+    .map(([id, label]) => `<option value="${id}">${label}</option>`)
+    .join("");
+}
+function customMetricRow(item = { name: "", type: "text", value: "" }) {
+  return `<div class="custom-metric-row"><label>Metric name<input name="metric-name" maxlength="100" value="${e(item.name)}" placeholder="Hymnal number"></label><label>Type<select name="metric-type" aria-label="Metric type"><option value="text" ${item.type === "text" ? "selected" : ""}>Text</option><option value="number" ${item.type === "number" ? "selected" : ""}>Number</option></select></label><label>Metric value<input name="metric-value" maxlength="1000" value="${e(item.value)}"></label><button type="button" class="icon-button" data-action="remove-metric" aria-label="Remove custom metric">×</button></div>`;
+}
+function criteriaDialog() {
+  const eligible = state.profile.aiMode === "full",
+    available = eligible && aiConfigured;
+  modal(
+    `<h2>Search a subjective criterion</h2><p class="muted">An optional AI search of a library you select. Results are tentative matches to your criterion, with evidence for you to review. They do not select songs for a worship plan.</p>${!eligible ? "<p>Your account preference hides subjective AI content. This search requires Full AI content; you can change your preference in Rating profile.</p>" : !aiConfigured ? "<p>AI search is prepared but unavailable on this website until a secure AI service is connected. The manual index is ready to use.</p>" : ""}<form id="criteria-form"><label>Your library<select name="library" aria-label="Your library" required>${state.libraries.map((l) => `<option value="${e(l.id)}">${e(l.name)} (${l.songIds.length} songs)</option>`).join("")}</select></label><label>Your criterion<textarea name="criteria" rows="4" maxlength="1000" required placeholder="For example: songs that express dependence on God using concrete, well-structured language."></textarea></label><p class="muted">An explicit search sends stored text excerpts (up to 1,500 characters per song), themes, and assessment/arrangement details for the selected library to the AI provider. No web research. Up to 100 songs per search. Results do not change reviews, metrics, approval, or plans.</p><p id="criteria-error" role="alert"></p><div class="form-actions"><button class="button" type="button" data-action="close">Cancel</button><button class="button primary" ${available ? "" : "disabled"}>Search with AI</button></div></form>`,
+  );
+}
+function indexDetailsDialog(song) {
+  const m = song.metadata || {};
+  modal(
+    `<h2>Index details</h2><p>${e(song.title)}</p><p class="muted">Enter details for your chosen text and arrangement. These are your records; no AI fills these fields.</p><form id="index-details-form" data-id="${e(song.id)}"><label>Themes, separated by commas<input name="themes" maxlength="1000" value="${e(themesForDisplay(song, state.profile.aiMode).join(", "))}"></label><div class="form-columns">${[
+      ["tune", "Tune"],
+      ["meter", "Poetic meter"],
+      ["timeSignature", "Time signature"],
+      ["range", "Vocal range"],
+      ["vocalDifficulty", "Vocal difficulty"],
+      ["instrumentalDifficulty", "Instrumental difficulty"],
+      ["languageName", "Language"],
+    ]
+      .map(
+        ([id, label]) =>
+          `<label>${label}<input name="${id}" maxlength="300" value="${e(m[id] || "")}"></label>`,
+      )
+      .join(
+        "",
+      )}<label>Tempo (BPM)<input name="tempo" type="number" min="20" max="400" step="any" value="${m.tempo ?? ""}"></label></div><label>Instruments, separated by commas<input name="instruments" maxlength="1000" value="${e((m.instruments || []).join(", "))}"></label><label>Your tags, separated by commas<input name="tags" maxlength="1000" value="${e((m.tags || []).join(", "))}" placeholder="Congregation knows, Advent, hymnal 123"></label><details class="index-lyrics"><summary>Song words for indexing</summary><p class="muted">Enter a text you have permission to store. The app does not fetch lyrics. These words are included in your workspace backups and account saves, and are sent to AI only if you explicitly supply them in a separate analysis request.</p><label>Song words<textarea name="lyrics" aria-label="Song words" rows="8" maxlength="30000">${e(m.lyrics || "")}</textarea></label></details><h3>Custom metrics</h3><p class="muted">Use the same metric name across songs to filter or sort them together. Choose Number for numeric comparisons.</p><div id="custom-metrics">${(m.custom?.length ? m.custom : [{}]).map(customMetricRow).join("")}</div><button type="button" class="text-button" data-action="add-metric">+ Add a metric</button><p id="index-error" role="alert"></p><div class="form-actions"><button type="button" class="button" data-action="close">Cancel</button><button class="button primary">Save index details</button></div></form>`,
+  );
 }
 function plansPage() {
   const plan = state.plans.find((p) => p.id === planId) || state.plans[0];
@@ -455,7 +622,7 @@ function editReviewDialog(song) {
     ]
       .map(
         ([name, label, value]) =>
-          `<label>${e(label)}<textarea name="${name}" rows="3" maxlength="6000">${e(value)}</textarea></label>`,
+          `<label>${e(label)}<textarea name="${name}" aria-label="${e(label)}" rows="3" maxlength="6000">${e(value)}</textarea></label>`,
       )
       .join(
         "",
@@ -491,6 +658,72 @@ document.addEventListener("click", (event) => {
   const action = button.dataset.action,
     id = button.dataset.id;
   const song = state.songs.find((s) => s.id === id);
+  if (action === "criteria-search") return criteriaDialog();
+  if (action === "edit-index") return indexDetailsDialog(song);
+  if (action === "index-entry") {
+    if (indexRules.length >= 30)
+      return toast("You can combine up to 30 filters.");
+    const field =
+      button.dataset.field === "words" ? "lyrics" : button.dataset.field;
+    const type = indexFields(state.songs).find((f) => f.id === field)?.type;
+    indexRules.push({
+      field,
+      op:
+        button.dataset.field === "words"
+          ? "word"
+          : type === "number"
+            ? "numeric"
+            : "equals",
+      value: button.dataset.value,
+    });
+    render();
+    return;
+  }
+  if (action === "index-open") {
+    selected = id;
+    view = "discover";
+    query = themeFilter = approvalFilter = "";
+    if (dialog.open) dialog.close();
+    render();
+    return;
+  }
+  if (action === "remove-index-filter") {
+    indexRules.splice(Number(id), 1);
+    render();
+    return;
+  }
+  if (action === "reset-index") {
+    indexRules = [];
+    indexQuery = "";
+    indexSort = "title";
+    indexDescending = false;
+    render();
+    return;
+  }
+  if (action === "export-index") {
+    download(
+      "faithful-repertoire-index.csv",
+      indexCSV(
+        indexResults(),
+        indexFields(state.songs),
+        state.profile,
+        state.libraries,
+      ),
+      "text/csv;charset=utf-8",
+    );
+    return;
+  }
+  if (action === "add-metric") {
+    const rows = document.querySelector("#custom-metrics");
+    if (rows.children.length >= 50)
+      return toast("You can record up to 50 custom metrics per song.");
+    rows.insertAdjacentHTML("beforeend", customMetricRow());
+    return;
+  }
+  if (action === "remove-metric") {
+    button.closest(".custom-metric-row").remove();
+    return;
+  }
   if (action === "setup-profile") return wizard();
   if (action === "account")
     return accountDialog(button.dataset.mode || "signin");
@@ -531,16 +764,36 @@ document.addEventListener("click", (event) => {
     return;
   }
   if (action === "cloud-save") {
+    if (["saving", "checking", "conflict"].includes(accountSave.phase))
+      return toast("Review the account copy before saving.");
     modal(
-      '<h2>Save an account backup?</h2><p>This uploads your current profile, notes, libraries and plans to your account and replaces its existing backup. It does not include sign-in credentials or supplied song lyrics.</p><p id="account-error" role="alert"></p><div class="form-actions"><button class="button" data-action="close">Cancel</button><button class="button primary" id="save-cloud">Save this workspace</button></div>',
+      '<h2>Save an account backup?</h2><p>This uploads your current profile, index details, stored song words, notes, libraries and plans to your account and replaces its existing backup. Sign-in credentials are excluded. If another device has saved since this copy was checked, the upload will stop so you can review its changes.</p><p id="account-error" role="alert"></p><div class="form-actions"><button class="button" data-action="close">Cancel</button><button class="button primary" id="save-cloud">Save this workspace</button></div>',
     );
     document.querySelector("#save-cloud").onclick = async (event) => {
       event.target.disabled = true;
+      const snapshot = clone(state),
+        owner = accounts.user?.id,
+        store = activeStore;
+      accountSave.phase = "saving";
+      updateSaveStrip();
       try {
-        await accounts.saveWorkspace(state);
+        await accounts.saveWorkspace(snapshot);
+        if (accounts.user?.id !== owner || activeStore !== store) return;
+        accountSave = {
+          phase: "local",
+          signature: workspaceSignature(snapshot),
+          remoteAvailable: true,
+        };
+        updateSaveStrip();
         dialog.close();
         toast("Your workspace and profile are saved to your account.");
       } catch (error) {
+        if (accounts.user?.id !== owner || activeStore !== store) return;
+        accountSave.phase =
+          error instanceof WorkspaceConflictError ? "conflict" : "error";
+        if (error instanceof WorkspaceConflictError)
+          accountSave.remoteAvailable = true;
+        updateSaveStrip();
         if (document.querySelector("#account-error"))
           document.querySelector("#account-error").textContent = error.message;
         event.target.disabled = false;
@@ -549,10 +802,17 @@ document.addEventListener("click", (event) => {
     return;
   }
   if (action === "cloud-load") {
+    if (accountSave.phase === "saving") return;
+    const owner = accounts.user?.id,
+      store = activeStore;
     button.disabled = true;
     accounts
       .loadWorkspace()
       .then((saved) => {
+        if (accounts.user?.id !== owner || activeStore !== store) return;
+        accountSave.phase = "local";
+        accountSave.remoteAvailable = Boolean(saved);
+        updateSaveStrip();
         if (!saved) {
           toast("No account backup yet. Save this workspace first.");
           button.disabled = false;
@@ -720,6 +980,48 @@ document.addEventListener("input", (event) => {
   } catch {}
 });
 document.addEventListener("change", (event) => {
+  if (event.target.closest("#index-filter-form")) {
+    const form = event.target.form;
+    if (event.target.name === "field") {
+      const field = indexFields(state.songs).find(
+        (f) => f.id === form.elements.field.value,
+      );
+      form.elements.op.innerHTML = indexOperators(field.type);
+      form.elements.value.type = field.type === "number" ? "number" : "text";
+      form.elements.value.step = "any";
+      form.elements.value.value = "";
+      form.querySelector("#index-values").innerHTML = indexEntries(
+        state.songs,
+        field.id,
+        state.profile,
+        state.libraries,
+      )
+        .slice(0, 200)
+        .map((entry) => `<option value="${e(entry.value)}"></option>`)
+        .join("");
+    }
+    const withoutValue = ["missing", "present"].includes(
+      form.elements.op.value,
+    );
+    form.elements.value.disabled = withoutValue;
+    form.elements.value.required = !withoutValue;
+    return;
+  }
+  if (event.target.id === "index-sort") {
+    indexSort = event.target.value;
+    render();
+    return;
+  }
+  if (event.target.id === "index-order") {
+    indexDescending = event.target.value === "desc";
+    render();
+    return;
+  }
+  if (event.target.id === "index-column") {
+    indexColumn = event.target.value;
+    render();
+    return;
+  }
   if (
     event.target.name === "statement" &&
     event.target.closest("#wizard-form")
@@ -756,6 +1058,159 @@ document.addEventListener("submit", async (event) => {
       .split("\n")
       .map((s) => s.trim())
       .filter(Boolean);
+  if (form.id === "criteria-form") {
+    const error = form.querySelector("#criteria-error"),
+      submit =
+        form.querySelector('[type="submit"]') || form.querySelector(".primary");
+    const owner = activeStore,
+      mode = state.profile.aiMode;
+    try {
+      if (mode !== "full" || !aiConfigured)
+        throw new Error(
+          "This search requires Full AI content and a connected AI service.",
+        );
+      const library = state.libraries.find((l) => l.id === values.library);
+      const songs =
+        library?.songIds
+          .map((id) => state.songs.find((s) => s.id === id))
+          .filter(Boolean) || [];
+      if (!songs.length || songs.length > 100)
+        throw new Error(
+          "Select a library containing 1–100 songs. You can create a smaller library to narrow your search.",
+        );
+      const evidence = songs.map((song) =>
+        criteriaEvidence(song, state.profile),
+      );
+      submit.disabled = true;
+      submit.textContent = "Searching your library…";
+      const response = await fetch("./api/index-match", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          criteria: values.criteria,
+          aiMode: mode,
+          songs: evidence,
+        }),
+        signal: AbortSignal.timeout(75000),
+      });
+      const result = await response.json();
+      if (!response.ok)
+        throw new Error(
+          result.error || "The AI search could not be completed.",
+        );
+      const checked = validateCriteriaResults(result, evidence);
+      if (
+        activeStore !== owner ||
+        state.profile.aiMode !== mode ||
+        !form.isConnected ||
+        !dialog.open
+      )
+        return;
+      const labels = {
+        likely: "Likely match",
+        possible: "Possible match",
+        insufficient: "Insufficient evidence",
+        unlikely: "Does not appear to match",
+      };
+      const renderResults = (items) =>
+        items
+          .map(
+            (item) =>
+              `<li><button class="index-title" data-action="index-open" data-id="${e(item.id)}">${e(songs.find((s) => s.id === item.id).title)}</button><small>${labels[item.fit]}</small><p>${e(item.reason)}</p>${item.evidence.map((q) => `<blockquote>${e(q)}</blockquote>`).join("")}</li>`,
+          )
+          .join("");
+      const matches = checked.filter((item) =>
+          ["likely", "possible"].includes(item.fit),
+        ),
+        other = checked.filter(
+          (item) => !["likely", "possible"].includes(item.fit),
+        );
+      modal(
+        `<h2>Library criteria search</h2><p>${e(values.criteria)}</p><p class="muted">${matches.length} tentative matches of ${songs.length} songs · ${e(result.model)}. These are AI interpretations of supplied excerpts and records. Results follow library order, with no ranking or service selection.</p><ul class="criteria-results">${renderResults(matches) || "<li>No tentative matches were supported by the supplied records.</li>"}</ul><details><summary>Other results (${other.length})</summary><ul class="criteria-results">${renderResults(other)}</ul></details><p class="muted">Results are temporary. Your assessments, metrics, approval and worship plans are unchanged.</p><button class="button" data-action="close">Close search</button>`,
+      );
+    } catch (err) {
+      if (!form.isConnected) return;
+      error.textContent = err.message;
+      submit.disabled = false;
+      submit.textContent = "Search with AI";
+    }
+    return;
+  }
+  if (form.id === "index-search-form") {
+    indexQuery = values.query;
+    render();
+    return;
+  }
+  if (form.id === "index-browse-form") {
+    browseField = values.field;
+    browseQuery = values.value;
+    render();
+    document.querySelector(".index-directory").open = true;
+    return;
+  }
+  if (form.id === "index-filter-form") {
+    if (indexRules.length >= 30)
+      return toast("You can combine up to 30 filters.");
+    indexRules.push({
+      field: values.field,
+      op: values.op,
+      value: values.value || "",
+    });
+    render();
+    return;
+  }
+  if (form.id === "index-details-form") {
+    try {
+      const metadata = Object.fromEntries(
+        [
+          "tune",
+          "meter",
+          "timeSignature",
+          "range",
+          "vocalDifficulty",
+          "instrumentalDifficulty",
+          "languageName",
+          "lyrics",
+        ].map((k) => [k, values[k].trim()]),
+      );
+      metadata.tempo = values.tempo === "" ? null : Number(values.tempo);
+      for (const key of ["themes", "instruments", "tags"])
+        metadata[key] = values[key]
+          .split(",")
+          .map((v) => v.trim())
+          .filter(Boolean);
+      metadata.custom = [
+        ...form.querySelectorAll(".custom-metric-row"),
+      ].flatMap((row) => {
+        const name = row.querySelector('[name="metric-name"]').value.trim(),
+          type = row.querySelector('[name="metric-type"]').value,
+          raw = row.querySelector('[name="metric-value"]').value.trim();
+        if (!name && !raw) return [];
+        if (!name || !raw)
+          throw new Error("Each custom metric needs a name and a value.");
+        if (type === "number" && !Number.isFinite(Number(raw)))
+          throw new Error("A numeric metric must contain a number.");
+        return [{ name, type, value: type === "number" ? Number(raw) : raw }];
+      });
+      const next = clone(state),
+        song = next.songs.find((s) => s.id === id);
+      if (
+        metadata.lyrics !== (song.metadata?.lyrics || "") ||
+        metadata.themes.join(",") !==
+          themesForDisplay(song, state.profile.aiMode).join(",")
+      )
+        invalidateApproval(song);
+      song.metadata = metadata;
+      state = validateWorkspace(next);
+      persist();
+      dialog.close();
+      render();
+      toast("Your index details are saved.");
+    } catch (error) {
+      form.querySelector("#index-error").textContent = error.message;
+    }
+    return;
+  }
   if (form.id === "wizard-form") {
     const step = Number(form.dataset.step);
     if (step === 1) {

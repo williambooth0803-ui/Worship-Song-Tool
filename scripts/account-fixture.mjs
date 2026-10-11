@@ -16,7 +16,9 @@ export async function checkAccountFlows(browser, base) {
   };
   const profiles = new Map(),
     workspaces = new Map();
-  const sessions = new Map();
+  const sessions = new Map(),
+    versions = new Map();
+  let saveNumber = 0;
   const errors = [];
   page.on("pageerror", (error) => errors.push(error.message));
   await page.route("**/config.js", (route) =>
@@ -36,7 +38,7 @@ export async function checkAccountFlows(browser, base) {
           "Access-Control-Allow-Origin": "*",
           "Access-Control-Allow-Headers":
             "apikey,authorization,content-type,prefer",
-          "Access-Control-Allow-Methods": "GET,POST,PUT,OPTIONS",
+          "Access-Control-Allow-Methods": "GET,POST,PATCH,PUT,OPTIONS",
         },
         body: status === 204 ? "" : JSON.stringify(value),
       });
@@ -63,16 +65,36 @@ export async function checkAccountFlows(browser, base) {
     if (request.method() === "POST") {
       const data = request.postDataJSON();
       assert.equal(data.user_id, user.id);
+      if (table === workspaces && table.has(user.id))
+        return answer({ message: "Duplicate workspace" }, 409);
       table.set(user.id, structuredClone(data[field]));
+      if (table === workspaces) {
+        const date = new Date(
+          Date.UTC(2026, 9, 11, 10, 0, ++saveNumber),
+        ).toISOString();
+        versions.set(user.id, date);
+        return answer([{ updated_at: date }]);
+      }
       return answer(null, 204);
     }
     assert.equal(url.searchParams.get("user_id"), `eq.${user.id}`);
+    if (request.method() === "PATCH") {
+      assert.equal(table, workspaces);
+      if (url.searchParams.get("updated_at") !== `eq.${versions.get(user.id)}`)
+        return answer([]);
+      table.set(user.id, structuredClone(request.postDataJSON().workspace));
+      const date = new Date(
+        Date.UTC(2026, 9, 11, 10, 0, ++saveNumber),
+      ).toISOString();
+      versions.set(user.id, date);
+      return answer([{ updated_at: date }]);
+    }
     return answer(
       table.has(user.id)
         ? [
             {
               [field]: table.get(user.id),
-              updated_at: new Date().toISOString(),
+              updated_at: versions.get(user.id) || new Date().toISOString(),
             },
           ]
         : [],
@@ -140,6 +162,48 @@ export async function checkAccountFlows(browser, base) {
   await page.getByRole("button", { name: "Save this workspace" }).click();
   await saving;
   await page.getByRole("button", { name: "My account", exact: true }).waitFor();
+  await page
+    .locator("#account-save-strip")
+    .getByText("Saved to your account", { exact: true })
+    .waitFor();
+  await page
+    .getByRole("button", { name: "Edit assessment" })
+    .click();
+  await page
+    .getByLabel("Your notes", { exact: true })
+    .fill("Private account-one note, newer browser edit");
+  await page
+    .getByRole("button", { name: "Save assessment", exact: true })
+    .click();
+  assert.match(
+    await page.locator("#account-save-strip").textContent(),
+    /Changes saved in this browser/,
+  );
+  // A second device saved since this browser read the original version.
+  versions.set(users["one@example.test"].id, "2026-10-11T12:00:00.000Z");
+  await page
+    .getByRole("button", { name: "Save to account", exact: true })
+    .click();
+  await page
+    .getByRole("button", { name: "Save this workspace", exact: true })
+    .click();
+  await page
+    .locator("#account-error")
+    .getByText(/account copy changed/)
+    .waitFor();
+  await page.getByRole("button", { name: "Close dialog", exact: true }).click();
+  assert.ok(
+    await page
+      .getByRole("button", { name: "Save to account", exact: true })
+      .isDisabled(),
+  );
+  await page
+    .getByRole("button", { name: "Review account copy", exact: true })
+    .click();
+  await page
+    .getByRole("button", { name: "Load this backup", exact: true })
+    .click();
+  await page.getByText("Private account-one note", { exact: true }).waitFor();
   await logout();
   const guest = await page.evaluate(() =>
     JSON.parse(localStorage.getItem("hymn-heart-v1")),

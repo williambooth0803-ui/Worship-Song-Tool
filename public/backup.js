@@ -137,6 +137,51 @@ export function validateWorkspace(input) {
       themes: texts(song.themes, "themes"),
       review: review(song.review),
     };
+    if (song.metadata !== undefined) {
+      const value = object(song.metadata, "song index details");
+      result.metadata = {};
+      for (const key of [
+        "tune",
+        "meter",
+        "timeSignature",
+        "range",
+        "vocalDifficulty",
+        "instrumentalDifficulty",
+        "languageName",
+      ])
+        result.metadata[key] = text(value[key] ?? "", key, 300);
+      result.metadata.lyrics = text(value.lyrics ?? "", "song words", 30000);
+      result.metadata.tempo =
+        value.tempo === null || value.tempo === undefined
+          ? null
+          : number(value.tempo, "tempo", 20, 400);
+      for (const key of ["instruments", "tags", "themes"]) {
+        if (value[key] !== undefined)
+          result.metadata[key] = texts(value[key], key);
+      }
+      result.metadata.custom = array(
+        value.custom ?? [],
+        "custom metrics",
+        50,
+      ).map((item) => {
+        object(item, "custom metric");
+        const type = choice(item.type, "metric type", ["text", "number"]);
+        return {
+          name: text(item.name, "metric name", 100, true),
+          type,
+          value:
+            type === "number"
+              ? number(item.value, "metric value", -1e9, 1e9)
+              : text(item.value, "metric value", 1000),
+        };
+      });
+      unique(
+        result.metadata.custom.map((item) =>
+          item.name.normalize("NFKC").toLowerCase().trim(),
+        ),
+        "custom metric names",
+      );
+    }
     if (song.catalogReview !== undefined)
       result.catalogReview = review(song.catalogReview);
     if (song.catalogRevision !== undefined)

@@ -1,6 +1,10 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { AccountClient, validateAccountConfig } from "../public/accounts.js";
+import {
+  AccountClient,
+  WorkspaceConflictError,
+  validateAccountConfig,
+} from "../public/accounts.js";
 import { defaultProfile } from "../public/core.js";
 import { syncCatalog } from "../public/catalog.js";
 
@@ -133,8 +137,9 @@ test("save is owner-scoped and validates cloud data before sending", async () =>
   const client = new AccountClient(config, {
     storage: storage(),
     fetcher: async (url, options) => {
+      if (!options.body) return response([]);
       saved = JSON.parse(options.body);
-      return response(null, 204);
+      return response([{ updated_at: "2026-10-11T10:00:00.000Z" }]);
     },
   });
   client.setSession(session);
@@ -161,4 +166,64 @@ test("sign-out clears local tokens even when the remote operation fails", async 
   client.setSession(session);
   await assert.rejects(client.signOut());
   assert.equal(client.user, null);
+});
+test("conditional workspace updates protect newer copies and first-save collisions", async () => {
+  const workspace = syncCatalog({
+    version: 1,
+    songs: [],
+    libraries: [{ id: "me", name: "Mine", songIds: [] }],
+    plans: [],
+    profile: defaultProfile,
+  });
+  const date = "2026-10-11T10:00:00.123456+00:00",
+    calls = [];
+  let conflict = false;
+  const client = new AccountClient(config, {
+    storage: storage(),
+    fetcher: async (url, options) => {
+      calls.push({ url, options });
+      if (options.method === "GET")
+        return response([{ workspace, updated_at: date }]);
+      return response(
+        conflict ? [] : [{ updated_at: "2026-10-11T11:00:00.000Z" }],
+      );
+    },
+  });
+  client.setSession(session);
+  await client.loadWorkspace();
+  await client.saveWorkspace(workspace);
+  assert.equal(calls[1].options.method, "PATCH");
+  const url = new URL(calls[1].url);
+  assert.equal(url.searchParams.get("user_id"), `eq.${user.id}`);
+  assert.equal(url.searchParams.get("updated_at"), `eq.${date}`);
+  conflict = true;
+  await assert.rejects(client.saveWorkspace(workspace), WorkspaceConflictError);
+  const fresh = new AccountClient(config, {
+    storage: storage(),
+    fetcher: async (url, options) =>
+      options.method === "GET"
+        ? response([])
+        : response({ message: "Duplicate" }, 409),
+  });
+  fresh.setSession(session);
+  await assert.rejects(fresh.saveWorkspace(workspace), WorkspaceConflictError);
+});
+test("responses for a previous account cannot replace the new account version", async () => {
+  let resolve;
+  const client = new AccountClient(config, {
+    storage: storage(),
+    fetcher: () =>
+      new Promise((done) => {
+        resolve = done;
+      }),
+  });
+  client.setSession(session);
+  const pending = client.loadWorkspace();
+  client.setSession({
+    ...session,
+    user: { ...user, id: "00000000-0000-0000-0000-000000000002" },
+  });
+  resolve(response([]));
+  await assert.rejects(pending, /account changed/);
+  assert.equal(client.workspaceVersion, undefined);
 });

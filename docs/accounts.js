@@ -1,4 +1,12 @@
 import { validateWorkspace } from "./backup.js";
+export class WorkspaceConflictError extends Error {
+  constructor() {
+    super(
+      "Your account copy changed on another device. Load or review that copy before saving again.",
+    );
+    this.name = "WorkspaceConflictError";
+  }
+}
 
 export function validateAccountConfig(config) {
   if (!config?.supabaseUrl || !config?.supabasePublishableKey) return null;
@@ -39,6 +47,8 @@ export class AccountClient {
     this.storage = storage;
     this.fetcher = fetcher;
     this.session = null;
+    this.workspaceVersion = undefined;
+    this.workspaceRequest = 0;
     try {
       this.storage ||= globalThis.sessionStorage;
     } catch {
@@ -77,6 +87,10 @@ export class AccountClient {
       (!session.access_token || !session.refresh_token || !session.user?.id)
     )
       throw new Error("The sign-in response is incomplete.");
+    if (this.session?.user?.id !== session?.user?.id) {
+      this.workspaceVersion = undefined;
+      this.workspaceRequest++;
+    }
     this.session = session;
     try {
       if (session)
@@ -141,6 +155,9 @@ export class AccountClient {
     }
     const data =
       response.status === 204 ? null : await response.json().catch(() => null);
+    if (!response.ok)
+      if (response.status === 409 && path.startsWith("/rest/v1/workspaces"))
+        throw new WorkspaceConflictError();
     if (!response.ok)
       throw new Error(
         data?.msg ||
@@ -236,25 +253,65 @@ export class AccountClient {
     return value;
   }
   async loadWorkspace() {
+    const owner = this.userId(),
+      requestNumber = ++this.workspaceRequest;
     const rows = await this.request(
-      `/rest/v1/workspaces?user_id=eq.${this.userId()}&select=workspace,updated_at`,
+      `/rest/v1/workspaces?user_id=eq.${owner}&select=workspace,updated_at`,
       { authenticated: true },
     );
-    if (!Array.isArray(rows))
+    if (this.user?.id !== owner)
+      throw new Error("The signed-in account changed. Please try again.");
+    if (!Array.isArray(rows) || rows.length > 1)
       throw new Error("The account workspace response was invalid.");
-    if (!rows.length) return null;
+    if (!rows.length) {
+      if (requestNumber === this.workspaceRequest) this.workspaceVersion = null;
+      return null;
+    }
+    if (
+      typeof rows[0].updated_at !== "string" ||
+      !Number.isFinite(Date.parse(rows[0].updated_at))
+    )
+      throw new Error("The account copy has an invalid save date.");
+    if (requestNumber === this.workspaceRequest)
+      this.workspaceVersion = rows[0].updated_at;
     return {
       workspace: validateWorkspace(rows[0].workspace),
       updatedAt: rows[0].updated_at,
     };
   }
   async saveWorkspace(workspace) {
-    await this.request("/rest/v1/workspaces?on_conflict=user_id", {
-      method: "POST",
-      authenticated: true,
-      headers: { Prefer: "resolution=merge-duplicates,return=minimal" },
-      body: { user_id: this.userId(), workspace: validateWorkspace(workspace) },
-    });
+    const owner = this.userId(),
+      checked = validateWorkspace(workspace);
+    if (this.workspaceVersion === undefined) await this.loadWorkspace();
+    if (this.user?.id !== owner)
+      throw new Error("The signed-in account changed. Please try again.");
+    const version = this.workspaceVersion,
+      requestNumber = ++this.workspaceRequest;
+    const rows = await this.request(
+      version === null
+        ? "/rest/v1/workspaces?select=updated_at"
+        : `/rest/v1/workspaces?user_id=eq.${owner}&updated_at=eq.${encodeURIComponent(version)}&select=updated_at`,
+      {
+        method: version === null ? "POST" : "PATCH",
+        authenticated: true,
+        headers: { Prefer: "return=representation" },
+        body:
+          version === null
+            ? { user_id: owner, workspace: checked }
+            : { workspace: checked },
+      },
+    );
+    if (this.user?.id !== owner)
+      throw new Error("The signed-in account changed. Please try again.");
+    if (!Array.isArray(rows) || rows.length !== 1)
+      throw new WorkspaceConflictError();
+    const date = rows[0].updated_at;
+    if (typeof date !== "string" || !Number.isFinite(Date.parse(date)))
+      throw new Error(
+        "The saved account copy could not be verified. Your browser copy is retained.",
+      );
+    if (requestNumber === this.workspaceRequest) this.workspaceVersion = date;
+    return { updatedAt: date };
   }
   async loadProfile() {
     const rows = await this.request(

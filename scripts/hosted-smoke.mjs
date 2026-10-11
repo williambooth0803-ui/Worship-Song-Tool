@@ -5,6 +5,7 @@ import { readFile } from "node:fs/promises";
 import assert from "node:assert/strict";
 import { chromium } from "playwright";
 import { checkAccountFlows } from "./account-fixture.mjs";
+import { checkIndexFlows } from "./index-fixture.mjs";
 
 const root = fileURLToPath(new URL("../docs/", import.meta.url));
 const requests = [];
@@ -273,6 +274,10 @@ try {
   });
   assert.deepEqual(errors, []);
   await checkAccountFlows(
+    browser,
+    `http://127.0.0.1:${server.address().port}/Worship-Song-Tool/`,
+  );
+  await checkIndexFlows(
     browser,
     `http://127.0.0.1:${server.address().port}/Worship-Song-Tool/`,
   );
