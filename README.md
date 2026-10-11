@@ -6,6 +6,8 @@ A first working loop for thoughtful worship planning: identify a song, assess it
 
 `npm run build:site` prepares the static edition in `docs/` for GitHub Pages. Assets and imports use relative paths so the app works under a repository subdirectory. Publish with Pages configured to the `main` branch and `/docs` folder. Regenerate and commit `docs/` whenever frontend source changes.
 
+One-time activation: open the repository's **Settings → Pages**, set **Source** to **Deploy from a branch**, select **main** and **/docs**, then click **Save**. The GitHub integration used during development can push code but returned `403 Resource not accessible by integration` when enabling Pages, so account-side activation remains necessary. The site is not considered live until its public address has been verified.
+
 The static edition supports manual assessments, libraries, service planning, exports and backup restoration. It does not make AI requests or expose a credential. Live AI requires the Node backend and authenticated hosting. Private-repository Pages availability depends on the GitHub account plan.
 
 Run `npm run test:hosted` to regenerate the website and test it under its hosted path, including backup download, rejected malformed files, cancellation, confirmed restoration and mobile controls. This test starts its own temporary local server.
