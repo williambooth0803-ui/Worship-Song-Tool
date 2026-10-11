@@ -6,6 +6,10 @@ import { validateReview } from './public/core.js';
 
 const root = path.resolve(fileURLToPath(new URL('./public/', import.meta.url)));
 const port = Number(process.env.PORT || 3000);
+// Development previews embed the app. Production can restrict embedding explicitly.
+const frameAncestors = process.env.FRAME_ANCESTORS;
+if (frameAncestors && /[;\r\n]/.test(frameAncestors)) throw new Error('FRAME_ANCESTORS must contain CSP source expressions only.');
+const contentSecurityPolicy = "default-src 'self'; script-src 'self'; style-src 'self'; connect-src 'self'; img-src 'self' data:; base-uri 'self'; form-action 'self'" + (frameAncestors ? `; frame-ancestors ${frameAncestors}` : '');
 const types = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.css': 'text/css; charset=utf-8', '.svg': 'image/svg+xml' };
 function json(res, status, data) { res.writeHead(status, { 'Content-Type': 'application/json', 'Cache-Control': 'no-store' }); res.end(JSON.stringify(data)); }
 async function body(req) {
@@ -36,7 +40,7 @@ export const server = http.createServer(async (req, res) => {
     if (!file.startsWith(root + path.sep)) return json(res, 403, { error: 'Forbidden.' });
     let content;
     try { content = await readFile(file); } catch { return json(res, 404, { error: 'Not found.' }); }
-    res.writeHead(200, { 'Content-Type': types[path.extname(file)] || 'application/octet-stream', 'X-Content-Type-Options': 'nosniff', 'Referrer-Policy': 'same-origin', 'Content-Security-Policy': "default-src 'self'; script-src 'self'; style-src 'self'; connect-src 'self'; img-src 'self' data:; frame-ancestors 'none'; base-uri 'self'; form-action 'self'" });
+    res.writeHead(200, { 'Content-Type': types[path.extname(file)] || 'application/octet-stream', 'X-Content-Type-Options': 'nosniff', 'Referrer-Policy': 'same-origin', 'Content-Security-Policy': contentSecurityPolicy });
     res.end(req.method === 'HEAD' ? undefined : content);
   } catch (error) {
     console.error('Request failed:', error.name);

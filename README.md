@@ -13,6 +13,8 @@ npm start
 
 Open `http://localhost:3000` in your browser. `PORT` overrides the default port. `npm run dev` restarts the server when files change. Run `npm test` for the rating, search, review-validation and server tests.
 
+The development server permits embedded previews. For a deployment that should block embedding, set `FRAME_ANCESTORS="'none'"`; alternatively supply the trusted parent origins as CSP source expressions. The server must be running for a preview to load; cloud environment restoration does not preserve server processes.
+
 With the app running, `npm run test:browser` exercises edits, multiple libraries, plans, reordering, persistence, safe text rendering and mobile overflow in a fresh browser context. It uses the installed Chromium at `/usr/bin/chromium`; set `CHROMIUM_PATH` for another executable, and `APP_URL` for another app address. Screenshots are written to `/tmp/worship-discover.png`, `/tmp/worship-plan.png` and `/tmp/worship-mobile.png`. Playwright is a development dependency; there are no third-party runtime dependencies.
 
 ## The first loop
