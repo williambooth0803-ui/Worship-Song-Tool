@@ -1,24 +1,147 @@
 const common = {
-  status: 'starter', updatedAt: null, notes: '', key: '', minutes: 4,
-  musical: 'Not assessed. Supply the specific key, melody or arrangement before evaluating range, vocal jumps or instrumental difficulty.',
+  status: "starter",
+  updatedAt: null,
+  notes: "",
+  key: "",
+  minutes: 4,
+  musical:
+    "Not assessed. Supply the specific key, melody or arrangement before evaluating range, vocal jumps or instrumental difficulty.",
   scores: { accuracy: null, substance: null, language: null, time: null },
-  concern: 'none', concerns: [], sources: [], time: 'Not assessed for your arrangement. Enter its duration and note any repeated sections, wordless vocals or instrumental breaks.',
+  concern: "none",
+  concerns: [],
+  sources: [],
+  time: "Not assessed for your arrangement. Enter its duration and note any repeated sections, wordless vocals or instrumental breaks.",
 };
 export const seedSongs = [
   {
-    id: 'holy-holy-holy', title: 'Holy, Holy, Holy', author: 'Reginald Heber · tune: John B. Dykes', firstLine: 'Holy, holy, holy! Lord God Almighty!', version: 'Traditional hymn · NICAEA', themes: ['Trinity', 'Holiness', 'Adoration'],
-    review: { ...common, scores: { accuracy: 9, substance: 9, language: 8, time: null }, summary: 'A substantial confession of God’s holiness and the Trinity. Archaic English may benefit from brief explanation. This starter assessment is editorial, not an AI review or a verified scholarly consensus.', claims: ['God is holy, almighty and triune.', 'God is merciful, mighty and worthy of worship.', 'Creation joins in praise of God.'], uses: ['Opening praise', 'Trinity emphasis', 'Call to worship'], scriptures: ['Revelation 4:8 — clear allusion to the threefold “holy”.', 'Isaiah 6:3 — thematic connection: God’s holiness.', 'Matthew 28:19 — thematic connection: the Trinity.'], language: 'Structured hymn stanzas with purposeful repetition. Words such as “wert” and “thee” may need explanation; archaic language is not inherently poor grammar.', sources: [{ label: 'Hymnary: text and hymn background (verify chosen edition)', url: 'https://hymnary.org/text/holy_holy_holy_lord_god_almighty_early' }] }
+    id: "holy-holy-holy",
+    title: "Holy, Holy, Holy",
+    author: "Reginald Heber · tune: John B. Dykes",
+    firstLine: "Holy, holy, holy! Lord God Almighty!",
+    version: "Traditional hymn · NICAEA",
+    themes: ["Trinity", "Holiness", "Adoration"],
+    review: {
+      ...common,
+      scores: { accuracy: 9, substance: 9, language: 8, time: null },
+      summary:
+        "A substantial confession of God’s holiness and the Trinity. Archaic English may benefit from brief explanation. This starter assessment is editorial, not an AI review or a verified scholarly consensus.",
+      claims: [
+        "God is holy, almighty and triune.",
+        "God is merciful, mighty and worthy of worship.",
+        "Creation joins in praise of God.",
+      ],
+      uses: ["Opening praise", "Trinity emphasis", "Call to worship"],
+      scriptures: [
+        "Revelation 4:8 — clear allusion to the threefold “holy”.",
+        "Isaiah 6:3 — thematic connection: God’s holiness.",
+        "Matthew 28:19 — thematic connection: the Trinity.",
+      ],
+      language:
+        "Structured hymn stanzas with purposeful repetition. Words such as “wert” and “thee” may need explanation; archaic language is not inherently poor grammar.",
+      sources: [
+        {
+          label: "Hymnary: text and hymn background (verify chosen edition)",
+          url: "https://hymnary.org/text/holy_holy_holy_lord_god_almighty_early",
+        },
+      ],
+    },
   },
   {
-    id: 'amazing-grace', title: 'Amazing Grace', author: 'John Newton · tune: NEW BRITAIN', firstLine: 'Amazing grace! How sweet the sound', version: 'Traditional hymn · verify verses', themes: ['Grace', 'Salvation', 'Assurance'],
-    review: { ...common, scores: { accuracy: 9, substance: 8, language: 9, time: null }, summary: 'A personal testimony of saving grace, transformation and sustaining hope. Identify the verses you use: later additions and modern choruses change the text. This is a starter assessment for review.', claims: ['Grace saves undeserving sinners.', 'God’s grace transforms and sustains the believer.', 'God’s promises give the believer hope.'], uses: ['Response', 'Assurance', 'Testimony'], scriptures: ['Ephesians 2:8–9 — thematic connection: salvation by grace.', 'John 9:25 — clear allusion: once blind, now seeing.'], concerns: ['Do not treat every verse circulating under this title as a verse written by Newton.'], language: 'Clear poetic contrasts and a coherent personal testimony. “Wretch” communicates an assessment of sin rather than a modern self-esteem claim.', sources: [{ label: 'Hymnary: text and hymn background (verify chosen edition)', url: 'https://hymnary.org/text/amazing_grace_how_sweet_the_sound' }] }
+    id: "amazing-grace",
+    title: "Amazing Grace",
+    author: "John Newton · tune: NEW BRITAIN",
+    firstLine: "Amazing grace! How sweet the sound",
+    version: "Traditional hymn · verify verses",
+    themes: ["Grace", "Salvation", "Assurance"],
+    review: {
+      ...common,
+      scores: { accuracy: 9, substance: 8, language: 9, time: null },
+      summary:
+        "A personal testimony of saving grace, transformation and sustaining hope. Identify the verses you use: later additions and modern choruses change the text. This is a starter assessment for review.",
+      claims: [
+        "Grace saves undeserving sinners.",
+        "God’s grace transforms and sustains the believer.",
+        "God’s promises give the believer hope.",
+      ],
+      uses: ["Response", "Assurance", "Testimony"],
+      scriptures: [
+        "Ephesians 2:8–9 — thematic connection: salvation by grace.",
+        "John 9:25 — clear allusion: once blind, now seeing.",
+      ],
+      concerns: [
+        "Do not treat every verse circulating under this title as a verse written by Newton.",
+      ],
+      language:
+        "Clear poetic contrasts and a coherent personal testimony. “Wretch” communicates an assessment of sin rather than a modern self-esteem claim.",
+      sources: [
+        {
+          label: "Hymnary: text and hymn background (verify chosen edition)",
+          url: "https://hymnary.org/text/amazing_grace_how_sweet_the_sound",
+        },
+      ],
+    },
   },
   {
-    id: 'decided', title: 'I Have Decided to Follow Jesus', author: 'Traditional · attribution varies', firstLine: 'I have decided to follow Jesus', version: 'Traditional refrain · verify text and tune', themes: ['Discipleship', 'Commitment', 'Perseverance'],
-    review: { ...common, scores: { accuracy: 8, substance: 6, language: 8, time: null }, summary: 'A simple profession of commitment to discipleship. Human response language does not by itself deny divine initiative. Its limited doctrinal development makes context especially useful. Attribution should be verified.', claims: ['Following Jesus involves commitment.', 'Discipleship can require perseverance despite opposition.'], uses: ['Response', 'Baptism', 'Discipleship emphasis'], scriptures: ['Luke 9:23 — thematic connection: following Christ.', 'Luke 9:62 — thematic connection: perseverance.'], concerns: ['Provides little explanation of the gospel or the source of saving faith; pair it with a substantial reading or song.'], concern: 'context', language: 'Simple, intelligible declarations. Repetition reinforces commitment, but extended repetitions may add little new meaning.', sources: [] }
+    id: "decided",
+    title: "I Have Decided to Follow Jesus",
+    author: "Traditional · attribution varies",
+    firstLine: "I have decided to follow Jesus",
+    version: "Traditional refrain · verify text and tune",
+    themes: ["Discipleship", "Commitment", "Perseverance"],
+    review: {
+      ...common,
+      scores: { accuracy: 8, substance: 6, language: 8, time: null },
+      summary:
+        "A simple profession of commitment to discipleship. Human response language does not by itself deny divine initiative. Its limited doctrinal development makes context especially useful. Attribution should be verified.",
+      claims: [
+        "Following Jesus involves commitment.",
+        "Discipleship can require perseverance despite opposition.",
+      ],
+      uses: ["Response", "Baptism", "Discipleship emphasis"],
+      scriptures: [
+        "Luke 9:23 — thematic connection: following Christ.",
+        "Luke 9:62 — thematic connection: perseverance.",
+      ],
+      concerns: [
+        "Provides little explanation of the gospel or the source of saving faith; pair it with a substantial reading or song.",
+      ],
+      concern: "context",
+      language:
+        "Simple, intelligible declarations. Repetition reinforces commitment, but extended repetitions may add little new meaning.",
+      sources: [],
+    },
   },
   {
-    id: 'be-thou', title: 'Be Thou My Vision', author: 'Traditional Irish · translation: Mary E. Byrne; versification: Eleanor H. Hull', firstLine: 'Be Thou my vision, O Lord of my heart', version: 'Traditional hymn · SLANE', themes: ['Dependence', 'Wisdom', 'Devotion'],
-    review: { ...common, scores: { accuracy: 9, substance: 8, language: 8, time: null }, summary: 'A prayer for God to shape the singer’s desires, wisdom and priorities. Poetic imagery carries meaningful substance, though archaic terms deserve explanation. Verify the selected translation.', claims: ['God is the believer’s wisdom and guiding priority.', 'God is a greater treasure than earthly riches or praise.', 'The believer depends on God’s presence.'], uses: ['Preparation for sermon', 'Response', 'Sending'], scriptures: ['Matthew 6:19–21 — thematic connection: true treasure.', 'Colossians 3:1–2 — thematic connection: heavenly priorities.'], language: 'Coherent prayer expressed through poetic metaphors. Archaic pronouns are grammatical; assess their accessibility for your congregation.', sources: [{ label: 'Hymnary: text and hymn background (verify chosen edition)', url: 'https://hymnary.org/text/be_thou_my_vision_o_lord_of_my_heart' }] }
+    id: "be-thou",
+    title: "Be Thou My Vision",
+    author:
+      "Traditional Irish · translation: Mary E. Byrne; versification: Eleanor H. Hull",
+    firstLine: "Be Thou my vision, O Lord of my heart",
+    version: "Traditional hymn · SLANE",
+    themes: ["Dependence", "Wisdom", "Devotion"],
+    review: {
+      ...common,
+      scores: { accuracy: 9, substance: 8, language: 8, time: null },
+      summary:
+        "A prayer for God to shape the singer’s desires, wisdom and priorities. Poetic imagery carries meaningful substance, though archaic terms deserve explanation. Verify the selected translation.",
+      claims: [
+        "God is the believer’s wisdom and guiding priority.",
+        "God is a greater treasure than earthly riches or praise.",
+        "The believer depends on God’s presence.",
+      ],
+      uses: ["Preparation for sermon", "Response", "Sending"],
+      scriptures: [
+        "Matthew 6:19–21 — thematic connection: true treasure.",
+        "Colossians 3:1–2 — thematic connection: heavenly priorities.",
+      ],
+      language:
+        "Coherent prayer expressed through poetic metaphors. Archaic pronouns are grammatical; assess their accessibility for your congregation.",
+      sources: [
+        {
+          label: "Hymnary: text and hymn background (verify chosen edition)",
+          url: "https://hymnary.org/text/be_thou_my_vision_o_lord_of_my_heart",
+        },
+      ],
+    },
   },
 ];

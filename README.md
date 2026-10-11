@@ -2,6 +2,14 @@
 
 A first working loop for thoughtful worship planning: identify a song, assess it under an editable Baptist/Reformed-friendly profile, save it to multiple libraries, and build a service plan.
 
+## Hosted website
+
+`npm run build:site` prepares the static edition in `docs/` for GitHub Pages. Assets and imports use relative paths so the app works under a repository subdirectory. Publish with Pages configured to the `main` branch and `/docs` folder. Regenerate and commit `docs/` whenever frontend source changes.
+
+The static edition supports manual assessments, libraries, service planning, exports and backup restoration. It does not make AI requests or expose a credential. Live AI requires the Node backend and authenticated hosting. Private-repository Pages availability depends on the GitHub account plan.
+
+Run `npm run test:hosted` to regenerate the website and test it under its hosted path, including backup download, rejected malformed files, cancellation, confirmed restoration and mobile controls. This test starts its own temporary local server.
+
 ## Run locally
 
 Requires Node.js 22 or later. No third-party runtime dependencies or build step.
@@ -47,7 +55,9 @@ AI accuracy, provider connectivity and musical inference have not been establish
 
 ## Storage and scope
 
-Libraries, profiles and plans use this browser's localStorage. They are not synced to accounts or other devices. Clearing site data removes them; use **Export your data** for a JSON backup. This version exports data but does not yet restore backups through the UI. It has no accounts, shared approval workflow, catalog search API, licensed lyric retrieval, sheet-music/audio analysis or automatic online source verification.
+Libraries, profiles and plans use this browser's localStorage. They are not synced to accounts or other devices. Clearing site data removes them. Use **Backup & restore** to download a JSON backup or restore it on another browser. Imported files are validated before a confirmation step; restoring replaces this browser's workspace. Canceling or providing an invalid backup preserves the current workspace. The file limit is 5 MB. Your personal data is not committed to GitHub or published with the website.
+
+It has no accounts, shared approval workflow, catalog search API, licensed lyric retrieval, sheet-music/audio analysis or automatic online source verification.
 
 This server is for personal/local development. Before sharing a server with AI enabled, add authentication, authorization and rate limiting to protect API spending. A deployed multi-user version also needs database storage and a clear licensing/data-retention policy.
 

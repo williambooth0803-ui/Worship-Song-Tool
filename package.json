@@ -7,7 +7,9 @@
     "start": "node server.js",
     "dev": "node --watch server.js",
     "test": "node --test test/*.test.js",
-    "test:browser": "node scripts/browser-smoke.mjs"
+    "test:browser": "node scripts/browser-smoke.mjs",
+    "build:site": "node scripts/build-site.mjs",
+    "test:hosted": "npm run build:site && node scripts/hosted-smoke.mjs"
   },
   "engines": {
     "node": ">=22"
