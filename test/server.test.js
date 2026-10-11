@@ -23,7 +23,7 @@ test("server serves the app, reports AI availability, and fails safely without c
   const base = "http://127.0.0.1:3199";
   const page = await fetch(base);
   assert.equal(page.status, 200);
-  assert.match(await page.text(), /Hymn & Heart/);
+  assert.match(await page.text(), /Faithful Repertoire/);
   assert.match(
     page.headers.get("content-security-policy"),
     /script-src 'self'/,
@@ -43,4 +43,33 @@ test("server serves the app, reports AI availability, and fails safely without c
   assert.match((await analysis.json()).error, /not configured/);
   assert.equal((await fetch(base + "/server.js")).status, 404);
   assert.equal((await fetch(base + "/app.js")).status, 200);
+});
+test("manual and invalid AI modes are rejected before any provider call", async (t) => {
+  const child = spawn(process.execPath, ["server.js"], {
+    env: {
+      ...process.env,
+      PORT: "3197",
+      WORSHIP_AI_KEY: "fixture-not-a-real-key",
+    },
+    stdio: ["ignore", "pipe", "pipe"],
+  });
+  t.after(() => child.kill());
+  await Promise.race([
+    once(child.stdout, "data"),
+    once(child, "exit").then(() => {
+      throw new Error("Server failed to start");
+    }),
+  ]);
+  for (const aiMode of ["manual", "invalid"]) {
+    const response = await fetch("http://127.0.0.1:3197/api/analyze", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        title: "Fixture title",
+        lyrics: "Fixture evidence",
+        aiMode,
+      }),
+    });
+    assert.equal(response.status, 400);
+  }
 });

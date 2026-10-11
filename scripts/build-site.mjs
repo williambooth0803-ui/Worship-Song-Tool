@@ -7,6 +7,7 @@ import {
 } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
 import path from "node:path";
+import { validateAccountConfig } from "../public/accounts.js";
 
 const project = fileURLToPath(new URL("../", import.meta.url));
 const source = path.join(project, "public");
@@ -28,6 +29,19 @@ for (const file of await readdir(source, { withFileTypes: true })) {
     );
 }
 await writeFile(path.join(destination, ".nojekyll"), "");
+// These are browser-safe project identifiers, not privileged credentials.
+if (process.env.SUPABASE_URL || process.env.SUPABASE_PUBLISHABLE_KEY) {
+  const config = {
+    supabaseUrl: process.env.SUPABASE_URL || "",
+    supabasePublishableKey: process.env.SUPABASE_PUBLISHABLE_KEY || "",
+  };
+  if (!validateAccountConfig(config))
+    throw new Error("Supply both public Supabase project settings.");
+  await writeFile(
+    path.join(destination, "config.js"),
+    `export const siteConfig = ${JSON.stringify(config)};\n`,
+  );
+}
 console.log(
   "Static website prepared in docs/. No credentials or personal browser data are included.",
 );

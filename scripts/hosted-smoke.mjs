@@ -4,6 +4,7 @@ import { fileURLToPath } from "node:url";
 import { readFile } from "node:fs/promises";
 import assert from "node:assert/strict";
 import { chromium } from "playwright";
+import { checkAccountFlows } from "./account-fixture.mjs";
 
 const root = fileURLToPath(new URL("../docs/", import.meta.url));
 const requests = [];
@@ -50,7 +51,7 @@ try {
   await page
     .getByRole("heading", { name: "Find words worth singing." })
     .waitFor();
-  assert.equal(await page.locator(".song-card").count(), 4);
+  assert.equal(await page.locator(".song-card").count(), 20);
   assert.equal(
     await page.locator("html").getAttribute("data-edition"),
     "static",
@@ -81,13 +82,11 @@ try {
   );
 
   const invalid = { ...before, version: 99 };
-  await page
-    .getByLabel("Backup file", { exact: true })
-    .setInputFiles({
-      name: "bad.json",
-      mimeType: "application/json",
-      buffer: Buffer.from(JSON.stringify(invalid)),
-    });
+  await page.getByLabel("Backup file", { exact: true }).setInputFiles({
+    name: "bad.json",
+    mimeType: "application/json",
+    buffer: Buffer.from(JSON.stringify(invalid)),
+  });
   await page
     .getByRole("button", { name: "Review backup", exact: true })
     .click();
@@ -144,7 +143,139 @@ try {
       () => document.documentElement.scrollWidth <= innerWidth,
     ),
   );
+  await page.setViewportSize({ width: 1440, height: 1000 });
+  await page.getByRole("button", { name: "Build my profile" }).click();
+  await page
+    .getByLabel("Denomination", { exact: true })
+    .selectOption("lutheran");
+  await page.getByRole("button", { name: "Continue", exact: true }).click();
+  await page
+    .getByLabel("Statement of faith", { exact: true })
+    .selectOption("augsburg");
+  await page.getByRole("button", { name: "Continue", exact: true }).click();
+  await page.getByRole("radio", { name: /Human reviews only/ }).check();
+  await page.getByRole("button", { name: "Save my profile" }).click();
+  const profile = await page.evaluate(
+    () => JSON.parse(localStorage.getItem("hymn-heart-v1")).profile,
+  );
+  assert.equal(profile.denomination, "lutheran");
+  assert.equal(profile.statement, "augsburg");
+  assert.equal(profile.aiMode, "manual");
+  assert.equal(
+    await page.getByRole("button", { name: "Draft with AI" }).count(),
+    0,
+  );
+  await page.getByRole("button", { name: "Review decision" }).click();
+  await page
+    .getByLabel("Church-use decision", { exact: true })
+    .selectOption("context");
+  await page
+    .getByLabel("Reasoning or conditions for use")
+    .fill("Explain the hymn’s archaic language.");
+  await page
+    .getByLabel("I have reviewed the exact version and any concerns.")
+    .check();
+  await page.getByRole("button", { name: "Save church-use decision" }).click();
+  await page.getByLabel("Church use", { exact: true }).selectOption("context");
+  assert.equal(await page.locator(".song-card").count(), 1);
+  await page.getByRole("button", { name: "Edit assessment" }).click();
+  await page
+    .getByRole("button", { name: "Save assessment", exact: true })
+    .click();
+  const edited = await page.evaluate(
+    () => JSON.parse(localStorage.getItem("hymn-heart-v1")).songs[0],
+  );
+  assert.equal(edited.approval.status, "unreviewed");
+  assert.ok(edited.approval.notes);
+  await page.getByRole("button", { name: "Clear filters" }).click();
+  await page.getByRole("button", { name: "Review decision" }).click();
+  await page
+    .getByLabel("Church-use decision", { exact: true })
+    .selectOption("avoid");
+  await page
+    .getByLabel("Reasoning or conditions for use")
+    .fill("Testing a church-use restriction.");
+  await page.getByRole("button", { name: "Save church-use decision" }).click();
+  await page.getByRole("button", { name: "Add to plan" }).click();
+  await page.locator("#approval-form").waitFor();
+  await page.getByRole("button", { name: "Cancel", exact: true }).click();
+  await page.evaluate(() => {
+    const state = JSON.parse(localStorage.getItem("hymn-heart-v1"));
+    const song = state.songs[0],
+      human = structuredClone(song.review);
+    delete human.previous;
+    human.summary = "My human assessment is retained.";
+    song.review = {
+      ...song.review,
+      status: "ai",
+      summary: "AI draft visibility fixture.",
+      previous: human,
+      assistance: {
+        summary: "AI observation visibility fixture.",
+        language: "Fixture observation",
+        time: "Not assessed.",
+        model: "fixture",
+        updatedAt: new Date().toISOString(),
+      },
+    };
+    state.profile.aiMode = "full";
+    localStorage.setItem("hymn-heart-v1", JSON.stringify(state));
+  });
+  await page.reload();
+  await page
+    .getByText("AI draft visibility fixture.", { exact: true })
+    .waitFor();
+  for (const mode of ["manual", "limited", "full"]) {
+    await page
+      .locator("nav")
+      .getByRole("button", { name: "Rating profile" })
+      .click();
+    await page
+      .getByLabel("AI content preference", { exact: true })
+      .selectOption(mode);
+    await page
+      .getByRole("button", { name: "Save rating profile", exact: true })
+      .click();
+    await page
+      .locator("nav")
+      .getByRole("button", { name: "Discover songs" })
+      .click();
+    assert.equal(
+      await page
+        .getByText("AI draft visibility fixture.", { exact: true })
+        .count(),
+      mode === "full" ? 1 : 0,
+    );
+    assert.equal(
+      await page
+        .getByText("AI observation visibility fixture.", { exact: true })
+        .count(),
+      mode === "manual" ? 0 : 1,
+    );
+    const retained = await page.evaluate(
+      () => JSON.parse(localStorage.getItem("hymn-heart-v1")).songs[0].review,
+    );
+    assert.equal(retained.summary, "AI draft visibility fixture.");
+  }
+  await page.screenshot({
+    path: "/tmp/faithful-repertoire-desktop.png",
+    fullPage: true,
+  });
+  await page.setViewportSize({ width: 390, height: 844 });
+  assert.ok(
+    await page.evaluate(
+      () => document.documentElement.scrollWidth <= innerWidth,
+    ),
+  );
+  await page.screenshot({
+    path: "/tmp/faithful-repertoire-mobile.png",
+    fullPage: true,
+  });
   assert.deepEqual(errors, []);
+  await checkAccountFlows(
+    browser,
+    `http://127.0.0.1:${server.address().port}/Worship-Song-Tool/`,
+  );
   console.log(
     "PASS: hosted subdirectory assets, static edition without API calls, backup download, invalid import rejection, cancel preservation, confirmed restore, reload and mobile controls.",
   );

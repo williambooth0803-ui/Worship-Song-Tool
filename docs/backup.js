@@ -1,4 +1,5 @@
 import { dimensions } from "./core.js";
+import { denominations, statements, aiModes } from "./profile.js";
 
 export const MAX_BACKUP_BYTES = 5 * 1024 * 1024;
 
@@ -103,6 +104,15 @@ export function validateWorkspace(input) {
       result.themes = texts(value.themes, "assessment themes");
     if (value.model !== undefined)
       result.model = text(value.model, "model", 200);
+    if (value.assistance !== undefined) {
+      object(value.assistance, "assistance notes");
+      result.assistance = {};
+      for (const key of ["summary", "language", "time", "model", "updatedAt"])
+        result.assistance[key] = text(
+          value.assistance[key],
+          "assistance notes",
+        );
+    }
     if (value.updatedAt !== undefined && value.updatedAt !== null) {
       result.updatedAt = text(value.updatedAt, "review date", 100);
       if (!Number.isFinite(Date.parse(result.updatedAt)))
@@ -118,7 +128,7 @@ export function validateWorkspace(input) {
   if (input.version !== 1) fail("this backup version is not supported.");
   const songs = array(input.songs, "songs", 5000).map((song) => {
     object(song, "song");
-    return {
+    const result = {
       id: id(song.id),
       title: text(song.title, "song title", 200, true),
       author: text(song.author, "song author", 1000),
@@ -127,6 +137,37 @@ export function validateWorkspace(input) {
       themes: texts(song.themes, "themes"),
       review: review(song.review),
     };
+    if (song.catalogReview !== undefined)
+      result.catalogReview = review(song.catalogReview);
+    if (song.catalogRevision !== undefined)
+      result.catalogRevision = number(
+        song.catalogRevision,
+        "catalog revision",
+        1,
+        100000,
+      );
+    if (song.catalogThemes !== undefined)
+      result.catalogThemes = texts(song.catalogThemes, "catalog themes");
+    if (song.approval !== undefined) {
+      object(song.approval, "church-use decision");
+      const value = song.approval;
+      result.approval = {
+        status: choice(value.status, "church-use decision", [
+          "unreviewed",
+          "approved",
+          "context",
+          "avoid",
+        ]),
+        notes: text(value.notes, "decision notes"),
+        updatedAt: null,
+      };
+      if (value.updatedAt !== null && value.updatedAt !== undefined) {
+        result.approval.updatedAt = text(value.updatedAt, "decision date", 100);
+        if (!Number.isFinite(Date.parse(value.updatedAt)))
+          fail("the decision date is invalid.");
+      }
+    }
+    return result;
   });
   unique(
     songs.map((s) => s.id),
@@ -177,6 +218,7 @@ export function validateWorkspace(input) {
     if (
       date &&
       (!/^\d{4}-\d{2}-\d{2}$/.test(date) ||
+        !Number.isFinite(Date.parse(date)) ||
         new Date(date).toISOString().slice(0, 10) !== date)
     )
       fail("the plan date is invalid.");
@@ -203,7 +245,7 @@ export function validateWorkspace(input) {
   );
   if (!Object.values(weights).some((w) => w > 0))
     fail("at least one rating weight must be positive.");
-  return {
+  const result = {
     version: 1,
     songs,
     libraries,
@@ -213,4 +255,24 @@ export function validateWorkspace(input) {
       principles: text(profile.principles, "rating parameters", 6000, true),
     },
   };
+  for (const [key, choices] of [
+    ["denomination", Object.keys(denominations)],
+    ["statement", Object.keys(statements)],
+    ["aiMode", Object.keys(aiModes)],
+  ]) {
+    if (profile[key] !== undefined)
+      result.profile[key] = choice(profile[key], key, choices);
+  }
+  if (profile.customStatement !== undefined)
+    result.profile.customStatement = text(
+      profile.customStatement,
+      "custom statement",
+      6000,
+    );
+  if (profile.setupComplete !== undefined) {
+    if (typeof profile.setupComplete !== "boolean")
+      fail("profile setup state must be a boolean.");
+    result.profile.setupComplete = profile.setupComplete;
+  }
+  return result;
 }
