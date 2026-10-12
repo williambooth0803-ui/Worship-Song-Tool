@@ -1,3 +1,4 @@
+import { reveal } from "./disclosure.mjs";
 import assert from "node:assert/strict";
 
 // Provider fixture only. This exercises the client flow; it does not establish
@@ -102,6 +103,7 @@ export async function checkAccountFlows(browser, base) {
   });
   await page.goto(base);
   async function login(email) {
+    await reveal(page, "button", { name: "Sign in", exact: true });
     await page.getByRole("button", { name: "Sign in", exact: true }).click();
     const form = page.locator("#auth-form");
     await form.getByLabel("Email", { exact: true }).fill(email);
@@ -119,27 +121,34 @@ export async function checkAccountFlows(browser, base) {
           (await page.locator("#account-error").textContent()),
       );
     }
+    await reveal(page, "button", { name: "Close dialog" });
     await page.getByRole("button", { name: "Close dialog" }).click();
   }
   async function logout() {
+    await reveal(page, "button", { name: "My account", exact: true });
     await page.getByRole("button", { name: "My account", exact: true }).click();
+    await reveal(page, "button", { name: "Sign out", exact: true });
     await page.getByRole("button", { name: "Sign out", exact: true }).click();
     await page.getByRole("button", { name: "Sign in", exact: true }).waitFor();
   }
   await login("one@example.test");
+  await reveal(page, "button", { name: "Build my profile" });
   await page.getByRole("button", { name: "Build my profile" }).click();
   await page
     .getByLabel("Denomination", { exact: true })
     .selectOption("baptist");
+  await reveal(page, "button", { name: "Continue", exact: true });
   await page.getByRole("button", { name: "Continue", exact: true }).click();
   await page
     .getByLabel("Statement of faith", { exact: true })
     .selectOption("london1689");
+  await reveal(page, "button", { name: "Continue", exact: true });
   await page.getByRole("button", { name: "Continue", exact: true }).click();
   await page.getByRole("radio", { name: /Human reviews only/ }).check();
   const syncing = page.waitForResponse(
     (r) => r.url().includes("/profiles") && r.request().method() === "POST",
   );
+  await reveal(page, "button", { name: "Save my profile" });
   await page.getByRole("button", { name: "Save my profile" }).click();
   await syncing;
   assert.equal(profiles.get(users["one@example.test"].id).aiMode, "manual");
@@ -147,31 +156,37 @@ export async function checkAccountFlows(browser, base) {
     profiles.get(users["one@example.test"].id).statement,
     "london1689",
   );
+  await reveal(page, "button", { name: "Edit assessment" });
   await page.getByRole("button", { name: "Edit assessment" }).click();
   await page
     .getByLabel("Your notes", { exact: true })
     .fill("Private account-one note");
+  await reveal(page, "button", { name: "Save assessment", exact: true });
   await page
     .getByRole("button", { name: "Save assessment", exact: true })
     .click();
+  await reveal(page, "button", { name: "My account", exact: true });
   await page.getByRole("button", { name: "My account", exact: true }).click();
+  await reveal(page, "button", { name: "Save account backup" });
   await page.getByRole("button", { name: "Save account backup" }).click();
   const saving = page.waitForResponse(
     (r) => r.url().includes("/workspaces") && r.request().method() === "POST",
   );
+  await reveal(page, "button", { name: "Save this workspace" });
   await page.getByRole("button", { name: "Save this workspace" }).click();
   await saving;
   await page.getByRole("button", { name: "My account", exact: true }).waitFor();
+  await page.locator("#account-save-strip summary").click();
   await page
     .locator("#account-save-strip")
     .getByText("Saved to your account", { exact: true })
     .waitFor();
-  await page
-    .getByRole("button", { name: "Edit assessment" })
-    .click();
+  await reveal(page, "button", { name: "Edit assessment" });
+  await page.getByRole("button", { name: "Edit assessment" }).click();
   await page
     .getByLabel("Your notes", { exact: true })
     .fill("Private account-one note, newer browser edit");
+  await reveal(page, "button", { name: "Save assessment", exact: true });
   await page
     .getByRole("button", { name: "Save assessment", exact: true })
     .click();
@@ -181,9 +196,11 @@ export async function checkAccountFlows(browser, base) {
   );
   // A second device saved since this browser read the original version.
   versions.set(users["one@example.test"].id, "2026-10-11T12:00:00.000Z");
+  await reveal(page, "button", { name: "Save to account", exact: true });
   await page
     .getByRole("button", { name: "Save to account", exact: true })
     .click();
+  await reveal(page, "button", { name: "Save this workspace", exact: true });
   await page
     .getByRole("button", { name: "Save this workspace", exact: true })
     .click();
@@ -191,18 +208,27 @@ export async function checkAccountFlows(browser, base) {
     .locator("#account-error")
     .getByText(/account copy changed/)
     .waitFor();
+  await reveal(page, "button", { name: "Close dialog", exact: true });
   await page.getByRole("button", { name: "Close dialog", exact: true }).click();
   assert.ok(
     await page
-      .getByRole("button", { name: "Save to account", exact: true })
+      .getByRole("button", {
+        name: "Save to account",
+        exact: true,
+        includeHidden: true,
+      })
       .isDisabled(),
   );
+  await reveal(page, "button", { name: "Review account copy", exact: true });
   await page
     .getByRole("button", { name: "Review account copy", exact: true })
     .click();
+  await reveal(page, "button", { name: "Load this backup", exact: true });
   await page
     .getByRole("button", { name: "Load this backup", exact: true })
     .click();
+  if (!(await page.locator('[data-attribute="notes"]').evaluate((n) => n.open)))
+    await page.locator('[data-attribute="notes"] > summary').click();
   await page.getByText("Private account-one note", { exact: true }).waitFor();
   await logout();
   const guest = await page.evaluate(() =>
@@ -232,14 +258,25 @@ export async function checkAccountFlows(browser, base) {
     ),
   );
   await login("one@example.test");
-  assert.ok(
-    (await page.locator(".profile-strip").textContent()).includes(
-      "Human reviews only",
+  assert.equal(
+    await page.evaluate(
+      () =>
+        JSON.parse(
+          localStorage.getItem(
+            "faithful-repertoire-user:00000000-0000-0000-0000-000000000001",
+          ),
+        ).profile.aiMode,
     ),
+    "manual",
   );
+  await reveal(page, "button", { name: "My account", exact: true });
   await page.getByRole("button", { name: "My account", exact: true }).click();
+  await reveal(page, "button", { name: "Load account backup" });
   await page.getByRole("button", { name: "Load account backup" }).click();
+  await reveal(page, "button", { name: "Load this backup" });
   await page.getByRole("button", { name: "Load this backup" }).click();
+  if (!(await page.locator('[data-attribute="notes"]').evaluate((n) => n.open)))
+    await page.locator('[data-attribute="notes"] > summary').click();
   await page.getByText("Private account-one note", { exact: true }).waitFor();
   const saved = await page.evaluate(() =>
     JSON.parse(

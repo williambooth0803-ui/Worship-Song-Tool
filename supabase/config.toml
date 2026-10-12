@@ -1,0 +1,8 @@
+project_id = "faithful-repertoire"
+
+# OAuth discovery must be public. The handler cryptographically verifies every
+# account request and applies owner/client grants before any data is read.
+[functions.faithful-mcp]
+verify_jwt = false
+entrypoint = "./functions/faithful-mcp/index.ts"
+import_map = "./functions/faithful-mcp/deno.json"

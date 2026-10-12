@@ -1,3 +1,4 @@
+import { specificScriptures } from "./song-details.js";
 import { overall, dimensions } from "./core.js";
 import { reviewForDisplay, themesForDisplay } from "./profile.js";
 import { approvalLabels } from "./catalog.js";
@@ -68,8 +69,8 @@ export function indexFields(songs) {
     ["summary", "Assessment summary"],
     ["claims", "Theological claims"],
     ["concerns", "Assessment concerns"],
-    ["language", "Language observations"],
-    ["time", "Use-of-time observations"],
+    ["languageNotes", "Language observations"],
+    ["timeNotes", "Use-of-time observations"],
     ["libraries", "Libraries"],
     ["version", "Version / arrangement"],
   ].map(([id, label, type = "text"]) => ({ id, label, type }));
@@ -91,6 +92,8 @@ export function indexFields(songs) {
 }
 export function indexedValue(song, field, profile, libraries = [], plans = []) {
   const review = reviewForDisplay(song, profile.aiMode);
+  if (field === "languageNotes") return review.language;
+  if (field === "timeNotes") return review.time;
   if (
     [
       "wordCount",
@@ -102,6 +105,10 @@ export function indexedValue(song, field, profile, libraries = [], plans = []) {
     ].includes(field)
   )
     return textStats(song)[field];
+  if (field === "scriptures")
+    return specificScriptures(
+      reviewForDisplay(song, profile?.aiMode).scriptures,
+    );
   const arrangement = selectedArrangement(song);
   if (field === "category") return songTypes[song.category || "other"];
   if (field === "arrangements")

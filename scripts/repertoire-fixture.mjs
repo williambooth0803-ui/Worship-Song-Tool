@@ -1,3 +1,4 @@
+import { reveal } from "./disclosure.mjs";
 import assert from "node:assert/strict";
 export async function checkRepertoireFlows(browser, base) {
   const page = await browser.newPage({
@@ -21,7 +22,7 @@ export async function checkRepertoireFlows(browser, base) {
     .locator("nav")
     .getByRole("button", { name: "Collections", exact: true })
     .click();
-  assert.equal(await page.locator(".collection-row").count(), 9);
+  assert.equal(await page.locator(".collection-row").count(), 14);
   await page
     .getByLabel("Collection depth", { exact: true })
     .selectOption("all");
@@ -30,7 +31,7 @@ export async function checkRepertoireFlows(browser, base) {
   });
   assert.equal(
     await modern.locator(".collection-count strong").textContent(),
-    "40",
+    "44",
   );
   await modern
     .getByRole("button", { name: "Preview & import", exact: true })
@@ -40,28 +41,32 @@ export async function checkRepertoireFlows(browser, base) {
     .selectOption("essentials");
   assert.equal(await page.locator(".import-song input").count(), 12);
   await page.getByLabel("Import depth", { exact: true }).selectOption("all");
-  assert.equal(await page.locator(".import-song input").count(), 40);
+  assert.equal(await page.locator(".import-song input").count(), 44);
   await page
     .getByLabel("New library name", { exact: true })
     .fill("Modern hymns for my church");
+  await reveal(page, "button", { name: "Import selected songs", exact: true });
   await page
     .getByRole("button", { name: "Import selected songs", exact: true })
     .click();
   assert.equal(await page.locator(".song-card").count(), 24);
   assert.match(
     await page.locator(".song-list .pagination").textContent(),
-    /of 40/,
+    /of 44/,
   );
+  await reveal(page, "button", { name: "Rename", exact: true });
   await page.getByRole("button", { name: "Rename", exact: true }).click();
   await page
     .getByLabel("Library name", { exact: true })
     .fill("Reviewed modern hymn candidates");
+  await reveal(page, "button", { name: "Save library name", exact: true });
   await page
     .getByRole("button", { name: "Save library name", exact: true })
     .click();
   await page
     .getByRole("searchbox", { name: "Search songs", exact: true })
     .fill("In Christ Alone");
+  await reveal(page, "button", { name: "Add arrangement", exact: true });
   await page
     .getByRole("button", { name: "Add arrangement", exact: true })
     .click();
@@ -97,6 +102,7 @@ export async function checkRepertoireFlows(browser, base) {
       "16 semitones",
     ),
   );
+  await reveal(page, "button", { name: "Edit index details", exact: true });
   await page
     .getByRole("button", { name: "Edit index details", exact: true })
     .click();
@@ -104,6 +110,7 @@ export async function checkRepertoireFlows(browser, base) {
   await page
     .getByLabel("Song words", { exact: true })
     .fill("We just sing truth\nOh, oh\nWe just sing truth");
+  await reveal(page, "button", { name: "Save index details", exact: true });
   await page
     .getByRole("button", { name: "Save index details", exact: true })
     .click();
@@ -131,6 +138,7 @@ export async function checkRepertoireFlows(browser, base) {
   await filter.getByLabel("Index value", { exact: true }).fill("12");
   await filter.getByRole("button", { name: "Add filter", exact: true }).click();
   assert.equal(await page.locator(".index-table tbody tr").count(), 1);
+  await reveal(page, "button", { name: "In Christ Alone", exact: true });
   await page
     .getByRole("button", { name: "In Christ Alone", exact: true })
     .click();
@@ -138,6 +146,7 @@ export async function checkRepertoireFlows(browser, base) {
     .locator("nav")
     .getByRole("button", { name: "Worship plans", exact: true })
     .click();
+  await reveal(page, "button", { name: "+ New worship plan", exact: true });
   await page
     .getByRole("button", { name: "+ New worship plan", exact: true })
     .click();
@@ -148,6 +157,7 @@ export async function checkRepertoireFlows(browser, base) {
   await page
     .getByLabel("Service status", { exact: true })
     .selectOption("completed");
+  await reveal(page, "button", { name: "Create plan", exact: true });
   await page.getByRole("button", { name: "Create plan", exact: true }).click();
   await page
     .locator("nav")
@@ -156,6 +166,7 @@ export async function checkRepertoireFlows(browser, base) {
   await page
     .getByRole("searchbox", { name: "Search songs", exact: true })
     .fill("In Christ Alone");
+  await reveal(page, "button", { name: "Add to plan", exact: false });
   await page.getByRole("button", { name: "Add to plan", exact: false }).click();
   const add = page.locator("#add-to-plan-form");
   assert.equal(
@@ -170,20 +181,24 @@ export async function checkRepertoireFlows(browser, base) {
       "Acoustic congregational version",
     ),
   );
+  await reveal(page, "button", { name: "Duplicate plan", exact: true });
   await page
     .getByRole("button", { name: "Duplicate plan", exact: true })
     .click();
   await page
     .getByLabel("Service name", { exact: true })
     .fill("Next Sunday draft");
+  await reveal(page, "button", { name: "Create copy", exact: true });
   await page.getByRole("button", { name: "Create copy", exact: true }).click();
   assert.equal(await page.locator(".plan-state").textContent(), "draft");
+  await reveal(page, "button", { name: "Edit In Christ Alone", exact: true });
   await page
     .getByRole("button", { name: "Edit In Christ Alone", exact: true })
     .click();
   await page
     .locator('#item-form [name="notes"]')
     .fill("Only this copied plan changes.");
+  await reveal(page, "button", { name: "Save item", exact: true });
   await page.getByRole("button", { name: "Save item", exact: true }).click();
   await page.emulateMedia({ media: "print" });
   assert.equal(
@@ -219,6 +234,7 @@ export async function checkRepertoireFlows(browser, base) {
   await page
     .getByRole("searchbox", { name: "Search songs", exact: true })
     .fill("In Christ Alone");
+  await page.locator('[data-attribute="usage"] > summary').click();
   assert.ok(
     (
       await page
@@ -231,6 +247,7 @@ export async function checkRepertoireFlows(browser, base) {
     .locator("nav")
     .getByRole("button", { name: "Collections", exact: true })
     .click();
+  await reveal(page, "button", { name: "Import your song list", exact: true });
   await page
     .getByRole("button", { name: "Import your song list", exact: true })
     .click();
@@ -241,21 +258,25 @@ export async function checkRepertoireFlows(browser, base) {
       "Title,Attribution,Preferred Key\nMy original chorus,Our church,C",
     ),
   });
+  await reveal(page, "button", { name: "Preview song list", exact: true });
   await page
     .getByRole("button", { name: "Preview song list", exact: true })
     .click();
   await page
     .getByLabel("New library name", { exact: true })
     .fill("Our own songs");
+  await reveal(page, "button", { name: "Import selected songs", exact: true });
   await page
     .getByRole("button", { name: "Import selected songs", exact: true })
     .click();
   await page
     .getByRole("heading", { name: "My original chorus", exact: true, level: 2 })
     .waitFor();
+  await reveal(page, "button", { name: "Delete library", exact: true });
   await page
     .getByRole("button", { name: "Delete library", exact: true })
     .click();
+  await reveal(page, "button", { name: "Delete this library", exact: true });
   await page
     .getByRole("button", { name: "Delete this library", exact: true })
     .click();

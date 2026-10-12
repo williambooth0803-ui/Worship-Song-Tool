@@ -1,3 +1,5 @@
+import { prewrittenReview } from "./prewritten-reviews.js";
+import { modernCatalog } from "./modern-catalog.js";
 import { seedSongs } from "./seeds.js";
 import { additionalSongs, mixedStarterTitles } from "./repertoire-data.js";
 import { overall } from "./core.js";
@@ -167,7 +169,7 @@ const additions = [
     9,
     9,
     8,
-    "A developed testimony of undeserved grace, liberation and assurance. Its imagery of divine initiative is welcome under this profile; interpret its incarnation language with care.",
+    "A developed testimony of undeserved grace, liberation and assurance. Interpret its incarnation language with care.",
     [
       "Christ died for undeserving sinners.",
       "God’s initiative brings liberation from sin.",
@@ -320,7 +322,7 @@ const additions = [
     9,
     9,
     8,
-    "A prayer for refuge in Christ that explicitly rejects salvation by personal effort. Its theological substance fits a grace-centered, Reformed-friendly profile.",
+    "A prayer for refuge in Christ that explicitly rejects salvation by personal effort. Its images develop a sustained confession of dependence on Christ.",
     [
       "Salvation depends on Christ rather than human works.",
       "Christ provides refuge and cleansing for sinners.",
@@ -469,13 +471,57 @@ function makeSong([
 export const traditionalCatalog = [
   ...seedSongs,
   ...additions.map(makeSong),
-].map((song) => ({ ...song, category: "traditional" }));
-export const allCatalogSongs = [...traditionalCatalog, ...additionalSongs];
+].map((song) => ({
+  ...song,
+  category: "traditional",
+  review: {
+    ...song.review,
+    status: "ai",
+    aiFields: [
+      "scores",
+      "summary",
+      "claims",
+      "concerns",
+      "uses",
+      "themes",
+      "scriptures",
+      "language",
+      "time",
+    ],
+    model: "Prewritten model-knowledge draft · exact text not verified",
+  },
+}));
+const reviewedAdditions = additionalSongs.map(prewrittenReview);
+export const allCatalogSongs = [
+  ...traditionalCatalog,
+  ...reviewedAdditions,
+  ...modernCatalog,
+];
 export const catalogSongs = [
   ...traditionalCatalog,
-  ...additionalSongs.filter((song) => mixedStarterTitles.includes(song.title)),
+  ...reviewedAdditions.filter((song) =>
+    mixedStarterTitles.includes(song.title),
+  ),
+  ...modernCatalog
+    .filter((s) =>
+      [
+        "Elevation Worship",
+        "Bethel Music",
+        "Hillsong Worship",
+        "The Worship Initiative",
+        "Sovereign Grace Music",
+        "Kari Jobe",
+      ].some((a) => s.author.includes(a)),
+    )
+    .filter(
+      (s, i, all) =>
+        i < 12 ||
+        s.author.includes("The Worship Initiative") ||
+        s.author.includes("Sovereign Grace"),
+    ),
+  ...modernCatalog.filter((s) => s.title.startsWith("Forever (")),
 ];
-export const CATALOG_REVISION = 1;
+export const CATALOG_REVISION = 2;
 export const approvalLabels = {
   unreviewed: "Not reviewed",
   approved: "Approved for use",
@@ -504,8 +550,23 @@ export function syncCatalog(
       result.songs.push(song);
     }
     // Refresh shared evidence, but only replace an untouched starter assessment.
-    if (song.review.status === "starter" && song.catalogRevision !== revision) {
+    if (
+      (song.review.status === "starter" ||
+        song.review.status === "unreviewed" ||
+        (song.review.status === "ai" &&
+          song.review.model?.startsWith("Prewritten model-knowledge"))) &&
+      song.catalogRevision !== revision
+    ) {
+      const personalNotes = song.review.notes,
+        personalKey = song.review.key,
+        personalMinutes = song.review.minutes,
+        personalMusical = song.review.musical;
       song.review = structuredClone(entry.review);
+      if (personalNotes) song.review.notes = personalNotes;
+      if (personalKey) song.review.key = personalKey;
+      if (personalMinutes) song.review.minutes = personalMinutes;
+      if (personalMusical && !personalMusical.startsWith("Not assessed"))
+        song.review.musical = personalMusical;
       song.themes = structuredClone(entry.themes);
       if (song.approval) invalidateApproval(song);
     }

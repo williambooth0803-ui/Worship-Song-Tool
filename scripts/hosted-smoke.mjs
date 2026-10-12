@@ -1,3 +1,6 @@
+import { checkConnectionFlows } from "./connection-fixture.mjs";
+import { checkPreferencesFlows } from "./preferences-fixture.mjs";
+import { reveal } from "./disclosure.mjs";
 import http from "node:http";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -12,10 +15,11 @@ const root = fileURLToPath(new URL("../docs/", import.meta.url));
 const requests = [];
 const server = http.createServer(async (req, res) => {
   requests.push(req.url);
+  const requestPath = new URL(req.url, "http://localhost").pathname;
   const filename =
-    req.url === "/Worship-Song-Tool/"
+    requestPath === "/Worship-Song-Tool/"
       ? "index.html"
-      : req.url.slice("/Worship-Song-Tool/".length);
+      : requestPath.slice("/Worship-Song-Tool/".length);
   if (!req.url.startsWith("/Worship-Song-Tool/") || filename.includes("..")) {
     res.writeHead(404);
     res.end();
@@ -50,13 +54,11 @@ try {
   await page.goto(
     `http://127.0.0.1:${server.address().port}/Worship-Song-Tool/`,
   );
-  await page
-    .getByRole("heading", { name: "Find words worth singing." })
-    .waitFor();
+  await page.getByRole("heading", { name: "Discover songs" }).waitFor();
   assert.equal(await page.locator(".song-card").count(), 24);
   assert.match(
     await page.locator(".song-list .pagination").textContent(),
-    /of 40/,
+    /of 61/,
   );
   assert.equal(
     await page.locator("html").getAttribute("data-edition"),
@@ -66,18 +68,22 @@ try {
   assert.ok(requests.includes("/Worship-Song-Tool/app.js"));
   assert.ok(!requests.some((url) => url.includes("/api/")));
 
+  await reveal(page, "button", { name: "Edit assessment" });
   await page.getByRole("button", { name: "Edit assessment" }).click();
   await page
     .getByLabel("Your notes", { exact: true })
     .fill("Restore this personal note.");
+  await reveal(page, "button", { name: "Save assessment", exact: true });
   await page
     .getByRole("button", { name: "Save assessment", exact: true })
     .click();
   const before = await page.evaluate(() =>
     JSON.parse(localStorage.getItem("hymn-heart-v1")),
   );
+  await reveal(page, "button", { name: "Backup & restore" });
   await page.getByRole("button", { name: "Backup & restore" }).click();
   const downloading = page.waitForEvent("download");
+  await reveal(page, "button", { name: "Download a backup", exact: true });
   await page
     .getByRole("button", { name: "Download a backup", exact: true })
     .click();
@@ -93,6 +99,7 @@ try {
     mimeType: "application/json",
     buffer: Buffer.from(JSON.stringify(invalid)),
   });
+  await reveal(page, "button", { name: "Review backup", exact: true });
   await page
     .getByRole("button", { name: "Review backup", exact: true })
     .click();
@@ -116,9 +123,11 @@ try {
     buffer: Buffer.from(JSON.stringify(backup)),
   };
   await page.getByLabel("Backup file", { exact: true }).setInputFiles(file);
+  await reveal(page, "button", { name: "Review backup", exact: true });
   await page
     .getByRole("button", { name: "Review backup", exact: true })
     .click();
+  await reveal(page, "button", { name: "Cancel", exact: true });
   await page.getByRole("button", { name: "Cancel", exact: true }).click();
   assert.deepEqual(
     await page.evaluate(() =>
@@ -127,11 +136,17 @@ try {
     before,
   );
 
+  await reveal(page, "button", { name: "Backup & restore" });
   await page.getByRole("button", { name: "Backup & restore" }).click();
   await page.getByLabel("Backup file", { exact: true }).setInputFiles(file);
+  await reveal(page, "button", { name: "Review backup", exact: true });
   await page
     .getByRole("button", { name: "Review backup", exact: true })
     .click();
+  await reveal(page, "button", {
+    name: "Replace with this backup",
+    exact: true,
+  });
   await page
     .getByRole("button", { name: "Replace with this backup", exact: true })
     .click();
@@ -141,6 +156,7 @@ try {
     /Restored from the other browser/,
   );
   await page.setViewportSize({ width: 390, height: 844 });
+  await page.locator(".topbar .more-menu summary").click();
   assert.ok(
     await page.getByRole("button", { name: "Backup & restore" }).isVisible(),
   );
@@ -150,16 +166,20 @@ try {
     ),
   );
   await page.setViewportSize({ width: 1440, height: 1000 });
+  await reveal(page, "button", { name: "Build my profile" });
   await page.getByRole("button", { name: "Build my profile" }).click();
   await page
     .getByLabel("Denomination", { exact: true })
     .selectOption("lutheran");
+  await reveal(page, "button", { name: "Continue", exact: true });
   await page.getByRole("button", { name: "Continue", exact: true }).click();
   await page
     .getByLabel("Statement of faith", { exact: true })
     .selectOption("augsburg");
+  await reveal(page, "button", { name: "Continue", exact: true });
   await page.getByRole("button", { name: "Continue", exact: true }).click();
   await page.getByRole("radio", { name: /Human reviews only/ }).check();
+  await reveal(page, "button", { name: "Save my profile" });
   await page.getByRole("button", { name: "Save my profile" }).click();
   const profile = await page.evaluate(
     () => JSON.parse(localStorage.getItem("hymn-heart-v1")).profile,
@@ -171,6 +191,7 @@ try {
     await page.getByRole("button", { name: "Draft with AI" }).count(),
     0,
   );
+  await reveal(page, "button", { name: "Review decision" });
   await page.getByRole("button", { name: "Review decision" }).click();
   await page
     .getByLabel("Church-use decision", { exact: true })
@@ -181,10 +202,14 @@ try {
   await page
     .getByLabel("I have reviewed the exact version and any concerns.")
     .check();
+  await reveal(page, "button", { name: "Save church-use decision" });
   await page.getByRole("button", { name: "Save church-use decision" }).click();
+  await page.locator(".filter-panel > summary").click();
   await page.getByLabel("Church use", { exact: true }).selectOption("context");
   assert.equal(await page.locator(".song-card").count(), 1);
+  await reveal(page, "button", { name: "Edit assessment" });
   await page.getByRole("button", { name: "Edit assessment" }).click();
+  await reveal(page, "button", { name: "Save assessment", exact: true });
   await page
     .getByRole("button", { name: "Save assessment", exact: true })
     .click();
@@ -193,7 +218,9 @@ try {
   );
   assert.equal(edited.approval.status, "unreviewed");
   assert.ok(edited.approval.notes);
+  await reveal(page, "button", { name: "Clear filters" });
   await page.getByRole("button", { name: "Clear filters" }).click();
+  await reveal(page, "button", { name: "Review decision" });
   await page.getByRole("button", { name: "Review decision" }).click();
   await page
     .getByLabel("Church-use decision", { exact: true })
@@ -201,9 +228,12 @@ try {
   await page
     .getByLabel("Reasoning or conditions for use")
     .fill("Testing a church-use restriction.");
+  await reveal(page, "button", { name: "Save church-use decision" });
   await page.getByRole("button", { name: "Save church-use decision" }).click();
+  await reveal(page, "button", { name: "Add to plan" });
   await page.getByRole("button", { name: "Add to plan" }).click();
   await page.locator("#approval-form").waitFor();
+  await reveal(page, "button", { name: "Cancel", exact: true });
   await page.getByRole("button", { name: "Cancel", exact: true }).click();
   await page.evaluate(() => {
     const state = JSON.parse(localStorage.getItem("hymn-heart-v1"));
@@ -211,6 +241,7 @@ try {
       human = structuredClone(song.review);
     delete human.previous;
     human.summary = "My human assessment is retained.";
+    delete human.aiFields;
     song.review = {
       ...song.review,
       status: "ai",
@@ -239,6 +270,7 @@ try {
     await page
       .getByLabel("AI content preference", { exact: true })
       .selectOption(mode);
+    await reveal(page, "button", { name: "Save rating profile", exact: true });
     await page
       .getByRole("button", { name: "Save rating profile", exact: true })
       .click();
@@ -278,6 +310,14 @@ try {
     fullPage: true,
   });
   assert.deepEqual(errors, []);
+  await checkPreferencesFlows(
+    browser,
+    `http://127.0.0.1:${server.address().port}/Worship-Song-Tool/`,
+  );
+  await checkConnectionFlows(
+    browser,
+    `http://127.0.0.1:${server.address().port}/Worship-Song-Tool/`,
+  );
   await checkAccountFlows(
     browser,
     `http://127.0.0.1:${server.address().port}/Worship-Song-Tool/`,

@@ -92,7 +92,7 @@ export const seedSongs = [
       ...common,
       scores: { accuracy: 8, substance: 6, language: 8, time: null },
       summary:
-        "A simple profession of commitment to discipleship. Human response language does not by itself deny divine initiative. Its limited doctrinal development makes context especially useful. Attribution should be verified.",
+        "Short statements of commitment and perseverance in following Jesus. The repeated refrain offers little development of the gospel; its value depends on its purpose and surrounding teaching. Attribution should be verified.",
       claims: [
         "Following Jesus involves commitment.",
         "Discipleship can require perseverance despite opposition.",
@@ -103,7 +103,7 @@ export const seedSongs = [
         "Luke 9:62 — thematic connection: perseverance.",
       ],
       concerns: [
-        "Provides little explanation of the gospel or the source of saving faith; pair it with a substantial reading or song.",
+        "A brief profession of discipleship rather than a developed explanation of the gospel.",
       ],
       concern: "context",
       language:

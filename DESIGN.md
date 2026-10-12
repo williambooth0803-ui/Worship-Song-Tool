@@ -22,3 +22,26 @@ Use a calm editorial interface suited to a working song reference:
 
 User-entered custom metrics extend the index without needing an AI provider.
 Song words are optional; an opening-line search must not imply full-text coverage.
+
+## Disclosure and provenance
+
+Use collapsible song attributes, rating breakdowns, filters, library tools and simple
+menus. Keep completed profile information and account-save explanations in menus.
+Avoid decorative copy on library pages. Song attributes can be hidden/reordered per
+song; user-created text/number attributes are indexed. Empty observations are omitted.
+
+AI Labels default On, independently of how much AI content is visible. Mark generated
+subjective fields, including unchanged AI content carried into a manual edit. Human
+notes, arrangement measurements and deterministic text counts do not receive AI labels.
+Prewritten ratings are model-knowledge drafts and must never be described as source
+verification or human editorial review. Do not invent musical findings to fill a card.
+
+Keep Scripture references to specific quotations or clear allusions with chapter and
+verse. Broad topic overlap belongs in themes. Discuss soteriology only when an explicit
+salvation claim is central to the song. Preserve the owner's personal concern for Kari
+Jobe's Forever separately from AI assessments.
+
+The ChatGPT MCP connection reads saved account records through explicit OAuth consent.
+It exposes six read tools and no writes or automated service selection. Notes and song
+text start unshared. Enforce owner isolation, visibility and consent inside PostgreSQL,
+not only in tool descriptions. Revoke data access before attempting provider grant removal.

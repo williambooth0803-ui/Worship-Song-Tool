@@ -10,12 +10,20 @@
     "test:browser": "node scripts/browser-smoke.mjs",
     "test:scale": "node scripts/scale-smoke.mjs",
     "build:site": "node scripts/build-site.mjs",
-    "test:hosted": "npm run build:site && node scripts/hosted-smoke.mjs"
+    "test:hosted": "npm run build:site && node scripts/hosted-smoke.mjs",
+    "deploy:mcp": "node scripts/deploy-mcp.mjs",
+    "check:mcp": "DENO_DIR=/tmp/faithful-deno-cache npx --yes --cache /tmp/faithful-npm-cache deno@2.9.6 check --config supabase/functions/faithful-mcp/deno.json supabase/functions/faithful-mcp/index.ts"
   },
   "engines": {
     "node": ">=22"
   },
   "devDependencies": {
+    "@electric-sql/pglite": "0.5.8",
     "playwright": "1.64.0"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "1.32.1",
+    "jose": "6.2.12",
+    "zod": "4.3.6"
   }
 }

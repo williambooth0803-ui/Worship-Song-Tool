@@ -1,0 +1,8 @@
+{
+  "imports": {
+    "jose": "npm:jose@6.2.12",
+    "zod": "npm:zod@4.3.6",
+    "@modelcontextprotocol/sdk/server/mcp.js": "npm:@modelcontextprotocol/sdk@1.32.1/server/mcp.js",
+    "@modelcontextprotocol/sdk/server/webStandardStreamableHttp.js": "npm:@modelcontextprotocol/sdk@1.32.1/server/webStandardStreamableHttp.js"
+  }
+}

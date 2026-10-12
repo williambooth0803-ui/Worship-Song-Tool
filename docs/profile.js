@@ -95,7 +95,7 @@ export const aiModes = {
   },
 };
 const editorialPrinciples =
-  "Distinguish doctrinal error from lack of theological substance. Value specific claims, clear English and coherent sentences. Assess filler uses of “just” in context. Evaluate repetition, wordless vocals and instrumental breaks by purpose and arrangement evidence. Do not infer musical range or difficult intervals from lyrics alone.";
+  "Distinguish doctrinal error from lack of theological substance. Value specific claims, clear English and coherent sentences. Assess filler uses of “just” in context. Evaluate repetition, wordless vocals and instrumental breaks by purpose and arrangement evidence. Do not infer musical range or difficult intervals from lyrics alone. Discuss soteriology only when an explicit salvation claim is a major part of the song; ordinary devotion does not require that debate. Include Scripture only for specific quotations or clear textual allusions, with chapter and verse; omit broad topical parallels.";
 
 export function composePrinciples(statement, customStatement = "") {
   return `${statements[statement]?.summary || statements.custom.summary}\n${customStatement.trim() ? `Additional church convictions: ${customStatement.trim()}\n` : ""}${editorialPrinciples}`;
@@ -107,6 +107,7 @@ export function withProfileDefaults(profile) {
     statement: profile.statement || "bfm2000",
     customStatement: profile.customStatement || "",
     aiMode: profile.aiMode || "full",
+    aiLabels: profile.aiLabels !== false,
     setupComplete: Boolean(profile.setupComplete),
   };
 }
@@ -118,7 +119,9 @@ export function reviewForDisplay(song, mode = "full") {
     base =
       raw.previous && ["manual", "starter"].includes(raw.previous.status)
         ? raw.previous
-        : song.catalogReview;
+        : song.catalogReview?.status !== "ai"
+          ? song.catalogReview
+          : null;
     base ||= {
       scores: { accuracy: null, substance: null, language: null, time: null },
       status: "unreviewed",
@@ -140,14 +143,31 @@ export function reviewForDisplay(song, mode = "full") {
     key: raw.key,
     minutes: raw.minutes,
   };
+  for (const field of base.aiFields || []) {
+    if (field === "scores")
+      result.scores = {
+        accuracy: null,
+        substance: null,
+        language: null,
+        time: null,
+      };
+    else if (
+      ["claims", "concerns", "uses", "scriptures", "themes"].includes(field)
+    )
+      result[field] = [];
+    else result[field] = "";
+  }
   if (mode === "manual") delete result.assistance;
   else if (raw.assistance) result.assistance = raw.assistance;
   return result;
 }
 export function themesForDisplay(song, mode = "full") {
   if (song.metadata?.themes) return song.metadata.themes;
-  return mode !== "full" && song.review.status === "ai"
-    ? song.catalogThemes || []
+  return mode !== "full" &&
+    (song.review.status === "ai" || song.review.aiFields?.includes("themes"))
+    ? song.catalogReview?.status === "ai"
+      ? []
+      : song.catalogThemes || []
     : song.themes;
 }
 export function restrictAssistance(review, mode) {

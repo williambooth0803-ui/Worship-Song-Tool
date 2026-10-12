@@ -7,16 +7,18 @@ The public website is hosted at https://williambooth0803-ui.github.io/Worship-So
 ## Current workflow
 
 - Build a profile from the prominent setup prompt: denomination, a named statement-of-faith starting point, custom convictions and personal AI-content visibility.
-- Start with 40 mixed hymn, modern hymn, worship, CCM and gospel title records. Browse 215 distinct titles across nine collections, choosing Essentials, Standards or All before a selective import. Search also surfaces matching catalog titles not yet imported; open an individual record without importing its entire collection. Filter by song type, assessment status, theme and church-use decision.
+- Start with 61 mixed hymn, modern hymn, worship, CCM and gospel records. Browse 254 distinct titles across 14 collections, choosing Essentials, Standards or All before a selective import. Search also surfaces matching catalog titles not yet imported; open an individual record without importing its entire collection. Filter by song type, assessment status, theme and church-use decision.
 - Edit assessments, personal notes, Scripture connections, source links, arrangement observations, key and duration.
 - Compare your current review with the separately preserved catalog assessment.
 - Mark songs as not reviewed, approved, approved with context or to avoid. Context/avoid decisions require reasoning; approving requires acknowledgement of the exact version and concerns. Changes to the assessment require fresh approval. Avoided songs require reconsideration before being added to a plan.
 - Save songs to multiple libraries; rename them, import/export CSV title lists, or delete a library while keeping its song records. Build and reorder services with songs, readings, prayer and other items; duplicate an independent draft, export a timed text outline, or print/save a PDF. Completed services supply recorded song-use history.
 - Export and restore validated JSON backups, including backups from the original four-song version. Existing personal reviews, libraries and plans survive catalog expansion.
 
-The 20 traditional hymn assessments remain editorial starter drafts. The additional 195 titles identify songs/associated recordings without invented lyrics, scores, theological claims or musical evidence. Artist associations are not complete songwriting credits; verify your chosen version. Catalog membership and collection depth never imply church approval.
+Every catalog song has a **prewritten AI draft rating** based on general model knowledge. These are provisional assessments, not a lyric-by-lyric verification, live web research or a verified consensus. Exact versions must be checked. Artist associations identify recordings rather than exhaustive songwriting credits; inclusion never implies church approval. Time and musical findings remain unassessed without arrangement evidence. Default durations are planning estimates. Profile presets are short working summaries and do not silently rewrite saved judgments.
 
-Catalog assessments are **editorial starter drafts under a Baptist/Reformed-friendly baseline**, not AI output, live research or a verified consensus. The statement presets are short working summaries, not reproductions of full confessions. Different profiles do not silently rewrite existing catalog judgments. Musical findings and arrangement time remain unassessed until evidence is supplied. Default durations are planning estimates.
+AI Labels default **On** and can be switched off in More or Rating profile. Badges mark generated ratings, summaries, themes and interpretive details, including unchanged AI fields carried into an edited assessment. Human notes and arrangement observations are separate. This label preference does not change AI visibility. Human-only/limited modes suppress subjective drafts, including index/export and connector output.
+
+Song details, filters, library tools and account status use collapsible controls. **Customize details** hides or reorders attributes per song; custom text/number attributes are added in Edit index details and participate in indexing. Empty musical/language/time fields and vague topical Scripture connections are omitted. Scripture lists retain specific chapter/verse quotations or clear allusions. Theology notes avoid forcing a soteriology debate onto ordinary devotional language. Kari Jobe's distinct Forever entry retains the project owner's supplied personal theological concern about the grave-battle line.
 
 ## Song index
 
@@ -39,14 +41,14 @@ reasons, and exact supporting snippets. Invalid IDs or invented quotations rejec
 the response. Results are temporary and never change metrics, reviews, approval,
 or worship plans. The public static website has no connected AI service yet.
 
-A future read-only ChatGPT app connection is described in
+The read-only ChatGPT app connection is implemented and documented in
 [CHATGPT-CONNECTION.md](CHATGPT-CONNECTION.md). It requires a deployed HTTPS MCP
-backend and per-user authorization; it is not installed or available yet.
+backend and per-user OAuth authorization; live activation still requires Supabase deployment. It requires no paid OpenAI API billing.
 [DESIGN.md](DESIGN.md) records the user's design and human-planning boundaries.
 
 ## Collection imports and scale
 
-Nine editorial collections cover mixed Baptist repertoire, Baptist hymn selections,
+Fourteen editorial selections, including five artist/recording collections, cover mixed Baptist repertoire, Baptist hymn selections,
 modern hymns, contemporary worship, CCM/choruses, gospel, Presbyterian/Reformed hymn
 selections, Advent/Christmas and cross/resurrection titles. Essentials, Standards
 and All are nested depth levels with exact preview counts. Import individual
@@ -96,7 +98,7 @@ When configured:
 ### Configure a new Supabase project
 
 1. Create a project at https://supabase.com/dashboard. Keep the database password private; this app does not need it in the browser.
-2. In the SQL editor, run [supabase/schema.sql](supabase/schema.sql). It creates `profiles` and `workspaces` with owner-only row-level security and denies anonymous access.
+2. In the SQL editor, run [supabase/schema.sql](supabase/schema.sql). It creates `profiles` and `workspaces` with owner-only row-level security and denies anonymous access and OAuth token writes. Run supabase/mcp.sql separately for the read-only connector.
 3. Under Authentication, enable email signup and keep email confirmation enabled. Set the Site URL to `https://williambooth0803-ui.github.io/Worship-Song-Tool/` and allow that exact URL as a redirect. Configure an email delivery provider when needed for production email traffic.
 4. Configure the project's **public** URL as `SUPABASE_URL` and **publishable** key as `SUPABASE_PUBLISHABLE_KEY`. A legacy anon key is also supported. Use environment settings for these values; never use a secret or service-role key in frontend configuration. The build rejects those privileged key types.
 5. Run `npm run build:site` with both settings present, then commit the generated `docs/` files and push. They contain only public browser-safe project settings. The local Node server also accepts these environment variables. Alternatively, the public settings can be maintained in `public/config.js` before a build.
@@ -106,7 +108,7 @@ User sign-in is confirmed; provider-fixture account flows are tested. Real signe
 
 ## Development and checks
 
-Requires Node.js 22 or later. No third-party runtime dependencies or bundler.
+Requires Node.js 22 or later. The browser stays vanilla JavaScript without a bundler. The MCP backend uses pinned official MCP SDK, JOSE and Zod dependencies.
 
 ```sh
 npm ci
@@ -119,15 +121,16 @@ Open the app on port 3000. `PORT` overrides it; `npm run dev` watches server cha
 npm test
 npm run test:hosted
 npm run test:scale
+npm run check:mcp
 # With npm start running:
 npm run test:browser
 ```
 
-`test:hosted` builds the GitHub Pages edition and starts a temporary local server under the repository path. It checks restoration, guided profiles, approval rules, mobile layout and a simulated account service with isolated users and synced profiles. `test:browser` covers reviews, multiple libraries, plans and a simulated AI draft. It also exercises collection imports, CSV/library management, arrangements, plan copies, print/PDF output and completed-use history. These fixtures are not real provider integration tests. Chromium is expected at `/usr/bin/chromium`; set `CHROMIUM_PATH` for another executable. `APP_URL` overrides the development test address.
+`test:hosted` builds the GitHub Pages edition and starts a temporary local server under the repository path. It checks restoration, guided profiles, approval rules, AI labels, customizable/collapsible details, OAuth consent, mobile layout and a simulated account service with isolated users and synced profiles. `test:browser` covers reviews, multiple libraries, plans and a simulated AI draft. It also exercises collection imports, CSV/library management, arrangements, plan copies, print/PDF output and completed-use history. These fixtures are not real provider integration tests. Chromium is expected at `/usr/bin/chromium`; set `CHROMIUM_PATH` for another executable. `APP_URL` overrides the development test address.
 
 The published static site has no private credentials or personal workspace data. Stored index words and notes belong to browser/account workspaces and their backups. Without a configured account, data stays in this browser. Clearing site data removes it; use **Backup & restore** for a copy. Restoring replaces the current workspace only after validation and confirmation; invalid files and cancellation preserve existing data. Backups are limited to 5 MB.
 
-Before deploying a paid AI backend for multiple users, add authenticated requests, authorization and rate limits. The current Node backend is for personal/local development. The app does not yet retrieve licensed lyrics, analyze scores/audio, offer a 1,000-song AI catalog, or coordinate shared church approvals across multiple users.
+Before deploying a paid AI backend for multiple users, add authenticated requests, authorization and rate limits. The current Node backend is for personal/local development. The app does not yet retrieve licensed lyrics, analyze scores/audio, offer a verified 1,000-song AI catalog, or coordinate shared church approvals across multiple users.
 
 The GitHub **App checks** workflow runs unit, scale and hosted browser checks on main pushes and pull requests, then verifies committed Pages output matches the build. Tests require no live AI credentials.
 

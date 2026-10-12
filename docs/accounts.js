@@ -279,6 +279,80 @@ export class AccountClient {
       updatedAt: rows[0].updated_at,
     };
   }
+  async authorizationDetails(id) {
+    if (!/^[a-zA-Z0-9_-]{1,200}$/.test(id))
+      throw new Error("Invalid authorization request.");
+    return this.request(`/auth/v1/oauth/authorizations/${id}`, {
+      authenticated: true,
+    });
+  }
+  async decideAuthorization(id, action) {
+    if (
+      !/^[a-zA-Z0-9_-]{1,200}$/.test(id) ||
+      !["approve", "deny"].includes(action)
+    )
+      throw new Error("Invalid authorization decision.");
+    return this.request(`/auth/v1/oauth/authorizations/${id}/consent`, {
+      method: "POST",
+      authenticated: true,
+      body: { action },
+    });
+  }
+  async listConnections() {
+    const rows = await this.request(
+      `/rest/v1/mcp_connections?user_id=eq.${this.userId()}&select=client_id,client_name,enabled,authorized_at,share_profile,share_libraries,share_plans,share_notes,share_lyrics`,
+      { authenticated: true },
+    );
+    if (!Array.isArray(rows)) throw new Error("Invalid connection response.");
+    return rows;
+  }
+  async saveConnection(client, permissions) {
+    if (!/^[0-9a-f-]{36}$/i.test(client.id))
+      throw new Error("Invalid connection client.");
+    await this.request(
+      "/rest/v1/mcp_connections?on_conflict=user_id,client_id",
+      {
+        method: "POST",
+        authenticated: true,
+        headers: { Prefer: "resolution=merge-duplicates,return=minimal" },
+        body: {
+          user_id: this.userId(),
+          client_id: client.id,
+          client_name: String(client.name || "ChatGPT").slice(0, 200),
+          enabled: true,
+          ...Object.fromEntries(
+            ["profile", "libraries", "plans", "notes", "lyrics"].map((k) => [
+              "share_" + k,
+              permissions[k] === true,
+            ]),
+          ),
+        },
+      },
+    );
+  }
+  async disableConnection(id) {
+    if (!/^[0-9a-f-]{36}$/i.test(id))
+      throw new Error("Invalid connection client.");
+    const rows = await this.request(
+      `/rest/v1/mcp_connections?user_id=eq.${this.userId()}&client_id=eq.${id}`,
+      {
+        method: "PATCH",
+        authenticated: true,
+        headers: { Prefer: "return=representation" },
+        body: { enabled: false },
+      },
+    );
+    if (!Array.isArray(rows) || rows.length !== 1 || rows[0].enabled !== false)
+      throw new Error("Access could not be disabled. Please retry.");
+  }
+  async revokeGrant(id) {
+    if (!/^[0-9a-f-]{36}$/i.test(id))
+      throw new Error("Invalid connection client.");
+    return this.request(`/auth/v1/user/oauth/grants?client_id=${id}`, {
+      method: "DELETE",
+      authenticated: true,
+    });
+  }
   async saveWorkspace(workspace) {
     const owner = this.userId(),
       checked = validateWorkspace(workspace);

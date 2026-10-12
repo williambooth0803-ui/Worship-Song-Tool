@@ -1,3 +1,4 @@
+import { reveal } from "./disclosure.mjs";
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 export async function checkIndexFlows(browser, base) {
@@ -42,7 +43,11 @@ export async function checkIndexFlows(browser, base) {
     .locator("nav")
     .getByRole("button", { name: "Song index", exact: true })
     .click();
-  assert.equal(await page.locator(".index-table tbody tr").count(), 40);
+  assert.equal(await page.locator(".index-table tbody tr").count(), 50);
+  await reveal(page, "button", {
+    name: "Edit index details for Amazing Grace",
+    exact: true,
+  });
   await page
     .getByRole("button", {
       name: "Edit index details for Amazing Grace",
@@ -71,6 +76,7 @@ export async function checkIndexFlows(browser, base) {
   assert.ok((await page.locator(".index-table").textContent()).includes("123"));
   await page.locator(".index-directory summary").click();
   await page.getByLabel("Find a value", { exact: true }).fill("trust");
+  await reveal(page, "button", { name: "Find values", exact: true });
   await page.getByRole("button", { name: "Find values", exact: true }).click();
   await page
     .locator(".index-entry-list button")
@@ -84,6 +90,7 @@ export async function checkIndexFlows(browser, base) {
   await filter.getByRole("button", { name: "Add filter", exact: true }).click();
   assert.equal(await page.locator(".index-table tbody tr").count(), 1);
   const downloading = page.waitForEvent("download");
+  await reveal(page, "button", { name: "Export results (CSV)", exact: true });
   await page
     .getByRole("button", { name: "Export results (CSV)", exact: true })
     .click();
@@ -93,9 +100,11 @@ export async function checkIndexFlows(browser, base) {
   for await (const chunk of stream) csv += chunk.toString();
   assert.ok(csv.includes("Hymnal number"));
   assert.ok(csv.includes("Grace that teaches us to trust."));
+  await reveal(page, "button", { name: "Amazing Grace", exact: true });
   await page
     .getByRole("button", { name: "Amazing Grace", exact: true })
     .click();
+  await reveal(page, "button", { name: "+ Save to library", exact: true });
   await page
     .getByRole("button", { name: "+ Save to library", exact: true })
     .click();
@@ -108,12 +117,17 @@ export async function checkIndexFlows(browser, base) {
   const before = await page.evaluate(() =>
     localStorage.getItem("hymn-heart-v1"),
   );
+  await reveal(page, "button", {
+    name: "AI criteria search · optional",
+    exact: true,
+  });
   await page
     .getByRole("button", { name: "AI criteria search · optional", exact: true })
     .click();
   await page
     .getByLabel("Your criterion", { exact: true })
     .fill("Songs expressing trust.");
+  await reveal(page, "button", { name: "Search with AI", exact: true });
   await page
     .getByRole("button", { name: "Search with AI", exact: true })
     .click();
@@ -124,7 +138,9 @@ export async function checkIndexFlows(browser, base) {
     before,
     "AI lookup must not modify plans or reviews",
   );
+  await reveal(page, "button", { name: "Close search", exact: true });
   await page.getByRole("button", { name: "Close search", exact: true }).click();
+  await reveal(page, "button", { name: "Reset index", exact: true });
   await page.getByRole("button", { name: "Reset index", exact: true }).click();
   await page.screenshot({
     path: "/tmp/faithful-repertoire-index.png",

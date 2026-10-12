@@ -27,6 +27,22 @@ const selected = (id, name, description, songIds, essentials, standards) => ({
     "Editorial title selection · not a ranked chart or denominational endorsement",
 });
 export const songCollections = [
+  ...[
+    "Elevation Worship",
+    "Bethel Music",
+    "Hillsong",
+    "The Worship Initiative",
+    "Sovereign Grace",
+  ].map((artist) =>
+    selected(
+      "artist-" + normalize(artist).replaceAll(" ", "-"),
+      artist,
+      "Recording associations across worship and modern hymn texts. Assess songs individually; inclusion is not an endorsement.",
+      allCatalogSongs.filter((s) => s.author.includes(artist)).map((s) => s.id),
+      2,
+      4,
+    ),
+  ),
   selected(
     "baptist-mixed",
     "Baptist church repertoire",

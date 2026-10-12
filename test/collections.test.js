@@ -7,7 +7,11 @@ import {
   songsFromCSV,
   parseCSV,
 } from "../public/collections.js";
-import { allCatalogSongs, syncCatalog } from "../public/catalog.js";
+import {
+  allCatalogSongs,
+  catalogSongs,
+  syncCatalog,
+} from "../public/catalog.js";
 import { defaultProfile } from "../public/core.js";
 import { validateWorkspace } from "../public/backup.js";
 const workspace = () =>
@@ -19,7 +23,7 @@ const workspace = () =>
     profile: defaultProfile,
   });
 test("depth levels are nested and every collection uses real distinct catalog records", () => {
-  assert.equal(songCollections.length, 9);
+  assert.equal(songCollections.length, 14);
   for (const pack of songCollections) {
     const essentials = collectionSongs(pack, "essentials"),
       standards = collectionSongs(pack, "standards"),
@@ -51,8 +55,8 @@ test("overlapping and repeated collection imports preserve personal assessments,
     collectionId: pack.id,
     depth: "all",
   });
-  assert.equal(first.added, 30);
-  assert.equal(first.saved, 40);
+  assert.equal(first.added, 31);
+  assert.equal(first.saved, 44);
   const again = importSongs(first.workspace, songs, {
     libraryId: "mine",
     collectionId: pack.id,
@@ -71,7 +75,7 @@ test("overlapping and repeated collection imports preserve personal assessments,
   assert.deepEqual(syncCatalog(restored), restored);
   assert.equal(
     state.songs.length,
-    40,
+    catalogSongs.length,
     "imports do not mutate the original state",
   );
 });

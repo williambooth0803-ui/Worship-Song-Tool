@@ -4,6 +4,7 @@ import {
   catalogSongs,
   allCatalogSongs,
   syncCatalog,
+  CATALOG_REVISION,
   discoverSongs,
   invalidateApproval,
 } from "../public/catalog.js";
@@ -28,7 +29,7 @@ test("catalog expansion is idempotent and keeps saved songs and personal reviews
   old.songs[1].review.notes = "My notes";
   old.songs[1].review.scores.substance = 5;
   const migrated = syncCatalog(old);
-  assert.equal(migrated.songs.length, 40);
+  assert.equal(migrated.songs.length, catalogSongs.length);
   assert.equal(old.songs.length, 4);
   assert.deepEqual(migrated.libraries, old.libraries);
   assert.deepEqual(migrated.songs[1].review, old.songs[1].review);
@@ -45,12 +46,28 @@ test("catalog updates preserve manual overrides and invalidate outdated starter 
   const revised = structuredClone(catalogSongs);
   revised[0].review.summary = "Revised evidence";
   revised[1].review.scores.substance = 7;
-  const next = syncCatalog(state, revised, 2);
+  const next = syncCatalog(state, revised, CATALOG_REVISION + 1);
   assert.equal(next.songs[0].review.summary, "Revised evidence");
   assert.equal(next.songs[0].approval.status, "unreviewed");
   assert.equal(next.songs[1].approval.status, "approved");
   assert.equal(next.songs[1].review.notes, "Keep this");
   assert.equal(next.songs[1].catalogReview.scores.substance, 7);
+});
+test("catalog draft refresh keeps personal notes and recorded musical settings", () => {
+  const workspace = oldWorkspace();
+  const original = workspace.songs[0];
+  Object.assign(original.review, {
+    notes: "Retain my church's notes",
+    key: "D",
+    minutes: 3.5,
+    musical: "Observed octave leap in our arrangement",
+  });
+  const updated = syncCatalog(workspace).songs.find(
+    (s) => s.id === original.id,
+  );
+  assert.equal(updated.review.status, "ai");
+  for (const key of ["notes", "key", "minutes", "musical"])
+    assert.equal(updated.review[key], original.review[key]);
 });
 test("approval resets after an assessment changes without erasing decision notes", () => {
   const song = {
@@ -82,21 +99,34 @@ test("discovery filters and sort order respect unknown scores", () => {
   );
   assert.equal(songs[0].id, "holy-holy-holy");
 });
-test("catalog has distinct traditional and modern titles without invented assessments", () => {
-  assert.equal(new Set(allCatalogSongs.map((s) => s.id)).size, 215);
+test("catalog drafts cover all titles with explicit AI provenance and no inferred arrangements", () => {
   assert.equal(
-    catalogSongs.filter((s) => s.review.status === "starter").length,
-    20,
+    new Set(allCatalogSongs.map((s) => s.id)).size,
+    allCatalogSongs.length,
   );
+  assert.ok(allCatalogSongs.length >= 250);
   for (const song of allCatalogSongs) {
-    assert.ok(["starter", "unreviewed"].includes(song.review.status));
-    if (song.review.status === "unreviewed") {
-      assert.ok(Object.values(song.review.scores).every((s) => s === null));
-      assert.deepEqual(song.review.claims, []);
-      assert.equal(song.firstLine, "");
-      assert.equal(indexedValue(song, "concern", defaultProfile), "Unassessed");
-    }
+    assert.equal(song.review.status, "ai");
+    assert.ok(Number.isFinite(song.review.scores.accuracy));
     assert.equal(song.review.scores.time, null);
-    assert.match(song.review.musical, /^Not assessed/);
+    assert.ok(
+      !song.review.musical || song.review.musical.startsWith("Not assessed"),
+    );
+    assert.ok(song.review.aiFields.includes("scores"));
+    assert.match(song.review.model, /exact text not verified/);
   }
+  for (const artist of [
+    "Elevation Worship",
+    "Bethel Music",
+    "Hillsong",
+    "The Worship Initiative",
+    "Sovereign Grace",
+  ])
+    assert.ok(allCatalogSongs.some((s) => s.author.includes(artist)));
+  assert.match(
+    allCatalogSongs.find(
+      (s) => s.author.includes("Kari Jobe") && s.title.startsWith("Forever"),
+    ).review.notes,
+    /work was finished on the cross/,
+  );
 });

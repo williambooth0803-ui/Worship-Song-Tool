@@ -2263,3 +2263,225 @@ footer {
   display: block;
   color: var(--muted);
 }
+/* Quiet controls, compact provenance, and progressive song detail disclosure. */
+.ai-mark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font:
+    700 9px Arial,
+    sans-serif;
+  letter-spacing: 0.02em;
+  border: 1px solid #526b60;
+  color: #315b4b;
+  border-radius: 3px;
+  padding: 2px 3px;
+  margin-left: 6px;
+  vertical-align: middle;
+  line-height: 1;
+  flex-shrink: 0;
+}
+.attribute-panel > summary,
+.rating-details > summary {
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--ink, #24332e);
+  padding: 10px 0;
+  list-style-position: outside;
+}
+.attribute-panel:not([open]) {
+  padding-top: 5px;
+  padding-bottom: 5px;
+}
+.attribute-panel > p {
+  margin-top: 8px;
+}
+.rating-details {
+  margin-bottom: 14px;
+}
+.compact-meta {
+  margin: 14px 0;
+  font-size: 12px;
+}
+.filter-panel {
+  margin: 0 0 18px;
+  border-bottom: 1px solid #dedfd6;
+  padding-bottom: 12px;
+}
+.filter-panel > summary,
+.library-toolbar > summary {
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 600;
+  padding: 8px 0;
+}
+.library-toolbar {
+  display: block !important;
+}
+.library-toolbar > div {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.library-toolbar:not([open]) > div {
+  display: none;
+}
+.more-menu {
+  position: relative;
+  font-size: 13px;
+}
+.more-menu > summary {
+  cursor: pointer;
+  padding: 8px 12px;
+  list-style: none;
+  border: 1px solid #d8dcd3;
+  border-radius: 4px;
+}
+.more-menu[open] {
+  background: #fff;
+}
+.more-menu[open] > .text-button {
+  display: block;
+  padding: 10px 12px;
+  width: 100%;
+  text-align: left;
+  white-space: nowrap;
+}
+.more-menu:not([open]) > button {
+  display: none;
+}
+.account-save-strip {
+  display: block !important;
+  position: relative;
+  font-size: 12px;
+  border: 0 !important;
+  background: transparent !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+.account-save-strip > summary {
+  cursor: pointer;
+  padding: 8px;
+  white-space: nowrap;
+}
+.account-save-strip[open] > span,
+.account-save-strip[open] > div {
+  display: block;
+  background: #fff;
+  padding: 10px;
+  max-width: 310px;
+}
+.account-save-strip:not([open]) > span,
+.account-save-strip:not([open]) > div {
+  display: none;
+}
+.attribute-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid #e1e3da;
+  padding: 8px 0;
+}
+.attribute-row .check-label {
+  margin: 0;
+}
+.attribute-row > div {
+  display: flex;
+  gap: 5px;
+}
+.attribute-row input {
+  width: auto;
+}
+.connect-page {
+  display: block;
+  padding: 40px 20px;
+  background: #f4f3ed;
+}
+.connect-page main.connect-card {
+  margin: 0 auto;
+  max-width: 610px;
+  padding: 32px;
+  border: 1px solid #d8dcd3;
+  background: white;
+  min-height: 0;
+}
+.connect-brand {
+  font:
+    20px Georgia,
+    serif;
+  color: #163e35;
+}
+.connect-card h1 {
+  font-size: 34px;
+  margin-top: 22px;
+}
+.connect-card p {
+  line-height: 1.6;
+}
+.connection-row {
+  border-top: 1px solid #ddd;
+  padding: 18px 0;
+}
+.connect-card .check-label {
+  margin: 14px 0;
+}
+.connect-card input[type="checkbox"] {
+  width: auto;
+}
+@media (max-width: 700px) {
+  .topbar-actions {
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+  .detail-actions {
+    gap: 7px;
+    flex-wrap: wrap;
+  }
+  .connect-page main.connect-card {
+    padding: 22px;
+  }
+  .account-save-strip[open] > span {
+    max-width: 210px;
+  }
+  .page-heading h1 {
+    font-size: 30px;
+  }
+}
+.more-menu .menu-items,
+.sync-menu-content {
+  position: absolute;
+  z-index: 30;
+  top: calc(100% + 6px);
+  right: 0;
+  width: 220px;
+  background: #fff;
+  border: 1px solid #d8dcd3;
+  box-shadow: 0 8px 22px #102d2214;
+  padding: 8px;
+  border-radius: 4px;
+  text-align: left;
+}
+.more-menu .menu-items .text-button {
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: 10px;
+  white-space: nowrap;
+}
+.account-save-strip .sync-menu-content {
+  width: 290px;
+  max-width: calc(100vw - 40px);
+  padding: 16px !important;
+  line-height: 1.6;
+}
+.sync-menu-content button {
+  display: block;
+  margin-top: 7px;
+}
+.more-menu:not([open]) > .menu-items {
+  display: none;
+}
+.ai-mark {
+  font-size: 10px;
+}

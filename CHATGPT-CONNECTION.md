@@ -1,76 +1,128 @@
-# ChatGPT account connection: proposed first release
+# Read-only ChatGPT connection
 
-Goal: a user connects Faithful Repertoire in ChatGPT, signs in, and asks questions
-about their own profile, libraries, songs and human-built worship plans. A modern
-ChatGPT app/custom MCP connection is the intended route; this is not the retired
-ChatGPT plugin system. This document describes planned work, not an installed app.
+The connector implementation is ready for Supabase deployment. **It is not live until
+`supabase/mcp.sql`, the Edge function and native OAuth configuration are deployed.**
+The public website and account sign-in can continue to work before that step.
+No OpenAI API key or paid OpenAI API billing is used. ChatGPT answers in your own
+ChatGPT session; Supabase hosts the read tools within your project's existing quotas.
 
-Examples:
+## Activate the backend
 
-- Which songs in my repertoire contain the word “faithful”?
-- List hymns in my library tagged Assurance and recorded in D.
-- Show my October 18 service outline.
-- Search my repertoire for songs that probably meet a criterion I describe.
+The existing public project key cannot administer your project. Create a Supabase
+personal access token at https://supabase.com/dashboard/account/tokens and enter it
+as **SUPABASE_ACCESS_TOKEN in Codex environment settings**, then save/publish the
+configuration. Do not paste that token into chat, source files or browser settings.
+The saved configuration scopes this secret to `api.supabase.com`.
 
-The first release is read-only. It must not generate a worship service, recommend
-service selections, alter reviews, or edit plans. An explicitly requested
-subjective library search is allowed, with evidence and uncertainty. It is
-separate from deterministic index queries and respects the account preference.
+Once available, run:
 
-## Required infrastructure
+```sh
+npm run deploy:mcp -- --dry-run  # Shows files and planned operations; no mutations
+npm run deploy:mcp
+```
 
-The current GitHub Pages site serves static files and cannot host an MCP server
-or OAuth endpoints. Deploy a small HTTPS backend implementing remote MCP and the
-authentication required by ChatGPT's current app platform. Use supported MCP
-libraries and confirm current OAuth, transport and client-registration details
-against OpenAI's official documentation before selecting an authorization server.
-The existing Supabase database can remain the source of account records.
+The deployment script verifies that the current consent page is published, applies
+owner isolation/read-only policies, deploys the function, checks its public resource
+metadata and unauthenticated 401 challenge, and only then enables Supabase OAuth.
+It updates only three OAuth settings, preserving the existing email/site configuration.
+The base tables must already exist from `supabase/schema.sql`.
 
-Users authorize access through sign-in. An MCP public/publishable key alone must
-never grant access to private rows. Verify each access token (signature, issuer,
-expiry and the intended resource/audience); derive the owner from the verified
-identity, never a model-supplied user ID. Map that identity to the Supabase owner
-and apply owner-only database authorization. Avoid privileged database keys where
-user-scoped access is supported; keep any necessary backend credentials private.
+If administering manually:
 
-## Proposed read-only tools
+1. Run [supabase/mcp.sql](supabase/mcp.sql) in the Supabase SQL editor after the base schema.
+2. Deploy `faithful-mcp` with its checked-in entrypoint/import map. The supported CLI alternative is `npx supabase@2.120.0 functions deploy faithful-mcp --project-ref inhqxwratimjvzsnuwik --no-verify-jwt` from this repository, with securely configured Supabase CLI authentication.
+3. Keep the Auth Site URL `https://williambooth0803-ui.github.io/Worship-Song-Tool/`. Under Authentication → OAuth Server, enable the server, set the authorization path to **`/connect.html`**, and enable dynamic client registration. Supabase appends that path to the Site URL; do not repeat the repository folder.
+4. Check the endpoints below, then authorize from ChatGPT. Supabase OAuth requires an asymmetric signing key; this project currently exposes an ES256 key. The connector accepts ES256/RS256 and rejects legacy HS256 signing.
 
-| Tool                | Response                                                                                 |
-| ------------------- | ---------------------------------------------------------------------------------------- |
-| `get_my_profile`    | Denomination, statement, preferences and review parameters; omit email by default.       |
-| `list_my_libraries` | Library names, IDs and song counts.                                                      |
-| `search_my_songs`   | Deterministic index filters within one owned library, with pagination and source labels. |
-| `get_my_song`       | Visible assessment, human notes, musical metadata and approval for an owned song.        |
-| `list_my_plans`     | Plan titles, dates and duration totals.                                                  |
-| `get_my_plan`       | The saved human service order, keys, durations and notes.                                |
+**Apply the database migration before enabling OAuth.** Both the updated base schema
+and migration exclude OAuth `client_id` tokens from raw workspace/profile access and
+writes. Never deploy this connector with a service-role key. Disabling the platform's
+legacy JWT gateway is necessary for public discovery; the handler independently verifies
+every data request against Supabase's issuer, native `authenticated` audience, signing
+keys, expiration, role, user ID, client ID, and an explicit approved account grant.
 
-Tool schemas must use narrow inputs and read-only annotations. Library/song/plan
-IDs must be checked against the authenticated owner's workspace. Return the
-current saved account copy and its save timestamp; edits saved only in a browser
-are unavailable to ChatGPT until the user chooses **Save to account**.
+## Connect in ChatGPT
 
-Follow the profile's AI visibility setting when exposing review fields. Do not
-send hidden AI drafts, password/session fields, or entire workspaces unnecessarily.
-Stored words can be searched on the server; return brief supporting snippets only
-when needed. Song words and notes are untrusted content, never tool instructions.
-All account data returned by a connected tool is shared with the ChatGPT session
-for the requested task; explain that clearly during connection.
+For an account with custom app creation available (Plus/Pro availability and menus
+can vary), open ChatGPT Settings → Apps → Advanced settings and turn on Developer
+mode. Create an app named **Faithful Repertoire**, choose OAuth authentication, and
+enter:
 
-## Validation before connecting a real account
+```
+https://inhqxwratimjvzsnuwik.supabase.co/functions/v1/faithful-mcp
+```
 
-Test OAuth sign-in, expiry and revocation; reject anonymous, invalid and wrong
-audience tokens. Verify two actual accounts cannot read each other's IDs. Check
-the MCP client handshake, pagination, AI visibility, private-data minimization,
-and the absence of write/plan-generation tools. Then add the HTTPS MCP endpoint
-using the custom app/developer connection options available to the user's
-ChatGPT account. Current availability can depend on account/workspace settings.
+Open the authorization prompt, sign in with your Faithful Repertoire account, choose
+what to share and approve. Libraries, profile and existing plans start checked;
+**personal notes and stored song text start unchecked**. Song-text permission allows
+reading your stored words, although normal tool responses return at most a 1,200-character
+excerpt only when explicitly requested. Shared records go to ChatGPT when used.
 
-References to verify during implementation:
+Save your workspace using **Account sync → Save to account** first. Browser-only edits
+are unavailable to this connection. Profile preferences save separately; the backend
+uses the saved profile's AI visibility even when the workspace was saved earlier.
 
+Examples: “List my libraries,” “What notes did I save for Forever?” (with notes shared),
+“Show my saved service outline,” or an explicitly requested tentative search of one
+library using your own criterion. The connector never selects a worship service,
+generates a setlist, or changes your records. Plans remain human-created.
+
+Revoke under **My account → ChatGPT connections → Revoke access**. Database access is
+blocked first, then the native provider grant is removed. If provider removal fails,
+the screen states that data access is already disabled and offers a retry.
+
+## Read tools and boundaries
+
+| Tool | Access |
+| --- | --- |
+| `get_my_profile` | Denomination, faith statement, principles, weights, AI visibility |
+| `list_my_libraries` | Owned library IDs, names and counts |
+| `search_my_songs` | One owned library, user-chosen query/filters/sort |
+| `get_my_song` | Visible assessment and observed musical details; optional notes/text |
+| `list_my_plans` | Existing human-created plans |
+| `get_my_plan` | Saved order, roles, keys and durations; optional notes |
+
+Results carry save timestamps, read-only/untrusted-reference notices and AI visibility.
+Tools have strict schemas, read-only annotations, no arbitrary SQL/HTTP or owner-ID
+parameters, and bounded pages (up to 50 records). Song/plan lookup is owner scoped.
+No write, recommendation, account-password, email, secret or automatic-planning tools
+exist. Full API results are JSON data, never HTML to execute.
+
+OAuth cannot read raw JSON workspaces, change reviews/plans/profile/connection grants,
+or bypass visibility by calling the database directly. A SECURITY DEFINER projection
+function derives the owner/client from verified claims and redacts hidden AI fields,
+notes and song text before returning data. It has no supplied owner parameters.
+Native signed-in website sessions retain their normal owner-scoped writes. A durable
+per-account/client limit allows 60 snapshot reads per minute. Revocation is checked
+on every authenticated request and again on each snapshot read.
+
+Public checks after deployment:
+
+- `GET <connector URL>/health`: service status, no account data.
+- `GET <connector URL>/.well-known/oauth-protected-resource`: MCP resource metadata.
+- `POST <connector URL>` without a bearer: 401 with `WWW-Authenticate` metadata URL.
+- `GET https://inhqxwratimjvzsnuwik.supabase.co/.well-known/oauth-authorization-server/auth/v1`: native OAuth discovery.
+
+## Verification and limits
+
+`npm test` exercises actual PostgreSQL RLS/projection/revocation/rate limits through
+PGlite and an official MCP SDK client round trip, plus signed JWT failure cases.
+`npm run check:mcp` checks the actual Deno entrypoint. The Deno HTTP runtime's public
+metadata/health and missing-token challenge were also exercised locally.
+`npm run test:hosted` tests consent, default scopes, denial, malicious redirects and
+the website's account workflow using provider fixtures. Fixtures are not deployed
+Supabase proof or a real ChatGPT authorization. After deploying, verify a real
+ChatGPT connection, hidden AI preferences, another account's isolation, and revocation.
+
+Native Supabase OAuth uses the `authenticated` audience; record access is enforced by
+client-ID policies and the consent projection rather than treating identity scopes as
+data permissions. OAuth server is currently a Supabase beta feature. The app still
+stores each owner's workspace as JSON; normal workspace size/storage limits apply.
+
+Official implementation references:
+
+- https://supabase.com/docs/guides/auth/oauth-server/mcp-authentication
+- https://supabase.com/docs/guides/auth/oauth-server/token-security
+- https://supabase.com/docs/guides/ai-tools/byo-mcp
 - https://developers.openai.com/apps-sdk/deploy/connect-chatgpt
-- https://developers.openai.com/apps-sdk/build/auth
-- https://platform.openai.com/docs/guides/developer-mode
-
-No live connector, OAuth authorization server, or backend deployment has been
-created yet. No Supabase schema changes are required just to finish the manual
-index being built now.
+- https://github.com/openai/openai-apps-sdk-examples/tree/main/authenticated_server_python

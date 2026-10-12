@@ -104,6 +104,8 @@ export function validateWorkspace(input) {
       result[key] = texts(value[key], key);
     if (value.themes !== undefined)
       result.themes = texts(value.themes, "assessment themes");
+    if (value.aiFields !== undefined)
+      result.aiFields = texts(value.aiFields, "AI field labels");
     if (value.model !== undefined)
       result.model = text(value.model, "model", 200);
     if (value.assistance !== undefined) {
@@ -139,6 +141,13 @@ export function validateWorkspace(input) {
       themes: texts(song.themes, "themes"),
       review: review(song.review),
     };
+    if (song.detailLayout !== undefined) {
+      object(song.detailLayout, "detail layout");
+      result.detailLayout = {
+        order: texts(song.detailLayout.order, "attribute order"),
+        hidden: texts(song.detailLayout.hidden, "hidden attributes"),
+      };
+    }
     if (song.category !== undefined)
       result.category = choice(
         song.category,
@@ -427,6 +436,11 @@ export function validateWorkspace(input) {
     if (typeof profile.setupComplete !== "boolean")
       fail("profile setup state must be a boolean.");
     result.profile.setupComplete = profile.setupComplete;
+  }
+  if (profile.aiLabels !== undefined) {
+    if (typeof profile.aiLabels !== "boolean")
+      fail("AI labels setting must be a boolean.");
+    result.profile.aiLabels = profile.aiLabels;
   }
   return result;
 }
