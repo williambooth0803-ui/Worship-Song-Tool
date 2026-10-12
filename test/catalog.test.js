@@ -10,6 +10,7 @@ import {
 import { seedSongs } from "../public/seeds.js";
 import { defaultProfile } from "../public/core.js";
 import { validateWorkspace } from "../public/backup.js";
+import { indexedValue } from "../public/song-index.js";
 
 const oldWorkspace = () =>
   structuredClone({
@@ -93,6 +94,7 @@ test("catalog has distinct traditional and modern titles without invented assess
       assert.ok(Object.values(song.review.scores).every((s) => s === null));
       assert.deepEqual(song.review.claims, []);
       assert.equal(song.firstLine, "");
+      assert.equal(indexedValue(song, "concern", defaultProfile), "Unassessed");
     }
     assert.equal(song.review.scores.time, null);
     assert.match(song.review.musical, /^Not assessed/);

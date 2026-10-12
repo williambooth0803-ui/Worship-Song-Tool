@@ -165,6 +165,8 @@ export function indexedValue(song, field, profile, libraries = [], plans = []) {
       unreviewed: "Awaiting assessment",
     }[review.status];
   if (field === "concern")
+    if (review.status === "unreviewed") return "Unassessed";
+  if (field === "concern")
     return {
       none: "No identified concern",
       context: "Context needed",
