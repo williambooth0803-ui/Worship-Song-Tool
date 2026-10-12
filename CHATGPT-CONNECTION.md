@@ -21,6 +21,10 @@ npm run deploy:mcp -- --dry-run  # Shows files and planned operations; no mutati
 npm run deploy:mcp
 ```
 
+The npm deployment command enables Node's environment-proxy support, so securely
+injected credentials use their configured HTTPS destination. Use Node 24+ for
+deployment in the cloud environment.
+
 The deployment script verifies that the current consent page is published, applies
 owner isolation/read-only policies, deploys the function, checks its public resource
 metadata and unauthenticated 401 challenge, and only then enables Supabase OAuth.
