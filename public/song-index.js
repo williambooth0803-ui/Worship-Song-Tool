@@ -160,7 +160,10 @@ export function indexedValue(song, field, profile, libraries = [], plans = []) {
       : song.firstLine
         ? "Opening line only"
         : "No text recorded";
-  if (field === "rating") return overall(review, profile);
+  if (field === "rating")
+    return typeof profile.ratingForSong === "function"
+      ? profile.ratingForSong(song)
+      : overall(review, profile);
   if (field in dimensions) return review.scores[field];
   if (field === "approval")
     return approvalLabels[song.approval?.status || "unreviewed"];

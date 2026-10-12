@@ -25,6 +25,7 @@ test("real PostgreSQL: native accounts retain writes; OAuth is isolated, project
       summary: "SECRET AI summary",
       notes: "SECRET personal note",
       assistance: { summary: "AI objective observation" },
+      scores: { accuracy: 2, substance: 10, language: 10, time: null },
     };
     song.themes = ["SECRET AI theme"];
     song.catalogReview = { ...seedSongs[0].review, summary: "Human baseline" };
@@ -153,8 +154,14 @@ test("real PostgreSQL: native accounts retain writes; OAuth is isolated, project
     await db.exec(
       "update public.mcp_connections set share_libraries=true,share_notes=true,share_lyrics=true; update public.workspaces set workspace=jsonb_set(workspace,'{profile,aiMode}','\"full\"')",
     );
+    await db.exec(
+      `update public.workspaces set workspace=jsonb_set(workspace,'{profile,weights}','{"accuracy":100,"substance":0,"language":0,"time":0}')`,
+    );
     await identity(owner, true);
-    encoded = JSON.stringify(await snapshot());
+    data = await snapshot();
+    assert.deepEqual(data.profile, {});
+    assert.equal(data.songs[0].account_rating, 2);
+    encoded = JSON.stringify(data);
     assert.ok(encoded.includes("SECRET AI summary"));
     assert.ok(encoded.includes("SECRET personal note"));
     assert.ok(encoded.includes("SECRET song words"));

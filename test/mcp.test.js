@@ -4,6 +4,7 @@ import { generateKeyPair, SignJWT, createLocalJWKSet, exportJWK } from "jose";
 import { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { StreamableHTTPClientTransport } from "@modelcontextprotocol/sdk/client/streamableHttp.js";
 import { createMcpHandler } from "../backend/mcp/handler.js";
+import { readTools } from "../backend/mcp/tools.js";
 import { tokenVerifier, validateSettings } from "../backend/mcp/auth.js";
 import { seedSongs } from "../public/seeds.js";
 import { defaultProfile } from "../public/core.js";
@@ -16,6 +17,37 @@ const config = {
   publishableKey: "sb_publishable_test",
   resourceUrl: "https://example.supabase.co/functions/v1/faithful-mcp",
 };
+test("library rating filters retain account weights without profile sharing, and reject unshared fields", () => {
+  const song = { ...structuredClone(seedSongs[0]), account_rating: 2 };
+  const data = {
+    ai_mode: "full",
+    profile: {},
+    permissions: {
+      libraries: true,
+      profile: false,
+      notes: false,
+      plans: false,
+      lyrics: false,
+    },
+    songs: [song],
+    libraries: [{ id: "mine", name: "Mine", songIds: [song.id] }],
+    plans: [],
+  };
+  const search = readTools.find((tool) => tool.name === "search_my_songs");
+  const run = (args) =>
+    search.read(data, search.schema.parse({ library_id: "mine", ...args }));
+  assert.equal(
+    run({ rules: [{ field: "rating", op: "gte", value: 5 }] }).total,
+    0,
+  );
+  assert.equal(run({}).items[0].rating, 2);
+  for (const field of ["notes", "completedServices", "lyrics"])
+    assert.throws(
+      () => run({ rules: [{ field, op: "missing" }] }),
+      /sharing is disabled/,
+    );
+  assert.throws(() => run({ sort: "lyrics" }), /sharing is disabled/);
+});
 test("connector verifies signatures, issuer, audience, expiry and OAuth identity", async () => {
   const keys = await generateKeyPair("ES256"),
     jwk = await exportJWK(keys.publicKey);

@@ -10,7 +10,7 @@ import {
   reviewForDisplay,
   themesForDisplay,
 } from "../../public/profile.js";
-import { defaultProfile, planDuration } from "../../public/core.js";
+import { defaultProfile, planDuration, overall } from "../../public/core.js";
 import { ConnectionError } from "./auth.js";
 
 const id = z.string().min(1).max(200),
@@ -32,11 +32,16 @@ function permit(data, key) {
     );
 }
 function profile(data) {
-  return withProfileDefaults({
+  const result = withProfileDefaults({
     ...defaultProfile,
     ...data.profile,
     aiMode: data.ai_mode,
   });
+  result.ratingForSong = (song) =>
+    Object.hasOwn(song, "account_rating")
+      ? song.account_rating
+      : overall(reviewForDisplay(song, data.ai_mode), result);
+  return result;
 }
 const pick = (object, keys) =>
   Object.fromEntries(
@@ -61,6 +66,7 @@ function summary(song, data) {
     themes: themesForDisplay(song, p.aiMode),
     approval: song.approval?.status || "unreviewed",
     assessment_source: r.status,
+    rating: indexedValue(song, "rating", p),
     key: indexedValue(song, "key", p),
     planning_minutes: indexedValue(song, "minutes", p),
   };
@@ -224,9 +230,28 @@ export const readTools = [
         args.rules.some((r) => !fields.has(r.field))
       )
         throw new ConnectionError("Choose a supported song index field.", 400);
+      const requestedFields = [
+        args.sort,
+        ...args.rules.map((rule) => rule.field),
+      ];
+      if (!data.permissions.notes && requestedFields.includes("notes"))
+        throw new ConnectionError(
+          "Personal-note sharing is disabled for this connection.",
+        );
+      if (
+        !data.permissions.plans &&
+        requestedFields.some((field) =>
+          ["plannedServices", "completedServices", "lastUsedDate"].includes(
+            field,
+          ),
+        )
+      )
+        throw new ConnectionError(
+          "Plan sharing is disabled for this connection.",
+        );
       if (
         !data.permissions.lyrics &&
-        args.rules.some((r) =>
+        requestedFields.some((field) =>
           [
             "lyrics",
             "firstLine",
@@ -236,7 +261,7 @@ export const readTools = [
             "interiorJust",
             "ohCount",
             "repeatedLines",
-          ].includes(r.field),
+          ].includes(field),
         )
       )
         throw new ConnectionError(

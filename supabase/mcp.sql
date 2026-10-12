@@ -64,7 +64,7 @@ declare
  owner_id uuid=auth.uid(); jwt jsonb=auth.jwt(); connection public.mcp_connections;
  w jsonb; p jsonb; mode text; saved_at timestamptz; count_reads integer;
  s jsonb; raw jsonb; r jsonb; m jsonb; item jsonb; plan jsonb;
- songs jsonb='[]'; libraries jsonb='[]'; plans jsonb='[]'; items jsonb; arrangements jsonb;
+ songs jsonb='[]'; libraries jsonb='[]'; plans jsonb='[]'; items jsonb; arrangements jsonb; account_rating numeric;
 begin
  if owner_id is null or jwt->>'role'<>'authenticated' or jwt->>'aud'<>'authenticated' or jwt->>'client_id' is null then raise insufficient_privilege using message='OAuth authorization required'; end if;
  select * into connection from public.mcp_connections where user_id=owner_id and client_id=(jwt->>'client_id')::uuid;
@@ -99,7 +99,13 @@ begin
    m=public.mcp_pick(s->'metadata',array['themes','tags','year','language','tune','meter','tempo','timeSignature','instruments','vocalDifficulty','instrumentalDifficulty','lowNote','highNote','largestLeap','wordlessSeconds','instrumentalSeconds','custom']);
    if connection.share_lyrics then m=m||public.mcp_pick(s->'metadata',array['lyrics']); end if;
    select coalesce(jsonb_agg(public.mcp_pick(a,array['id','name','key','minutes','tempo','timeSignature','lowNote','highNote','largestLeap','wordlessSeconds','instrumentalSeconds','instruments','vocalDifficulty','instrumentalDifficulty']) || case when connection.share_notes then public.mcp_pick(a,array['notes']) else '{}'::jsonb end),'[]'::jsonb) into arrangements from jsonb_array_elements(coalesce(s->'arrangements','[]')) a;
-   songs=songs||jsonb_build_array(public.mcp_pick(s,array['id','title','author','version','category','preferredArrangementId'])||jsonb_build_object('review',r,'metadata',m,'arrangements',arrangements,
+   -- Libraries expose the owner's displayed rating without exposing private
+   -- profile weights when profile sharing is switched off.
+   select round(sum((r->'scores'->>dimension)::numeric * weight) / nullif(sum(weight),0),1) into account_rating
+   from (select dimension,coalesce((p->'weights'->>dimension)::numeric,default_weight) as weight
+    from (values ('accuracy',35),('substance',30),('language',20),('time',15)) as dimensions(dimension,default_weight)) as weighted
+   where jsonb_typeof(r->'scores'->dimension)='number' and weight>0;
+   songs=songs||jsonb_build_array(public.mcp_pick(s,array['id','title','author','version','category','preferredArrangementId'])||jsonb_build_object('review',r,'metadata',m,'arrangements',arrangements,'account_rating',account_rating,
     'firstLine',case when connection.share_lyrics then coalesce(s->>'firstLine','') else '' end,
     'themes',coalesce(s->'metadata'->'themes',case when mode<>'full' and (raw->>'status'='ai' or raw->'aiFields' ? 'themes') then case when s->'catalogReview'->>'status'='ai' then '[]'::jsonb else s->'catalogThemes' end else s->'themes' end,'[]'),
     'approval',public.mcp_pick(s->'approval',array['status','updatedAt'])||case when connection.share_notes then public.mcp_pick(s->'approval',array['notes']) else '{}'::jsonb end));
