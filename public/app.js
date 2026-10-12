@@ -443,11 +443,22 @@ function confirmCloudRestore(saved, title = "Load your account backup?") {
     }
   };
 }
+function navigationIcon(id) {
+  const paths = {
+    discover: '<circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 4 4"/>',
+    index: '<rect x="4" y="4" width="16" height="16" rx="3"/><path d="M4 9h16M9 9v11M13 13h4M13 17h4"/>',
+    collections: '<rect x="3" y="5" width="5" height="15" rx="1"/><rect x="9" y="3" width="5" height="17" rx="1"/><path d="m16 6 4-1 3 14-4 1z"/>',
+    library: '<path d="M4 5c3-1 5-1 8 1 3-2 5-2 8-1v15c-3-1-5-1-8 1-3-2-5-2-8-1zM12 6v15"/>',
+    plans: '<rect x="4" y="4" width="16" height="17" rx="3"/><path d="M8 3v3M16 3v3M4 9h16m-12 6 2 2 5-5"/>',
+    profile: '<path d="M4 7h5m4 0h7M4 17h9m4 0h3"/><circle cx="11" cy="7" r="2"/><circle cx="15" cy="17" r="2"/>',
+  };
+  return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${paths[id]}</svg>`;
+}
 function render() {
   for (const node of app.querySelectorAll("details[data-disclosure]"))
     disclosureState.set(node.dataset.disclosure, node.open);
   const count = new Set(state.libraries.flatMap((x) => x.songIds)).size;
-  app.innerHTML = `<aside class="sidebar"><a class="brand" href="#" data-action="nav" data-view="discover"><span class="brand-mark">✣</span><span>Faithful<br>Repertoire<small>WORDS WORTH SINGING</small></span></a><div class="workspace-label">YOUR WORKSPACE</div><nav aria-label="Main navigation">${[
+  app.innerHTML = `<aside class="sidebar"><a class="brand" href="#" data-action="nav" data-view="discover"><span class="brand-mark">✣</span><span>Faithful<br>Repertoire</span></a><div class="workspace-label">YOUR WORKSPACE</div><nav aria-label="Main navigation">${[
     ["discover", "", "Discover songs"],
     ["index", "", "Song index"],
     ["collections", "", "Collections"],
@@ -457,7 +468,7 @@ function render() {
   ]
     .map(
       ([id, icon, text]) =>
-        `<button aria-label="${e(text)}" data-action="nav" data-view="${id}" class="nav-item ${view === id ? "active" : ""}"><span>${icon}</span>${text}${id === "library" ? `<b>${count}</b>` : ""}</button>`,
+        `<button aria-label="${e(text)}" data-action="nav" data-view="${id}" class="nav-item ${view === id ? "active" : ""}" ${view === id ? 'aria-current="page"' : ""}><span class="nav-icon" aria-hidden="true">${navigationIcon(id)}</span>${text}${id === "library" ? `<b>${count}</b>` : ""}</button>`,
     )
     .join(
       "",
@@ -517,7 +528,7 @@ function songWorkspace() {
       (s) => s.id === selected && shown.some((x) => x.id === s.id),
     ) || shown[0];
   if (song) selected = song.id;
-  return `<div class="page-heading"><div><h1>${isLibrary ? "Your song libraries" : "Discover songs"}</h1></div><button class="button primary" data-action="${isLibrary ? "new-library" : "new-song"}">+ ${isLibrary ? "New library" : "Add a song"}</button></div>${isLibrary ? `${libraryToolbar(lib)}<div class="library-tabs">${state.libraries.map((l) => `<button class="${l.id === lib?.id ? "selected" : ""}" data-action="library-select" data-id="${e(l.id)}">${e(l.name)} <span>${l.songIds.length}</span></button>`).join("")}</div>` : `<div class="collection-prompt"><button class="text-button" data-action="nav" data-view="collections">Browse collections</button></div>`}<div class="search-row"><label class="search-box"><span>⌕</span><input id="search" type="search" value="${e(query)}" placeholder="Search by title, writer, or theme…" aria-label="Search songs"></label><span class="result-count">${songs.length} song${songs.length === 1 ? "" : "s"}</span></div>${catalogMatches(available)}<details class="filter-panel"><summary>Filters & sorting</summary>${discoveryControls(pool)}</details><div class="song-workspace"><section class="song-list" aria-label="Song results">${songs.length ? shown.map((s) => songCard(s, s.id === song.id)).join("") : `<div class="empty"><span>♫</span><h3>${query ? "No matching songs" : "A repertoire starts with one song."}</h3><p>${query ? "Try another title or add a song to review." : "Find a song in Discover and save it here."}</p><button class="button" data-action="${query ? "new-song" : "nav"}" data-view="discover">${query ? "Add a song" : "Discover songs"}</button></div>`}${pagination("song", songPage, songs.length, PAGE_SIZE)}<div class="catalog-note">${isLibrary ? "Library membership does not imply church approval." : `${state.songs.length} workspace songs · ${allCatalogSongs.length} titles available in Collections. Prewritten AI drafts; verify the exact version.`}</div></section>${song ? songDetail(song, isLibrary ? lib : null) : '<section class="detail-panel empty"><h2>Your next song belongs here.</h2><p>Save an existing song or add one to begin a review.</p></section>'}</div>`;
+  return `<div class="page-heading"><div><h1>${isLibrary ? "Your song libraries" : "Discover songs"}</h1></div><button class="button primary" data-action="${isLibrary ? "new-library" : "new-song"}">+ ${isLibrary ? "New library" : "Add a song"}</button></div>${isLibrary ? `${libraryToolbar(lib)}<div class="library-tabs">${state.libraries.map((l) => `<button class="${l.id === lib?.id ? "selected" : ""}" data-action="library-select" data-id="${e(l.id)}">${e(l.name)} <span>${l.songIds.length}</span></button>`).join("")}</div>` : `<div class="collection-prompt"><button class="text-button" data-action="nav" data-view="collections">Browse collections</button></div>`}<div class="search-row"><label class="search-box"><span>⌕</span><input id="search" type="search" value="${e(query)}" placeholder="Search by title, writer, or theme…" aria-label="Search songs"></label><span class="result-count">${songs.length} song${songs.length === 1 ? "" : "s"}</span></div>${catalogMatches(available)}<details class="filter-panel"><summary>Filters & sorting</summary>${discoveryControls(pool)}</details><div class="song-workspace"><section class="song-list" aria-label="Song results" tabindex="0">${songs.length ? shown.map((s) => songCard(s, s.id === song.id)).join("") : `<div class="empty"><span>♫</span><h3>${query ? "No matching songs" : "A repertoire starts with one song."}</h3><p>${query ? "Try another title or add a song to review." : "Find a song in Discover and save it here."}</p><button class="button" data-action="${query ? "new-song" : "nav"}" data-view="discover">${query ? "Add a song" : "Discover songs"}</button></div>`}${pagination("song", songPage, songs.length, PAGE_SIZE)}<div class="catalog-note">${isLibrary ? "Library membership does not imply church approval." : `${state.songs.length} workspace songs · ${allCatalogSongs.length} titles available in Collections. Prewritten AI drafts; verify the exact version.`}</div></section>${song ? songDetail(song, isLibrary ? lib : null) : '<section class="detail-panel empty"><h2>Your next song belongs here.</h2><p>Save an existing song or add one to begin a review.</p></section>'}</div>`;
 }
 function catalogMatches(songs) {
   if (!songs.length) return "";

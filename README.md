@@ -4,6 +4,8 @@ A worship-planning workspace for choosing songs with sound doctrine, meaningful 
 
 The public website is hosted at https://williambooth0803-ui.github.io/Worship-Song-Tool/. GitHub Pages publishes `main` → `/docs`; regenerate and commit those files after frontend changes.
 
+[Project links](PROJECT-LINKS.md) collects the website, repository, Supabase dashboard and deployment shortcuts.
+
 ## Current workflow
 
 - Build a profile from the prominent setup prompt: denomination, a named statement-of-faith starting point, custom convictions and personal AI-content visibility.

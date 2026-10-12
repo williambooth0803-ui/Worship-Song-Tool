@@ -20,10 +20,14 @@ creates independent item IDs; optional song placeholders are filled by a human.
 
 Use a calm editorial interface suited to a working song reference:
 
-- Light paper backgrounds, dark readable text, one restrained green accent.
-- Georgia for editorial headings and Arial for controls and reference tables.
+- Warm light backgrounds, dark readable text, and a restrained forest/sage palette.
+- Soft background gradients and a deep green navigation rail establish hierarchy; keep data surfaces white.
+- Georgia for editorial headings and system sans-serif/Arial for controls and reference tables.
 - Spacing based on 4/8/16/24/32 pixels; align labels and data deliberately.
-- Small, consistent corner radii; borders rather than decorative shadows.
+- Rounded panels (18–24px), controls (12px), and navigation (14px), with fine borders and subtle shadows.
+- Keep the visual system in theme.css, separate from structural styles and plain print output.
+- Use consistent, quiet line icons for navigation; no decorative icon tiles or animated gradients.
+- On phones, keep song results in a bounded, keyboard-accessible scroll area so the selected record is easy to reach.
 - Literal functional copy. Avoid marketing claims and AI magic/sparkle icons.
 - Use tables for indexed data and clear lists for the human service order.
 - Retain visible focus states, clear field labels, and mobile access to tables.
