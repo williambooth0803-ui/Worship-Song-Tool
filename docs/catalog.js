@@ -1,8 +1,9 @@
 import { prewrittenReview } from "./prewritten-reviews.js";
 import { modernCatalog } from "./modern-catalog.js";
+import { expandedCatalog, newStarterTitles } from "./expanded-catalog.js";
 import { seedSongs } from "./seeds.js";
 import { additionalSongs, mixedStarterTitles } from "./repertoire-data.js";
-import { overall } from "./core.js";
+import { overall, normalize } from "./core.js";
 import { withProfileDefaults } from "./profile.js";
 import { reviewForDisplay } from "./profile.js";
 
@@ -492,10 +493,13 @@ export const traditionalCatalog = [
   },
 }));
 const reviewedAdditions = additionalSongs.map(prewrittenReview);
+const previousTitles = new Set([...traditionalCatalog, ...reviewedAdditions, ...modernCatalog].map(s => normalize(s.title)));
+const expandedAdditions = expandedCatalog.filter(s => !previousTitles.has(normalize(s.title)));
 export const allCatalogSongs = [
   ...traditionalCatalog,
   ...reviewedAdditions,
   ...modernCatalog,
+  ...expandedAdditions,
 ];
 export const catalogSongs = [
   ...traditionalCatalog,
@@ -520,6 +524,7 @@ export const catalogSongs = [
         s.author.includes("Sovereign Grace"),
     ),
   ...modernCatalog.filter((s) => s.title.startsWith("Forever (")),
+  ...expandedAdditions.filter(s => newStarterTitles.includes(s.title)),
 ];
 export const CATALOG_REVISION = 2;
 export const approvalLabels = {

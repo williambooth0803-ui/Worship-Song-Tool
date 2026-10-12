@@ -99,13 +99,22 @@ test("discovery filters and sort order respect unknown scores", () => {
   );
   assert.equal(songs[0].id, "holy-holy-holy");
 });
-test("catalog drafts cover all titles with explicit AI provenance and no inferred arrangements", () => {
+test("catalog records distinguish explicit AI drafts from titles without an assessment", () => {
   assert.equal(
     new Set(allCatalogSongs.map((s) => s.id)).size,
     allCatalogSongs.length,
   );
-  assert.ok(allCatalogSongs.length >= 250);
+  assert.ok(allCatalogSongs.length >= 1000);
   for (const song of allCatalogSongs) {
+    if (song.review.status === "unreviewed") {
+      assert.ok(Object.values(song.review.scores).every(score => score === null));
+      assert.equal(song.review.summary, "");
+      assert.deepEqual(song.themes, []);
+      for (const key of ["claims", "concerns", "uses", "scriptures", "sources"])
+        assert.deepEqual(song.review[key], []);
+      assert.equal(song.review.musical, "");
+      continue;
+    }
     assert.equal(song.review.status, "ai");
     assert.ok(Number.isFinite(song.review.scores.accuracy));
     assert.equal(song.review.scores.time, null);
@@ -117,6 +126,8 @@ test("catalog drafts cover all titles with explicit AI provenance and no inferre
   }
   for (const artist of [
     "Elevation Worship",
+    "Elevation RHYTHM",
+    "Red Rocks Worship",
     "Bethel Music",
     "Hillsong",
     "The Worship Initiative",

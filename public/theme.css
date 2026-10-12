@@ -347,3 +347,17 @@
 @media screen and (prefers-reduced-motion: reduce) {
   *, *::before, *::after { transition: none !important; animation: none !important; scroll-behavior: auto !important; }
 }
+@media screen {
+  .song-resources { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0 18px; }
+  .song-resources .button { font-size: .82rem; }
+  .closest-matches { padding: 16px; border-top: 1px solid var(--border, #dce4dd); }
+  .closest-matches h3 { margin: 0 0 8px; font-size: 1rem; }
+  .closest-matches ul { list-style: none; padding: 0; margin: 0; }
+  .closest-matches .text-button { width: 100%; text-align: left; padding: 10px 8px; border-radius: 10px; }
+  .closest-matches small { display: block; color: #596d60; font-weight: 400; margin-top: 4px; }
+  .closest-matches button:hover { background: #edf3ed; }
+  .evaluation-request { margin: 16px 0; }
+  .evaluation-request summary { cursor: pointer; padding: 10px 0; }
+  #evaluation-preview:has(h3) { border-top: 1px solid #dce4dd; padding-top: 16px; margin-top: 16px; }
+  #evaluation-error { color: #8b3329; }
+}

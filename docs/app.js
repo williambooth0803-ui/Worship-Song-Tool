@@ -7,6 +7,9 @@ import {
 } from "./song-details.js";
 import { mcpEndpoint } from "./connection.js";
 import { seedSongs } from "./seeds.js";
+import { closestSongs } from "./fuzzy-search.js";
+import { songResourceLinks } from "./song-resources.js";
+import { evaluationPrompt, parseEvaluation, applyEvaluation } from "./evaluation.js";
 import {
   catalogSongs,
   allCatalogSongs,
@@ -523,12 +526,19 @@ function songWorkspace() {
     Math.min(songPage, Math.ceil(songs.length / PAGE_SIZE) || 1),
   );
   const shown = songs.slice((songPage - 1) * PAGE_SIZE, songPage * PAGE_SIZE);
+  const nearby = query.trim() && !searchSongs(pool, query).length && !available.length
+    ? closestSongs(isLibrary ? pool : [...pool, ...allCatalogSongs.filter(s => !existingMatch(state, s))], query)
+    : [];
   const song =
     state.songs.find(
       (s) => s.id === selected && shown.some((x) => x.id === s.id),
     ) || shown[0];
   if (song) selected = song.id;
-  return `<div class="page-heading"><div><h1>${isLibrary ? "Your song libraries" : "Discover songs"}</h1></div><button class="button primary" data-action="${isLibrary ? "new-library" : "new-song"}">+ ${isLibrary ? "New library" : "Add a song"}</button></div>${isLibrary ? `${libraryToolbar(lib)}<div class="library-tabs">${state.libraries.map((l) => `<button class="${l.id === lib?.id ? "selected" : ""}" data-action="library-select" data-id="${e(l.id)}">${e(l.name)} <span>${l.songIds.length}</span></button>`).join("")}</div>` : `<div class="collection-prompt"><button class="text-button" data-action="nav" data-view="collections">Browse collections</button></div>`}<div class="search-row"><label class="search-box"><span>⌕</span><input id="search" type="search" value="${e(query)}" placeholder="Search by title, writer, or theme…" aria-label="Search songs"></label><span class="result-count">${songs.length} song${songs.length === 1 ? "" : "s"}</span></div>${catalogMatches(available)}<details class="filter-panel"><summary>Filters & sorting</summary>${discoveryControls(pool)}</details><div class="song-workspace"><section class="song-list" aria-label="Song results" tabindex="0">${songs.length ? shown.map((s) => songCard(s, s.id === song.id)).join("") : `<div class="empty"><span>♫</span><h3>${query ? "No matching songs" : "A repertoire starts with one song."}</h3><p>${query ? "Try another title or add a song to review." : "Find a song in Discover and save it here."}</p><button class="button" data-action="${query ? "new-song" : "nav"}" data-view="discover">${query ? "Add a song" : "Discover songs"}</button></div>`}${pagination("song", songPage, songs.length, PAGE_SIZE)}<div class="catalog-note">${isLibrary ? "Library membership does not imply church approval." : `${state.songs.length} workspace songs · ${allCatalogSongs.length} titles available in Collections. Prewritten AI drafts; verify the exact version.`}</div></section>${song ? songDetail(song, isLibrary ? lib : null) : '<section class="detail-panel empty"><h2>Your next song belongs here.</h2><p>Save an existing song or add one to begin a review.</p></section>'}</div>`;
+  return `<div class="page-heading"><div><h1>${isLibrary ? "Your song libraries" : "Discover songs"}</h1></div><button class="button primary" data-action="${isLibrary ? "new-library" : "new-song"}">+ ${isLibrary ? "New library" : "Add a song"}</button></div>${isLibrary ? `${libraryToolbar(lib)}<div class="library-tabs">${state.libraries.map((l) => `<button class="${l.id === lib?.id ? "selected" : ""}" data-action="library-select" data-id="${e(l.id)}">${e(l.name)} <span>${l.songIds.length}</span></button>`).join("")}</div>` : `<div class="collection-prompt"><button class="text-button" data-action="nav" data-view="collections">Browse collections</button></div>`}<div class="search-row"><label class="search-box"><span>⌕</span><input id="search" type="search" value="${e(query)}" placeholder="Search by title, writer, or theme…" aria-label="Search songs"></label><span class="result-count">${songs.length} song${songs.length === 1 ? "" : "s"}</span></div>${catalogMatches(available)}<details class="filter-panel"><summary>Filters & sorting</summary>${discoveryControls(pool)}</details><div class="song-workspace"><section class="song-list" aria-label="Song results" tabindex="0">${songs.length ? shown.map((s) => songCard(s, s.id === song.id)).join("") : `<div class="empty"><span>♫</span><h3>${query ? "No matching songs" : "A repertoire starts with one song."}</h3><p>${query ? "Try another title or add a song to review." : "Find a song in Discover and save it here."}</p><button class="button" data-action="${query ? "new-song" : "nav"}" data-view="discover">${query ? "Add a song" : "Discover songs"}</button></div>${closestMatches(nearby)}`}${pagination("song", songPage, songs.length, PAGE_SIZE)}<div class="catalog-note">${isLibrary ? "Library membership does not imply church approval." : `${state.songs.length} workspace songs · ${allCatalogSongs.length} records in Collections · includes AI drafts and unrated titles.`}</div></section>${song ? songDetail(song, isLibrary ? lib : null) : '<section class="detail-panel empty"><h2>Your next song belongs here.</h2><p>Save an existing song or add one to begin a review.</p></section>'}</div>`;
+}
+function closestMatches(songs) {
+  if (!songs.length) return "";
+  return `<section class="closest-matches" aria-label="Closest matches"><h3>Closest title/artist matches</h3><ul>${songs.map(song => `<li><button class="text-button" data-action="${state.songs.some(s => s.id === song.id) ? "index-open" : "catalog-open"}" data-id="${e(song.id)}"><strong>${e(song.title)}</strong><small>${e(song.author)}</small></button></li>`).join("")}</ul></section>`;
 }
 function catalogMatches(songs) {
   if (!songs.length) return "";
@@ -726,7 +736,7 @@ function songDetail(song, lib) {
       `<p>${e(metric.value)}</p>`,
     );
   const hidden = new Set(song.detailLayout?.hidden || []);
-  return `<article class="detail-panel"><div class="detail-header"><span class="status-badge">${e(statusLabel(r))}</span><button class="text-button" data-action="customize-details" data-id="${e(song.id)}">Customize details</button></div><h2>${e(song.title)}</h2><p class="author">${e(song.author)}</p><p class="version">${e(song.version)}</p><div class="detail-actions"><button class="button primary" data-action="save-song" data-id="${e(song.id)}">${saved ? "✓ Saved · manage libraries" : "+ Save to library"}</button><button class="button" data-action="add-to-plan" data-id="${e(song.id)}">Add to plan ›</button><details class="more-menu"><summary>Edit</summary><div class="menu-items"><button class="text-button" data-action="edit-review" data-id="${e(song.id)}">Edit assessment</button><button class="text-button" data-action="edit-index" data-id="${e(song.id)}">Edit index details</button>${state.profile.aiMode !== "manual" ? `<button class="text-button" data-action="ai-review" data-id="${e(song.id)}">${state.profile.aiMode === "limited" ? "Get limited assistance" : "Draft with AI"}</button>` : ""}</div></details></div>${churchDecision(song)}${attributeOrder(
+  return `<article class="detail-panel"><div class="detail-header"><span class="status-badge">${e(statusLabel(r))}</span><button class="text-button" data-action="customize-details" data-id="${e(song.id)}">Customize details</button></div><h2>${e(song.title)}</h2><p class="author">${e(song.author)}</p><p class="version">${e(song.version)}</p><div class="detail-actions"><button class="button primary" data-action="save-song" data-id="${e(song.id)}">${saved ? "✓ Saved · manage libraries" : "+ Save to library"}</button><button class="button" data-action="add-to-plan" data-id="${e(song.id)}">Add to plan ›</button><details class="more-menu"><summary>Edit</summary><div class="menu-items"><button class="text-button" data-action="edit-review" data-id="${e(song.id)}">Edit assessment</button><button class="text-button" data-action="edit-index" data-id="${e(song.id)}">Edit index details</button>${state.profile.aiMode !== "manual" ? `<button class="text-button" data-action="ai-review" data-id="${e(song.id)}">${state.profile.aiMode === "limited" ? "Get limited assistance" : "Draft with AI"}</button>` : ""}</div></details></div><div class="song-resources"><a class="button" href="${e(songResourceLinks(song).lyrics)}" target="_blank" rel="noopener noreferrer">Find lyrics ↗</a><a class="button" href="${e(songResourceLinks(song).reviews)}" target="_blank" rel="noopener noreferrer">Find public reviews ↗</a>${state.profile.aiMode !== "manual" ? `<button class="button" data-action="chatgpt-evaluation" data-id="${e(song.id)}">Generate AI evaluation</button>` : ""}</div>${churchDecision(song)}${attributeOrder(
     song,
   )
     .filter((k) => !hidden.has(k))
@@ -734,6 +744,41 @@ function songDetail(song, lib) {
     .join(
       "",
     )}${r.assistance ? section("assistance", "AI observations", `${state.profile.aiLabels ? '<span class="ai-mark" role="img" aria-label="AI generated">AI</span>' : ""}<p>${e(r.assistance.summary)}</p><p>${e(r.assistance.language)}</p><p>${e(r.assistance.time)}</p>`) : ""}${lib ? `<button class="text-button danger" data-action="remove-library-song" data-id="${e(song.id)}">Remove from ${e(lib.name)}</button>` : ""}</article>`;
+}
+function chatGPTEvaluation(song) {
+  if (!song || state.profile.aiMode === "manual") return;
+  const store = activeStore, owner = accounts.user?.id,
+    original = JSON.stringify(song), profile = JSON.stringify(state.profile),
+    mode = state.profile.aiMode;
+  const prompt = evaluationPrompt(song, state.profile);
+  modal(`<h2>Generate AI evaluation</h2><p>Copy the request into ChatGPT, then paste its JSON response below. Your ChatGPT account generates the evaluation; this website makes no paid API call.</p><p class="muted">${mode === "limited" ? "Your limited assistance setting allows objective observations only. Your ratings and church decision will stay unchanged." : "The request includes your review principles and weights. Review it before copying. Applying an evaluation keeps your personal notes and previous assessment and resets church approval."} No lyrics or private library notes are included automatically.</p><details class="evaluation-request"><summary>Review the ChatGPT request</summary><label>Evaluation request<textarea id="evaluation-prompt" rows="12" readonly>${e(prompt)}</textarea></label></details><div class="form-actions"><button type="button" class="button" id="copy-evaluation">Copy request</button><a class="button" href="https://chatgpt.com/" target="_blank" rel="noopener noreferrer">Open ChatGPT ↗</a></div><label>ChatGPT evaluation JSON<textarea id="evaluation-json" rows="7" maxlength="65536" placeholder="Paste the JSON response here. Nothing is saved until you preview and apply it."></textarea></label><p id="evaluation-error" role="alert"></p><div class="form-actions"><button class="button" data-action="close">Cancel</button><button type="button" class="button primary" id="preview-evaluation">Preview evaluation</button></div><div id="evaluation-preview" aria-live="polite"></div>`);
+  const unchanged = () => store === activeStore && owner === accounts.user?.id && profile === JSON.stringify(state.profile) && original === JSON.stringify(state.songs.find(s => s.id === song.id));
+  const error = message => { dialog.querySelector("#evaluation-error").textContent = message; };
+  dialog.querySelector("#copy-evaluation").onclick = async () => {
+    const text = dialog.querySelector("#evaluation-prompt");
+    try { await navigator.clipboard.writeText(text.value); toast("Evaluation request copied. Paste it into ChatGPT."); }
+    catch { text.closest("details").open = true; text.focus(); text.select(); toast("Copy the highlighted request with your browser's Copy command."); }
+  };
+  const preview = dialog.querySelector("#evaluation-preview"), input = dialog.querySelector("#evaluation-json");
+  input.oninput = () => { preview.innerHTML = ""; error(""); };
+  dialog.querySelector("#preview-evaluation").onclick = () => {
+    try {
+      if (!unchanged()) throw new Error("The account, song or profile changed. Close this dialog and start a new evaluation.");
+      const raw = input.value, draft = parseEvaluation(raw, song.id, mode), r = draft.review;
+      error("");
+      preview.innerHTML = `<h3>Review before applying ${state.profile.aiLabels ? '<span class="ai-mark" aria-label="AI generated">AI</span>' : ""}</h3>${r.summary ? `<p>${e(r.summary)}</p>` : ""}${mode === "full" ? `<div class="draft-scores">${Object.entries(dimensions).map(([key, label]) => `<p>${e(label)} <strong>${r.scores[key] ?? "Not assessed"}</strong></p>`).join("")}</div><p>Doctrinal concern: ${e(r.concern)}</p>${["claims", "concerns", "uses", "themes", "scriptures"].filter(k => r[k].length).map(k => `<h4>${e({claims:"Claims",concerns:"Concerns",uses:"Service uses",themes:"Themes",scriptures:"Scripture connections"}[k])}</h4>${list(r[k])}`).join("")}` : ""}${r.language ? `<h4>Language</h4><p>${e(r.language)}</p>` : ""}${r.time ? `<h4>Arrangement observations</h4><p>${e(r.time)}</p>` : ""}${r.sources.length ? `<h4>Sources supplied by ChatGPT · verify these</h4><ul>${r.sources.map(s => `<li><a href="${e(s.url)}" target="_blank" rel="noopener noreferrer">${e(s.label)}</a></li>`).join("")}</ul>` : ""}<button type="button" class="button primary" id="apply-evaluation">${mode === "limited" ? "Save AI observations" : "Apply evaluation"}</button>`;
+      preview.querySelector("#apply-evaluation").onclick = () => {
+        try {
+          if (!unchanged() || input.value !== raw) throw new Error("The account, song, profile or response changed. Preview a fresh evaluation before applying.");
+          const next = clone(state);
+          next.songs[next.songs.findIndex(s => s.id === song.id)] = applyEvaluation(song, draft, mode);
+          if (!commitWorkspace(validateWorkspace(next))) return;
+          dialog.close(); render();
+          toast(mode === "limited" ? "AI observations saved. Your assessment is unchanged." : "AI evaluation saved as a draft. Review it before approving church use.");
+        } catch (err) { error(err.message); }
+      };
+    } catch (err) { preview.innerHTML = ""; error(err.message); }
+  };
 }
 function customizeDetails(song) {
   modal(
@@ -1166,6 +1211,7 @@ document.addEventListener("click", async (event) => {
   const action = button.dataset.action,
     id = button.dataset.id;
   const song = state.songs.find((s) => s.id === id);
+  if (action === "chatgpt-evaluation") return chatGPTEvaluation(song);
   if (action === "copy-criteria-prompt") {
     const prompt = dialog.querySelector("#chatgpt-criteria-prompt");
     try { await navigator.clipboard.writeText(prompt.value); toast("Search request copied."); }
@@ -1659,6 +1705,7 @@ document.addEventListener("click", async (event) => {
     toast("Human reviews only sends no AI requests.");
     return;
   }
+  if (action === "ai-review" && !aiConfigured) return chatGPTEvaluation(song);
   if (action === "ai-review")
     return modal(
       `<h2>Draft a review with AI</h2><p class="muted">${aiConfigured ? "Your supplied text is sent to the AI provider. The draft needs human review; it does not search the web." : "AI drafting is not available in this edition. You can still edit every assessment manually."}</p><form id="ai-form" data-id="${e(id)}"><label>Song text you have permission to use<textarea name="lyrics" rows="9" maxlength="20000" required placeholder="Paste the exact version for analysis. This text is not saved in your library."></textarea></label><label>Arrangement evidence<textarea name="arrangement" rows="3" maxlength="4000" placeholder="For example: 4 minutes, two verses, repeated chorus, 45 seconds of wordless vocals. Leave blank if unknown."></textarea></label><p class="muted">Current rating parameters will be included. Applying a draft preserves the previous assessment and keeps your personal notes.</p><p id="ai-error" role="alert"></p><div class="form-actions"><button class="button" type="button" data-action="close">Cancel</button><button class="button primary" ${aiConfigured ? "" : "disabled"}>Generate draft</button></div></form>`,

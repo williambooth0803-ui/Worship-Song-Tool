@@ -29,6 +29,8 @@ const selected = (id, name, description, songIds, essentials, standards) => ({
 export const songCollections = [
   ...[
     "Elevation Worship",
+    "Elevation RHYTHM",
+    "Red Rocks Worship",
     "Bethel Music",
     "Hillsong",
     "The Worship Initiative",

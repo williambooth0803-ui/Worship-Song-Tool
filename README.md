@@ -9,14 +9,23 @@ The public website is hosted at https://williambooth0803-ui.github.io/Worship-So
 ## Current workflow
 
 - Build a profile from the prominent setup prompt: denomination, a named statement-of-faith starting point, custom convictions and personal AI-content visibility.
-- Start with 61 mixed hymn, modern hymn, worship, CCM and gospel records. Browse 254 distinct titles across 14 collections, choosing Essentials, Standards or All before a selective import. Search also surfaces matching catalog titles not yet imported; open an individual record without importing its entire collection. Filter by song type, assessment status, theme and church-use decision.
+- Start with 69 mixed hymn, modern hymn, worship, CCM and gospel records. Browse 1,001 song/version records across 16 collections, choosing Essentials, Standards or All before a selective import. Search ranks matching titles ahead of author/theme matches. With no text matches, it keeps the no-matches message and lists the closest title/artist spellings below it. Library searches stay within the chosen library. Opening a catalog record does not add it to a library. Filter by song type, assessment status, theme and church-use decision.
+- Use **Find lyrics** or **Find public reviews** for a title-and-recording-specific web search. These are search links, not a claim that a verified review or licensed lyric page exists for every title.
 - Edit assessments, personal notes, Scripture connections, source links, arrangement observations, key and duration.
 - Compare your current review with the separately preserved catalog assessment.
 - Mark songs as not reviewed, approved, approved with context or to avoid. Context/avoid decisions require reasoning; approving requires acknowledgement of the exact version and concerns. Changes to the assessment require fresh approval. Avoided songs require reconsideration before being added to a plan.
 - Save songs to multiple libraries; rename them, import/export CSV title lists, or delete a library while keeping its song records. Build and reorder services with songs, readings, prayer and other items; duplicate an independent draft, export a timed text outline, or print/save a PDF. Completed services supply recorded song-use history. Save your own service orders as templates, optionally replacing selected songs with manually filled placeholders; create independent, dated drafts from them. Templates do not count as services or recorded song use.
 - Export and restore validated JSON backups, including backups from the original four-song version. Existing personal reviews, libraries and plans survive catalog expansion.
 
-Every catalog song has a **prewritten AI draft rating** based on general model knowledge. These are provisional assessments, not a lyric-by-lyric verification, live web research or a verified consensus. Exact versions must be checked. Artist associations identify recordings rather than exhaustive songwriting credits; inclusion never implies church approval. Time and musical findings remain unassessed without arrangement evidence. Default durations are planning estimates. Profile presets are short working summaries and do not silently rewrite saved judgments.
+279 catalog records have **prewritten AI draft ratings** based on general model knowledge. The other 722 are finding-aid records with null ratings and empty assessment fields. No ratings, themes or Scripture connections are invented from a title alone. Drafts are provisional, not a lyric-by-lyric verification, live web research or a verified consensus. Exact versions and recording associations must be checked. Artist associations identify versions rather than exhaustive songwriting credits; inclusion never implies church approval. Time and musical findings remain unassessed without arrangement evidence. Default durations are planning estimates. Profile presets are short working summaries and do not silently rewrite saved judgments.
+
+**Generate AI evaluation** uses the user's ChatGPT account without paid API billing:
+
+1. Review and copy the song-specific request, then paste it into ChatGPT. Full mode includes the account's review principles and weights; limited mode requests objective observations only. Personal song notes, lyrics, account credentials, libraries and plans are not included automatically.
+2. Paste ChatGPT's JSON response back into the dialog and preview its ratings, observations and supplied sources. The importer checks the song ID, AI mode, score ranges, list/text limits and safe source URLs. Source links and theological claims still need human verification.
+3. Apply the draft explicitly. This retains personal notes, key, duration, musical observations, custom attributes and a single previous assessment, and resets church approval. Limited observations are stored separately without changing the assessment or approval. Human-only mode hides this action. Editing the response invalidates its preview; account/profile/song changes block stale application.
+
+The read-only ChatGPT connection cannot write an evaluation back to the website. This copy/preview/apply workflow is deliberate; evaluating a song does not recommend songs or build a service plan.
 
 AI Labels default **On** and can be switched off in More or Rating profile. Badges mark generated ratings, summaries, themes and interpretive details, including unchanged AI fields carried into an edited assessment. Human notes and arrangement observations are separate. This label preference does not change AI visibility. Human-only/limited modes suppress subjective drafts, including index/export and connector output.
 
@@ -63,7 +72,7 @@ their own account. It requires no paid OpenAI API billing.
 
 ## Collection imports and scale
 
-Fourteen editorial selections, including five artist/recording collections, cover mixed Baptist repertoire, Baptist hymn selections,
+Sixteen editorial selections, including seven artist/recording collections, cover mixed Baptist repertoire, Baptist hymn selections,
 modern hymns, contemporary worship, CCM/choruses, gospel, Presbyterian/Reformed hymn
 selections, Advent/Christmas and cross/resurrection titles. Essentials, Standards
 and All are nested depth levels with exact preview counts. Import individual
@@ -141,7 +150,7 @@ npm run check:mcp
 npm run test:browser
 ```
 
-`test:hosted` builds the GitHub Pages edition and starts a temporary local server under the repository path. It checks restoration, guided profiles, approval rules, AI labels, customizable/collapsible details, OAuth consent, mobile layout and a simulated account service with isolated users and synced profiles. `test:browser` covers reviews, multiple libraries, plans and a simulated AI draft. It also exercises collection imports, CSV/library management, arrangements, plan copies, print/PDF output and completed-use history. These fixtures are not real provider integration tests. Chromium is expected at `/usr/bin/chromium`; set `CHROMIUM_PATH` for another executable. `APP_URL` overrides the development test address.
+`test:hosted` builds the GitHub Pages edition and starts a temporary local server under the repository path. It checks restoration, guided profiles, approval rules, AI labels, customizable/collapsible details, OAuth consent, mobile layout and a simulated account service with isolated users and synced profiles. It also checks typo alternatives, library scope, lyric/review links and the ChatGPT evaluation import, including preview-only behavior, escaping, preserved notes and AI visibility modes. `test:browser` covers reviews, multiple libraries, plans and a simulated AI draft. It also exercises collection imports, CSV/library management, arrangements, plan copies, print/PDF output and completed-use history. These fixtures are not real provider integration tests. Chromium is expected at `/usr/bin/chromium`; set `CHROMIUM_PATH` for another executable. `APP_URL` overrides the development test address.
 
 The published static site has no private credentials or personal workspace data. Stored index words and notes belong to browser/account workspaces and their backups. Without a configured account, data stays in this browser. Clearing site data removes it; use **Backup & restore** for a copy. Restoring replaces the current workspace only after validation and confirmation; invalid files and cancellation preserve existing data. Backups are limited to 5 MB.
 

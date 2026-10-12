@@ -11,6 +11,8 @@ import { chromium } from "playwright";
 import { checkAccountFlows } from "./account-fixture.mjs";
 import { checkIndexFlows } from "./index-fixture.mjs";
 import { checkRepertoireFlows } from "./repertoire-fixture.mjs";
+import { catalogSongs } from "../public/catalog.js";
+import { checkEvaluationFlows } from "./evaluation-fixture.mjs";
 
 const root = fileURLToPath(new URL("../docs/", import.meta.url));
 const requests = [];
@@ -59,7 +61,7 @@ try {
   assert.equal(await page.locator(".song-card").count(), 24);
   assert.match(
     await page.locator(".song-list .pagination").textContent(),
-    /of 61/,
+    new RegExp(`of ${catalogSongs.length}(?!\\d)`),
   );
   assert.equal(
     await page.locator("html").getAttribute("data-edition"),
@@ -335,6 +337,7 @@ try {
     browser,
     `http://127.0.0.1:${server.address().port}/Worship-Song-Tool/`,
   );
+  await checkEvaluationFlows(browser, `http://127.0.0.1:${server.address().port}/Worship-Song-Tool/`);
   console.log(
     "PASS: hosted subdirectory assets, static edition without API calls, backup download, invalid import rejection, cancel preservation, confirmed restore, reload and mobile controls.",
   );

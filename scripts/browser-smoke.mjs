@@ -1,4 +1,5 @@
 import { reveal } from "./disclosure.mjs";
+import { catalogSongs } from "../public/catalog.js";
 import { chromium } from "playwright";
 import assert from "node:assert/strict";
 import http from "node:http";
@@ -124,7 +125,7 @@ const saved = await page.evaluate(() =>
 assert.equal(saved.profile.weights.accuracy, 50);
 assert.equal(saved.libraries.length, 3);
 assert.equal(saved.libraries[0].songIds.length, 1);
-assert.equal(saved.songs.length, 62);
+assert.equal(saved.songs.length, catalogSongs.length + 1);
 assert.equal(
   saved.songs.find((s) => s.id === "amazing-grace").review.status,
   "manual",

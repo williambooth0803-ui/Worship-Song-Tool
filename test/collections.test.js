@@ -23,7 +23,7 @@ const workspace = () =>
     profile: defaultProfile,
   });
 test("depth levels are nested and every collection uses real distinct catalog records", () => {
-  assert.equal(songCollections.length, 14);
+  assert.equal(songCollections.length, 16);
   for (const pack of songCollections) {
     const essentials = collectionSongs(pack, "essentials"),
       standards = collectionSongs(pack, "standards"),
@@ -55,8 +55,8 @@ test("overlapping and repeated collection imports preserve personal assessments,
     collectionId: pack.id,
     depth: "all",
   });
-  assert.equal(first.added, 31);
-  assert.equal(first.saved, 44);
+  assert.equal(first.added, songs.filter(s => !state.songs.some(old => old.id === s.id)).length);
+  assert.equal(first.saved, songs.length);
   const again = importSongs(first.workspace, songs, {
     libraryId: "mine",
     collectionId: pack.id,

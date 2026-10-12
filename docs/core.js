@@ -54,13 +54,25 @@ export function normalize(value) {
 }
 export function searchSongs(songs, query) {
   const terms = normalize(query).split(" ").filter(Boolean);
-  return songs.filter((s) =>
+  const matches = songs.filter((s) =>
     terms.every((t) =>
       normalize(
         [s.title, s.author, s.firstLine, ...s.themes].join(" "),
       ).includes(t),
     ),
   );
+  if (!terms.length) return matches;
+  const phrase = terms.join(" ");
+  const rank = (s) => {
+    const title = normalize(s.title);
+    if (title === phrase) return 1000;
+    if (title.startsWith(phrase)) return 800;
+    if (terms.every((term) => title.includes(term))) return 600;
+    if (terms.every((term) => normalize(s.author).includes(term))) return 300;
+    if (terms.every((term) => normalize(s.firstLine).includes(term))) return 200;
+    return 100;
+  };
+  return matches.sort((a, b) => rank(b) - rank(a));
 }
 export function planDuration(items) {
   return items.reduce((sum, item) => sum + Number(item.minutes || 0), 0);
@@ -73,7 +85,7 @@ export function validateReview(value) {
     const score = value.scores?.[key];
     if (
       score !== null &&
-      (typeof score !== "number" || score < 0 || score > 10)
+      (typeof score !== "number" || !Number.isFinite(score) || score < 0 || score > 10)
     )
       throw new Error(`Invalid ${key} score.`);
     scores[key] = score;

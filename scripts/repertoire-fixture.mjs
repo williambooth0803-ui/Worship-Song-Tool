@@ -1,5 +1,7 @@
 import { reveal } from "./disclosure.mjs";
 import assert from "node:assert/strict";
+import { songCollections, collectionSongs } from "../public/collections.js";
+const modernCount = collectionSongs(songCollections.find(c => c.id === "modern-hymns"), "all").length;
 export async function checkRepertoireFlows(browser, base) {
   const page = await browser.newPage({
       viewport: { width: 1440, height: 1000 },
@@ -22,7 +24,7 @@ export async function checkRepertoireFlows(browser, base) {
     .locator("nav")
     .getByRole("button", { name: "Collections", exact: true })
     .click();
-  assert.equal(await page.locator(".collection-row").count(), 14);
+  assert.equal(await page.locator(".collection-row").count(), songCollections.length);
   await page
     .getByLabel("Collection depth", { exact: true })
     .selectOption("all");
@@ -31,7 +33,7 @@ export async function checkRepertoireFlows(browser, base) {
   });
   assert.equal(
     await modern.locator(".collection-count strong").textContent(),
-    "44",
+    String(modernCount),
   );
   await modern
     .getByRole("button", { name: "Preview & import", exact: true })
@@ -41,7 +43,7 @@ export async function checkRepertoireFlows(browser, base) {
     .selectOption("essentials");
   assert.equal(await page.locator(".import-song input").count(), 12);
   await page.getByLabel("Import depth", { exact: true }).selectOption("all");
-  assert.equal(await page.locator(".import-song input").count(), 44);
+  assert.equal(await page.locator(".import-song input").count(), modernCount);
   await page
     .getByLabel("New library name", { exact: true })
     .fill("Modern hymns for my church");
@@ -52,7 +54,7 @@ export async function checkRepertoireFlows(browser, base) {
   assert.equal(await page.locator(".song-card").count(), 24);
   assert.match(
     await page.locator(".song-list .pagination").textContent(),
-    /of 44/,
+    new RegExp(`of ${modernCount}(?!\\d)`),
   );
   await reveal(page, "button", { name: "Rename", exact: true });
   await page.getByRole("button", { name: "Rename", exact: true }).click();
