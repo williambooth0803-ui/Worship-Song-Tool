@@ -8,6 +8,31 @@ ChatGPT session; Supabase hosts the read tools within your project's existing qu
 
 ## Activate the backend
 
+### Deploy using GitHub (also works when the Codex environment editor is blocked)
+
+1. Open the repository's **Settings → Secrets and variables → Actions**.
+2. Choose **New repository secret**, use the name **`SUPABASE_ACCESS_TOKEN`**,
+   and enter your Supabase personal access token there. Do not put it in a
+   repository variable, source file, issue, or chat. The deployment needs
+   `auth:read`, `auth:write`, `database:write`, and `edge_functions:write` for
+   project `inhqxwratimjvzsnuwik`.
+3. Open **Actions → Deploy ChatGPT connection → Run workflow**. Select **main**
+   and click **Run workflow**. This is a manual deployment; ordinary pushes
+   and pull requests do not run it.
+4. Wait for the run to turn green, then follow **Connect in ChatGPT** below.
+   If it fails, check the failing step before retrying. It may have completed
+   earlier operations; do not enable OAuth manually before the database and
+   function checks succeed.
+
+The workflow installs the frozen dependencies, runs the unit/security suite and
+Deno check, and uses the existing deployment script. Only the final deployment
+step receives the token. It does not require a Codex environment secret, an
+OpenAI API key, or software installed on your computer. GitHub Actions and
+Supabase remain subject to their usual account quotas. After deployment, you
+may remove the repository secret; future deployments require adding it again.
+
+### Deploy from the Codex environment
+
 The existing public project key cannot administer your project. Create a Supabase
 personal access token at https://supabase.com/dashboard/account/tokens and enter it
 as **SUPABASE_ACCESS_TOKEN in Codex environment settings**, then save/publish the
