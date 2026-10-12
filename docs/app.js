@@ -458,7 +458,7 @@ function render() {
   for (const node of app.querySelectorAll("details[data-disclosure]"))
     disclosureState.set(node.dataset.disclosure, node.open);
   const count = new Set(state.libraries.flatMap((x) => x.songIds)).size;
-  app.innerHTML = `<aside class="sidebar"><a class="brand" href="#" data-action="nav" data-view="discover"><span class="brand-mark">✣</span><span>Faithful<br>Repertoire</span></a><div class="workspace-label">YOUR WORKSPACE</div><nav aria-label="Main navigation">${[
+  app.innerHTML = `<aside class="sidebar"><a class="brand" aria-label="Faithful Repertoire" href="#" data-action="nav" data-view="discover"><span class="brand-mark">✣</span><span class="brand-name">Faithful<br>Repertoire</span></a><nav aria-label="Main navigation">${[
     ["discover", "", "Discover songs"],
     ["index", "", "Song index"],
     ["collections", "", "Collections"],
@@ -468,7 +468,7 @@ function render() {
   ]
     .map(
       ([id, icon, text]) =>
-        `<button aria-label="${e(text)}" data-action="nav" data-view="${id}" class="nav-item ${view === id ? "active" : ""}" ${view === id ? 'aria-current="page"' : ""}><span class="nav-icon" aria-hidden="true">${navigationIcon(id)}</span>${text}${id === "library" ? `<b>${count}</b>` : ""}</button>`,
+        `<button aria-label="${e(text)}" data-action="nav" data-view="${id}" class="nav-item ${view === id ? "active" : ""}" ${view === id ? 'aria-current="page"' : ""}><span class="nav-icon" aria-hidden="true">${navigationIcon(id)}</span><span class="nav-label">${text}</span>${id === "library" ? `<b>${count}</b>` : ""}</button>`,
     )
     .join(
       "",

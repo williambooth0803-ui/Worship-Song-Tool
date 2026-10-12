@@ -1,4 +1,5 @@
 import { checkConnectionFlows } from "./connection-fixture.mjs";
+import { checkNavigationFlows } from "./navigation-fixture.mjs";
 import { checkPreferencesFlows } from "./preferences-fixture.mjs";
 import { reveal } from "./disclosure.mjs";
 import http from "node:http";
@@ -311,6 +312,10 @@ try {
   });
   assert.deepEqual(errors, []);
   await checkPreferencesFlows(
+    browser,
+    `http://127.0.0.1:${server.address().port}/Worship-Song-Tool/`,
+  );
+  await checkNavigationFlows(
     browser,
     `http://127.0.0.1:${server.address().port}/Worship-Song-Tool/`,
   );
