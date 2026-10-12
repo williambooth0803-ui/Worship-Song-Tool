@@ -7,6 +7,16 @@ AI song assessment is optional per account and does not select worship songs.
 An explicitly requested AI search may list tentative matches to a user-defined
 subjective criterion within a selected personal library. It requires Full AI
 content, evidence and uncertainty labels. It does not rank songs or edit plans.
+The public app can prepare that explicit request for the owner's read-only ChatGPT
+connection without sending an AI API request. Only the selected library name/ID
+and human-entered criterion are copied; account data stays behind OAuth consent.
+Do not imply that copying a request executes a search or imports its results.
+
+Saved index views contain query/filter/display settings, never cached hidden AI
+content. Recompute results with the current account preferences. Service templates
+are owner-created snapshots stored separately from actual plans, so they never
+count as planned or completed services. Instantiation resets dates/status and
+creates independent item IDs; optional song placeholders are filled by a human.
 
 Use a calm editorial interface suited to a working song reference:
 

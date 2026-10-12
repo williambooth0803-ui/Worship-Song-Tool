@@ -33,6 +33,7 @@ import {
   planOutline,
 } from "./planning.js";
 import { textStats } from "./text-stats.js";
+import { templateFromPlan, planFromTemplate } from "./plan-templates.js";
 import { validateWorkspace, MAX_BACKUP_BYTES } from "./backup.js";
 import {
   denominations,
@@ -55,7 +56,7 @@ import {
   indexEntries,
   indexText,
 } from "./song-index.js";
-import { criteriaEvidence, validateCriteriaResults } from "./criteria.js";
+import { criteriaEvidence, validateCriteriaResults, chatGPTCriteriaPrompt } from "./criteria.js";
 import {
   defaultProfile,
   dimensions,
@@ -86,6 +87,7 @@ let indexQuery = "",
   indexSort = "title",
   indexDescending = false,
   indexColumn = "scriptures";
+let activeIndexViewId = "";
 let browseField = "words",
   browseQuery = "";
 const staticEdition = document.documentElement.dataset.edition === "static";
@@ -110,6 +112,8 @@ const freshState = () => ({
     { id: "review", name: "Songs to review", songIds: [] },
   ],
   plans: [],
+  indexViews: [],
+  planTemplates: [],
 });
 let state,
   storageProblem = false;
@@ -319,6 +323,7 @@ function resetSelection() {
   songPage = indexPageNumber = 1;
   indexRules = [];
   indexQuery = "";
+  activeIndexViewId = "";
   importDraft = null;
 }
 function switchWorkspace(user = null) {
@@ -763,6 +768,31 @@ function indexResults() {
     state.plans,
   );
 }
+function savedViewsMarkup() {
+  const views = state.indexViews || [];
+  return `<details class="saved-index-views"><summary>Saved views (${views.length})</summary><div class="saved-view-controls"><label>Saved index view<select id="saved-index-view" aria-label="Saved index view"><option value="">Choose a view</option>${views.map((v) => `<option value="${e(v.id)}" ${v.id === activeIndexViewId ? "selected" : ""}>${e(v.name)}</option>`).join("")}</select></label><button class="button" data-action="apply-index-view">Apply view</button><button class="button" data-action="save-index-view">Save current view</button><details class="more-menu"><summary>Manage views</summary><div class="menu-items"><button class="text-button" data-action="update-index-view">Update selected view</button><button class="text-button" data-action="rename-index-view">Rename selected view</button><button class="text-button danger" data-action="delete-index-view">Delete selected view</button></div></details></div></details>`;
+}
+function indexViewDialog(existing = null, rename = false) {
+  modal(`<h2>${rename ? "Rename saved view" : existing ? "Update saved view" : "Save index view"}</h2><form id="index-view-form" data-id="${e(existing?.id || "")}" data-rename="${rename}"><label>View name<input name="name" maxlength="100" value="${e(existing?.name || "")}" required></label>${rename ? "" : '<p class="muted">Saves the current search, filters, sort order and additional column. Results update as your song records change.</p>'}<p id="view-error" role="alert"></p><div class="form-actions"><button type="button" class="button" data-action="close">Cancel</button><button class="button primary">Save view</button></div></form>`);
+}
+function templatesDialog() {
+  const templates = state.planTemplates || [];
+  modal(`<h2>Service templates</h2>${templates.length ? `<ul class="template-list">${templates.map((t) => `<li><div><strong>${e(t.title)}</strong><small>${t.items.length} items · ${planDuration(t.items)} min</small></div><button class="button" data-action="use-plan-template" data-id="${e(t.id)}">Use template</button><details class="more-menu"><summary>Manage</summary><div class="menu-items"><button class="text-button" data-action="rename-plan-template" data-id="${e(t.id)}">Rename template</button><button class="text-button danger" data-action="delete-plan-template" data-id="${e(t.id)}">Delete template</button></div></details></li>`).join("")}</ul>` : '<p>Open a plan, then use Plan tools → Save as template to reuse your service order.</p>'}<button class="button" data-action="close">Close templates</button>`);
+}
+function templateDialog(template = null, rename = false) {
+  const source = template || getPlan();
+  modal(`<h2>${rename ? "Rename template" : template ? "Create plan from template" : "Save service template"}</h2><form id="template-form" data-id="${e(source.id)}" data-mode="${rename ? "rename" : template ? "use" : "save"}"><label>${template && !rename ? "Service name" : "Template name"}<input name="title" maxlength="200" value="${e(source.title)}" required></label>${template && !rename ? '<label>Date<input name="date" type="date"></label><p class="muted">Creates an independent draft with the service order you saved. Check its songs and details before use.</p>' : !rename ? '<label class="check-label"><input name="keepSongs" type="checkbox" checked>Keep selected songs</label><p class="muted">Uncheck to replace songs with placeholders you fill manually. Templates keep your order, notes and timings and do not count as services.</p>' : ""}<p id="template-error" role="alert"></p><div class="form-actions"><button type="button" class="button" data-action="close">Cancel</button><button class="button primary">${template && !rename ? "Create draft" : "Save template"}</button></div></form>`);
+}
+function prepareChatGPTCriteria(form) {
+  if (!form.reportValidity()) return;
+  if (state.profile.aiMode !== "full") throw new Error("This search requires Full AI content.");
+  if (!accounts.user || activeStore === STORE) throw new Error("Sign in and save this library to your account before searching it in ChatGPT.");
+  const values = Object.fromEntries(new FormData(form));
+  const library = state.libraries.find((l) => l.id === values.library);
+  if (!library?.songIds.length) throw new Error("Choose a library with saved songs.");
+  const prompt = chatGPTCriteriaPrompt(library, values.criteria);
+  modal(`<h2>Search your library in ChatGPT</h2><p>Save your latest changes to your account, then paste this request into a ChatGPT conversation with Faithful Repertoire connected.</p><label>ChatGPT search request<textarea id="chatgpt-criteria-prompt" rows="12" readonly>${e(prompt)}</textarea></label><div class="form-actions"><button class="button" data-action="copy-criteria-prompt">Copy request</button><a class="button" href="https://chatgpt.com/" target="_blank" rel="noopener noreferrer">Open ChatGPT</a><button class="button" data-action="close">Close</button></div><p class="muted">Only the library name, ID and criterion are in this request. ChatGPT reads your saved account records within your connection permissions. Results stay in ChatGPT; this does not change your reviews or plans.</p>`);
+}
 function indexPage() {
   const fields = indexFields(state.songs),
     songs = indexResults();
@@ -807,7 +837,7 @@ function indexPage() {
         : "")
     );
   };
-  return `<div class="page-heading"><div><div class="eyebrow">CATALOG & PERSONAL REPERTOIRE</div><h1>Song index</h1><p>Find songs by their words and recorded details. You choose every song in your service.</p></div><div class="index-heading-actions"><button class="button" data-action="export-index">Export results (CSV)</button><button class="text-button" data-action="criteria-search">AI criteria search · optional</button></div></div><section class="index-tools" aria-label="Index search and filters"><form id="index-search-form"><label>Search across all indexed fields<input name="query" type="search" value="${e(indexQuery)}" placeholder="A word, writer, theme, passage, or note"></label><button class="button primary">Search index</button></form><form id="index-filter-form"><label>Field<select name="field" aria-label="Index field">${fieldOptions}</select></label><label>Match<select name="op" aria-label="Index match">${indexOperators("text")}</select></label><label>Value<input name="value" maxlength="1000" aria-label="Index value" list="index-values" required></label><datalist id="index-values">${indexEntries(
+  return `<div class="page-heading"><div><h1>Song index</h1></div><div class="index-heading-actions"><button class="button" data-action="export-index">Export results (CSV)</button><button class="text-button" data-action="criteria-search">AI criteria search · optional</button></div></div>${savedViewsMarkup()}<section class="index-tools" aria-label="Index search and filters"><form id="index-search-form"><label>Search across all indexed fields<input name="query" type="search" value="${e(indexQuery)}" placeholder="A word, writer, theme, passage, or note"></label><button class="button primary">Search index</button></form><details class="index-filter-panel"><summary>Add filters</summary><form id="index-filter-form"><label>Field<select name="field" aria-label="Index field">${fieldOptions}</select></label><label>Match<select name="op" aria-label="Index match">${indexOperators("text")}</select></label><label>Value<input name="value" maxlength="1000" aria-label="Index value" list="index-values" required></label><datalist id="index-values">${indexEntries(
     state.songs,
     "title",
     state.profile,
@@ -818,7 +848,7 @@ function indexPage() {
     .map((entry) => `<option value="${e(entry.value)}"></option>`)
     .join(
       "",
-    )}</datalist><button class="button">Add filter</button></form><p class="index-help">Every added filter must match. “Whole word” searches actual words; “contains” finds a phrase or partial text. Song words search the opening line when a full text has not been entered.</p>${indexRules.length ? `<ul class="index-rules">${indexRules.map((r, i) => `<li><span>${e(fields.find((f) => f.id === r.field)?.label || r.field)} ${e({ contains: "contains", equals: "equals", word: "has the word", excludes: "does not contain", gte: "≥", lte: "≤", numeric: "=", missing: "is unrecorded", present: "is recorded" }[r.op])} ${["missing", "present"].includes(r.op) ? "" : e(r.value)}</span><button type="button" class="icon-button" data-action="remove-index-filter" data-id="${i}" aria-label="Remove filter ${i + 1}">×</button></li>`).join("")}</ul>` : ""}<details class="index-directory"><summary>Browse words, themes, keys, and other recorded values</summary><form id="index-browse-form"><label>Browse<select name="field" aria-label="Browse index"><option value="words">Words in song text</option>${fields.map((f) => `<option value="${e(f.id)}" ${f.id === browseField ? "selected" : ""}>${e(f.label)}</option>`).join("")}</select></label><label>Find a value<input name="value" type="search" value="${e(browseQuery)}" placeholder="Type part of a word or value"></label><button class="button">Find values</button></form><p class="index-help">Alphabetical list across your whole catalog. Counts show how many songs contain each value. ${browseField === "words" ? `${state.songs.filter((s) => s.metadata?.lyrics).length} songs have full text stored; remaining entries use opening lines.` : ""} Select a value to add it as a filter.${entries.length > 200 ? " Showing the first 200; narrow the value search to see more." : ""}</p><ul class="index-entry-list">${
+    )}</datalist><button class="button">Add filter</button></form><p class="index-help">Every added filter must match. “Whole word” searches actual words; “contains” finds a phrase or partial text. Song words search the opening line when a full text has not been entered.</p></details>${indexRules.length ? `<ul class="index-rules">${indexRules.map((r, i) => `<li><span>${e(fields.find((f) => f.id === r.field)?.label || r.field)} ${e({ contains: "contains", equals: "equals", word: "has the word", excludes: "does not contain", gte: "≥", lte: "≤", numeric: "=", missing: "is unrecorded", present: "is recorded" }[r.op])} ${["missing", "present"].includes(r.op) ? "" : e(r.value)}</span><button type="button" class="icon-button" data-action="remove-index-filter" data-id="${i}" aria-label="Remove filter ${i + 1}">×</button></li>`).join("")}</ul>` : ""}<details class="index-directory"><summary>Browse words, themes, keys, and other recorded values</summary><form id="index-browse-form"><label>Browse<select name="field" aria-label="Browse index"><option value="words">Words in song text</option>${fields.map((f) => `<option value="${e(f.id)}" ${f.id === browseField ? "selected" : ""}>${e(f.label)}</option>`).join("")}</select></label><label>Find a value<input name="value" type="search" value="${e(browseQuery)}" placeholder="Type part of a word or value"></label><button class="button">Find values</button></form><p class="index-help">Alphabetical list across your whole catalog. Counts show how many songs contain each value. ${browseField === "words" ? `${state.songs.filter((s) => s.metadata?.lyrics).length} songs have full text stored; remaining entries use opening lines.` : ""} Select a value to add it as a filter.${entries.length > 200 ? " Showing the first 200; narrow the value search to see more." : ""}</p><ul class="index-entry-list">${
     entries
       .slice(0, 200)
       .map(
@@ -854,10 +884,9 @@ function customMetricRow(item = { name: "", type: "text", value: "" }) {
   return `<div class="custom-metric-row"><label>Metric name<input name="metric-name" maxlength="100" value="${e(item.name)}" placeholder="Hymnal number"></label><label>Type<select name="metric-type" aria-label="Metric type"><option value="text" ${item.type === "text" ? "selected" : ""}>Text</option><option value="number" ${item.type === "number" ? "selected" : ""}>Number</option></select></label><label>Metric value<input name="metric-value" maxlength="1000" value="${e(item.value)}"></label><button type="button" class="icon-button" data-action="remove-metric" aria-label="Remove custom metric">×</button></div>`;
 }
 function criteriaDialog() {
-  const eligible = state.profile.aiMode === "full",
-    available = eligible && aiConfigured;
+  const eligible = state.profile.aiMode === "full";
   modal(
-    `<h2>Search a subjective criterion</h2><p class="muted">An optional AI search of a library you select. Results are tentative matches to your criterion, with evidence for you to review. They do not select songs for a worship plan.</p>${!eligible ? "<p>Your account preference hides subjective AI content. This search requires Full AI content; you can change your preference in Rating profile.</p>" : !aiConfigured ? "<p>AI search is prepared but unavailable on this website until a secure AI service is connected. The manual index is ready to use.</p>" : ""}<form id="criteria-form"><label>Your library<select name="library" aria-label="Your library" required>${state.libraries.map((l) => `<option value="${e(l.id)}">${e(l.name)} (${l.songIds.length} songs)</option>`).join("")}</select></label><label>Your criterion<textarea name="criteria" rows="4" maxlength="1000" required placeholder="For example: songs that express dependence on God using concrete, well-structured language."></textarea></label><p class="muted">An explicit search sends stored text excerpts (up to 1,500 characters per song), themes, and assessment/arrangement details for the selected library to the AI provider. No web research. Up to 100 songs per search. Results do not change reviews, metrics, approval, or plans.</p><p id="criteria-error" role="alert"></p><div class="form-actions"><button class="button" type="button" data-action="close">Cancel</button><button class="button primary" ${available ? "" : "disabled"}>Search with AI</button></div></form>`,
+    `<h2>Search a subjective criterion</h2><p class="muted">Look for tentative matches in a library you select. You review the evidence and choose your worship songs.</p>${!eligible ? "<p>Your profile hides subjective AI content. This search requires Full AI content.</p>" : ""}<form id="criteria-form"><label>Your library<select name="library" aria-label="Your library" required>${state.libraries.map((l) => `<option value="${e(l.id)}">${e(l.name)} (${l.songIds.length} songs)</option>`).join("")}</select></label><label>Your criterion<textarea name="criteria" rows="4" maxlength="1000" required placeholder="For example: songs that express dependence on God using concrete, well-structured language."></textarea></label>${aiConfigured ? '<p class="muted">The local AI search uses supplied record excerpts for 1–100 songs. You can also take the request to your connected ChatGPT account.</p>' : '<p class="muted">Prepare a request for your connected ChatGPT account. Save your library to your account first. This uses your ChatGPT connection; the website sends no AI request.</p>'}<p id="criteria-error" role="alert"></p><div class="form-actions"><button class="button" type="button" data-action="close">Cancel</button>${aiConfigured ? `<button class="button" type="button" data-action="prepare-chatgpt-criteria" ${eligible ? "" : "disabled"}>Prepare ChatGPT search</button>` : ""}<button class="button primary" ${eligible ? "" : "disabled"}>${aiConfigured ? "Search with AI" : "Prepare ChatGPT search"}</button></div></form>`,
   );
 }
 function indexDetailsDialog(song) {
@@ -933,10 +962,10 @@ function plansPage() {
       ),
   ).length;
   let elapsed = 0;
-  return `<div class="page-heading"><div><div class="eyebrow">FROM REPERTOIRE TO SUNDAY</div><h1>Plan with purpose.</h1><p>Give each song, reading, and moment a meaningful place.</p></div><button class="button primary" data-action="new-plan">+ New worship plan</button></div>${
+  return `<div class="page-heading"><div><h1>Service plans</h1></div><div class="index-heading-actions"><button class="button" data-action="plan-templates">Service templates</button><button class="button primary" data-action="new-plan">+ New worship plan</button></div></div>${
     !plan
-      ? `<section class="empty full-empty"><span>▦</span><h2>Your first service starts here.</h2><p>Create a plan, add a Scripture reading, and choose songs that support its message.</p><button class="button primary" data-action="new-plan">Create a worship plan</button></section>`
-      : `<div class="plan-layout"><aside class="plan-list">${state.plans.map((p) => `<button data-action="plan-select" data-id="${e(p.id)}" class="${p.id === plan.id ? "selected" : ""}"><strong>${e(p.title)}</strong><span>${e(p.date || "No date set")} · ${planDuration(p.items)} min</span></button>`).join("")}</aside><section class="plan-sheet"><div class="plan-sheet-header"><div><div class="eyebrow">${e(plan.date || "DATE TO BE CONFIRMED")}</div><h2>${e(plan.title)}</h2><p>${e(plan.theme || "Add a theme and sermon passage to guide your choices.")}</p>${plan.passage ? `<span class="tag">${e(plan.passage)}</span>` : ""}</div><div class="duration-total"><strong>${planDuration(plan.items)}</strong><span>minutes</span></div></div><div class="plan-toolbar"><button class="text-button" data-action="edit-plan">Edit service details</button><button class="button" data-action="copy-plan">Duplicate plan</button><button class="button" data-action="print-plan">Print / Save PDF</button><button class="text-button danger" data-action="delete-plan">Delete plan</button><span class="plan-state">${e(plan.status || "draft")}</span></div>${newSongs ? `<div class="plan-notice">${newSongs} song${newSongs === 1 ? "" : "s"} ${newSongs === 1 ? "has" : "have"} not been approved for your church. Confirm suitability before use.</div>` : ""}<ol class="service-items">${plan.items
+      ? `<section class="empty full-empty"><h2>No service plans yet</h2><p>Create a plan or start from one of your saved templates.</p><button class="button primary" data-action="new-plan">Create a worship plan</button></section>`
+      : `<div class="plan-layout"><aside class="plan-list">${state.plans.map((p) => `<button data-action="plan-select" data-id="${e(p.id)}" class="${p.id === plan.id ? "selected" : ""}"><strong>${e(p.title)}</strong><span>${e(p.date || "No date set")} · ${planDuration(p.items)} min</span></button>`).join("")}</aside><section class="plan-sheet"><div class="plan-sheet-header"><div><div class="eyebrow">${e(plan.date || "DATE TO BE CONFIRMED")}</div><h2>${e(plan.title)}</h2><p>${e(plan.theme || "")}</p>${plan.passage ? `<span class="tag">${e(plan.passage)}</span>` : ""}</div><div class="duration-total"><strong>${planDuration(plan.items)}</strong><span>minutes</span></div></div><div class="plan-toolbar"><button class="text-button" data-action="edit-plan">Edit service details</button><details class="more-menu"><summary>Plan tools</summary><div class="menu-items"><button class="text-button" data-action="copy-plan">Duplicate plan</button><button class="text-button" data-action="save-plan-template">Save as template</button><button class="text-button" data-action="print-plan">Print / Save PDF</button><button class="text-button danger" data-action="delete-plan">Delete plan</button></div></details><span class="plan-state">${e(plan.status || "draft")}</span></div>${newSongs ? `<div class="plan-notice">${newSongs} song${newSongs === 1 ? "" : "s"} ${newSongs === 1 ? "has" : "have"} not been approved for your church. Confirm suitability before use.</div>` : ""}<ol class="service-items">${plan.items
           .map((item, i) => {
             const song = state.songs.find((s) => s.id === item.songId);
             const offset = elapsedTime(elapsed);
@@ -945,7 +974,7 @@ function plansPage() {
           })
           .join(
             "",
-          )}</ol>${!plan.items.length ? '<div class="empty"><h3>Make room for the message.</h3><p>Add songs from Discover or your library, then readings, prayer, and the sermon.</p></div>' : ""}<div class="plan-buttons"><button class="button primary" data-action="nav" data-view="discover">+ Choose a song</button><button class="button" data-action="new-item">+ Reading, prayer, or other item</button><button class="text-button" data-action="export-plan">↓ Export plan</button></div></section></div>`
+          )}</ol>${!plan.items.length ? '<div class="empty"><h3>No service items yet</h3><p>Add songs, readings, prayer or other items.</p></div>' : ""}<div class="plan-buttons"><button class="button primary" data-action="nav" data-view="discover">+ Choose a song</button><button class="button" data-action="new-item">+ Reading, prayer, or other item</button><button class="text-button" data-action="export-plan">↓ Export plan</button></div></section></div>`
   }`;
 }
 function profilePage() {
@@ -1055,7 +1084,7 @@ function getPlan() {
   return state.plans.find((p) => p.id === planId);
 }
 function closeMenus() {
-  for (const menu of app.querySelectorAll(
+  for (const menu of document.querySelectorAll(
     ".more-menu[open],.account-save-strip[open]",
   )) {
     menu.open = false;
@@ -1067,7 +1096,7 @@ document.addEventListener("keydown", (event) => {
   if (event.key === "Escape") closeMenus();
 });
 document.addEventListener("click", async (event) => {
-  for (const menu of app.querySelectorAll(
+  for (const menu of document.querySelectorAll(
     ".more-menu[open],.account-save-strip[open]",
   ))
     if (!menu.contains(event.target)) menu.open = false;
@@ -1126,6 +1155,60 @@ document.addEventListener("click", async (event) => {
   const action = button.dataset.action,
     id = button.dataset.id;
   const song = state.songs.find((s) => s.id === id);
+  if (action === "copy-criteria-prompt") {
+    const prompt = dialog.querySelector("#chatgpt-criteria-prompt");
+    try { await navigator.clipboard.writeText(prompt.value); toast("Search request copied."); }
+    catch { prompt.focus(); prompt.select(); toast("Select Copy from your browser menu to copy the highlighted request."); }
+    return;
+  }
+  if (action === "prepare-chatgpt-criteria") {
+    const form = dialog.querySelector("#criteria-form");
+    try { prepareChatGPTCriteria(form); }
+    catch (err) { form.querySelector("#criteria-error").textContent = err.message; }
+    return;
+  }
+  if (action === "plan-templates") return templatesDialog();
+  if (action === "save-plan-template") return templateDialog();
+  if (["use-plan-template", "rename-plan-template", "delete-plan-template"].includes(action)) {
+    const template = state.planTemplates?.find((t) => t.id === id);
+    if (!template) return;
+    if (action === "use-plan-template") return templateDialog(template);
+    if (action === "rename-plan-template") return templateDialog(template, true);
+    const store = activeStore;
+    modal(`<h2>Delete ${e(template.title)}?</h2><p>Existing service plans remain intact.</p><div class="form-actions"><button class="button" data-action="close">Cancel</button><button class="button danger" id="confirm-template-delete">Delete template</button></div>`);
+    dialog.querySelector("#confirm-template-delete").onclick = () => {
+      if (store !== activeStore) return;
+      const next = clone(state);
+      next.planTemplates = next.planTemplates.filter((t) => t.id !== id);
+      if (!commitWorkspace(validateWorkspace(next))) return;
+      templatesDialog();
+    };
+    return;
+  }
+  if (action === "save-index-view") return indexViewDialog();
+  if (["apply-index-view", "update-index-view", "rename-index-view", "delete-index-view"].includes(action)) {
+    const chosen = document.querySelector("#saved-index-view").value;
+    const saved = state.indexViews?.find((v) => v.id === chosen);
+    if (!saved) return toast("Choose a saved view first.");
+    if (action === "apply-index-view") {
+      indexQuery = saved.query; indexRules = clone(saved.rules); indexSort = saved.sort;
+      indexDescending = saved.descending; indexColumn = saved.column;
+      activeIndexViewId = saved.id; indexPageNumber = 1; render(); return;
+    }
+    if (action === "update-index-view") return indexViewDialog(saved);
+    if (action === "rename-index-view") return indexViewDialog(saved, true);
+    const store = activeStore;
+    modal(`<h2>Delete ${e(saved.name)}?</h2><p>Your song records stay intact.</p><div class="form-actions"><button class="button" data-action="close">Cancel</button><button class="button danger" id="confirm-view-delete">Delete view</button></div>`);
+    dialog.querySelector("#confirm-view-delete").onclick = () => {
+      if (store !== activeStore) return;
+      const next = clone(state);
+      next.indexViews = next.indexViews.filter((v) => v.id !== chosen);
+      if (!commitWorkspace(validateWorkspace(next))) return;
+      if (activeIndexViewId === chosen) activeIndexViewId = "";
+      dialog.close(); render();
+    };
+    return;
+  }
   if (action === "catalog-open") {
     const record = allCatalogSongs.find((s) => s.id === id),
       next = clone(state);
@@ -1759,6 +1842,50 @@ document.addEventListener("submit", async (event) => {
     }
     return;
   }
+  if (form.id === "index-view-form") {
+    try {
+      const next = clone(state);
+      next.indexViews ||= [];
+      const existing = next.indexViews.find((v) => v.id === id);
+      if (id && !existing) throw new Error("This saved view is no longer available.");
+      const record = form.dataset.rename === "true" ? { ...existing, name: values.name.trim() } : {
+        id: id || uid(), name: values.name.trim(), query: indexQuery,
+        rules: clone(indexRules), sort: indexSort, descending: indexDescending, column: indexColumn,
+      };
+      if (id) next.indexViews = next.indexViews.map((v) => v.id === id ? record : v);
+      else next.indexViews.push(record);
+      if (!commitWorkspace(validateWorkspace(next))) return;
+      activeIndexViewId = record.id;
+      dialog.close(); render(); toast("Index view saved.");
+    } catch (err) { form.querySelector("#view-error").textContent = err.message; }
+    return;
+  }
+  if (form.id === "template-form") {
+    try {
+      const next = clone(state);
+      next.planTemplates ||= [];
+      const mode = form.dataset.mode;
+      if (mode === "save") {
+        const plan = next.plans.find((p) => p.id === id);
+        if (!plan) throw new Error("This plan is no longer available.");
+        next.planTemplates.push(templateFromPlan(plan, values.title.trim(), !!values.keepSongs));
+      } else {
+        const template = next.planTemplates.find((t) => t.id === id);
+        if (!template) throw new Error("This template is no longer available.");
+        if (mode === "rename") template.title = values.title.trim();
+        else {
+          const plan = planFromTemplate(template, { title: values.title.trim(), date: values.date });
+          next.plans.push(plan);
+          if (!commitWorkspace(validateWorkspace(next))) return;
+          planId = plan.id; view = "plans";
+          dialog.close(); render(); toast("Independent service draft created."); return;
+        }
+      }
+      if (!commitWorkspace(validateWorkspace(next))) return;
+      dialog.close(); render(); toast("Service template saved.");
+    } catch (err) { form.querySelector("#template-error").textContent = err.message; }
+    return;
+  }
   if (form.id === "copy-plan-form") {
     const next = clone(state),
       plan = next.plans.find((p) => p.id === id),
@@ -1847,6 +1974,7 @@ document.addEventListener("submit", async (event) => {
     const owner = activeStore,
       mode = state.profile.aiMode;
     try {
+      if (!aiConfigured) { prepareChatGPTCriteria(form); return; }
       if (mode !== "full" || !aiConfigured)
         throw new Error(
           "This search requires Full AI content and a connected AI service.",
@@ -1914,7 +2042,7 @@ document.addEventListener("submit", async (event) => {
       if (!form.isConnected) return;
       error.textContent = err.message;
       submit.disabled = false;
-      submit.textContent = "Search with AI";
+      submit.textContent = aiConfigured ? "Search with AI" : "Prepare ChatGPT search";
     }
     return;
   }

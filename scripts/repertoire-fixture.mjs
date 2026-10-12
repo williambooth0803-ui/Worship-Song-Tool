@@ -131,6 +131,7 @@ export async function checkRepertoireFlows(browser, base) {
   assert.ok(
     await page.getByRole("button", { name: "Next", exact: true }).isEnabled(),
   );
+  await reveal(page, "combobox", { name: "Index field", exact: true });
   const filter = page.locator("#index-filter-form");
   await filter
     .getByLabel("Index field", { exact: true })

@@ -2,6 +2,7 @@ import { dimensions } from "./core.js";
 import { denominations, statements, aiModes } from "./profile.js";
 import { songTypes } from "./repertoire-data.js";
 import { parsePitch } from "./planning.js";
+import { validateIndexView } from "./index-views.js";
 
 export const MAX_BACKUP_BYTES = 5 * 1024 * 1024;
 
@@ -316,7 +317,7 @@ export function validateWorkspace(input) {
     libraries.map((l) => l.id),
     "libraries",
   );
-  const plans = array(input.plans, "plans", 1000).map((plan) => {
+  const validatePlan = (plan) => {
     object(plan, "plan");
     const items = array(plan.items, "service items", 1000).map((item) => {
       object(item, "service item");
@@ -370,7 +371,8 @@ export function validateWorkspace(input) {
         "completed",
       ]);
     return checkedPlan;
-  });
+  };
+  const plans = array(input.plans, "plans", 1000).map(validatePlan);
   unique(
     plans.map((p) => p.id),
     "plans",
@@ -395,6 +397,20 @@ export function validateWorkspace(input) {
       principles: text(profile.principles, "rating parameters", 6000, true),
     },
   };
+  if (input.indexViews !== undefined) {
+    result.indexViews = array(input.indexViews, "saved index views", 100).map(validateIndexView);
+    unique(result.indexViews.map((v) => v.id), "saved index views");
+    unique(result.indexViews.map((v) => v.name.normalize("NFKC").toLowerCase()), "saved index view names");
+  }
+  if (input.planTemplates !== undefined) {
+    result.planTemplates = array(input.planTemplates, "plan templates", 100).map((template) => {
+      const checked = validatePlan(template);
+      if (checked.date || checked.status !== "draft") fail("templates must be undated drafts.");
+      return checked;
+    });
+    unique(result.planTemplates.map((p) => p.id), "plan templates");
+    unique(result.planTemplates.map((p) => p.title.normalize("NFKC").toLowerCase().trim()), "template names");
+  }
   if (input.collectionImports !== undefined)
     result.collectionImports = array(
       input.collectionImports,

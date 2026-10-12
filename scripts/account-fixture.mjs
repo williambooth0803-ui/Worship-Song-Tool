@@ -1,3 +1,4 @@
+import { checkWorkspaceToolsFlows } from "./workspace-tools-fixture.mjs";
 import { reveal } from "./disclosure.mjs";
 import assert from "node:assert/strict";
 
@@ -132,6 +133,7 @@ export async function checkAccountFlows(browser, base) {
     await page.getByRole("button", { name: "Sign in", exact: true }).waitFor();
   }
   await login("one@example.test");
+  await checkWorkspaceToolsFlows(page);
   await reveal(page, "button", { name: "Build my profile" });
   await page.getByRole("button", { name: "Build my profile" }).click();
   await page
@@ -175,6 +177,8 @@ export async function checkAccountFlows(browser, base) {
   await reveal(page, "button", { name: "Save this workspace" });
   await page.getByRole("button", { name: "Save this workspace" }).click();
   await saving;
+  assert.equal(workspaces.get(users["one@example.test"].id).indexViews.length, 1);
+  assert.equal(workspaces.get(users["one@example.test"].id).planTemplates.length, 2);
   await page.getByRole("button", { name: "My account", exact: true }).waitFor();
   await page.locator("#account-save-strip summary").click();
   await page
@@ -248,6 +252,8 @@ export async function checkAccountFlows(browser, base) {
     ),
   );
   assert.equal(second.profile.aiMode, "full");
+  assert.equal(second.indexViews.length, 0);
+  assert.equal(second.planTemplates.length, 0);
   assert.ok(
     !second.songs.some((s) => s.review.notes.includes("Private account-one")),
   );
@@ -285,6 +291,8 @@ export async function checkAccountFlows(browser, base) {
       ),
     ),
   );
+  assert.equal(saved.indexViews.length, 1);
+  assert.equal(saved.planTemplates.length, 2);
   assert.ok(!JSON.stringify(saved).includes("fixture-access"));
   assert.equal(workspaces.size, 1);
   assert.deepEqual(errors, []);

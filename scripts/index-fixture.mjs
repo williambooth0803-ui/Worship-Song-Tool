@@ -83,6 +83,7 @@ export async function checkIndexFlows(browser, base) {
     .filter({ hasText: "trust" })
     .click();
   assert.equal(await page.locator(".index-table tbody tr").count(), 1);
+  await reveal(page, "combobox", { name: "Index field", exact: true });
   const filter = page.locator("#index-filter-form");
   await filter.getByLabel("Index field", { exact: true }).selectOption("tempo");
   await filter.getByLabel("Index match", { exact: true }).selectOption("lte");

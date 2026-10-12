@@ -11,7 +11,7 @@ The public website is hosted at https://williambooth0803-ui.github.io/Worship-So
 - Edit assessments, personal notes, Scripture connections, source links, arrangement observations, key and duration.
 - Compare your current review with the separately preserved catalog assessment.
 - Mark songs as not reviewed, approved, approved with context or to avoid. Context/avoid decisions require reasoning; approving requires acknowledgement of the exact version and concerns. Changes to the assessment require fresh approval. Avoided songs require reconsideration before being added to a plan.
-- Save songs to multiple libraries; rename them, import/export CSV title lists, or delete a library while keeping its song records. Build and reorder services with songs, readings, prayer and other items; duplicate an independent draft, export a timed text outline, or print/save a PDF. Completed services supply recorded song-use history.
+- Save songs to multiple libraries; rename them, import/export CSV title lists, or delete a library while keeping its song records. Build and reorder services with songs, readings, prayer and other items; duplicate an independent draft, export a timed text outline, or print/save a PDF. Completed services supply recorded song-use history. Save your own service orders as templates, optionally replacing selected songs with manually filled placeholders; create independent, dated drafts from them. Templates do not count as services or recorded song use.
 - Export and restore validated JSON backups, including backups from the original four-song version. Existing personal reviews, libraries and plans survive catalog expansion.
 
 Every catalog song has a **prewritten AI draft rating** based on general model knowledge. These are provisional assessments, not a lyric-by-lyric verification, live web research or a verified consensus. Exact versions must be checked. Artist associations identify recordings rather than exhaustive songwriting credits; inclusion never implies church approval. Time and musical findings remain unassessed without arrangement evidence. Default durations are planning estimates. Profile presets are short working summaries and do not silently rewrite saved judgments.
@@ -26,7 +26,12 @@ The **Song index** is a deterministic reference, not a recommendation engine.
 Combine whole-word, phrase, exact-value, missing-value and numeric filters across
 song words, themes, keys, Scripture connections, scores, musical details, notes,
 libraries and custom metrics. Browse an alphabetical concordance with song counts,
-choose a metric column, sort, and export current results as CSV.
+choose a metric column, sort, and export current results as CSV. Save a named view to
+reuse its search, combined filters, sort order and additional column. Apply, update,
+rename or delete views under **Saved views**. Views recompute results from the current
+records and respect the current AI visibility; they store no cached assessments.
+Views and service templates are included in JSON backups and explicit account saves.
+Old backups remain supported.
 
 **Edit index details** records tune, meter, tempo, time signature, vocal range,
 difficulty, instruments, language, tags and optional song words. Custom text or
@@ -35,15 +40,23 @@ words the concordance covers only the opening line, which is labeled in the UI.
 Text/theme changes and preferred-arrangement changes require a fresh church-use approval. Local text counts make “just,” interior “just,” “oh,” unique words and repeated lines searchable without AI; counts are observations, not automatic quality penalties. Song-use history distinguishes saved plans from services explicitly marked completed.
 
 **AI criteria search** is an explicit, optional lookup within a selected personal
-library (1–100 songs). It requires Full AI content and the private local AI service.
-The provider evaluates supplied record excerpts only and returns tentative matches,
-reasons, and exact supporting snippets. Invalid IDs or invented quotations reject
-the response. Results are temporary and never change metrics, reviews, approval,
-or worship plans. The public static website has no connected AI service yet.
+library. With Full AI content, the public website prepares a request you can copy
+into your connected ChatGPT conversation. The request contains only the library's
+name/ID and your criterion; ChatGPT retrieves saved account records using your
+connection permissions. Sign in and save your library first. Results stay in
+ChatGPT and do not change ratings, custom metrics, approval or worship plans.
+No OpenAI API key or paid API billing is required for this route.
 
-The read-only ChatGPT app connection is implemented and documented in
-[CHATGPT-CONNECTION.md](CHATGPT-CONNECTION.md). It requires a deployed HTTPS MCP
-backend and per-user OAuth authorization; live activation still requires Supabase deployment. It requires no paid OpenAI API billing.
+An optional private local AI service can still evaluate supplied record excerpts
+for 1–100 songs and return tentative matches with exact supporting snippets.
+Invalid IDs or invented quotations reject its response. The public static website
+does not call that service.
+
+The read-only ChatGPT connection is deployed and documented in
+[CHATGPT-CONNECTION.md](CHATGPT-CONNECTION.md). Public discovery/authentication checks
+pass, and the project owner confirmed that ChatGPT correctly listed their saved
+libraries after authorizing the connection. Each additional user must authorize
+their own account. It requires no paid OpenAI API billing.
 [DESIGN.md](DESIGN.md) records the user's design and human-planning boundaries.
 
 ## Collection imports and scale
@@ -104,7 +117,7 @@ When configured:
 5. Run `npm run build:site` with both settings present, then commit the generated `docs/` files and push. They contain only public browser-safe project settings. The local Node server also accepts these environment variables. Alternatively, the public settings can be maintained in `public/config.js` before a build.
 6. Validate real signup/confirmation, password recovery, profile persistence, cross-account isolation and workspace backups against the deployed project. Client tests with a fixture do **not** establish deployed database security or successful email delivery.
 
-User sign-in is confirmed; provider-fixture account flows are tested. Real signed-in workspace writes and cross-account row isolation have not been independently verified by the development environment. Production email delivery and recovery still need live validation.
+User sign-in and a real ChatGPT lookup of the owner’s saved libraries are confirmed; provider-fixture account flows, including saved views and templates, are tested. Production cross-account row isolation has not been independently verified with two real accounts by the development environment. Production email delivery and recovery still need live validation.
 
 ## Development and checks
 
