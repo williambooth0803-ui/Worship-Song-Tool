@@ -54,6 +54,9 @@ The deployment script verifies that the current consent page is published, appli
 owner isolation/read-only policies, deploys the function, checks its public resource
 metadata and unauthenticated 401 challenge, and only then enables Supabase OAuth.
 It updates only three OAuth settings, preserving the existing email/site configuration.
+The final discovery check retries briefly while Supabase applies those settings;
+it verifies the issuer, OAuth endpoints, dynamic registration, and PKCE support.
+These retries only read the public endpoint and do not repeat deployment writes.
 The base tables must already exist from `supabase/schema.sql`.
 
 If administering manually:

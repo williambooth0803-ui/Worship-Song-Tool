@@ -2,6 +2,7 @@
 // No OpenAI key, service-role key, database password, or config overwrite.
 import { readFile } from "node:fs/promises";
 import { mcpUpload } from "./mcp-upload.mjs";
+import { waitForOAuthDiscovery } from "./oauth-discovery.mjs";
 import { siteConfig } from "../public/config.js";
 const project = new URL(siteConfig.supabaseUrl).hostname.split(".")[0];
 const endpoint = siteConfig.supabaseUrl + "/functions/v1/faithful-mcp";
@@ -116,14 +117,9 @@ await api("/config/auth", {
     oauth_server_authorization_path: "/connect.html",
   }),
 });
-const discovery = await fetch(
-  siteConfig.supabaseUrl + "/.well-known/oauth-authorization-server/auth/v1",
-  { signal: AbortSignal.timeout(15000) },
-);
-if (!discovery.ok)
-  throw new Error(
-    "OAuth settings saved; discovery did not respond yet. Check Supabase OAuth Server settings before connecting.",
-  );
+await waitForOAuthDiscovery(siteConfig.supabaseUrl, {
+  onRetry: () => console.log("Waiting for Supabase OAuth settings to become available…"),
+});
 console.log(
   "Connector deployed and native OAuth enabled. Authorize it from ChatGPT to verify your own saved account data.",
 );
