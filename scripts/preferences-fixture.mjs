@@ -11,8 +11,8 @@ export async function checkPreferencesFlows(browser, base) {
       false,
     );
     assert.equal(
-      await page.locator('[data-attribute="summary"]').evaluate((n) => n.open),
-      true,
+      await page.locator('.primary-evaluation').evaluate((n) => n.open),
+      false,
     );
     assert.equal(
       await page

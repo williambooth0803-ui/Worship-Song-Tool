@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { reveal } from "./disclosure.mjs";
+import { reveal, keepAIIfOffered } from "./disclosure.mjs";
 
 export async function checkEvaluationFlows(browser, base) {
   const page = await browser.newPage({ viewport: { width: 1440, height: 1000 } }), errors = [], requests = [];
@@ -32,6 +32,7 @@ export async function checkEvaluationFlows(browser, base) {
     await page.getByLabel("Your notes", { exact: true }).fill("Personal note to preserve");
     await reveal(page, "button", { name: "Save assessment", exact: true });
     await page.getByRole("button", { name: "Save assessment", exact: true }).click();
+  await keepAIIfOffered(page);
     const before = await stored();
     await page.getByRole("button", { name: "Generate AI evaluation", exact: true }).click();
     const prompt = await page.locator("#evaluation-prompt").inputValue();
@@ -54,8 +55,10 @@ export async function checkEvaluationFlows(browser, base) {
     await page.getByRole("button", { name: "Preview evaluation", exact: true }).click();
     await page.getByRole("button", { name: "Apply evaluation", exact: true }).click();
     const after = await stored(), s = after.songs.find(s => s.id === id);
-    assert.equal(s.review.status, "ai"); assert.equal(s.review.notes, "Personal note to preserve");
-    assert.equal(s.review.previous.status, "manual"); assert.equal(s.approval.status, "unreviewed");
+    assert.equal(s.review.status, "manual"); assert.equal(s.review.notes, "Personal note to preserve");
+    assert.equal(s.aiReview.status, "ai"); assert.equal(s.aiReview.scores.accuracy, 9);
+    assert.deepEqual(s.review, before.songs.find(record => record.id === id).review);
+    assert.equal(s.approval.status, "unreviewed");
     assert.deepEqual(after.libraries, before.libraries); assert.deepEqual(after.plans, before.plans);
     await mode("manual");
     assert.equal(await page.getByRole("button", { name: "Generate AI evaluation", exact: true }).count(), 0);

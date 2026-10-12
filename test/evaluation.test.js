@@ -32,23 +32,24 @@ test("JSON import binds the record and mode, rejects unsafe or oversized data an
   assert.throws(() => parseEvaluation("x".repeat(65537), s.id, "full"), /64 KB/);
   assert.throws(() => parseEvaluation("no JSON", s.id, "full"), /JSON/);
 });
-test("applying a full draft preserves human data and one previous review and resets church approval", () => {
+test("applying a full draft keeps a human assessment primary and preserves its approval", () => {
   const s = song(); Object.assign(s.review, { status: "manual", notes: "My note", key: "D", minutes: 3, musical: "Measured octave" });
   s.approval = { status: "approved", notes: "Use these verses", updatedAt: null };
   s.metadata = { themes: ["Human theme"], custom: [{ name: "Difficulty", value: "Medium", type: "text" }] };
   const original = structuredClone(s), value = result(s); value.review.themes = ["AI theme"];
   const next = applyEvaluation(s, value, "full");
   assert.deepEqual(s, original);
-  assert.equal(next.review.status, "ai"); assert.deepEqual(next.review.previous, original.review);
+  assert.equal(next.review.status, "manual"); assert.deepEqual(next.review, original.review);
+  assert.equal(next.aiReview.status, "ai"); assert.equal(next.aiReview.scores.accuracy, 9);
   for (const key of ["notes", "key", "minutes", "musical"]) assert.equal(next.review[key], s.review[key]);
   assert.deepEqual(next.metadata, s.metadata); assert.deepEqual(next.themes, s.themes);
-  assert.equal(next.approval.status, "unreviewed"); assert.equal(next.approval.notes, "Use these verses");
+  assert.equal(next.approval.status, "approved"); assert.equal(next.approval.notes, "Use these verses");
   assert.equal(reviewForDisplay(next, "manual").status, "manual");
-  const again = applyEvaluation(next, value, "full"); assert.ok(!again.review.previous.previous);
+  const again = applyEvaluation(next, value, "full"); assert.ok(!again.aiReview.previous);
   const state = syncCatalog({ version: 1, profile: defaultProfile, songs: [], libraries: [{ id: "mine", name: "Mine", songIds: [] }], plans: [] });
   state.songs[0] = next;
   assert.equal(validateWorkspace(state).songs[0].review.notes, "My note");
-  assert.equal(syncCatalog(state).songs[0].review.model, "ChatGPT evaluation · user-imported");
+  assert.equal(syncCatalog(state).songs[0].aiReview.model, "ChatGPT evaluation · user-imported");
 });
 test("limited observations cannot import theological ratings and never replace a review or approval", () => {
   const s = song(); s.approval = { status: "approved", notes: "Approved", updatedAt: null };

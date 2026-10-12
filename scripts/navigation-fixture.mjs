@@ -37,7 +37,7 @@ export async function checkNavigationFlows(browser, base) {
   await touchPage.getByRole("heading", { name: "Song index", exact: true }).waitFor();
   assert.ok(await touchPage.evaluate(() => document.documentElement.scrollWidth <= innerWidth));
   await touchPage.setViewportSize({ width: 390, height: 844 });
-  assert.equal(await touchPage.locator("nav .nav-label").count(), 6);
+  assert.equal(await touchPage.locator("nav .nav-label").count(), 7);
   for (const label of await touchPage.locator("nav .nav-label").all()) assert.ok(await label.isVisible());
   await touchPage.screenshot({ path: "/tmp/faithful-navigation-touch.png" });
   await touch.close();

@@ -82,6 +82,7 @@ begin
  mode=coalesce(p->>'aiMode','full'); if mode not in ('full','limited','manual') then mode='manual'; end if;
  if connection.share_libraries then
   for s in select value from jsonb_array_elements(coalesce(w->'songs','[]')) loop
+   if s->>'blacklisted'='true' then continue; end if;
    raw=s->'review'; r=raw;
    if mode<>'full' and raw->>'status'='ai' then
     r=case when raw->'previous'->>'status' in ('manual','starter') then raw->'previous' when s->'catalogReview'->>'status'<>'ai' then s->'catalogReview' else null end;
@@ -106,16 +107,22 @@ begin
     from (values ('accuracy',35),('substance',30),('language',20),('time',15)) as dimensions(dimension,default_weight)) as weighted
    where jsonb_typeof(r->'scores'->dimension)='number' and weight>0;
    songs=songs||jsonb_build_array(public.mcp_pick(s,array['id','title','author','version','category','preferredArrangementId'])||jsonb_build_object('review',r,'metadata',m,'arrangements',arrangements,'account_rating',account_rating,
+    'facts',(select coalesce(jsonb_object_agg(key,public.mcp_pick(value,case when connection.share_notes then array['confidence','source'] else array['confidence'] end)),'{}'::jsonb) from jsonb_each(coalesce(s->'facts','{}')) where key=any(array['author','key','tempo','minutes','timeSignature','range','tune','meter'])),
+    'aiReview',case when mode='full' and s->'review'->>'status'='manual' and coalesce(s->>'aiDismissed','false')<>'true' then public.mcp_pick(coalesce(s->'aiReview',s->'catalogReview'),array['status','scores','summary','claims','concerns','uses','scriptures','sources','language','time','themes','concern','updatedAt','aiFields','model']) else '{}'::jsonb end,
     'firstLine',case when connection.share_lyrics then coalesce(s->>'firstLine','') else '' end,
     'themes',coalesce(s->'metadata'->'themes',case when mode<>'full' and (raw->>'status'='ai' or raw->'aiFields' ? 'themes') then case when s->'catalogReview'->>'status'='ai' then '[]'::jsonb else s->'catalogThemes' end else s->'themes' end,'[]'),
     'approval',public.mcp_pick(s->'approval',array['status','updatedAt'])||case when connection.share_notes then public.mcp_pick(s->'approval',array['notes']) else '{}'::jsonb end));
   end loop;
-  select coalesce(jsonb_agg(public.mcp_pick(l,array['id','name','songIds'])),'[]'::jsonb) into libraries from jsonb_array_elements(coalesce(w->'libraries','[]')) l;
+  select coalesce(jsonb_agg(public.mcp_pick(l,array['id','name'])||jsonb_build_object('songIds',(select coalesce(jsonb_agg(song_id),'[]'::jsonb) from jsonb_array_elements(coalesce(l->'songIds','[]')) song_id where not exists(select 1 from jsonb_array_elements(coalesce(w->'songs','[]')) hidden where hidden->>'id'=song_id#>>'{}' and hidden->>'blacklisted'='true')))),'[]'::jsonb) into libraries from jsonb_array_elements(coalesce(w->'libraries','[]')) l;
  end if;
  if connection.share_plans then
   for plan in select value from jsonb_array_elements(coalesce(w->'plans','[]')) loop
    items='[]';
    for item in select value from jsonb_array_elements(coalesce(plan->'items','[]')) loop
+    if exists(select 1 from jsonb_array_elements(coalesce(w->'songs','[]')) hidden where hidden->>'id'=item->>'songId' and hidden->>'blacklisted'='true') then
+     items=items||jsonb_build_array(public.mcp_pick(item,array['id','type','minutes','role'])||jsonb_build_object('title','Blacklisted song','song_title','Blacklisted song'));
+     continue;
+    end if;
     items=items||jsonb_build_array(public.mcp_pick(item,array['id','type','songId','title','role','key','minutes','arrangementId','arrangementName'])||case when connection.share_notes then public.mcp_pick(item,array['notes']) else '{}'::jsonb end||jsonb_build_object('song_title',(select a->>'title' from jsonb_array_elements(coalesce(w->'songs','[]')) a where a->>'id'=item->>'songId' limit 1)));
    end loop;
    plans=plans||jsonb_build_array(public.mcp_pick(plan,array['id','title','date','theme','passage','status'])||jsonb_build_object('items',items));

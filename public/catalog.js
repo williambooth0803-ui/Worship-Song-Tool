@@ -1,11 +1,13 @@
 import { prewrittenReview } from "./prewritten-reviews.js";
 import { modernCatalog } from "./modern-catalog.js";
 import { expandedCatalog, newStarterTitles } from "./expanded-catalog.js";
+import { artistCatalog } from "./artist-catalog.js";
 import { seedSongs } from "./seeds.js";
 import { additionalSongs, mixedStarterTitles } from "./repertoire-data.js";
 import { overall, normalize } from "./core.js";
 import { withProfileDefaults } from "./profile.js";
 import { reviewForDisplay } from "./profile.js";
+import { humanFirst } from "./song-state.js";
 
 const additions = [
   [
@@ -495,11 +497,18 @@ export const traditionalCatalog = [
 const reviewedAdditions = additionalSongs.map(prewrittenReview);
 const previousTitles = new Set([...traditionalCatalog, ...reviewedAdditions, ...modernCatalog].map(s => normalize(s.title)));
 const expandedAdditions = expandedCatalog.filter(s => !previousTitles.has(normalize(s.title)));
+const seenAssociations = new Set([...traditionalCatalog, ...reviewedAdditions, ...modernCatalog, ...expandedAdditions].map(s => normalize(s.title) + ":" + normalize(s.author.replace(/^Associated recording:\s*/i, ""))));
+const artistAdditions = artistCatalog.filter(s => {
+  const key = normalize(s.title) + ":" + normalize(s.author.replace(/^Associated recording:\s*/i, ""));
+  if (seenAssociations.has(key)) return false;
+  seenAssociations.add(key); return true;
+});
 export const allCatalogSongs = [
   ...traditionalCatalog,
   ...reviewedAdditions,
   ...modernCatalog,
   ...expandedAdditions,
+  ...artistAdditions,
 ];
 export const catalogSongs = [
   ...traditionalCatalog,
@@ -582,6 +591,17 @@ export function syncCatalog(
   }
   const catalogIds = new Set(catalog.map((s) => s.id));
   for (const song of result.songs) {
+    if (!song.facts?.minutes && song.review.minutes === 4 && ["ai", "starter", "unreviewed"].includes(song.review.status)) {
+      song.facts ||= {};
+      song.facts.minutes = { confidence: "guess", source: "Editable planning estimate; recording duration not verified." };
+    }
+    const changedPrimary = song.review.status === "ai" && song.review.previous?.status === "manual";
+    humanFirst(song);
+    if (changedPrimary && song.approval) invalidateApproval(song);
+    if (song.author.startsWith("Associated recording:") && !song.facts?.author) {
+      song.facts ||= {};
+      song.facts.author = { confidence: "guess", source: "Model-knowledge recording association; verify the chosen recording." };
+    }
     song.approval ||= { status: "unreviewed", notes: "", updatedAt: null };
     if (!catalogIds.has(song.id)) {
       delete song.catalogReview;

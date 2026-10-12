@@ -240,7 +240,7 @@
   }
   .brand { display: none; }
   .sidebar nav { gap: 2px; }
-  .nav-item { width: calc(100% / 6); min-width: 0; min-height: 56px; padding: 7px 2px; gap: 5px; font-size: 10px; line-height: 1.2; border-radius: 12px; }
+  .nav-item { width: calc(100% / 7); min-width: 0; min-height: 56px; padding: 7px 2px; gap: 5px; font-size: 10px; line-height: 1.2; border-radius: 12px; }
   .nav-item > .nav-icon { width: 19px; }
   .nav-icon svg { width: 19px; height: 19px; }
   main { margin-left: 0; width: 100%; padding-bottom: calc(100px + env(safe-area-inset-bottom)); }
@@ -360,4 +360,45 @@
   .evaluation-request summary { cursor: pointer; padding: 10px 0; }
   #evaluation-preview:has(h3) { border-top: 1px solid #dce4dd; padding-top: 16px; margin-top: 16px; }
   #evaluation-error { color: #8b3329; }
+}
+@media screen {
+  .collection-browse-controls { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 16px; margin: 20px 0; }
+  .collection-dropdown { display: block; padding: 0; overflow: visible; }
+  .collection-dropdown > summary { display: flex; gap: 16px; justify-content: space-between; align-items: center; cursor: pointer; padding: 20px 24px; list-style: none; }
+  .collection-dropdown > summary::after { content: "+"; font-size: 24px; color: #596d60; }
+  .collection-dropdown[open] > summary::after { content: "−"; }
+  .collection-dropdown > summary::-webkit-details-marker { display: none; }
+  .collection-dropdown h2 { margin: 0 0 4px; font-size: 23px; }
+  .collection-dropdown .collection-count { margin-left: auto; }
+  .collection-body { padding: 0 24px 20px; }
+  .collection-bulk-actions { display: flex; flex-wrap: wrap; gap: 8px; margin: 16px 0; }
+  .collection-songs { list-style: none; padding: 0; margin: 0; }
+  .collection-songs > li { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 14px 0; border-top: 1px solid #dce5de; }
+  .collection-songs small { display: block; color: #596d60; margin-top: 4px; }
+  .collection-song-title { padding: 0; font-weight: 600; text-align: left; }
+  .collection-songs .menu-items { width: 220px; }
+  .objective-facts { margin: 16px 0 20px; font-size: .88rem; }
+  .objective-facts > div { display: flex; gap: 12px; margin: 8px 0; align-items: baseline; }
+  .objective-facts dt { min-width: 120px; color: #596d60; }
+  .objective-facts dd { margin: 0; }
+  .fact-confidence { font-size: .72rem; background: #f3ebdb; color: #75542a; border-radius: 6px; margin-left: 6px; padding: 3px 6px; }
+  .objective-facts .text-button { font-size: .72rem; padding: 3px 5px; }
+  .evaluation-box { margin: 18px 0; border: 1px solid #dce5de; border-radius: 16px; background: #fafcf9; }
+  .evaluation-box > summary { display: flex; align-items: center; justify-content: space-between; cursor: pointer; gap: 16px; padding: 18px; font-weight: 600; }
+  .evaluation-box > summary::after { content: "+"; }
+  .evaluation-box[open] > summary::after { content: "−"; }
+  .evaluation-box .ai-mark { margin-left: 6px; }
+  .evaluation-content { padding: 0 18px 18px; }
+  .evaluation-content section { padding-top: 12px; }
+  .evaluation-content h3 { margin: 8px 0; font-size: .94rem; }
+  .secondary-evaluation { background: transparent; font-size: .85rem; }
+  .song-file-list { list-style: none; padding: 0; }
+  .song-file-list li { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin: 12px 0; }
+}
+@media screen and (max-width: 700px) {
+  .collection-browse-controls { grid-template-columns: 1fr; gap: 10px; }
+  .collection-dropdown > summary { padding: 16px; }
+  .collection-body { padding: 0 16px 16px; }
+  .objective-facts > div { flex-wrap: wrap; gap: 4px 12px; }
+  .objective-facts dt { min-width: 90px; }
 }

@@ -1,0 +1,62 @@
+import assert from "node:assert/strict";
+import { reveal } from "./disclosure.mjs";
+export async function checkDiscoveryFlows(browser, base) {
+  const page=await browser.newPage({viewport:{width:1440,height:1000}}),errors=[];
+  page.on("pageerror",err=>errors.push(err.message));
+  const nav=async name=>page.locator("nav").getByRole("button",{name,exact:true}).click();
+  const state=()=>page.evaluate(()=>JSON.parse(localStorage.getItem("hymn-heart-v1")));
+  try{
+    await page.goto(base);await nav("Collections");
+    await page.getByLabel("Find a collection",{exact:true}).fill("Chris Tomlin");
+    const pack=page.locator(".collection-dropdown").filter({has:page.getByRole("heading",{name:"Chris Tomlin",exact:true})});
+    await pack.locator(":scope > summary").click();
+    const row=pack.locator(".collection-songs > li").first(),title=await row.locator(".collection-song-title").textContent(),id=await row.locator(".collection-song-title").getAttribute("data-id");
+    const act=async name=>{await row.locator(".more-menu > summary").click();await row.getByRole("button",{name,exact:true}).click();};
+    await act("Add to library");await page.locator('#save-song-form input[type="checkbox"]').first().check();
+    await page.getByRole("button",{name:"Save library choices",exact:true}).click();
+    assert.ok((await state()).libraries[0].songIds.includes(id));
+    await act("Add arrangement");await page.getByLabel("Arrangement name",{exact:true}).fill("Sunday acoustic");
+    await page.getByLabel("Arrangement key",{exact:true}).fill("D");
+    await page.getByLabel("Arrangement duration (minutes)",{exact:true}).fill("3");
+    await reveal(page,"button",{name:"Save arrangement",exact:true});await page.getByRole("button",{name:"Save arrangement",exact:true}).click();
+    assert.equal((await state()).songs.find(s=>s.id===id).arrangements[0].key,"D");
+    await act("Add files to song");
+    await page.locator('#song-file-form input[type="file"]').setInputFiles({name:"Chart.txt",mimeType:"text/plain",buffer:Buffer.from("Private chart notes")});
+    await page.getByRole("button",{name:"Upload file",exact:true}).click();
+    await page.getByText("Chart.txt · 1 KB",{exact:true}).waitFor();
+    const attachment=(await state()).songs.find(s=>s.id===id).files[0];assert.equal(attachment.storage,"device");
+    const downloading=page.waitForEvent("download");await page.getByRole("button",{name:"Download",exact:true}).click();const file=await downloading;assert.equal(file.suggestedFilename(),"Chart.txt");
+    await page.getByRole("button",{name:"Close dialog",exact:true}).click();
+    await act("Add human evaluation");
+    await page.getByLabel("Assessment summary",{exact:true}).fill("My primary human evaluation");
+    await reveal(page,"button",{name:"Save assessment",exact:true});await page.getByRole("button",{name:"Save assessment",exact:true}).click();
+    await page.getByRole("button",{name:"Delete AI evaluation",exact:true}).click();
+    assert.equal((await state()).songs.find(s=>s.id===id).aiDismissed,true);
+    await row.locator(".collection-song-title").click();
+    assert.match(await page.locator(".primary-evaluation > summary").textContent(),/^Your evaluation/);
+    assert.equal(await page.locator(".secondary-evaluation").count(),0);
+    assert.equal(await page.locator(".objective-facts").getByText("Tempo",{exact:true}).count(),0);
+    await page.getByRole("button",{name:"Blacklist song",exact:true}).click();
+    assert.ok((await state()).songs.find(s=>s.id===id).blacklisted);
+    await page.getByRole("searchbox",{name:"Search songs",exact:true}).fill(title);
+    assert.equal(await page.locator('.song-card[data-id="'+id+'"]').count(),0);
+    assert.equal(await page.locator('.catalog-matches [data-id="'+id+'"]').count(),0);
+    await nav("Song libraries");await page.getByRole("searchbox",{name:"Search songs",exact:true}).fill(title);assert.equal(await page.locator('.song-card[data-id="'+id+'"]').count(),0);
+    await nav("Collections");
+    assert.equal(await pack.locator('.collection-song-title[data-id="'+id+'"]').count(),0);
+    await pack.getByRole("button",{name:"Import all songs",exact:true}).click();
+    assert.equal(await page.locator(".import-song").count(),0,"Bulk import needs no checkbox selection");
+    await page.getByLabel("New library name",{exact:true}).fill("Tomlin reference");
+    await page.locator("#collection-import-form").getByRole("button",{name:"Import all songs",exact:true}).click();
+    const imported=await state();assert.ok(imported.songs.find(s=>s.id===id).blacklisted);assert.ok(!imported.libraries.find(l=>l.name==="Tomlin reference").songIds.includes(id));
+    await nav("Blacklist");await page.getByRole("heading",{name:title,exact:true,level:2}).waitFor();
+    await page.getByRole("button",{name:"Restore song",exact:true}).click();
+    assert.equal((await state()).songs.find(s=>s.id===id).blacklisted,false);
+    await nav("Collections");await page.getByLabel("Find a collection",{exact:true}).fill("");
+    for(const group of ["Eras","Themes","Artists"]){await page.getByLabel("Browse by",{exact:true}).selectOption(group);assert.ok(await page.locator(".collection-dropdown").count()>0);}
+    await page.setViewportSize({width:390,height:844});assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));
+    await page.screenshot({path:"/tmp/faithful-collections-mobile.png",fullPage:true});
+    assert.deepEqual(errors,[]);
+    console.log("PASS: artist browsing, library/arrangement/file actions, primary human review, AI deletion, blacklist isolation/restoration, bulk import and mobile layout.");
+  }finally{await page.close();}
+}

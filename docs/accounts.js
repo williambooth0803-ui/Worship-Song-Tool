@@ -47,10 +47,11 @@ export class AccountClient {
     this.storage = storage;
     this.fetcher = fetcher;
     this.session = null;
+    this.persisted = false;
     this.workspaceVersion = undefined;
     this.workspaceRequest = 0;
     try {
-      this.storage ||= globalThis.sessionStorage;
+      this.storage ||= globalThis.localStorage;
     } catch {
       /* Privacy settings may block storage. */
     }
@@ -67,11 +68,20 @@ export class AccountClient {
         if (
           saved?.project === this.config.url &&
           saved.session?.access_token &&
-          saved.session?.refresh_token
+          saved.session?.refresh_token && saved.session?.user?.id
         )
-          this.session = saved.session;
+          { this.session = saved.session; this.persisted = true; }
       } catch {
         /* An unavailable session store leaves the user signed out. */
+      }
+      // Upgrade existing tab-only sessions once; credentials stay out of backups.
+      if (!this.session && !storage) {
+        try {
+          const old = JSON.parse(globalThis.sessionStorage?.getItem("faithful-repertoire-session"));
+          if (old?.project === this.config.url && old.session?.access_token && old.session?.refresh_token && old.session?.user?.id)
+            this.setSession(old.session);
+          globalThis.sessionStorage?.removeItem("faithful-repertoire-session");
+        } catch { /* Storage may be blocked. */ }
       }
     }
   }
@@ -80,6 +90,17 @@ export class AccountClient {
   }
   get user() {
     return this.session?.user || null;
+  }
+  syncStoredSession() {
+    let saved;
+    try { saved = JSON.parse(this.storage.getItem("faithful-repertoire-session")); }
+    catch { return false; }
+    const next = saved?.project === this.config?.url && saved.session?.access_token && saved.session?.refresh_token && saved.session?.user?.id ? saved.session : null;
+    const changed = this.user?.id !== next?.user?.id;
+    if (changed) { this.workspaceVersion = undefined; this.workspaceRequest++; }
+    this.session = next;
+    this.persisted = Boolean(next);
+    return changed;
   }
   setSession(session) {
     if (
@@ -99,8 +120,10 @@ export class AccountClient {
           JSON.stringify({ project: this.config.url, session }),
         );
       else this.storage.removeItem("faithful-repertoire-session");
+      this.persisted = Boolean(session) && this.storage.getItem("faithful-repertoire-session") !== null;
     } catch {
       /* The current tab can remain signed in without persistence. */
+      this.persisted = false;
     }
   }
   async request(
@@ -111,6 +134,8 @@ export class AccountClient {
       authenticated = false,
       refresh = true,
       headers = {},
+      binary = false,
+      responseType = "json",
     } = {},
   ) {
     if (!this.config)
@@ -118,6 +143,7 @@ export class AccountClient {
         "Accounts are not configured yet. You can continue using this browser workspace.",
       );
     if (authenticated && !this.session) throw new Error("Sign in first.");
+    const owner = authenticated ? this.user?.id : null;
     const response = await this.fetcher(`${this.config.url}${path}`, {
       method,
       signal: AbortSignal.timeout(20000),
@@ -129,8 +155,9 @@ export class AccountClient {
           : {}),
         ...headers,
       },
-      ...(body === undefined ? {} : { body: JSON.stringify(body) }),
+      ...(body === undefined ? {} : { body: binary ? body : JSON.stringify(body) }),
     });
+    if (authenticated && owner !== this.user?.id) throw new Error("The signed-in account changed. Please try again.");
     if (
       response.status === 401 &&
       authenticated &&
@@ -139,11 +166,12 @@ export class AccountClient {
     ) {
       try {
         await this.refreshSession();
-      } catch {
-        this.setSession(null);
-        throw new Error(
-          "Your session expired. Sign in again; your browser workspace is preserved.",
-        );
+      } catch (err) {
+        if ([400, 401, 403].includes(err.status)) {
+          if (owner === this.user?.id) this.setSession(null);
+          throw new Error("Your session expired. Sign in again; your browser workspace is preserved.");
+        }
+        throw err;
       }
       return this.request(path, {
         method,
@@ -151,20 +179,25 @@ export class AccountClient {
         authenticated,
         refresh: false,
         headers,
+        binary,
+        responseType,
       });
     }
     const data =
-      response.status === 204 ? null : await response.json().catch(() => null);
+      response.status === 204 ? null : response.ok && responseType === "blob" ? await response.blob() : await response.json().catch(() => null);
     if (!response.ok)
       if (response.status === 409 && path.startsWith("/rest/v1/workspaces"))
         throw new WorkspaceConflictError();
-    if (!response.ok)
-      throw new Error(
+    if (!response.ok) {
+      const error = new Error(
         data?.msg ||
           data?.error_description ||
           data?.message ||
           "The account request failed. Please try again.",
       );
+      error.status = response.status;
+      throw error;
+    }
     return data;
   }
   async signIn(email, password) {
@@ -175,6 +208,22 @@ export class AccountClient {
     this.setSession(session);
     return this.user;
   }
+  attachmentPath(path) {
+    if (typeof path !== "string" || !path.startsWith(this.userId() + "/") || path.split("/").length !== 3 || path.includes("..") || path.length > 600)
+      throw new Error("This attachment belongs to a different account or has an invalid path.");
+    return path.split("/").map(encodeURIComponent).join("/");
+  }
+  async uploadSongFile(path, file) {
+    if (!file || file.size <= 0 || file.size > 10 * 1024 * 1024) throw new Error("Choose a nonempty file up to 10 MB.");
+    return this.request("/storage/v1/object/song-files/" + this.attachmentPath(path), { method: "POST", authenticated: true, binary: true, body: file, headers: { "Content-Type": file.type || "application/octet-stream", "x-upsert": "false" } });
+  }
+  async downloadSongFile(path) {
+    return this.request("/storage/v1/object/authenticated/song-files/" + this.attachmentPath(path), { authenticated: true, responseType: "blob" });
+  }
+  async deleteSongFile(path) {
+    this.attachmentPath(path);
+    return this.request("/storage/v1/object/song-files", { method: "DELETE", authenticated: true, body: { prefixes: [path] } });
+  }
   async signUp(email, password, redirectTo) {
     const result = await this.request(
       `/auth/v1/signup?redirect_to=${encodeURIComponent(redirectTo)}`,
@@ -184,11 +233,23 @@ export class AccountClient {
     return { signedIn: Boolean(result.access_token) };
   }
   async refreshSession() {
-    const session = await this.request(
+    const owner = this.user?.id, token = this.session?.access_token;
+    const refresh = async () => {
+      if (this.persisted) this.syncStoredSession();
+      if (owner !== this.user?.id) throw new Error("The signed-in account changed. Please try again.");
+      if (token !== this.session?.access_token) return;
+      const session = await this.request(
       "/auth/v1/token?grant_type=refresh_token",
       { method: "POST", body: { refresh_token: this.session.refresh_token } },
     );
-    this.setSession(session);
+      if (owner !== this.user?.id) throw new Error("The signed-in account changed. Please try again.");
+      this.setSession(session);
+    };
+    if (this.refreshing) return this.refreshing;
+    this.refreshing = globalThis.navigator?.locks
+      ? globalThis.navigator.locks.request("faithful-repertoire-refresh:" + this.config.url, refresh)
+      : refresh();
+    try { await this.refreshing; } finally { this.refreshing = null; }
   }
   async restoreSession() {
     if (!this.session) return;
@@ -199,8 +260,9 @@ export class AccountClient {
         this.session.user = user;
         this.setSession(this.session);
       }
-    } catch {
-      if (this.session?.user?.id === originalUserId) this.setSession(null);
+    } catch (err) {
+      if ([400, 401, 403].includes(err.status) && this.session?.user?.id === originalUserId) this.setSession(null);
+      else throw err;
     }
   }
   async acceptConfirmation(fragment) {

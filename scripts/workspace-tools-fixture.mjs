@@ -9,7 +9,7 @@ export async function checkWorkspaceToolsFlows(page) {
     await page.getByRole("button", { name, exact: true }).click();
   };
   const workspace = () => page.evaluate(() => {
-    const session = JSON.parse(sessionStorage.getItem("faithful-repertoire-session"));
+    const session = JSON.parse(localStorage.getItem("faithful-repertoire-session"));
     return JSON.parse(localStorage.getItem("faithful-repertoire-user:" + session.session.user.id));
   });
   await nav("Song index");

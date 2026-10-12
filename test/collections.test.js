@@ -23,7 +23,8 @@ const workspace = () =>
     profile: defaultProfile,
   });
 test("depth levels are nested and every collection uses real distinct catalog records", () => {
-  assert.equal(songCollections.length, 16);
+  assert.ok(songCollections.length >= 55);
+  assert.equal(songCollections.filter(c => c.group === "Artists").length, 42);
   for (const pack of songCollections) {
     const essentials = collectionSongs(pack, "essentials"),
       standards = collectionSongs(pack, "standards"),

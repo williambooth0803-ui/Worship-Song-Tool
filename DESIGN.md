@@ -40,7 +40,11 @@ Song words are optional; an opening-line search must not imply full-text coverag
 
 ## Disclosure and provenance
 
-Use collapsible song attributes, rating breakdowns, filters, library tools and simple
+Use one collapsible AI evaluation, a primary human evaluation and smaller secondary
+AI content. Keep populated objective facts as plain text, with explicit uncertainty
+and confirmation controls. Collections use expandable groups with lazy, paginated
+song actions and bulk import. Keep dismissed records in the personal Blacklist.
+Use collapsible filters, library tools and simple
 menus. Keep completed profile information and account-save explanations in menus.
 Avoid decorative copy on library pages. Song attributes can be hidden/reordered per
 song; user-created text/number attributes are indexed. Empty observations are omitted.

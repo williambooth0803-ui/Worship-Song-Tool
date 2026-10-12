@@ -89,6 +89,13 @@ export function applyEvaluation(song, evaluation, aiMode, now = new Date().toISO
     aiFields: ["scores", "summary", ...lists, "language", "time"], previous,
     notes: song.review.notes, key: song.review.key, minutes: song.review.minutes, musical: song.review.musical,
   };
+  next.aiDismissed = false;
+  if (song.review.status === "manual") {
+    next.aiReview = next.review;
+    delete next.aiReview.previous;
+    next.review = copy(song.review);
+    return next;
+  }
   // Human-entered theme overrides, custom attributes and arrangements survive.
   next.themes = song.metadata?.themes ? copy(song.themes) : copy(draft.themes);
   if (next.approval) next.approval = { ...next.approval, status: "unreviewed", updatedAt: null };

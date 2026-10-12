@@ -142,6 +142,33 @@ export function validateWorkspace(input) {
       themes: texts(song.themes, "themes"),
       review: review(song.review),
     };
+    for (const key of ["blacklisted", "aiDismissed"]) {
+      if (song[key] !== undefined) {
+        if (typeof song[key] !== "boolean") fail(`${key} must be true or false.`);
+        result[key] = song[key];
+      }
+    }
+    if (song.aiReview !== undefined) {
+      result.aiReview = review(song.aiReview);
+      if (result.aiReview.status !== "ai") fail("the secondary AI evaluation must be an AI draft.");
+    }
+    if (song.facts !== undefined) {
+      object(song.facts, "fact provenance"); result.facts = {};
+      for (const [field, value] of Object.entries(song.facts)) {
+        if (!["author", "key", "tempo", "minutes", "timeSignature", "range", "tune", "meter"].includes(field)) fail("unknown objective fact.");
+        object(value, "fact evidence");
+        result.facts[field] = { confidence: choice(value.confidence, "fact confidence", ["ai", "guess", "confirmed"]), source: text(value.source, "fact source", 1000) };
+      }
+    }
+    if (song.files !== undefined) {
+      result.files = array(song.files, "song files", 50).map(file => {
+        object(file, "song file");
+        const checked = { id: id(file.id), name: text(file.name, "file name", 200, true), size: number(file.size, "file size", 1, 10 * 1024 * 1024), mime: text(file.mime, "file type", 200), storage: choice(file.storage, "file storage", ["device", "account"]), path: text(file.path, "file path", 600, true) };
+        if (checked.storage === "account" && !/^[0-9a-f-]{36}\/[a-zA-Z0-9_-]{1,200}\/[a-zA-Z0-9._-]{1,200}$/i.test(checked.path)) fail("invalid account file path.");
+        return checked;
+      });
+      unique(result.files.map(file => file.id), "file IDs");
+    }
     if (song.detailLayout !== undefined) {
       object(song.detailLayout, "detail layout");
       result.detailLayout = {

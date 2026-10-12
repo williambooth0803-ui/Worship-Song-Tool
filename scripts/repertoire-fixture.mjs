@@ -31,6 +31,7 @@ export async function checkRepertoireFlows(browser, base) {
   const modern = page.locator(".collection-row").filter({
     has: page.getByRole("heading", { name: "Modern hymns", exact: true }),
   });
+  await modern.locator(":scope > summary").click();
   assert.equal(
     await modern.locator(".collection-count strong").textContent(),
     String(modernCount),
@@ -306,7 +307,7 @@ export async function checkRepertoireFlows(browser, base) {
       () => document.documentElement.scrollWidth <= innerWidth,
     ),
   );
-  assert.equal(await page.locator("nav .nav-item").count(), 6);
+  assert.equal(await page.locator("nav .nav-item").count(), 7);
   await page.screenshot({
     path: "/tmp/faithful-repertoire-collections-mobile.png",
     fullPage: true,

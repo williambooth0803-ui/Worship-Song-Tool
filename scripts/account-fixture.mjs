@@ -1,11 +1,12 @@
 import { checkWorkspaceToolsFlows } from "./workspace-tools-fixture.mjs";
-import { reveal } from "./disclosure.mjs";
+import { reveal, keepAIIfOffered } from "./disclosure.mjs";
 import assert from "node:assert/strict";
 
 // Provider fixture only. This exercises the client flow; it does not establish
 // that a real Supabase project or its row-level security has been deployed.
 export async function checkAccountFlows(browser, base) {
-  const page = await browser.newPage();
+  const context = await browser.newContext();
+  const page = await context.newPage();
   const users = {
     "one@example.test": {
       id: "00000000-0000-0000-0000-000000000001",
@@ -20,16 +21,18 @@ export async function checkAccountFlows(browser, base) {
     workspaces = new Map();
   const sessions = new Map(),
     versions = new Map();
+  const privateFiles = new Map();
+  let refreshCalls = 0;
   let saveNumber = 0;
   const errors = [];
   page.on("pageerror", (error) => errors.push(error.message));
-  await page.route("**/config.js", (route) =>
+  await page.context().route("**/config.js", (route) =>
     route.fulfill({
       contentType: "text/javascript",
       body: 'export const siteConfig = {supabaseUrl:"https://fixture.supabase.co",supabasePublishableKey:"sb_publishable_fixture_not_a_real_key"};',
     }),
   );
-  await page.route("https://fixture.supabase.co/**", async (route) => {
+  await page.context().route("https://fixture.supabase.co/**", async (route) => {
     const request = route.request(),
       url = new URL(request.url());
     const answer = (value, status = 200) =>
@@ -39,16 +42,18 @@ export async function checkAccountFlows(browser, base) {
         headers: {
           "Access-Control-Allow-Origin": "*",
           "Access-Control-Allow-Headers":
-            "apikey,authorization,content-type,prefer",
-          "Access-Control-Allow-Methods": "GET,POST,PATCH,PUT,OPTIONS",
+            "apikey,authorization,content-type,prefer,x-upsert",
+          "Access-Control-Allow-Methods": "GET,POST,PATCH,PUT,DELETE,OPTIONS",
         },
         body: status === 204 ? "" : JSON.stringify(value),
       });
     if (request.method() === "OPTIONS") return answer(null, 204);
     if (url.pathname.endsWith("/token")) {
-      const user = users[request.postDataJSON().email];
+      const body = request.postDataJSON(), refreshing = url.searchParams.get("grant_type") === "refresh_token";
+      const user = refreshing ? Object.values(users).find(u => body.refresh_token === "fixture-refresh-" + u.id) : users[body.email];
       assert.ok(user);
-      const token = `fixture-access-${user.id}`;
+      if (refreshing) refreshCalls++;
+      const token = `fixture-access-${user.id}-${refreshCalls}`;
       sessions.set(token, user);
       return answer({
         access_token: token,
@@ -59,7 +64,18 @@ export async function checkAccountFlows(browser, base) {
     const user = sessions.get(
       request.headers().authorization?.replace("Bearer ", ""),
     );
-    assert.ok(user, "provider fixture requires an authenticated request");
+    if (!user) return answer({message:"Expired fixture token"},401);
+    if (url.pathname.startsWith("/storage/v1/object/")) {
+      const path = decodeURIComponent(url.pathname.replace(/^\/storage\/v1\/object\/(?:authenticated\/)?song-files\/?/, ""));
+      if (request.method() === "DELETE") {
+        for(const p of request.postDataJSON().prefixes) { assert.ok(p.startsWith(user.id + "/")); privateFiles.delete(p); }
+        return answer([]);
+      }
+      assert.ok(path.startsWith(user.id + "/"));
+      if(request.method()==="POST") { privateFiles.set(path,request.postDataBuffer()); return answer({Key:path}); }
+      const body=privateFiles.get(path);assert.ok(body);
+      return route.fulfill({contentType:"application/octet-stream",body,headers:{"Access-Control-Allow-Origin":"*"}});
+    }
     if (url.pathname.endsWith("/user")) return answer(user);
     if (url.pathname.endsWith("/logout")) return answer(null, 204);
     const table = url.pathname.endsWith("/profiles") ? profiles : workspaces;
@@ -107,10 +123,12 @@ export async function checkAccountFlows(browser, base) {
     await reveal(page, "button", { name: "Sign in", exact: true });
     await page.getByRole("button", { name: "Sign in", exact: true }).click();
     const form = page.locator("#auth-form");
-    await form.getByLabel("Email", { exact: true }).fill(email);
-    await form
-      .getByLabel("Password", { exact: true })
-      .fill("fixture-password-123");
+    assert.equal(await form.getByLabel("Email",{exact:true}).getAttribute("autocomplete"),"username");
+    assert.equal(await form.getByLabel("Password",{exact:true}).getAttribute("autocomplete"),"current-password");
+    assert.equal(await form.getByLabel("Password",{exact:true}).getAttribute("minlength"),null);
+    // Password managers may set DOM values without emitting input events.
+    await form.getByLabel("Email",{exact:true}).evaluate((input,email)=>input.value=email,email);
+    await form.getByLabel("Password",{exact:true}).evaluate(input=>input.value="short!");
     await form.getByRole("button", { name: "Sign in", exact: true }).click();
     try {
       await page
@@ -126,13 +144,35 @@ export async function checkAccountFlows(browser, base) {
     await page.getByRole("button", { name: "Close dialog" }).click();
   }
   async function logout() {
+    const watching=await context.newPage();await watching.goto(base);
+    await watching.getByRole("button",{name:"My account",exact:true}).waitFor();
     await reveal(page, "button", { name: "My account", exact: true });
     await page.getByRole("button", { name: "My account", exact: true }).click();
     await reveal(page, "button", { name: "Sign out", exact: true });
     await page.getByRole("button", { name: "Sign out", exact: true }).click();
     await page.getByRole("button", { name: "Sign in", exact: true }).waitFor();
+    await watching.getByRole("button",{name:"Sign in",exact:true}).waitFor();
+    await watching.close();
   }
   await login("one@example.test");
+  await page.getByRole("button",{name:"Files",exact:true}).click();
+  await page.locator('#song-file-form input[type="file"]').setInputFiles({name:"Account chart.txt",mimeType:"text/plain",buffer:Buffer.from("Account-only chart")});
+  await page.getByRole("button",{name:"Upload file",exact:true}).click();
+  await page.getByText("Account chart.txt · 1 KB",{exact:true}).waitFor();
+  assert.equal(privateFiles.size,1);
+  await page.getByRole("button",{name:"Close dialog",exact:true}).click();
+  const old=await page.evaluate(()=>JSON.parse(localStorage.getItem("faithful-repertoire-session")).session.access_token);
+  sessions.delete(old);
+  const anotherTab=await page.context().newPage();
+  const concurrentTab=await page.context().newPage();
+  await Promise.all([anotherTab.goto(base),concurrentTab.goto(base)]);
+  await anotherTab.getByRole("button",{name:"My account",exact:true}).waitFor();
+  await concurrentTab.getByRole("button",{name:"My account",exact:true}).waitFor();
+  assert.equal(refreshCalls,1,"Concurrent tabs share a single refresh-token rotation");
+  await concurrentTab.close();
+  await anotherTab.reload();
+  await anotherTab.getByRole("button",{name:"My account",exact:true}).waitFor();
+  await anotherTab.close();
   await checkWorkspaceToolsFlows(page);
   await reveal(page, "button", { name: "Build my profile" });
   await page.getByRole("button", { name: "Build my profile" }).click();
@@ -167,6 +207,7 @@ export async function checkAccountFlows(browser, base) {
   await page
     .getByRole("button", { name: "Save assessment", exact: true })
     .click();
+  await keepAIIfOffered(page);
   await reveal(page, "button", { name: "My account", exact: true });
   await page.getByRole("button", { name: "My account", exact: true }).click();
   await reveal(page, "button", { name: "Save account backup" });
@@ -194,6 +235,7 @@ export async function checkAccountFlows(browser, base) {
   await page
     .getByRole("button", { name: "Save assessment", exact: true })
     .click();
+  await keepAIIfOffered(page);
   assert.match(
     await page.locator("#account-save-strip").textContent(),
     /Changes saved in this browser/,

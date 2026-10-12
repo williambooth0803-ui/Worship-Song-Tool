@@ -1,7 +1,7 @@
 import { checkConnectionFlows } from "./connection-fixture.mjs";
 import { checkNavigationFlows } from "./navigation-fixture.mjs";
 import { checkPreferencesFlows } from "./preferences-fixture.mjs";
-import { reveal } from "./disclosure.mjs";
+import { reveal, keepAIIfOffered } from "./disclosure.mjs";
 import http from "node:http";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -13,6 +13,7 @@ import { checkIndexFlows } from "./index-fixture.mjs";
 import { checkRepertoireFlows } from "./repertoire-fixture.mjs";
 import { catalogSongs } from "../public/catalog.js";
 import { checkEvaluationFlows } from "./evaluation-fixture.mjs";
+import { checkDiscoveryFlows } from "./discovery-fixture.mjs";
 
 const root = fileURLToPath(new URL("../docs/", import.meta.url));
 const requests = [];
@@ -80,6 +81,7 @@ try {
   await page
     .getByRole("button", { name: "Save assessment", exact: true })
     .click();
+  await keepAIIfOffered(page);
   const before = await page.evaluate(() =>
     JSON.parse(localStorage.getItem("hymn-heart-v1")),
   );
@@ -216,6 +218,7 @@ try {
   await page
     .getByRole("button", { name: "Save assessment", exact: true })
     .click();
+  await keepAIIfOffered(page);
   const edited = await page.evaluate(
     () => JSON.parse(localStorage.getItem("hymn-heart-v1")).songs[0],
   );
@@ -264,7 +267,7 @@ try {
   await page.reload();
   await page
     .getByText("AI draft visibility fixture.", { exact: true })
-    .waitFor();
+    .waitFor({state:"attached"});
   for (const mode of ["manual", "limited", "full"]) {
     await page
       .locator("nav")
@@ -294,7 +297,7 @@ try {
       mode === "manual" ? 0 : 1,
     );
     const retained = await page.evaluate(
-      () => JSON.parse(localStorage.getItem("hymn-heart-v1")).songs[0].review,
+      () => JSON.parse(localStorage.getItem("hymn-heart-v1")).songs[0].aiReview,
     );
     assert.equal(retained.summary, "AI draft visibility fixture.");
   }
@@ -338,6 +341,7 @@ try {
     `http://127.0.0.1:${server.address().port}/Worship-Song-Tool/`,
   );
   await checkEvaluationFlows(browser, `http://127.0.0.1:${server.address().port}/Worship-Song-Tool/`);
+  await checkDiscoveryFlows(browser, `http://127.0.0.1:${server.address().port}/Worship-Song-Tool/`);
   console.log(
     "PASS: hosted subdirectory assets, static edition without API calls, backup download, invalid import rejection, cancel preservation, confirmed restore, reload and mobile controls.",
   );

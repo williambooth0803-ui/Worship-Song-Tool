@@ -17,6 +17,7 @@ if (process.argv.includes("--dry-run")) {
         order: [
           "verify published consent page",
           "apply read-only SQL",
+          "apply private song-file storage policies",
           "deploy function",
           "verify authentication challenge",
           "enable native OAuth",
@@ -83,6 +84,11 @@ await api("/database/query", {
   }),
 });
 console.log("Read-only database migration applied.");
+await api("/database/query", {
+  method: "POST", headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({ query: await readFile(new URL("../supabase/files.sql", import.meta.url), "utf8") }),
+});
+console.log("Private song-file storage policies applied.");
 await api("/functions/deploy?slug=faithful-mcp", {
   method: "POST",
   body: upload.form,

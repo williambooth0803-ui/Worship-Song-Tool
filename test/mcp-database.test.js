@@ -139,6 +139,15 @@ test("real PostgreSQL: native accounts retain writes; OAuth is isolated, project
     assert.ok(!encoded.includes("SECRET"));
     assert.ok(!encoded.includes("OTHER OWNER"));
     assert.equal(data.plans[0].items[0].song_title, song.title);
+    await identity(owner);
+    await db.exec("update public.workspaces set workspace=jsonb_set(workspace,'{songs,0,blacklisted}','true')");
+    await identity(owner,true);
+    const hidden=await snapshot();
+    assert.deepEqual(hidden.songs,[]);assert.deepEqual(hidden.libraries[0].songIds,[]);
+    assert.equal(hidden.plans[0].items[0].song_title,"Blacklisted song");
+    assert.ok(!JSON.stringify(hidden).includes(song.title));
+    await identity(owner);
+    await db.exec("update public.workspaces set workspace=jsonb_set(workspace,'{songs,0,blacklisted}','false')");
     await identity(other, true);
     await assert.rejects(snapshot(), /not authorized/);
     await identity(owner);

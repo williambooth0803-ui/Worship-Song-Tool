@@ -1,4 +1,4 @@
-import { reveal } from "./disclosure.mjs";
+import { reveal, keepAIIfOffered } from "./disclosure.mjs";
 import { catalogSongs } from "../public/catalog.js";
 import { chromium } from "playwright";
 import assert from "node:assert/strict";
@@ -41,6 +41,7 @@ await reveal(page, "button", { name: "Save assessment", exact: true });
 await page
   .getByRole("button", { name: "Save assessment", exact: true })
   .click();
+  await keepAIIfOffered(page);
 await reveal(page, "button", { name: "+ Save to library" });
 await page.getByRole("button", { name: "+ Save to library" }).click();
 await page.getByLabel("My repertoire", { exact: true }).check();
@@ -183,13 +184,13 @@ const drafted = await page.evaluate(
   () =>
     JSON.parse(localStorage.getItem("hymn-heart-v1")).songs.find(
       (s) => s.id === "amazing-grace",
-    ).review,
+    ),
 );
-assert.equal(drafted.status, "ai");
-assert.equal(drafted.previous.status, "manual");
-assert.match(drafted.notes, /Teach grace/);
-assert.equal(drafted.key, "D");
-assert.equal(drafted.scores.time, null);
+assert.equal(drafted.review.status, "manual");
+assert.equal(drafted.aiReview.status, "ai");
+assert.match(drafted.review.notes, /Teach grace/);
+assert.equal(drafted.review.key, "D");
+assert.equal(drafted.aiReview.scores.time, null);
 await page.getByRole("searchbox").fill("holy holy");
 await page.setViewportSize({ width: 390, height: 844 });
 await page.screenshot({ path: "/tmp/worship-mobile.png", fullPage: true });

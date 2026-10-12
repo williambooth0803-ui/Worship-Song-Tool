@@ -23,7 +23,7 @@ async function show() {
     throw new Error("Open this page from the ChatGPT connection setup.");
   if (!client.user) {
     root.innerHTML =
-      '<p>Sign in to choose what ChatGPT may read.</p><form id="connect-signin"><label>Email<input name="email" type="email" autocomplete="email" required></label><label>Password<input name="password" type="password" autocomplete="current-password" required></label><p id="connection-error" role="alert"></p><button class="button primary">Sign in</button></form><p><a href="./index.html" target="_blank" rel="noopener">Create an account or reset your password</a></p>';
+      '<p>Sign in to choose what ChatGPT may read.</p><form id="connect-signin" autocomplete="on"><label>Email<input id="connect-email" name="email" type="email" autocomplete="username" inputmode="email" autocapitalize="none" spellcheck="false" required></label><label>Password<input id="connect-password" name="password" type="password" autocomplete="current-password" required></label><p id="connection-error" role="alert"></p><button class="button primary">Sign in</button></form><p><a href="./index.html" target="_blank" rel="noopener">Create an account or reset your password</a></p>';
     return;
   }
   owner = client.user.id;

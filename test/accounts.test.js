@@ -34,6 +34,24 @@ const response = (value, status = 200) =>
     status,
     headers: { "Content-Type": "application/json" },
   });
+test("persistent sessions are shared by clients and sign-out is observed without copying credentials to workspace data", async () => {
+  const store=storage(),first=new AccountClient(config,{storage:store,fetcher:async()=>response(session)});
+  await first.signIn("fixture@example.com","secret");
+  const second=new AccountClient(config,{storage:store});assert.equal(second.user.id,user.id);
+  first.setSession(null);assert.equal(second.syncStoredSession(),true);assert.equal(second.user,null);
+});
+test("temporary provider failures do not discard a persistent session",async()=>{
+  const client=new AccountClient(config,{storage:storage(),fetcher:async()=>response({message:"Try later"},503)});
+  client.setSession(session);await assert.rejects(client.restoreSession(),/Try later/);assert.equal(client.user.id,user.id);
+});
+test("file operations reject other owners before sending a request and send uploads as binary",async()=>{
+  const calls=[],client=new AccountClient(config,{storage:storage(),fetcher:async(url,options)=>{calls.push({url,options});return response({Key:"stored"});}});
+  client.setSession(session);
+  await assert.rejects(client.uploadSongFile("10000000-0000-4000-8000-000000000001/song/file.pdf",new Blob(["data"])),/different account/);
+  assert.equal(calls.length,0);
+  const file=new Blob(["binary"],{type:"application/pdf"});await client.uploadSongFile(user.id+"/song/file.pdf",file);
+  assert.equal(calls[0].options.body,file);assert.match(calls[0].options.headers.Authorization,/fixture-access/);
+});
 test("client build accepts only public keys and HTTPS settings", () => {
   assert.ok(validateAccountConfig(config));
   assert.equal(validateAccountConfig({}), null);

@@ -1,6 +1,7 @@
 import { allCatalogSongs, syncCatalog } from "./catalog.js";
 import { normalize } from "./core.js";
 import { validateWorkspace } from "./backup.js";
+import { artistCollections } from "./artist-collections.js";
 
 export const depthLabels = {
   essentials: "Essentials",
@@ -22,29 +23,20 @@ const selected = (id, name, description, songIds, essentials, standards) => ({
   description,
   songIds: [...new Set(songIds)],
   revision: 1,
+  group: "Styles",
   limits: { essentials, standards },
   source:
     "Editorial title selection · not a ranked chart or denominational endorsement",
 });
 export const songCollections = [
-  ...[
-    "Elevation Worship",
-    "Elevation RHYTHM",
-    "Red Rocks Worship",
-    "Bethel Music",
-    "Hillsong",
-    "The Worship Initiative",
-    "Sovereign Grace",
-  ].map((artist) =>
-    selected(
-      "artist-" + normalize(artist).replaceAll(" ", "-"),
+  ...artistCollections.map(([artist, pattern]) => ({
+    ...selected(
+      "artist-" + normalize(({"Shane & Shane":"The Worship Initiative", "Sovereign Grace Music":"Sovereign Grace", "Hillsong Worship / Hillsong UNITED":"Hillsong"})[artist] || artist).replaceAll(" ", "-"),
       artist,
-      "Recording associations across worship and modern hymn texts. Assess songs individually; inclusion is not an endorsement.",
-      allCatalogSongs.filter((s) => s.author.includes(artist)).map((s) => s.id),
-      2,
-      4,
-    ),
-  ),
+      "Recording and writing associations. Verify the version you sing.",
+      allCatalogSongs.filter(s => pattern.test(s.author)).map(s => s.id), 5, 15,
+    ), group: "Artists",
+  })),
   selected(
     "baptist-mixed",
     "Baptist church repertoire",
@@ -183,6 +175,18 @@ export const songCollections = [
     10,
   ),
 ];
+for (const [id, name, group, titles] of [
+  ["era-classic-choruses", "Classic worship choruses · 1970s–1990s", "Eras", ["He Is Exalted", "We Bow Down", "We Will Glorify", "Lamb of God", "How Beautiful", "Oh Lord, You're Beautiful", "There Is a Redeemer", "Create in Me a Clean Heart", "Shout to the Lord", "Open the Eyes of My Heart", "Above All", "Agnus Dei", "You Are My King (Amazing Love)", "I Give You My Heart", "Draw Me Close", "Breathe", "He Knows My Name", "Praise Adonai"]],
+  ["era-2000s", "Worship of the 2000s", "Eras", ["How Great Is Our God", "Blessed Be Your Name", "Beautiful One", "Mighty to Save", "Hosanna", "The Stand", "Revelation Song", "Amazing Grace (My Chains Are Gone)", "Jesus Messiah", "Your Grace Is Enough", "Here I Am to Worship", "Your Love Never Fails", "How He Loves", "God of This City", "Our God Saves", "In Christ Alone", "The Power of the Cross", "Speak, O Lord"]],
+  ["era-2010s", "Worship of the 2010s", "Eras", ["10,000 Reasons (Bless the Lord)", "Living Hope", "Goodness of God", "Build My Life", "Oceans (Where Feet May Fail)", "What a Beautiful Name", "Great Are You Lord", "Holy Spirit", "This Is Amazing Grace", "O Come to the Altar", "Resurrecting", "King of Kings", "Run to the Father", "Good Good Father", "Raise a Hallelujah", "Yet Not I but Through Christ in Me", "His Mercy Is More", "Only a Holy God"]],
+  ["era-2020s", "Worship of the 2020s", "Eras", ["Christ Be Magnified", "The Blessing", "Graves into Gardens", "Battle Belongs", "Hymn of Heaven", "Holy Forever", "Praise", "Same God", "Trust in God", "Good Plans", "Goodbye Yesterday", "Washed", "Known by You", "At the Altar", "Hard Fought Hallelujah", "I Speak Jesus", "Thank You Jesus for the Blood", "There Is One Gospel", "You've Already Won"]],
+  ["theme-grace", "Grace & assurance", "Themes", ["Amazing Grace", "In Christ Alone", "His Mercy Is More", "He Will Hold Me Fast", "All I Have Is Christ", "Before the Throne of God Above", "Blessed Assurance", "Grace Greater than Our Sin", "It Was Finished Upon That Cross", "All Sufficient Merit", "Christ Our Hope in Life and Death", "There Is One Gospel", "Jesus, Thank You", "I Know Whom I Have Believed", "My Worth Is Not in What I Own", "O Lord, My Rock and My Redeemer"]],
+  ["theme-holiness", "God's holiness & majesty", "Themes", ["Holy, Holy, Holy", "Only a Holy God", "Holy Forever", "Behold Our God", "He Is Our God", "Immortal, Invisible, God Only Wise", "O Worship the King", "Praise to the Lord, the Almighty", "Agnus Dei", "Revelation Song", "Is He Worthy?", "King of Kings", "How Great Is Our God", "Great Are You Lord", "The God of Abraham Praise", "All Creatures of Our God and King"]],
+  ["theme-prayer", "Prayer & dependence", "Themes", ["Lord, I Need You", "I Need Thee Every Hour", "Sweet Hour of Prayer", "God I Look to You", "Speak, O Lord", "Holy Spirit, Living Breath of God", "Give Me Jesus", "O Great God", "My Heart Is Filled with Thankfulness", "Take My Life and Let It Be", "The Lord's Prayer (It's Yours)", "The Lord's My Shepherd (Psalm 23)", "Be Thou My Vision", "Jesus, Strong and Kind", "Abide with Me", "Run to the Father"]],
+]) {
+  const songIds = titles.flatMap(title => allCatalogSongs.filter(s => normalize(s.title) === normalize(title)).map(s => s.id));
+  songCollections.push({ ...selected(id, name, group === "Eras" ? "Songs associated with this worship era; later recordings may differ. This is an editorial grouping, not verified release-year metadata." : "An editorial topic grouping. Check the chosen lyric version before use.", songIds, 5, 12), group });
+}
 export function collectionSongs(collection, depth = "essentials") {
   if (!collection || !Object.hasOwn(depthLabels, depth))
     throw new Error("Choose a collection and depth.");
@@ -234,6 +238,7 @@ export function importSongs(
     if (seen.has(song.id)) continue;
     seen.add(song.id);
     let existing = existingMatch(next, song);
+    if (existing?.blacklisted || song.blacklisted) continue;
     if (!existing) {
       existing = structuredClone(song);
       next.songs.push(existing);

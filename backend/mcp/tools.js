@@ -126,6 +126,11 @@ function songDetails(song, data, includeText) {
     preferred_arrangement_id: song.preferredArrangementId || null,
   };
   result.review.scriptures = specificScriptures(r.scriptures);
+  if (data.ai_mode === "full" && song.aiReview?.status === "ai") {
+    result.ai_evaluation = pick(song.aiReview, ["status", "scores", "summary", "claims", "concerns", "uses", "themes", "sources", "language", "time", "concern", "updatedAt", "model", "aiFields"]);
+    result.ai_evaluation.scriptures = specificScriptures(song.aiReview.scriptures);
+  }
+  if (song.facts) result.fact_provenance = song.facts;
   if (data.permissions.notes) {
     result.personal_notes = r.notes || "";
     result.approval_notes = song.approval?.notes || "";
