@@ -7,12 +7,14 @@ The public website is hosted at https://williambooth0803-ui.github.io/Worship-So
 ## Current workflow
 
 - Build a profile from the prominent setup prompt: denomination, a named statement-of-faith starting point, custom convictions and personal AI-content visibility.
-- Search 20 traditional hymns by title, author, opening line or theme. Filter by theme and church-use decision; sort by title, overall rating or theological substance.
+- Start with 40 mixed hymn, modern hymn, worship, CCM and gospel title records. Browse 215 distinct titles across nine collections, choosing Essentials, Standards or All before a selective import. Search also surfaces matching catalog titles not yet imported; open an individual record without importing its entire collection. Filter by song type, assessment status, theme and church-use decision.
 - Edit assessments, personal notes, Scripture connections, source links, arrangement observations, key and duration.
 - Compare your current review with the separately preserved catalog assessment.
 - Mark songs as not reviewed, approved, approved with context or to avoid. Context/avoid decisions require reasoning; approving requires acknowledgement of the exact version and concerns. Changes to the assessment require fresh approval. Avoided songs require reconsideration before being added to a plan.
-- Save songs to multiple libraries. Build and reorder services with songs, readings, prayer and other items; export a text outline.
+- Save songs to multiple libraries; rename them, import/export CSV title lists, or delete a library while keeping its song records. Build and reorder services with songs, readings, prayer and other items; duplicate an independent draft, export a timed text outline, or print/save a PDF. Completed services supply recorded song-use history.
 - Export and restore validated JSON backups, including backups from the original four-song version. Existing personal reviews, libraries and plans survive catalog expansion.
+
+The 20 traditional hymn assessments remain editorial starter drafts. The additional 195 titles identify songs/associated recordings without invented lyrics, scores, theological claims or musical evidence. Artist associations are not complete songwriting credits; verify your chosen version. Catalog membership and collection depth never imply church approval.
 
 Catalog assessments are **editorial starter drafts under a Baptist/Reformed-friendly baseline**, not AI output, live research or a verified consensus. The statement presets are short working summaries, not reproductions of full confessions. Different profiles do not silently rewrite existing catalog judgments. Musical findings and arrangement time remain unassessed until evidence is supplied. Default durations are planning estimates.
 
@@ -26,9 +28,9 @@ choose a metric column, sort, and export current results as CSV.
 
 **Edit index details** records tune, meter, tempo, time signature, vocal range,
 difficulty, instruments, language, tags and optional song words. Custom text or
-numeric metrics extend the index. These details are human-entered. Without full
+numeric metrics extend the index. These details are human-entered. Arrangement records store selected-key vocal bounds, jumps, instrumental difficulty, durations, and observed wordless/instrumental seconds. Pitch spans are calculated from supplied note names, never inferred from lyrics. Arrangement measurements in the index use the preferred arrangement; All arrangement keys is a separate index field. Without full
 words the concordance covers only the opening line, which is labeled in the UI.
-Text/theme changes require a fresh church-use approval.
+Text/theme changes and preferred-arrangement changes require a fresh church-use approval. Local text counts make “just,” interior “just,” “oh,” unique words and repeated lines searchable without AI; counts are observations, not automatic quality penalties. Song-use history distinguishes saved plans from services explicitly marked completed.
 
 **AI criteria search** is an explicit, optional lookup within a selected personal
 library (1–100 songs). It requires Full AI content and the private local AI service.
@@ -41,6 +43,31 @@ A future read-only ChatGPT app connection is described in
 [CHATGPT-CONNECTION.md](CHATGPT-CONNECTION.md). It requires a deployed HTTPS MCP
 backend and per-user authorization; it is not installed or available yet.
 [DESIGN.md](DESIGN.md) records the user's design and human-planning boundaries.
+
+## Collection imports and scale
+
+Nine editorial collections cover mixed Baptist repertoire, Baptist hymn selections,
+modern hymns, contemporary worship, CCM/choruses, gospel, Presbyterian/Reformed hymn
+selections, Advent/Christmas and cross/resurrection titles. Essentials, Standards
+and All are nested depth levels with exact preview counts. Import individual
+selected titles into a new or existing library. Overlapping/repeated imports reuse
+matching records and keep personal assessments, notes, arrangements and approval.
+Import history survives JSON backups and account saves. Selections are not ranked
+charts or official denomination/hymnal lists; a sourced Top 500 list remains future work.
+
+CSV title lists support Title/Song Title, Attribution/Writer, Themes and Preferred
+Key. Files are previewed, accept quoted commas/newlines and are limited to 1 MB /
+1,000 rows. They transfer title records, not complete personal reviews; use JSON
+backups for complete workspace migration. Imported records keep their selected text
+version separate when attributions differ.
+
+Discovery renders 24 songs per page; the index renders 50 and exports every matching
+result. History lookup and repeated text calculations are cached during indexing.
+`npm run test:scale` verifies 1,000 synthetic songs and 1,000 plans; these fixtures
+are not catalog entries or precomputed AI reviews. The account database still stores
+owner-scoped JSON workspaces, with a 5 MB backup-file limit and browser storage quotas.
+Larger shared catalogs/real-time collaboration will need normalized shared song,
+version/analysis and owner-review tables rather than increasingly large workspace blobs.
 
 ## AI-content preferences
 
@@ -91,15 +118,18 @@ Open the app on port 3000. `PORT` overrides it; `npm run dev` watches server cha
 ```sh
 npm test
 npm run test:hosted
+npm run test:scale
 # With npm start running:
 npm run test:browser
 ```
 
-`test:hosted` builds the GitHub Pages edition and starts a temporary local server under the repository path. It checks restoration, guided profiles, approval rules, mobile layout and a simulated account service with isolated users and synced profiles. `test:browser` covers reviews, multiple libraries, plans and a simulated AI draft. Neither fixture is a real provider integration test. Chromium is expected at `/usr/bin/chromium`; set `CHROMIUM_PATH` for another executable. `APP_URL` overrides the development test address.
+`test:hosted` builds the GitHub Pages edition and starts a temporary local server under the repository path. It checks restoration, guided profiles, approval rules, mobile layout and a simulated account service with isolated users and synced profiles. `test:browser` covers reviews, multiple libraries, plans and a simulated AI draft. It also exercises collection imports, CSV/library management, arrangements, plan copies, print/PDF output and completed-use history. These fixtures are not real provider integration tests. Chromium is expected at `/usr/bin/chromium`; set `CHROMIUM_PATH` for another executable. `APP_URL` overrides the development test address.
 
 The published static site has no private credentials or personal workspace data. Stored index words and notes belong to browser/account workspaces and their backups. Without a configured account, data stays in this browser. Clearing site data removes it; use **Backup & restore** for a copy. Restoring replaces the current workspace only after validation and confirmation; invalid files and cancellation preserve existing data. Backups are limited to 5 MB.
 
 Before deploying a paid AI backend for multiple users, add authenticated requests, authorization and rate limits. The current Node backend is for personal/local development. The app does not yet retrieve licensed lyrics, analyze scores/audio, offer a 1,000-song AI catalog, or coordinate shared church approvals across multiple users.
+
+The GitHub **App checks** workflow runs unit, scale and hosted browser checks on main pushes and pull requests, then verifies committed Pages output matches the build. Tests require no live AI credentials.
 
 ## Cloud tasks
 

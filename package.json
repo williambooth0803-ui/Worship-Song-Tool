@@ -8,6 +8,7 @@
     "dev": "node --watch server.js",
     "test": "node --test test/*.test.js",
     "test:browser": "node scripts/browser-smoke.mjs",
+    "test:scale": "node scripts/scale-smoke.mjs",
     "build:site": "node scripts/build-site.mjs",
     "test:hosted": "npm run build:site && node scripts/hosted-smoke.mjs"
   },

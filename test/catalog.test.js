@@ -2,6 +2,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import {
   catalogSongs,
+  allCatalogSongs,
   syncCatalog,
   discoverSongs,
   invalidateApproval,
@@ -26,7 +27,7 @@ test("catalog expansion is idempotent and keeps saved songs and personal reviews
   old.songs[1].review.notes = "My notes";
   old.songs[1].review.scores.substance = 5;
   const migrated = syncCatalog(old);
-  assert.equal(migrated.songs.length, 20);
+  assert.equal(migrated.songs.length, 40);
   assert.equal(old.songs.length, 4);
   assert.deepEqual(migrated.libraries, old.libraries);
   assert.deepEqual(migrated.songs[1].review, old.songs[1].review);
@@ -80,10 +81,19 @@ test("discovery filters and sort order respect unknown scores", () => {
   );
   assert.equal(songs[0].id, "holy-holy-holy");
 });
-test("all catalog entries are clearly editorial and leave arrangement findings unknown", () => {
-  assert.equal(new Set(catalogSongs.map((s) => s.id)).size, 20);
-  for (const song of catalogSongs) {
-    assert.equal(song.review.status, "starter");
+test("catalog has distinct traditional and modern titles without invented assessments", () => {
+  assert.equal(new Set(allCatalogSongs.map((s) => s.id)).size, 215);
+  assert.equal(
+    catalogSongs.filter((s) => s.review.status === "starter").length,
+    20,
+  );
+  for (const song of allCatalogSongs) {
+    assert.ok(["starter", "unreviewed"].includes(song.review.status));
+    if (song.review.status === "unreviewed") {
+      assert.ok(Object.values(song.review.scores).every((s) => s === null));
+      assert.deepEqual(song.review.claims, []);
+      assert.equal(song.firstLine, "");
+    }
     assert.equal(song.review.scores.time, null);
     assert.match(song.review.musical, /^Not assessed/);
   }

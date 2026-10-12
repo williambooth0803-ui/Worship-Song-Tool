@@ -1,5 +1,7 @@
 import { dimensions } from "./core.js";
 import { denominations, statements, aiModes } from "./profile.js";
+import { songTypes } from "./repertoire-data.js";
+import { parsePitch } from "./planning.js";
 
 export const MAX_BACKUP_BYTES = 5 * 1024 * 1024;
 
@@ -137,6 +139,75 @@ export function validateWorkspace(input) {
       themes: texts(song.themes, "themes"),
       review: review(song.review),
     };
+    if (song.category !== undefined)
+      result.category = choice(
+        song.category,
+        "song type",
+        Object.keys(songTypes),
+      );
+    if (song.arrangements !== undefined) {
+      result.arrangements = array(song.arrangements, "arrangements", 50).map(
+        (a) => {
+          object(a, "arrangement");
+          const checked = {
+            id: id(a.id),
+            name: text(a.name, "arrangement name", 200, true),
+            key: text(a.key, "arrangement key", 30),
+            minutes: number(a.minutes, "arrangement duration", 0.5, 60),
+            notes: text(a.notes, "arrangement notes"),
+            lowNote: text(a.lowNote, "lowest note", 10),
+            highNote: text(a.highNote, "highest note", 10),
+          };
+          for (const k of [
+            "tempo",
+            "largestLeap",
+            "wordlessSeconds",
+            "instrumentalSeconds",
+          ]) {
+            const bounds = {
+              tempo: [20, 400],
+              largestLeap: [0, 36],
+              wordlessSeconds: [0, a.minutes * 60],
+              instrumentalSeconds: [0, a.minutes * 60],
+            }[k];
+            checked[k] = a[k] === null ? null : number(a[k], k, ...bounds);
+          }
+          for (const k of [
+            "timeSignature",
+            "vocalDifficulty",
+            "instrumentalDifficulty",
+          ])
+            checked[k] = text(a[k], k, 300);
+          checked.instruments = texts(a.instruments, "arrangement instruments");
+          for (const k of ["lowNote", "highNote"])
+            if (checked[k] && parsePitch(checked[k]) === null)
+              fail("use note names such as C4 or F#5 for the vocal range.");
+          if (
+            checked.lowNote &&
+            checked.highNote &&
+            parsePitch(checked.lowNote) > parsePitch(checked.highNote)
+          )
+            fail("the lowest vocal note must not exceed the highest note.");
+          return checked;
+        },
+      );
+      unique(
+        result.arrangements.map((a) => a.id),
+        "arrangements",
+      );
+    }
+    if (
+      song.preferredArrangementId !== undefined &&
+      song.preferredArrangementId !== null
+    ) {
+      result.preferredArrangementId = id(song.preferredArrangementId);
+      if (
+        !result.arrangements?.some(
+          (a) => a.id === result.preferredArrangementId,
+        )
+      )
+        fail("the preferred arrangement is missing.");
+    }
     if (song.metadata !== undefined) {
       const value = object(song.metadata, "song index details");
       result.metadata = {};
@@ -252,6 +323,14 @@ export function validateWorkspace(input) {
         if (!songIds.has(result.songId))
           fail("a plan references a missing song.");
         result.key = text(item.key, "item key", 100);
+        if (item.arrangementId !== undefined)
+          result.arrangementId = id(item.arrangementId);
+        if (item.arrangementName !== undefined)
+          result.arrangementName = text(
+            item.arrangementName,
+            "arrangement name",
+            200,
+          );
       } else result.title = text(item.title, "item title", 200, true);
       return result;
     });
@@ -267,7 +346,7 @@ export function validateWorkspace(input) {
         new Date(date).toISOString().slice(0, 10) !== date)
     )
       fail("the plan date is invalid.");
-    return {
+    const checkedPlan = {
       id: id(plan.id),
       title: text(plan.title, "plan title", 200, true),
       date,
@@ -275,6 +354,13 @@ export function validateWorkspace(input) {
       passage: text(plan.passage, "sermon passage", 200),
       items,
     };
+    if (plan.status !== undefined)
+      checkedPlan.status = choice(plan.status, "plan status", [
+        "draft",
+        "ready",
+        "completed",
+      ]);
+    return checkedPlan;
   });
   unique(
     plans.map((p) => p.id),
@@ -300,6 +386,29 @@ export function validateWorkspace(input) {
       principles: text(profile.principles, "rating parameters", 6000, true),
     },
   };
+  if (input.collectionImports !== undefined)
+    result.collectionImports = array(
+      input.collectionImports,
+      "collection imports",
+      100,
+    ).map((item) => {
+      object(item, "collection import");
+      const importedAt = text(item.importedAt, "import date", 100, true);
+      if (!Number.isFinite(Date.parse(importedAt)))
+        fail("the collection import date is invalid.");
+      return {
+        id: id(item.id),
+        collectionId: id(item.collectionId),
+        depth: choice(item.depth, "collection depth", [
+          "essentials",
+          "standards",
+          "all",
+        ]),
+        importedAt,
+        added: number(item.added, "added songs", 0, 5000),
+        saved: number(item.saved, "saved songs", 0, 5000),
+      };
+    });
   for (const [key, choices] of [
     ["denomination", Object.keys(denominations)],
     ["statement", Object.keys(statements)],

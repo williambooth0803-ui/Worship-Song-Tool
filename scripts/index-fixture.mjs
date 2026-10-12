@@ -42,7 +42,7 @@ export async function checkIndexFlows(browser, base) {
     .locator("nav")
     .getByRole("button", { name: "Song index", exact: true })
     .click();
-  assert.equal(await page.locator(".index-table tbody tr").count(), 20);
+  assert.equal(await page.locator(".index-table tbody tr").count(), 40);
   await page
     .getByRole("button", {
       name: "Edit index details for Amazing Grace",

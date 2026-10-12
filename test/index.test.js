@@ -16,6 +16,7 @@ import { workspaceSignature, saveLabel } from "../public/saving.js";
 import { validateWorkspace } from "../public/backup.js";
 import { syncCatalog } from "../public/catalog.js";
 import { defaultProfile } from "../public/core.js";
+import { textStats } from "../public/text-stats.js";
 const workspace = () =>
   syncCatalog({
     version: 1,
@@ -169,4 +170,23 @@ test("save status compares stable JSONB values and leaves newer local edits unsa
   assert.equal(saveLabel(status, state), "Saved to your account");
   state.songs[0].review.notes = "Newer change";
   assert.match(saveLabel(status, state), /Changes saved in this browser/);
+});
+test("text counts distinguish missing full text, interior words and meaningful praise", () => {
+  assert.equal(textStats({ firstLine: "Just as I am" }).justCount, null);
+  const song = {
+    metadata: {
+      lyrics:
+        "Just as I am\nWe just sing truth\nOh, oh, alleluia\nWe just sing truth",
+    },
+  };
+  assert.equal(textStats(song).justCount, 3);
+  assert.equal(textStats(song).interiorJust, 2);
+  assert.equal(textStats(song).ohCount, 2);
+  assert.equal(textStats(song).repeatedLines, 1);
+  song.metadata.lyrics = "We praise you";
+  assert.equal(
+    textStats(song).justCount,
+    0,
+    "text updates invalidate cached counts",
+  );
 });

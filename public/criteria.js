@@ -1,8 +1,10 @@
 import { reviewForDisplay, themesForDisplay } from "./profile.js";
+import { selectedArrangement } from "./planning.js";
 
 export function criteriaEvidence(song, profile) {
   const review = reviewForDisplay(song, profile.aiMode),
-    m = song.metadata || {};
+    m = song.metadata || {},
+    a = selectedArrangement(song);
   return {
     id: song.id,
     title: song.title,
@@ -13,23 +15,34 @@ export function criteriaEvidence(song, profile) {
       : "Opening line only",
     themes: themesForDisplay(song, profile.aiMode).slice(0, 20),
     summary: review.summary.slice(0, 600),
+    assessmentSource: review.status,
     claims: review.claims.slice(0, 5).map((s) => s.slice(0, 120)),
     musical: review.musical.slice(0, 500),
     language: review.language.slice(0, 500),
     time: review.time.slice(0, 300),
-    range: m.range || "",
-    vocalDifficulty: m.vocalDifficulty || "",
-    instrumentalDifficulty: m.instrumentalDifficulty || "",
+    range: a
+      ? `${a.lowNote || "unrecorded"} to ${a.highNote || "unrecorded"}`
+      : m.range || "",
+    vocalDifficulty: a?.vocalDifficulty ?? m.vocalDifficulty ?? "",
+    instrumentalDifficulty:
+      a?.instrumentalDifficulty ?? m.instrumentalDifficulty ?? "",
+    arrangement: a
+      ? {
+          name: a.name,
+          key: a.key,
+          minutes: a.minutes,
+          largestLeap: a.largestLeap,
+          wordlessSeconds: a.wordlessSeconds,
+          instrumentalSeconds: a.instrumentalSeconds,
+          notes: a.notes.slice(0, 400),
+        }
+      : null,
     tags: (m.tags || []).slice(0, 10).map((s) => s.slice(0, 100)),
-    custom: (m.custom || [])
-      .slice(0, 5)
-      .map((item) => ({
-        ...item,
-        value:
-          typeof item.value === "string"
-            ? item.value.slice(0, 120)
-            : item.value,
-      })),
+    custom: (m.custom || []).slice(0, 5).map((item) => ({
+      ...item,
+      value:
+        typeof item.value === "string" ? item.value.slice(0, 120) : item.value,
+    })),
   };
 }
 export function validateCriteriaResults(value, songs) {

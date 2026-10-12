@@ -1,0 +1,26 @@
+name: App checks
+on:
+  push:
+    branches: [main]
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+          cache: npm
+      - run: npm ci
+      - run: npm test
+      - run: npm run test:scale
+      - run: npx playwright install --with-deps chromium
+      - name: Locate Playwright Chromium
+        run: node -e 'require("node:fs").appendFileSync(process.env.GITHUB_ENV,"CHROMIUM_PATH="+require("playwright").chromium.executablePath()+"\n")'
+      - run: npm run test:hosted
+      - name: Check published files are up to date
+        run: git diff --exit-code -- docs

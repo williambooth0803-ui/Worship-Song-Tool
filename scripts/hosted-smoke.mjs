@@ -6,6 +6,7 @@ import assert from "node:assert/strict";
 import { chromium } from "playwright";
 import { checkAccountFlows } from "./account-fixture.mjs";
 import { checkIndexFlows } from "./index-fixture.mjs";
+import { checkRepertoireFlows } from "./repertoire-fixture.mjs";
 
 const root = fileURLToPath(new URL("../docs/", import.meta.url));
 const requests = [];
@@ -52,7 +53,11 @@ try {
   await page
     .getByRole("heading", { name: "Find words worth singing." })
     .waitFor();
-  assert.equal(await page.locator(".song-card").count(), 20);
+  assert.equal(await page.locator(".song-card").count(), 24);
+  assert.match(
+    await page.locator(".song-list .pagination").textContent(),
+    /of 40/,
+  );
   assert.equal(
     await page.locator("html").getAttribute("data-edition"),
     "static",
@@ -278,6 +283,10 @@ try {
     `http://127.0.0.1:${server.address().port}/Worship-Song-Tool/`,
   );
   await checkIndexFlows(
+    browser,
+    `http://127.0.0.1:${server.address().port}/Worship-Song-Tool/`,
+  );
+  await checkRepertoireFlows(
     browser,
     `http://127.0.0.1:${server.address().port}/Worship-Song-Tool/`,
   );

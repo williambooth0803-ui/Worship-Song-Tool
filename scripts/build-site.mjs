@@ -8,6 +8,7 @@ import {
 import { fileURLToPath } from "node:url";
 import path from "node:path";
 import { validateAccountConfig } from "../public/accounts.js";
+import { siteConfig } from "../public/config.js";
 
 const project = fileURLToPath(new URL("../", import.meta.url));
 const source = path.join(project, "public");
@@ -16,6 +17,7 @@ await mkdir(destination, { recursive: true });
 for (const file of await readdir(source, { withFileTypes: true })) {
   if (!file.isFile() || !/\.(js|css|html|svg|png|ico)$/.test(file.name))
     continue;
+  if (file.name === "config.js") continue;
   if (file.name === "index.html") {
     const html = (await readFile(path.join(source, file.name), "utf8")).replace(
       '<html lang="en">',
@@ -30,12 +32,19 @@ for (const file of await readdir(source, { withFileTypes: true })) {
 }
 await writeFile(path.join(destination, ".nojekyll"), "");
 // These are browser-safe project identifiers, not privileged credentials.
-if (process.env.SUPABASE_URL || process.env.SUPABASE_PUBLISHABLE_KEY) {
+{
+  const overridden = Boolean(
+    process.env.SUPABASE_URL || process.env.SUPABASE_PUBLISHABLE_KEY,
+  );
   const config = {
-    supabaseUrl: process.env.SUPABASE_URL || "",
-    supabasePublishableKey: process.env.SUPABASE_PUBLISHABLE_KEY || "",
+    supabaseUrl: overridden
+      ? process.env.SUPABASE_URL || ""
+      : siteConfig.supabaseUrl || "",
+    supabasePublishableKey: overridden
+      ? process.env.SUPABASE_PUBLISHABLE_KEY || ""
+      : siteConfig.supabasePublishableKey || "",
   };
-  if (!validateAccountConfig(config))
+  if (!validateAccountConfig(config) && overridden)
     throw new Error("Supply both public Supabase project settings.");
   await writeFile(
     path.join(destination, "config.js"),

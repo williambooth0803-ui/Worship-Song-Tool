@@ -1,11 +1,30 @@
 import { seedSongs } from "./seeds.js";
 import {
   catalogSongs,
+  allCatalogSongs,
   syncCatalog,
   discoverSongs,
   approvalLabels,
   invalidateApproval,
 } from "./catalog.js";
+import { songTypes } from "./repertoire-data.js";
+import {
+  songCollections,
+  depthLabels,
+  collectionSongs,
+  existingMatch,
+  importSongs,
+  songsFromCSV,
+} from "./collections.js";
+import {
+  copyPlan,
+  songUsage,
+  elapsedTime,
+  selectedArrangement,
+  rangeSpan,
+  planOutline,
+} from "./planning.js";
+import { textStats } from "./text-stats.js";
 import { validateWorkspace, MAX_BACKUP_BYTES } from "./backup.js";
 import {
   denominations,
@@ -44,6 +63,14 @@ let activeStore = STORE;
 const accounts = new AccountClient(siteConfig);
 let accountReady = !accounts.session;
 let wizardDraft = null;
+let importDraft = null,
+  collectionDepth = "essentials",
+  songPage = 1,
+  indexPageNumber = 1;
+let typeFilter = "",
+  reviewFilter = "";
+const PAGE_SIZE = 24,
+  INDEX_PAGE_SIZE = 50;
 let accountSave = { phase: "local", signature: null, remoteAvailable: false };
 let indexQuery = "",
   indexRules = [],
@@ -115,6 +142,19 @@ function persist() {
     return false;
   }
 }
+function commitWorkspace(next) {
+  try {
+    localStorage.setItem(activeStore, JSON.stringify(next));
+    state = next;
+    updateSaveStrip();
+    return true;
+  } catch {
+    toast(
+      "Browser storage is full or unavailable. The current workspace is preserved; export a backup before adding more data.",
+    );
+    return false;
+  }
+}
 function modal(html) {
   dialog.innerHTML = `<div class="modal-top"><span class="eyebrow">FAITHFUL REPERTOIRE</span><button type="button" data-action="close" class="icon-button" aria-label="Close dialog">×</button></div>${html}`;
   dialog.showModal();
@@ -136,7 +176,16 @@ function statusLabel(review) {
 }
 function discoveryControls(pool) {
   const themes = [...new Set(pool.flatMap((song) => song.themes))].sort();
-  return `<div class="discovery-controls"><label>Theme<select id="theme-filter" aria-label="Theme"><option value="">All themes</option>${themes.map((t) => `<option value="${e(t)}" ${t === themeFilter ? "selected" : ""}>${e(t)}</option>`).join("")}</select></label><label>Church use<select id="approval-filter" aria-label="Church use"><option value="">All decisions</option>${Object.entries(
+  return `<div class="discovery-controls"><label>Song type<select id="type-filter" aria-label="Song type"><option value="">All types</option>${Object.entries(
+    songTypes,
+  )
+    .map(
+      ([value, label]) =>
+        `<option value="${value}" ${typeFilter === value ? "selected" : ""}>${e(label)}</option>`,
+    )
+    .join(
+      "",
+    )}</select></label><label>Assessment<select id="review-filter" aria-label="Assessment"><option value="">All assessments</option><option value="unreviewed" ${reviewFilter === "unreviewed" ? "selected" : ""}>Awaiting assessment</option><option value="assessed" ${reviewFilter === "assessed" ? "selected" : ""}>Has an assessment</option></select></label><label>Theme<select id="theme-filter" aria-label="Theme"><option value="">All themes</option>${themes.map((t) => `<option value="${e(t)}" ${t === themeFilter ? "selected" : ""}>${e(t)}</option>`).join("")}</select></label><label>Church use<select id="approval-filter" aria-label="Church use"><option value="">All decisions</option>${Object.entries(
     approvalLabels,
   )
     .map(
@@ -157,7 +206,7 @@ function discoveryControls(pool) {
     )
     .join(
       "",
-    )}</select></label>${themeFilter || approvalFilter ? '<button class="text-button" data-action="clear-filters">Clear filters</button>' : ""}</div>`;
+    )}</select></label>${themeFilter || approvalFilter || typeFilter || reviewFilter ? '<button class="text-button" data-action="clear-filters">Clear filters</button>' : ""}</div>`;
 }
 function churchDecision(song) {
   const decision = song.approval || { status: "unreviewed", notes: "" };
@@ -166,6 +215,8 @@ function churchDecision(song) {
 function catalogComparison(song) {
   if (!song.catalogReview) return "";
   const base = song.catalogReview;
+  if (base.status === "unreviewed")
+    return '<details class="catalog-comparison"><summary>Catalog title record</summary><p class="muted">This catalog entry identifies a title and attribution or associated recording. No lyric assessment, musical measurement, source verification or church approval is implied.</p></details>';
   const displayed = reviewForDisplay(song, state.profile.aiMode);
   return `<details class="catalog-comparison"><summary>${song.review.status === "starter" ? "Catalog assessment & provenance" : "Compare with the catalog assessment"}</summary><p class="muted">Editorial starter assessment · revision ${e(song.catalogRevision)}. Your personal assessment is stored separately. These notes are not an AI review or independent verification.</p><table><caption>Assessment scores</caption><thead><tr><th>Dimension</th><th>Catalog</th><th>Current</th></tr></thead><tbody>${Object.entries(
     dimensions,
@@ -251,6 +302,11 @@ function resetSelection() {
   planId = state.plans[0]?.id;
   view = "discover";
   query = themeFilter = approvalFilter = "";
+  typeFilter = reviewFilter = "";
+  songPage = indexPageNumber = 1;
+  indexRules = [];
+  indexQuery = "";
+  importDraft = null;
 }
 function switchWorkspace(user = null) {
   accountSave = { phase: "local", signature: null, remoteAvailable: false };
@@ -374,17 +430,18 @@ function render() {
   app.innerHTML = `<aside class="sidebar"><a class="brand" href="#" data-action="nav" data-view="discover"><span class="brand-mark">✣</span><span>Faithful<br>Repertoire<small>WORDS WORTH SINGING</small></span></a><div class="workspace-label">YOUR WORKSPACE</div><nav aria-label="Main navigation">${[
     ["discover", "", "Discover songs"],
     ["index", "", "Song index"],
+    ["collections", "", "Collections"],
     ["library", "", "Song libraries"],
     ["plans", "", "Worship plans"],
     ["profile", "", "Rating profile"],
   ]
     .map(
       ([id, icon, text]) =>
-        `<button data-action="nav" data-view="${id}" class="nav-item ${view === id ? "active" : ""}"><span>${icon}</span>${text}${id === "library" ? `<b>${count}</b>` : ""}</button>`,
+        `<button aria-label="${e(text)}" data-action="nav" data-view="${id}" class="nav-item ${view === id ? "active" : ""}"><span>${icon}</span>${text}${id === "library" ? `<b>${count}</b>` : ""}</button>`,
     )
     .join(
       "",
-    )}</nav><div class="sidebar-bottom"><div class="small-heading">A thoughtful repertoire.</div><p>Sound doctrine. Meaningful words.<br>A congregation that can sing.</p><button class="text-button" data-action="export">↓ Export your data</button><div class="local-note">Saved on this browser · no account needed</div></div></aside><main><header class="topbar"><span>Faithful Repertoire <span class="divider">/</span> ${e({ discover: "Discover", index: "Song index", library: "Libraries", plans: "Planning", profile: "Preferences" }[view])}</span><div class="topbar-actions"><button class="button" data-action="account">${accounts.user && activeStore !== STORE ? "My account" : "Sign in"}</button><button class="button" data-action="backup">Backup & restore</button><span class="workspace-pill"><span class="dot"></span>Personal workspace</span></div></header><div class="page">${saveStrip()}${profilePrompt()}${view === "discover" || view === "library" ? songWorkspace() : view === "index" ? indexPage() : view === "plans" ? plansPage() : profilePage()}</div><footer>Thoughtful tools for faithful worship. <span>First edition · ${aiConfigured ? "AI drafting available" : "Manual review available"}</span></footer></main>`;
+    )}</nav><div class="sidebar-bottom"><div class="small-heading">A thoughtful repertoire.</div><p>Sound doctrine. Meaningful words.<br>A congregation that can sing.</p><button class="text-button" data-action="export">↓ Export your data</button><div class="local-note">Saved on this browser · no account needed</div></div></aside><main><header class="topbar"><span>Faithful Repertoire <span class="divider">/</span> ${e({ discover: "Discover", index: "Song index", collections: "Collections", library: "Libraries", plans: "Planning", profile: "Preferences" }[view])}</span><div class="topbar-actions"><button class="button" data-action="account">${accounts.user && activeStore !== STORE ? "My account" : "Sign in"}</button><button class="button" data-action="backup">Backup & restore</button><span class="workspace-pill"><span class="dot"></span>Personal workspace</span></div></header><div class="page">${saveStrip()}${profilePrompt()}${view === "discover" || view === "library" ? songWorkspace() : view === "index" ? indexPage() : view === "collections" ? collectionsPage() : view === "plans" ? plansPage() : profilePage()}</div><footer>Thoughtful tools for faithful worship. <span>First edition · ${aiConfigured ? "AI drafting available" : "Manual review available"}</span></footer></main>`;
 }
 function songWorkspace() {
   const isLibrary = view === "library";
@@ -399,16 +456,113 @@ function songWorkspace() {
     themes: themesForDisplay(song, state.profile.aiMode),
   }));
   const songs = discoverSongs(
-    searchSongs(pool, query),
+    searchSongs(pool, query).filter(
+      (s) =>
+        (!typeFilter || (s.category || "other") === typeFilter) &&
+        (!reviewFilter ||
+          (reviewFilter === "unreviewed"
+            ? reviewForDisplay(s, state.profile.aiMode).status === "unreviewed"
+            : reviewForDisplay(s, state.profile.aiMode).status !==
+              "unreviewed")),
+    ),
     { theme: themeFilter, approval: approvalFilter, sort: sortOrder },
     state.profile,
   );
+  const available =
+    query.trim() && !isLibrary
+      ? searchSongs(allCatalogSongs, query).filter(
+          (song) => !existingMatch(state, song),
+        )
+      : [];
+  songPage = Math.max(
+    1,
+    Math.min(songPage, Math.ceil(songs.length / PAGE_SIZE) || 1),
+  );
+  const shown = songs.slice((songPage - 1) * PAGE_SIZE, songPage * PAGE_SIZE);
   const song =
     state.songs.find(
-      (s) => s.id === selected && songs.some((x) => x.id === s.id),
-    ) || songs[0];
+      (s) => s.id === selected && shown.some((x) => x.id === s.id),
+    ) || shown[0];
   if (song) selected = song.id;
-  return `<div class="page-heading"><div><div class="eyebrow">${isLibrary ? "MAKE IT YOUR OWN" : "BUILD A FAITHFUL REPERTOIRE"}</div><h1>${isLibrary ? "Your song libraries" : "Find words worth singing."}</h1><p>${isLibrary ? "The songs you know, the notes you trust, the repertoire you’re building." : "Explore the theology, language, and practical place of every song."}</p></div><button class="button primary" data-action="${isLibrary ? "new-library" : "new-song"}">+ ${isLibrary ? "New library" : "Add a song"}</button></div>${isLibrary ? `<div class="library-tabs">${state.libraries.map((l) => `<button class="${l.id === lib?.id ? "selected" : ""}" data-action="library-select" data-id="${e(l.id)}">${e(l.name)} <span>${l.songIds.length}</span></button>`).join("")}</div>` : `<div class="intro-note"><div><strong>More than “nothing unbiblical.”</strong><span>Look for substantial truth, clear language, and a meaningful use of time.</span></div><button data-action="nav" data-view="profile">Your rating profile ›</button></div>`}<div class="search-row"><label class="search-box"><span>⌕</span><input id="search" type="search" value="${e(query)}" placeholder="Search by title, writer, or theme…" aria-label="Search songs"></label><span class="result-count">${songs.length} song${songs.length === 1 ? "" : "s"}</span></div>${discoveryControls(pool)}<div class="song-workspace"><section class="song-list" aria-label="Song results">${songs.length ? songs.map((s) => songCard(s, s.id === song.id)).join("") : `<div class="empty"><span>♫</span><h3>${query ? "No matching songs" : "A repertoire starts with one song."}</h3><p>${query ? "Try another title or add a song to review." : "Find a song in Discover and save it here."}</p><button class="button" data-action="${query ? "new-song" : "nav"}" data-view="discover">${query ? "Add a song" : "Discover songs"}</button></div>`}<div class="catalog-note">${isLibrary ? "Library membership does not imply church approval." : `${catalogSongs.length} catalog hymns + your own songs. Catalog assessments are editorial drafts, not verified research.`}</div></section>${song ? songDetail(song, isLibrary ? lib : null) : '<section class="detail-panel empty"><h2>Your next song belongs here.</h2><p>Save an existing song or add one to begin a review.</p></section>'}</div>`;
+  return `<div class="page-heading"><div><div class="eyebrow">${isLibrary ? "MAKE IT YOUR OWN" : "BUILD A FAITHFUL REPERTOIRE"}</div><h1>${isLibrary ? "Your song libraries" : "Find words worth singing."}</h1><p>${isLibrary ? "The songs you know, the notes you trust, the repertoire you’re building." : "Explore the theology, language, and practical place of every song."}</p></div><button class="button primary" data-action="${isLibrary ? "new-library" : "new-song"}">+ ${isLibrary ? "New library" : "Add a song"}</button></div>${isLibrary ? `${libraryToolbar(lib)}<div class="library-tabs">${state.libraries.map((l) => `<button class="${l.id === lib?.id ? "selected" : ""}" data-action="library-select" data-id="${e(l.id)}">${e(l.name)} <span>${l.songIds.length}</span></button>`).join("")}</div>` : `<div class="collection-prompt"><span>Start with essentials or add a deeper collection of hymns, worship, CCM, or gospel.</span><button class="text-button" data-action="nav" data-view="collections">Browse collections</button></div><div class="intro-note"><div><strong>More than “nothing unbiblical.”</strong><span>Look for substantial truth, clear language, and a meaningful use of time.</span></div><button data-action="nav" data-view="profile">Your rating profile ›</button></div>`}<div class="search-row"><label class="search-box"><span>⌕</span><input id="search" type="search" value="${e(query)}" placeholder="Search by title, writer, or theme…" aria-label="Search songs"></label><span class="result-count">${songs.length} song${songs.length === 1 ? "" : "s"}</span></div>${catalogMatches(available)}${discoveryControls(pool)}<div class="song-workspace"><section class="song-list" aria-label="Song results">${songs.length ? shown.map((s) => songCard(s, s.id === song.id)).join("") : `<div class="empty"><span>♫</span><h3>${query ? "No matching songs" : "A repertoire starts with one song."}</h3><p>${query ? "Try another title or add a song to review." : "Find a song in Discover and save it here."}</p><button class="button" data-action="${query ? "new-song" : "nav"}" data-view="discover">${query ? "Add a song" : "Discover songs"}</button></div>`}${pagination("song", songPage, songs.length, PAGE_SIZE)}<div class="catalog-note">${isLibrary ? "Library membership does not imply church approval." : `${state.songs.length} workspace songs · ${allCatalogSongs.length} titles available in Collections. Imports preserve your reviews; most new titles await assessment.`}</div></section>${song ? songDetail(song, isLibrary ? lib : null) : '<section class="detail-panel empty"><h2>Your next song belongs here.</h2><p>Save an existing song or add one to begin a review.</p></section>'}</div>`;
+}
+function catalogMatches(songs) {
+  if (!songs.length) return "";
+  return `<section class="catalog-matches"><h2>Catalog matches outside your workspace</h2><p class="muted">${songs.length} matching title${songs.length === 1 ? "" : "s"}. Open a record to review it, then choose whether to save it in a library.</p><ul>${songs
+    .slice(0, 8)
+    .map(
+      (song) =>
+        `<li><div><strong>${e(song.title)}</strong><small>${e(song.author)}</small></div><button class="button" data-action="catalog-open" data-id="${e(song.id)}">Open record</button></li>`,
+    )
+    .join(
+      "",
+    )}</ul>${songs.length > 8 ? '<p class="muted">Showing eight matches. Enter more of the title to narrow the lookup.</p>' : ""}</section>`;
+}
+function pagination(kind, page, count, size) {
+  const pages = Math.ceil(count / size) || 1;
+  if (pages === 1) return "";
+  return `<div class="pagination"><span>${(page - 1) * size + 1}–${Math.min(page * size, count)} of ${count}</span><button class="button" data-action="${kind}-page" data-id="${page - 1}" ${page === 1 ? "disabled" : ""}>Previous</button><span>Page ${page} of ${pages}</span><button class="button" data-action="${kind}-page" data-id="${page + 1}" ${page === pages ? "disabled" : ""}>Next</button></div>`;
+}
+function collectionsPage() {
+  return `<div class="page-heading"><div><div class="eyebrow">CHOOSE YOUR CATALOG DEPTH</div><h1>Song collections</h1><p>Import the titles relevant to your church. Review songs and arrangements before approving their use.</p></div><button class="button" data-action="csv-import">Import your song list</button></div><div class="collection-levels"><label>Collection depth<select id="collection-depth" aria-label="Collection depth">${Object.entries(
+    depthLabels,
+  )
+    .map(
+      ([id, label]) =>
+        `<option value="${id}" ${id === collectionDepth ? "selected" : ""}>${label}</option>`,
+    )
+    .join(
+      "",
+    )}</select></label><div><strong>${e(depthLabels[collectionDepth])}</strong><p>${{ essentials: "A smaller starting selection in each category.", standards: "A broader working repertoire in each category.", all: "Every title currently included in each collection." }[collectionDepth]}</p></div></div><p class="index-help">${allCatalogSongs.length} distinct catalog titles. Selections overlap; imports reuse existing songs and preserve your reviews, notes and church decisions. Depth levels are editorial selections, not popularity rankings. New title records have no invented ratings or lyrics.</p><div class="collection-list">${songCollections
+    .map((pack) => {
+      const songs = collectionSongs(pack, collectionDepth),
+        present = songs.filter((s) => existingMatch(state, s)).length;
+      return `<article class="collection-row"><div><h2>${e(pack.name)}</h2><p>${e(pack.description)}</p><small>${e(pack.source)}</small></div><div class="collection-count"><strong>${songs.length}</strong><span>titles · ${present} already in workspace</span></div><button class="button" data-action="collection-preview" data-id="${pack.id}">Preview & import</button></article>`;
+    })
+    .join("")}</div>${
+    state.collectionImports?.length
+      ? `<details class="import-history"><summary>Your collection import history</summary><ul>${state.collectionImports
+          .slice()
+          .reverse()
+          .map(
+            (item) =>
+              `<li>${e(songCollections.find((p) => p.id === item.collectionId)?.name || item.collectionId)} · ${e(depthLabels[item.depth])} · ${e(new Date(item.importedAt).toLocaleDateString())} · ${item.added} new records, ${item.saved} library additions</li>`,
+          )
+          .join("")}</ul></details>`
+      : ""
+  }`;
+}
+function previewCollection(pack, depth = collectionDepth) {
+  importDraft = {
+    packId: pack.id,
+    depth,
+    songs: collectionSongs(pack, depth),
+    target: "__new__",
+    name: `${pack.name} · ${depthLabels[depth]}`,
+  };
+  importDialog();
+}
+function importDialog() {
+  const draft = importDraft,
+    pack = songCollections.find((p) => p.id === draft.packId);
+  const present = draft.songs.filter((s) => existingMatch(state, s)).length;
+  modal(
+    `<h2>${pack ? e(pack.name) : "Import your song list"}</h2><p class="muted">${draft.songs.length} titles · ${draft.songs.length - present} new records · ${present} existing records preserved. Choose which titles to save.</p><form id="collection-import-form">${
+      pack
+        ? `<label>Depth<select name="depth" aria-label="Import depth">${Object.entries(
+            depthLabels,
+          )
+            .map(
+              ([id, label]) =>
+                `<option value="${id}" ${id === draft.depth ? "selected" : ""}>${label} (${collectionSongs(pack, id).length})</option>`,
+            )
+            .join("")}</select></label>`
+        : ""
+    }<label>Save into<select name="target" aria-label="Import target"><option value="__new__" ${draft.target === "__new__" ? "selected" : ""}>A new library</option>${state.libraries.map((l) => `<option value="${e(l.id)}" ${draft.target === l.id ? "selected" : ""}>${e(l.name)}</option>`).join("")}</select></label><label>New library name<input name="name" maxlength="100" value="${e(draft.name)}" ${draft.target === "__new__" ? "required" : "disabled"}></label><div class="selection-actions"><button type="button" class="text-button" data-action="import-select-all">Select all</button><button type="button" class="text-button" data-action="import-select-none">Select none</button></div><div class="import-song-list">${draft.songs.map((s) => `<label class="import-song"><input type="checkbox" name="songs" value="${e(s.id)}" checked><span><strong>${e(s.title)}</strong><small>${e(s.author)}</small><small>${existingMatch(state, s) ? "Existing record · your review will be kept" : "New title record · awaiting assessment"}</small></span></label>`).join("")}</div><p class="index-help">Library membership is separate from approval. No lyrics are downloaded and no AI requests are sent. CSV title-list imports do not restore ratings; use a JSON backup to transfer complete reviews.</p><p id="import-error" role="alert"></p><div class="form-actions"><button type="button" class="button" data-action="close">Cancel</button><button class="button primary">Import selected songs</button></div></form>`,
+  );
+}
+function libraryToolbar(lib) {
+  return `<div class="library-toolbar"><span>${e(lib?.name || "")}</span><div><button class="text-button" data-action="rename-library" data-id="${e(lib?.id)}">Rename</button><button class="text-button" data-action="export-library" data-id="${e(lib?.id)}">Export song list</button><button class="text-button" data-action="csv-import">Import song list</button><button class="text-button danger" data-action="delete-library" data-id="${e(lib?.id)}" ${state.libraries.length === 1 ? "disabled" : ""}>Delete library</button></div></div>`;
 }
 function songCard(s, active) {
   const displayedReview = reviewForDisplay(s, state.profile.aiMode);
@@ -416,7 +570,11 @@ function songCard(s, active) {
   return `<button class="song-card ${active ? "selected" : ""}" data-action="song-select" data-id="${e(s.id)}"><div class="song-card-top"><span class="song-symbol">♫</span><span class="card-score">${score ?? "—"}<small>/10</small></span></div><h3>${e(s.title)}</h3><p>${e(s.author)}</p><div class="tags">${tagList(s.themes.slice(0, 2))}</div><div class="card-bottom"><span>${e(s.approval?.status !== "unreviewed" ? approvalLabels[s.approval.status] : statusLabel(displayedReview))}</span><span>›</span></div></button>`;
 }
 function songDetail(song, lib) {
-  const r = reviewForDisplay(song, state.profile.aiMode),
+  const visible = reviewForDisplay(song, state.profile.aiMode),
+    arrangement = selectedArrangement(song),
+    r = arrangement
+      ? { ...visible, key: arrangement.key, minutes: arrangement.minutes }
+      : visible,
     score = overall(r, state.profile);
   const saved = state.libraries.some((l) => l.songIds.includes(song.id));
   return `<article class="detail-panel"><div class="detail-header"><span class="eyebrow">SONG SPOTLIGHT</span><span class="status-badge">${e(statusLabel(r))}</span></div><h2>${e(song.title)}</h2><p class="author">${e(song.author)}</p><p class="version">${e(song.version)}</p><div class="detail-actions"><button class="button primary" data-action="save-song" data-id="${e(song.id)}">${saved ? "✓ Saved · manage libraries" : "+ Save to library"}</button><button class="button" data-action="add-to-plan" data-id="${e(song.id)}">Add to plan ›</button><button class="text-button" data-action="edit-index" data-id="${e(song.id)}">Edit index details</button></div>${churchDecision(song)}<div class="rating-banner"><div class="overall-score">${score ?? "—"}<span>/10</span></div><div><strong>${e(recommendation(r, state.profile))}</strong><p>${score === null ? "Add an assessment to see a rating." : "Weighted to your theological profile."}</p><small>Unknown dimensions are excluded; this may be a partial score.</small></div></div><div class="score-grid">${Object.entries(
@@ -428,7 +586,7 @@ function songDetail(song, lib) {
     )
     .join(
       "",
-    )}</div><div class="review-controls"><button class="text-button" data-action="edit-review" data-id="${e(song.id)}">✎ Edit assessment</button>${state.profile.aiMode === "manual" ? `<span class="muted">Human reviews only</span>` : `<button class="text-button" data-action="ai-review" data-id="${e(song.id)}">${state.profile.aiMode === "limited" ? "Get limited assistance" : "Draft with AI"}</button>`}</div><section class="detail-section"><h3>The assessment</h3><p>${e(r.summary || "No assessment yet. Start a manual review or draft one with AI.")}</p>${r.updatedAt ? `<small class="muted">Last edited ${e(new Date(r.updatedAt).toLocaleDateString())}${r.model ? ` · ${e(r.model)}` : ""}</small>` : ""}</section><section class="detail-section"><h3>What does it actually say?</h3>${list(r.claims)}</section><div class="detail-columns"><section class="detail-section"><h3>Good places in a service</h3><div class="tags">${tagList(r.uses)}</div></section><section class="detail-section"><h3>Themes</h3><div class="tags">${tagList(themesForDisplay(song, state.profile.aiMode))}</div></section></div><section class="detail-section"><h3>Scripture connections</h3>${list(r.scriptures)}<small class="muted">References are review suggestions; verify their context and the chosen song text.</small></section><section class="detail-section"><h3>Language & meaningful time</h3><p>${e(r.language || "Language not assessed.")}</p><p>${e(r.time || "Arrangement not assessed.")}</p></section><section class="detail-section"><h3>Musical considerations <span class="subtle-badge">${r.musical.startsWith("Not assessed") ? "Not assessed" : "Your notes"}</span></h3><p>${e(r.musical)}</p><div class="metadata"><span>Preferred key <strong>${e(r.key || "Not set")}</strong></span><span>Planning duration <strong>${e(r.minutes)} min</strong></span></div><small class="muted">Duration is a planning estimate, not a verified recording length.</small></section>${r.concerns.length ? `<section class="detail-section concern"><h3>Things to consider</h3>${list(r.concerns)}</section>` : ""}<section class="detail-section"><h3>Your notes</h3><p class="notes-text">${e(r.notes || "Add your thoughts, teaching notes, and arrangement choices in Edit assessment.")}</p></section>${r.assistance ? `<section class="detail-section"><h3>Limited assistance notes</h3><p>${e(r.assistance.summary)}</p><p>${e(r.assistance.language)}</p><p>${e(r.assistance.time)}</p><small class="muted">AI observations · verify against your supplied evidence. These did not change your ratings.</small></section>` : ""}${catalogComparison(song)}<section class="detail-section"><h3>Sources & provenance</h3>${r.sources.length ? `<ul class="source-list">${r.sources.map((s) => `<li>${/^https?:\/\//.test(s.url) ? `<a href="${e(s.url)}" target="_blank" rel="noopener noreferrer">${e(s.label)} ›</a>` : e(s.label)}</li>`).join("")}</ul>` : '<p class="muted">No external sources attached. AI drafts analyze supplied text without browsing.</p>'}<p class="muted">${r.status === "starter" ? "Starter editorial notes; source links are references for your verification, not a claim of live source review." : r.status === "ai" ? "AI-generated draft. Verify claims and Scripture links before church use." : "Your editable assessment; it does not imply independent verification."}</p>${r.previous ? '<small class="muted">Previous assessment preserved in exported data.</small>' : ""}</section>${lib ? `<button class="text-button danger" data-action="remove-library-song" data-id="${e(song.id)}">Remove from ${e(lib.name)}</button>` : ""}</article>`;
+    )}</div><div class="review-controls"><button class="text-button" data-action="edit-review" data-id="${e(song.id)}">✎ Edit assessment</button>${state.profile.aiMode === "manual" ? `<span class="muted">Human reviews only</span>` : `<button class="text-button" data-action="ai-review" data-id="${e(song.id)}">${state.profile.aiMode === "limited" ? "Get limited assistance" : "Draft with AI"}</button>`}</div><section class="detail-section"><h3>The assessment</h3><p>${e(r.summary || "No assessment yet. Start a manual review or draft one with AI.")}</p>${r.updatedAt ? `<small class="muted">Last edited ${e(new Date(r.updatedAt).toLocaleDateString())}${r.model ? ` · ${e(r.model)}` : ""}</small>` : ""}</section><section class="detail-section"><h3>What does it actually say?</h3>${list(r.claims)}</section><div class="detail-columns"><section class="detail-section"><h3>Good places in a service</h3><div class="tags">${tagList(r.uses)}</div></section><section class="detail-section"><h3>Themes</h3><div class="tags">${tagList(themesForDisplay(song, state.profile.aiMode))}</div></section></div><section class="detail-section"><h3>Scripture connections</h3>${list(r.scriptures)}<small class="muted">References are review suggestions; verify their context and the chosen song text.</small></section><section class="detail-section"><h3>Language & meaningful time</h3><p>${e(r.language || "Language not assessed.")}</p><p>${e(r.time || "Arrangement not assessed.")}</p></section><section class="detail-section"><h3>Musical considerations <span class="subtle-badge">${r.musical.startsWith("Not assessed") ? "Not assessed" : "Your notes"}</span></h3><p>${e(r.musical)}</p><div class="metadata"><span>Preferred key <strong>${e(r.key || "Not set")}</strong></span><span>Planning duration <strong>${e(r.minutes)} min</strong></span></div><small class="muted">Duration is a planning estimate, not a verified recording length.</small></section>${r.concerns.length ? `<section class="detail-section concern"><h3>Things to consider</h3>${list(r.concerns)}</section>` : ""}${arrangementSection(song)}${textStatsSection(song)}${usageSection(song)}<section class="detail-section"><h3>Your notes</h3><p class="notes-text">${e(r.notes || "Add your thoughts, teaching notes, and arrangement choices in Edit assessment.")}</p></section>${r.assistance ? `<section class="detail-section"><h3>Limited assistance notes</h3><p>${e(r.assistance.summary)}</p><p>${e(r.assistance.language)}</p><p>${e(r.assistance.time)}</p><small class="muted">AI observations · verify against your supplied evidence. These did not change your ratings.</small></section>` : ""}${catalogComparison(song)}<section class="detail-section"><h3>Sources & provenance</h3>${r.sources.length ? `<ul class="source-list">${r.sources.map((s) => `<li>${/^https?:\/\//.test(s.url) ? `<a href="${e(s.url)}" target="_blank" rel="noopener noreferrer">${e(s.label)} ›</a>` : e(s.label)}</li>`).join("")}</ul>` : '<p class="muted">No external sources attached. AI drafts analyze supplied text without browsing.</p>'}<p class="muted">${r.status === "starter" ? "Starter editorial notes; source links are references for your verification, not a claim of live source review." : r.status === "ai" ? "AI-generated draft. Verify claims and Scripture links before church use." : "Your editable assessment; it does not imply independent verification."}</p>${r.previous ? '<small class="muted">Previous assessment preserved in exported data.</small>' : ""}</section>${lib ? `<button class="text-button danger" data-action="remove-library-song" data-id="${e(song.id)}">Remove from ${e(lib.name)}</button>` : ""}</article>`;
 }
 function indexResults() {
   return filterIndex(
@@ -441,6 +599,7 @@ function indexResults() {
     },
     state.profile,
     state.libraries,
+    state.plans,
   );
 }
 function indexPage() {
@@ -449,15 +608,30 @@ function indexPage() {
   const fieldOptions = fields
     .map((f) => `<option value="${e(f.id)}">${e(f.label)}</option>`)
     .join("");
+  indexPageNumber = Math.max(
+    1,
+    Math.min(indexPageNumber, Math.ceil(songs.length / INDEX_PAGE_SIZE) || 1),
+  );
+  const shown = songs.slice(
+    (indexPageNumber - 1) * INDEX_PAGE_SIZE,
+    indexPageNumber * INDEX_PAGE_SIZE,
+  );
   const column = fields.find((f) => f.id === indexColumn) || fields[0];
   const entries = indexEntries(
     state.songs,
     browseField,
     state.profile,
     state.libraries,
+    state.plans,
   ).filter((entry) => indexText(entry.value).includes(indexText(browseQuery)));
   const display = (song, field) => {
-    const value = indexedValue(song, field, state.profile, state.libraries);
+    const value = indexedValue(
+      song,
+      field,
+      state.profile,
+      state.libraries,
+      state.plans,
+    );
     return e(Array.isArray(value) ? value.join(", ") : (value ?? "—"));
   };
   return `<div class="page-heading"><div><div class="eyebrow">CATALOG & PERSONAL REPERTOIRE</div><h1>Song index</h1><p>Find songs by their words and recorded details. You choose every song in your service.</p></div><div class="index-heading-actions"><button class="button" data-action="export-index">Export results (CSV)</button><button class="text-button" data-action="criteria-search">AI criteria search · optional</button></div></div><section class="index-tools" aria-label="Index search and filters"><form id="index-search-form"><label>Search across all indexed fields<input name="query" type="search" value="${e(indexQuery)}" placeholder="A word, writer, theme, passage, or note"></label><button class="button primary">Search index</button></form><form id="index-filter-form"><label>Field<select name="field" aria-label="Index field">${fieldOptions}</select></label><label>Match<select name="op" aria-label="Index match">${indexOperators("text")}</select></label><label>Value<input name="value" maxlength="1000" aria-label="Index value" list="index-values" required></label><datalist id="index-values">${indexEntries(
@@ -465,6 +639,7 @@ function indexPage() {
     "title",
     state.profile,
     state.libraries,
+    state.plans,
   )
     .slice(0, 200)
     .map((entry) => `<option value="${e(entry.value)}"></option>`)
@@ -478,7 +653,7 @@ function indexPage() {
           `<li><button data-action="index-entry" data-field="${e(browseField)}" data-value="${e(entry.value)}"><span>${e(entry.value)}</span><small>${entry.count}</small></button></li>`,
       )
       .join("") || "<li>No recorded values.</li>"
-  }</ul></details><div class="index-toolbar"><span class="result-count" role="status">${songs.length} of ${state.songs.length} songs</span><label>Sort<select id="index-sort" aria-label="Index sort">${fields.map((f) => `<option value="${e(f.id)}" ${f.id === indexSort ? "selected" : ""}>${e(f.label)}</option>`).join("")}</select></label><label>Order<select id="index-order" aria-label="Index order"><option value="asc" ${!indexDescending ? "selected" : ""}>Ascending</option><option value="desc" ${indexDescending ? "selected" : ""}>Descending</option></select></label><label>Additional column<select id="index-column" aria-label="Additional column">${fields.map((f) => `<option value="${e(f.id)}" ${f.id === column.id ? "selected" : ""}>${e(f.label)}</option>`).join("")}</select></label><button class="text-button" data-action="reset-index">Reset index</button></div></section><div class="index-table-wrap" role="region" aria-label="Song index results" tabindex="0"><table class="index-table"><caption>Song index · ${songs.length} results</caption><thead><tr><th scope="col">Song / writer</th><th scope="col">Themes</th><th scope="col">Key</th><th scope="col">Rating</th><th scope="col">${e(column.label)}</th><th scope="col">Details</th></tr></thead><tbody>${songs.map((song) => `<tr><th scope="row"><button class="index-title" data-action="index-open" data-id="${e(song.id)}">${e(song.title)}</button><small>${e(song.author)}</small></th><td>${display(song, "themes")}</td><td>${display(song, "key") || "—"}</td><td>${display(song, "rating")}</td><td class="index-extra">${display(song, column.id) || "—"}</td><td><button class="text-button" data-action="edit-index" data-id="${e(song.id)}" aria-label="Edit index details for ${e(song.title)}">Edit</button></td></tr>`).join("") || '<tr><td colspan="6">No songs match these filters. Remove a filter or enter more song details.</td></tr>'}</tbody></table></div><p class="index-help">Blank values mean unrecorded, not zero. Ratings and assessment fields follow your AI visibility preference. Planning durations are editable estimates. CSV includes all indexed fields for the current results.</p>`;
+  }</ul></details><div class="index-toolbar"><span class="result-count" role="status">${songs.length} of ${state.songs.length} songs</span><label>Sort<select id="index-sort" aria-label="Index sort">${fields.map((f) => `<option value="${e(f.id)}" ${f.id === indexSort ? "selected" : ""}>${e(f.label)}</option>`).join("")}</select></label><label>Order<select id="index-order" aria-label="Index order"><option value="asc" ${!indexDescending ? "selected" : ""}>Ascending</option><option value="desc" ${indexDescending ? "selected" : ""}>Descending</option></select></label><label>Additional column<select id="index-column" aria-label="Additional column">${fields.map((f) => `<option value="${e(f.id)}" ${f.id === column.id ? "selected" : ""}>${e(f.label)}</option>`).join("")}</select></label><button class="text-button" data-action="reset-index">Reset index</button></div></section><div class="index-table-wrap" role="region" aria-label="Song index results" tabindex="0"><table class="index-table"><caption>Song index · ${songs.length} results</caption><thead><tr><th scope="col">Song / attribution</th><th scope="col">Themes</th><th scope="col">Key</th><th scope="col">Rating</th><th scope="col">${e(column.label)}</th><th scope="col">Details</th></tr></thead><tbody>${shown.map((song) => `<tr><th scope="row"><button class="index-title" data-action="index-open" data-id="${e(song.id)}">${e(song.title)}</button><small>${e(song.author)}</small></th><td>${display(song, "themes")}</td><td>${display(song, "key") || "—"}</td><td>${display(song, "rating")}</td><td class="index-extra">${display(song, column.id) || "—"}</td><td><button class="text-button" data-action="edit-index" data-id="${e(song.id)}" aria-label="Edit index details for ${e(song.title)}">Edit</button></td></tr>`).join("") || '<tr><td colspan="6">No songs match these filters. Remove a filter or enter more song details.</td></tr>'}</tbody></table></div>${pagination("index", indexPageNumber, songs.length, INDEX_PAGE_SIZE)}<p class="index-help">Arrangement measurements apply to your preferred arrangement. Blank values mean unrecorded, not zero. Ratings and assessment fields follow your AI visibility preference. Planning durations are editable estimates. CSV includes all indexed fields for the current results.</p>`;
 }
 function indexOperators(type) {
   return (
@@ -533,6 +708,47 @@ function indexDetailsDialog(song) {
       )}<label>Tempo (BPM)<input name="tempo" type="number" min="20" max="400" step="any" value="${m.tempo ?? ""}"></label></div><label>Instruments, separated by commas<input name="instruments" maxlength="1000" value="${e((m.instruments || []).join(", "))}"></label><label>Your tags, separated by commas<input name="tags" maxlength="1000" value="${e((m.tags || []).join(", "))}" placeholder="Congregation knows, Advent, hymnal 123"></label><details class="index-lyrics"><summary>Song words for indexing</summary><p class="muted">Enter a text you have permission to store. The app does not fetch lyrics. These words are included in your workspace backups and account saves, and are sent to AI only if you explicitly supply them in a separate analysis request.</p><label>Song words<textarea name="lyrics" aria-label="Song words" rows="8" maxlength="30000">${e(m.lyrics || "")}</textarea></label></details><h3>Custom metrics</h3><p class="muted">Use the same metric name across songs to filter or sort them together. Choose Number for numeric comparisons.</p><div id="custom-metrics">${(m.custom?.length ? m.custom : [{}]).map(customMetricRow).join("")}</div><button type="button" class="text-button" data-action="add-metric">+ Add a metric</button><p id="index-error" role="alert"></p><div class="form-actions"><button type="button" class="button" data-action="close">Cancel</button><button class="button primary">Save index details</button></div></form>`,
   );
 }
+function arrangementSection(song) {
+  const chosen = selectedArrangement(song);
+  return `<section class="detail-section arrangement-section"><div class="section-heading"><h3>Your arrangements</h3><button class="text-button" data-action="new-arrangement" data-id="${e(song.id)}">Add arrangement</button></div><p class="muted">Record what your congregation and musicians actually sing. Range and difficulty apply to the selected key and version.</p>${song.arrangements?.length ? `<ul class="arrangement-list">${song.arrangements.map((a) => `<li><div><strong>${e(a.name)}</strong><small>${e(a.key || "Key not set")} · ${a.minutes} min${a.id === chosen?.id ? " · Preferred" : ""}</small><p>${e(a.lowNote || "—")} to ${e(a.highNote || "—")}${rangeSpan(a) !== null ? ` · ${rangeSpan(a)} semitones` : ""}${a.largestLeap !== null ? ` · largest jump: ${a.largestLeap} semitones` : ""}</p><p>${e(a.vocalDifficulty || "Vocal difficulty unrecorded")} · ${e(a.instrumentalDifficulty || "Instrumental difficulty unrecorded")}</p>${a.wordlessSeconds !== null || a.instrumentalSeconds !== null ? `<small>Wordless vocals: ${a.wordlessSeconds ?? "—"} sec · instrumentals: ${a.instrumentalSeconds ?? "—"} sec. These may overlap.</small>` : ""}${a.notes ? `<p>${e(a.notes)}</p>` : ""}</div><div class="arrangement-actions"><button class="text-button" data-action="edit-arrangement" data-id="${e(song.id)}" data-arrangement="${e(a.id)}">Edit</button>${a.id !== chosen?.id ? `<button class="text-button" data-action="prefer-arrangement" data-id="${e(song.id)}" data-arrangement="${e(a.id)}">Set preferred</button>` : ""}<button class="text-button danger" data-action="delete-arrangement" data-id="${e(song.id)}" data-arrangement="${e(a.id)}">Delete</button></div></li>`).join("")}</ul>` : '<p class="muted">No arrangement records yet. No vocal range or difficulty is inferred from the title or lyrics.</p>'}</section>`;
+}
+function arrangementDialog(song, a = null) {
+  modal(
+    `<h2>${a ? "Edit arrangement" : "Add an arrangement"}</h2><p>${e(song.title)}</p><form id="arrangement-form" data-song="${e(song.id)}" ${a ? `data-id="${e(a.id)}"` : ""}><label>Arrangement name<input name="name" maxlength="200" value="${e(a?.name || "")}" placeholder="Acoustic setting · three verses" required></label><div class="form-columns"><label>Arrangement key<input name="key" maxlength="30" value="${e(a?.key || "")}"></label><label>Arrangement duration (minutes)<input name="minutes" type="number" min="0.5" max="60" step="0.5" value="${a?.minutes || song.review.minutes}" required></label><label>Lowest vocal note<input name="lowNote" maxlength="10" value="${e(a?.lowNote || "")}" placeholder="C4"></label><label>Highest vocal note<input name="highNote" maxlength="10" value="${e(a?.highNote || "")}" placeholder="E5"></label>${[
+      ["tempo", "Tempo (BPM)", 20, 400],
+      ["largestLeap", "Largest vocal jump (semitones)", 0, 36],
+      ["wordlessSeconds", "Wordless vocals (seconds)", 0, 3600],
+      ["instrumentalSeconds", "Instrumentals (seconds)", 0, 3600],
+    ]
+      .map(
+        ([id, label, min, max]) =>
+          `<label>${label}<input name="${id}" type="number" min="${min}" max="${max}" step="any" value="${a?.[id] ?? ""}" placeholder="Unrecorded"></label>`,
+      )
+      .join(
+        "",
+      )}<label>Time signature<input name="timeSignature" maxlength="300" value="${e(a?.timeSignature || "")}"></label><label>Vocal difficulty<input name="vocalDifficulty" maxlength="300" value="${e(a?.vocalDifficulty || "")}" placeholder="High chorus; octave jump on final phrase"></label><label>Instrumental difficulty<input name="instrumentalDifficulty" maxlength="300" value="${e(a?.instrumentalDifficulty || "")}" placeholder="Syncopated rhythm; challenging piano introduction"></label></div><p class="index-help">Scientific pitch names use an octave number: middle C is C4; an octave is 12 semitones. Enter observations from the actual melody. Blank measurements stay unrecorded.</p><label>Instruments, separated by commas<input name="instruments" maxlength="1000" value="${e((a?.instruments || []).join(", "))}"></label><label>Arrangement notes<textarea name="notes" aria-label="Arrangement notes" maxlength="6000" rows="4">${e(a?.notes || "")}</textarea></label><label class="check-label"><input name="preferred" type="checkbox" ${!song.preferredArrangementId || song.preferredArrangementId === a?.id ? "checked" : ""}>Use as my preferred arrangement</label><p id="arrangement-error" role="alert"></p><div class="form-actions"><button class="button" type="button" data-action="close">Cancel</button><button class="button primary">Save arrangement</button></div></form>`,
+  );
+}
+function textStatsSection(song) {
+  const stats = textStats(song);
+  if (stats.wordCount === null) return "";
+  return `<section class="detail-section"><h3>Stored text observations</h3><dl class="text-statistics">${[
+    [stats.wordCount, "Words"],
+    [stats.uniqueWords, "Unique words"],
+    [stats.justCount, "“Just” occurrences"],
+    [stats.interiorJust, "Interior “just”"],
+    [stats.ohCount, "“Oh” occurrences"],
+    [stats.repeatedLines, "Repeated lines"],
+  ]
+    .map(([count, label]) => `<div><dt>${e(label)}</dt><dd>${count}</dd></div>`)
+    .join(
+      "",
+    )}</dl><p class="muted">These are counts from the text you stored, calculated without AI. They do not establish poor grammar or wasted time. Read “just” and repeated lines in context; meaningful words such as “alleluia” are not treated as “oh”.</p></section>`;
+}
+function usageSection(song) {
+  const usage = songUsage(state.plans, song.id);
+  return `<section class="detail-section"><h3>Use in your services</h3><p>${usage.planned} saved plan${usage.planned === 1 ? "" : "s"} · ${usage.completed} marked completed${usage.lastUsed ? ` · Last recorded use: ${e(usage.lastUsed)}` : ""}</p><small class="muted">Only services you mark completed count as recorded use.</small></section>`;
+}
 function plansPage() {
   const plan = state.plans.find((p) => p.id === planId) || state.plans[0];
   if (plan) planId = plan.id;
@@ -543,13 +759,16 @@ function plansPage() {
         state.songs.find((s) => s.id === i.songId)?.approval?.status,
       ),
   ).length;
+  let elapsed = 0;
   return `<div class="page-heading"><div><div class="eyebrow">FROM REPERTOIRE TO SUNDAY</div><h1>Plan with purpose.</h1><p>Give each song, reading, and moment a meaningful place.</p></div><button class="button primary" data-action="new-plan">+ New worship plan</button></div>${
     !plan
       ? `<section class="empty full-empty"><span>▦</span><h2>Your first service starts here.</h2><p>Create a plan, add a Scripture reading, and choose songs that support its message.</p><button class="button primary" data-action="new-plan">Create a worship plan</button></section>`
-      : `<div class="plan-layout"><aside class="plan-list">${state.plans.map((p) => `<button data-action="plan-select" data-id="${e(p.id)}" class="${p.id === plan.id ? "selected" : ""}"><strong>${e(p.title)}</strong><span>${e(p.date || "No date set")} · ${planDuration(p.items)} min</span></button>`).join("")}</aside><section class="plan-sheet"><div class="plan-sheet-header"><div><div class="eyebrow">${e(plan.date || "DATE TO BE CONFIRMED")}</div><h2>${e(plan.title)}</h2><p>${e(plan.theme || "Add a theme and sermon passage to guide your choices.")}</p>${plan.passage ? `<span class="tag">${e(plan.passage)}</span>` : ""}</div><div class="duration-total"><strong>${planDuration(plan.items)}</strong><span>minutes</span></div></div><button class="text-button" data-action="edit-plan">✎ Edit service details</button>${newSongs ? `<div class="plan-notice">${newSongs} song${newSongs === 1 ? "" : "s"} ${newSongs === 1 ? "has" : "have"} not been approved for your church. Confirm suitability before use.</div>` : ""}<ol class="service-items">${plan.items
+      : `<div class="plan-layout"><aside class="plan-list">${state.plans.map((p) => `<button data-action="plan-select" data-id="${e(p.id)}" class="${p.id === plan.id ? "selected" : ""}"><strong>${e(p.title)}</strong><span>${e(p.date || "No date set")} · ${planDuration(p.items)} min</span></button>`).join("")}</aside><section class="plan-sheet"><div class="plan-sheet-header"><div><div class="eyebrow">${e(plan.date || "DATE TO BE CONFIRMED")}</div><h2>${e(plan.title)}</h2><p>${e(plan.theme || "Add a theme and sermon passage to guide your choices.")}</p>${plan.passage ? `<span class="tag">${e(plan.passage)}</span>` : ""}</div><div class="duration-total"><strong>${planDuration(plan.items)}</strong><span>minutes</span></div></div><div class="plan-toolbar"><button class="text-button" data-action="edit-plan">Edit service details</button><button class="button" data-action="copy-plan">Duplicate plan</button><button class="button" data-action="print-plan">Print / Save PDF</button><button class="text-button danger" data-action="delete-plan">Delete plan</button><span class="plan-state">${e(plan.status || "draft")}</span></div>${newSongs ? `<div class="plan-notice">${newSongs} song${newSongs === 1 ? "" : "s"} ${newSongs === 1 ? "has" : "have"} not been approved for your church. Confirm suitability before use.</div>` : ""}<ol class="service-items">${plan.items
           .map((item, i) => {
             const song = state.songs.find((s) => s.id === item.songId);
-            return `<li><span class="item-number">${String(i + 1).padStart(2, "0")}</span><div class="service-item-content"><span class="eyebrow">${e(item.role || item.type)}</span><h3>${e(song?.title || item.title)}</h3><p>${e(item.notes || (song ? `${item.key || "Key not set"} · ${themesForDisplay(song, state.profile.aiMode).join(", ")}` : ""))}</p></div><span class="item-time">${e(item.minutes)} min</span><div class="item-buttons"><button class="icon-button" data-action="move-item" data-id="${e(item.id)}" data-direction="-1" aria-label="Move ${e(song?.title || item.title)} up" ${i === 0 ? "disabled" : ""}>↑</button><button class="icon-button" data-action="move-item" data-id="${e(item.id)}" data-direction="1" aria-label="Move ${e(song?.title || item.title)} down" ${i === plan.items.length - 1 ? "disabled" : ""}>↓</button><button class="icon-button" data-action="edit-item" data-id="${e(item.id)}" aria-label="Edit ${e(song?.title || item.title)}">✎</button><button class="icon-button danger" data-action="remove-item" data-id="${e(item.id)}" aria-label="Remove ${e(song?.title || item.title)}">×</button></div></li>`;
+            const offset = elapsedTime(elapsed);
+            elapsed += item.minutes;
+            return `<li><span class="item-number">${String(i + 1).padStart(2, "0")}</span><div class="service-item-content"><span class="eyebrow">${e(item.role || item.type)} · ${offset} from start</span><h3>${e(song?.title || item.title)}</h3><p>${song ? `<span class="plan-song-meta">${e(item.key || "Key not set")}${item.arrangementName ? ` · ${e(item.arrangementName)}` : ""}</span>` : ""}${e(item.notes || (song ? themesForDisplay(song, state.profile.aiMode).join(", ") : ""))}${song?.approval?.status === "context" ? `<span class="plan-conditions">Conditions: ${e(song.approval.notes)}</span>` : ""}</p></div><span class="item-time">${e(item.minutes)} min</span><div class="item-buttons"><button class="icon-button" data-action="move-item" data-id="${e(item.id)}" data-direction="-1" aria-label="Move ${e(song?.title || item.title)} up" ${i === 0 ? "disabled" : ""}>↑</button><button class="icon-button" data-action="move-item" data-id="${e(item.id)}" data-direction="1" aria-label="Move ${e(song?.title || item.title)} down" ${i === plan.items.length - 1 ? "disabled" : ""}>↓</button><button class="icon-button" data-action="edit-item" data-id="${e(item.id)}" aria-label="Edit ${e(song?.title || item.title)}">✎</button><button class="icon-button danger" data-action="remove-item" data-id="${e(item.id)}" aria-label="Remove ${e(song?.title || item.title)}">×</button></div></li>`;
           })
           .join(
             "",
@@ -631,7 +850,18 @@ function editReviewDialog(song) {
 }
 function planDialog(plan = null) {
   modal(
-    `<h2>${plan ? "Edit worship plan" : "A new worship plan"}</h2><form id="plan-form" ${plan ? `data-id="${e(plan.id)}"` : ""}><label>Service name<input name="title" maxlength="200" value="${e(plan?.title || "Sunday worship")}" required></label><label>Date<input name="date" type="date" value="${e(plan?.date || "")}"></label><label>Theme<input name="theme" maxlength="500" value="${e(plan?.theme || "")}" placeholder="The faithfulness of God"></label><label>Sermon passage<input name="passage" maxlength="200" value="${e(plan?.passage || "")}" placeholder="Psalm 46"></label><div class="form-actions"><button class="button" type="button" data-action="close">Cancel</button><button class="button primary">${plan ? "Save changes" : "Create plan"}</button></div></form>`,
+    `<h2>${plan ? "Edit worship plan" : "A new worship plan"}</h2><form id="plan-form" ${plan ? `data-id="${e(plan.id)}"` : ""}><label>Service name<input name="title" maxlength="200" value="${e(plan?.title || "Sunday worship")}" required></label><label>Date<input name="date" type="date" value="${e(plan?.date || "")}"></label><label>Theme<input name="theme" maxlength="500" value="${e(plan?.theme || "")}" placeholder="The faithfulness of God"></label><label>Sermon passage<input name="passage" maxlength="200" value="${e(plan?.passage || "")}" placeholder="Psalm 46"></label><label>Service status<select name="status" aria-label="Service status">${[
+      ["draft", "Draft"],
+      ["ready", "Ready"],
+      ["completed", "Completed"],
+    ]
+      .map(
+        ([id, label]) =>
+          `<option value="${id}" ${(plan?.status || "draft") === id ? "selected" : ""}>${label}</option>`,
+      )
+      .join(
+        "",
+      )}</select></label><div class="form-actions"><button class="button" type="button" data-action="close">Cancel</button><button class="button primary">${plan ? "Save changes" : "Create plan"}</button></div></form>`,
   );
 }
 function itemDialog(item = null) {
@@ -658,6 +888,143 @@ document.addEventListener("click", (event) => {
   const action = button.dataset.action,
     id = button.dataset.id;
   const song = state.songs.find((s) => s.id === id);
+  if (action === "catalog-open") {
+    const record = allCatalogSongs.find((s) => s.id === id),
+      next = clone(state);
+    let match = existingMatch(next, record);
+    if (!match) {
+      match = clone(record);
+      next.songs.push(match);
+    }
+    if (!commitWorkspace(validateWorkspace(syncCatalog(next)))) return;
+    selected = match.id;
+    query = match.title;
+    songPage = 1;
+    themeFilter = approvalFilter = typeFilter = reviewFilter = "";
+    render();
+    return;
+  }
+  if (action === "new-arrangement") return arrangementDialog(song);
+  if (action === "edit-arrangement")
+    return arrangementDialog(
+      song,
+      song.arrangements.find((a) => a.id === button.dataset.arrangement),
+    );
+  if (action === "prefer-arrangement") {
+    song.preferredArrangementId = button.dataset.arrangement;
+    invalidateApproval(song);
+    persist();
+    render();
+    toast(
+      "Preferred arrangement changed. Review church-use approval for this version.",
+    );
+    return;
+  }
+  if (action === "delete-arrangement") {
+    const aid = button.dataset.arrangement,
+      a = song.arrangements.find((a) => a.id === aid),
+      store = activeStore;
+    modal(
+      `<h2>Delete ${e(a.name)}?</h2><p>Saved service items keep their recorded key, duration and arrangement name.</p><div class="form-actions"><button class="button" data-action="close">Cancel</button><button class="button danger" id="confirm-arrangement-delete">Delete arrangement</button></div>`,
+    );
+    document.querySelector("#confirm-arrangement-delete").onclick = () => {
+      if (store !== activeStore) return;
+      song.arrangements = song.arrangements.filter((a) => a.id !== aid);
+      if (song.preferredArrangementId === aid) {
+        delete song.preferredArrangementId;
+        invalidateApproval(song);
+      }
+      persist();
+      dialog.close();
+      render();
+    };
+    return;
+  }
+  if (action === "print-plan") return window.print();
+  if (action === "copy-plan") {
+    const plan = getPlan();
+    return modal(
+      `<h2>Duplicate worship plan</h2><p class="muted">Copy the service order and notes into an independent draft. Your original plan stays intact.</p><form id="copy-plan-form" data-id="${e(plan.id)}"><label>Service name<input name="title" maxlength="200" value="${e(plan.title.slice(0, 190) + " (copy)")}" required></label><label>Date<input name="date" type="date"></label><div class="form-actions"><button class="button" type="button" data-action="close">Cancel</button><button class="button primary">Create copy</button></div></form>`,
+    );
+  }
+  if (action === "delete-plan") {
+    const plan = getPlan(),
+      store = activeStore;
+    modal(
+      `<h2>Delete ${e(plan.title)}?</h2><p>This removes the plan and its recorded-use history. Your songs, reviews and libraries stay intact.</p><div class="form-actions"><button class="button" data-action="close">Cancel</button><button class="button danger" id="confirm-plan-delete">Delete this plan</button></div>`,
+    );
+    document.querySelector("#confirm-plan-delete").onclick = () => {
+      if (store !== activeStore) return;
+      state.plans = state.plans.filter((p) => p.id !== plan.id);
+      planId = state.plans[0]?.id;
+      persist();
+      dialog.close();
+      render();
+    };
+    return;
+  }
+  if (action === "collection-preview")
+    return previewCollection(songCollections.find((p) => p.id === id));
+  if (action === "import-select-all" || action === "import-select-none") {
+    dialog
+      .querySelectorAll('[name="songs"]')
+      .forEach((input) => (input.checked = action === "import-select-all"));
+    return;
+  }
+  if (action === "song-page") {
+    songPage = Number(id);
+    selected = null;
+    render();
+    return;
+  }
+  if (action === "index-page") {
+    indexPageNumber = Number(id);
+    render();
+    return;
+  }
+  if (action === "csv-import")
+    return modal(
+      '<h2>Import a song list</h2><p class="muted">Upload a CSV with a Title or Song Title column. Attribution, themes and preferred key are optional. You will preview the songs before importing. Existing matching records are preserved.</p><form id="csv-import-form"><label>Song list CSV<input type="file" name="file" accept=".csv,text/csv" required></label><p id="import-error" role="alert"></p><div class="form-actions"><button type="button" class="button" data-action="close">Cancel</button><button class="button primary">Preview song list</button></div></form>',
+    );
+  if (action === "rename-library") {
+    const library = state.libraries.find((l) => l.id === id);
+    return modal(
+      `<h2>Rename library</h2><form id="rename-library-form" data-id="${e(id)}"><label>Library name<input name="name" value="${e(library.name)}" maxlength="100" required></label><p id="library-error" role="alert"></p><div class="form-actions"><button type="button" class="button" data-action="close">Cancel</button><button class="button primary">Save library name</button></div></form>`,
+    );
+  }
+  if (action === "delete-library") {
+    const library = state.libraries.find((l) => l.id === id),
+      store = activeStore;
+    if (state.libraries.length === 1) return;
+    modal(
+      `<h2>Delete ${e(library.name)}?</h2><p>This removes the library. Its songs, reviews, arrangements and worship plans stay in your workspace.</p><div class="form-actions"><button class="button" data-action="close">Cancel</button><button class="button danger" id="confirm-library-delete">Delete this library</button></div>`,
+    );
+    document.querySelector("#confirm-library-delete").onclick = () => {
+      if (store !== activeStore) return;
+      state.libraries = state.libraries.filter((l) => l.id !== id);
+      libraryId = state.libraries[0].id;
+      persist();
+      dialog.close();
+      render();
+      toast("Library deleted. Songs and reviews retained.");
+    };
+    return;
+  }
+  if (action === "export-library") {
+    const library = state.libraries.find((l) => l.id === id),
+      songs = state.songs.filter((s) => library.songIds.includes(s.id));
+    return download(
+      "faithful-repertoire-song-list.csv",
+      indexCSV(
+        songs,
+        indexFields(songs),
+        state.profile,
+        state.libraries,
+        state.plans,
+      ),
+      "text/csv;charset=utf-8",
+    );
+  }
   if (action === "criteria-search") return criteriaDialog();
   if (action === "edit-index") return indexDetailsDialog(song);
   if (action === "index-entry") {
@@ -666,6 +1033,7 @@ document.addEventListener("click", (event) => {
     const field =
       button.dataset.field === "words" ? "lyrics" : button.dataset.field;
     const type = indexFields(state.songs).find((f) => f.id === field)?.type;
+    indexPageNumber = 1;
     indexRules.push({
       field,
       op:
@@ -682,18 +1050,22 @@ document.addEventListener("click", (event) => {
   if (action === "index-open") {
     selected = id;
     view = "discover";
-    query = themeFilter = approvalFilter = "";
+    query = song.title;
+    songPage = 1;
+    themeFilter = approvalFilter = typeFilter = reviewFilter = "";
     if (dialog.open) dialog.close();
     render();
     return;
   }
   if (action === "remove-index-filter") {
     indexRules.splice(Number(id), 1);
+    indexPageNumber = 1;
     render();
     return;
   }
   if (action === "reset-index") {
     indexRules = [];
+    indexPageNumber = 1;
     indexQuery = "";
     indexSort = "title";
     indexDescending = false;
@@ -708,6 +1080,7 @@ document.addEventListener("click", (event) => {
         indexFields(state.songs),
         state.profile,
         state.libraries,
+        state.plans,
       ),
       "text/csv;charset=utf-8",
     );
@@ -828,6 +1201,8 @@ document.addEventListener("click", (event) => {
   if (action === "approval") return approvalDialog(song);
   if (action === "clear-filters") {
     themeFilter = approvalFilter = "";
+    typeFilter = reviewFilter = "";
+    songPage = 1;
     render();
     return;
   }
@@ -836,6 +1211,8 @@ document.addEventListener("click", (event) => {
     view = button.dataset.view;
     query = "";
     themeFilter = approvalFilter = "";
+    typeFilter = reviewFilter = "";
+    songPage = 1;
     render();
     window.scrollTo(0, 0);
     return;
@@ -927,7 +1304,7 @@ document.addEventListener("click", (event) => {
       return;
     }
     return modal(
-      `<h2>Add ${e(song.title)} to a plan</h2><form id="add-to-plan-form" data-id="${e(id)}"><label>Worship plan<select name="plan">${state.plans.map((p) => `<option value="${e(p.id)}" ${p.id === planId ? "selected" : ""}>${e(p.title)} ${e(p.date)}</option>`).join("")}</select></label><label>Service role<input name="role" maxlength="100" placeholder="Opening praise, response…" value="${e(reviewForDisplay(song, state.profile.aiMode).uses[0] || "")}"></label><div class="form-columns"><label>Key<input name="key" maxlength="30" value="${e(song.review.key)}"></label><label>Duration (minutes)<input name="minutes" type="number" min="0.5" max="60" step="0.5" value="${e(song.review.minutes)}" required></label></div><div class="form-actions"><button class="button primary">Add to plan</button></div></form>`,
+      `<h2>Add ${e(song.title)} to a plan</h2><form id="add-to-plan-form" data-id="${e(id)}"><label>Worship plan<select name="plan">${state.plans.map((p) => `<option value="${e(p.id)}" ${p.id === planId ? "selected" : ""}>${e(p.title)} ${e(p.date)}</option>`).join("")}</select></label><label>Service role<input name="role" maxlength="100" placeholder="Enter the place you choose for this song"></label>${song.arrangements?.length ? `<label>Arrangement<select name="arrangement" aria-label="Plan arrangement"><option value="">Song settings · no arrangement selected</option>${song.arrangements.map((a) => `<option value="${e(a.id)}" ${song.preferredArrangementId === a.id ? "selected" : ""}>${e(a.name)} · ${e(a.key || "key unset")}</option>`).join("")}</select></label>` : ""}<div class="form-columns"><label>Key<input name="key" maxlength="30" value="${e(selectedArrangement(song)?.key ?? song.review.key)}"></label><label>Duration (minutes)<input name="minutes" type="number" min="0.5" max="60" step="0.5" value="${e(selectedArrangement(song)?.minutes ?? song.review.minutes)}" required></label></div><div class="form-actions"><button class="button primary">Add to plan</button></div></form>`,
     );
   }
   if (action === "backup")
@@ -940,25 +1317,12 @@ document.addEventListener("click", (event) => {
       JSON.stringify(state, null, 2),
       "application/json",
     );
-  if (action === "export-plan") {
-    const p = getPlan();
+  if (action === "export-plan")
     return download(
       "worship-plan.txt",
-      [
-        p.title,
-        p.date,
-        p.theme,
-        p.passage,
-        `Estimated duration: ${planDuration(p.items)} minutes`,
-        "",
-        ...p.items.map(
-          (i, n) =>
-            `${n + 1}. ${state.songs.find((s) => s.id === i.songId)?.title || i.title} — ${i.minutes} min\n   ${i.role || ""}${i.key ? ` · Key: ${i.key}` : ""}\n   ${i.notes || ""}`,
-        ),
-      ].join("\n"),
+      planOutline(getPlan(), state.songs),
       "text/plain",
     );
-  }
   if (action === "ai-review" && state.profile.aiMode === "manual") {
     toast("Human reviews only sends no AI requests.");
     return;
@@ -972,6 +1336,7 @@ document.addEventListener("input", (event) => {
   if (event.target.id !== "search") return;
   const position = event.target.selectionStart;
   query = event.target.value;
+  songPage = 1;
   render();
   const input = document.querySelector("#search");
   input.focus();
@@ -980,6 +1345,37 @@ document.addEventListener("input", (event) => {
   } catch {}
 });
 document.addEventListener("change", (event) => {
+  if (
+    event.target.closest("#add-to-plan-form") &&
+    event.target.name === "arrangement"
+  ) {
+    const form = event.target.form,
+      song = state.songs.find((s) => s.id === form.dataset.id),
+      a = song.arrangements?.find((a) => a.id === event.target.value);
+    form.elements.key.value = a?.key ?? song.review.key;
+    form.elements.minutes.value = a?.minutes ?? song.review.minutes;
+    return;
+  }
+  if (event.target.id === "collection-depth") {
+    collectionDepth = event.target.value;
+    render();
+    return;
+  }
+  if (event.target.closest("#collection-import-form")) {
+    const form = event.target.form;
+    if (event.target.name === "depth") {
+      importDraft.target = form.elements.target.value;
+      importDraft.name = form.elements.name.value;
+      importDraft.depth = event.target.value;
+      const pack = songCollections.find((p) => p.id === importDraft.packId);
+      importDraft.songs = collectionSongs(pack, importDraft.depth);
+      importDialog();
+    } else if (event.target.name === "target") {
+      form.elements.name.disabled = event.target.value !== "__new__";
+      form.elements.name.required = event.target.value === "__new__";
+    }
+    return;
+  }
   if (event.target.closest("#index-filter-form")) {
     const form = event.target.form;
     if (event.target.name === "field") {
@@ -995,6 +1391,7 @@ document.addEventListener("change", (event) => {
         field.id,
         state.profile,
         state.libraries,
+        state.plans,
       )
         .slice(0, 200)
         .map((entry) => `<option value="${e(entry.value)}"></option>`)
@@ -1031,6 +1428,9 @@ document.addEventListener("change", (event) => {
     return;
   }
   if (event.target.id === "theme-filter") themeFilter = event.target.value;
+  else if (event.target.id === "type-filter") typeFilter = event.target.value;
+  else if (event.target.id === "review-filter")
+    reviewFilter = event.target.value;
   else if (event.target.id === "approval-filter")
     approvalFilter = event.target.value;
   else if (event.target.id === "sort-order") sortOrder = event.target.value;
@@ -1045,6 +1445,7 @@ document.addEventListener("change", (event) => {
     );
     return;
   } else return;
+  songPage = 1;
   render();
 });
 document.addEventListener("submit", async (event) => {
@@ -1058,6 +1459,135 @@ document.addEventListener("submit", async (event) => {
       .split("\n")
       .map((s) => s.trim())
       .filter(Boolean);
+  if (form.id === "arrangement-form") {
+    try {
+      const next = clone(state),
+        song = next.songs.find((s) => s.id === form.dataset.song);
+      const record = {
+        id: id || uid(),
+        name: values.name.trim(),
+        key: values.key.trim(),
+        minutes: Number(values.minutes),
+        notes: values.notes.trim(),
+        lowNote: values.lowNote.trim(),
+        highNote: values.highNote.trim(),
+        timeSignature: values.timeSignature.trim(),
+        vocalDifficulty: values.vocalDifficulty.trim(),
+        instrumentalDifficulty: values.instrumentalDifficulty.trim(),
+        instruments: values.instruments
+          .split(",")
+          .map((s) => s.trim())
+          .filter(Boolean),
+      };
+      for (const k of [
+        "tempo",
+        "largestLeap",
+        "wordlessSeconds",
+        "instrumentalSeconds",
+      ])
+        record[k] = values[k] === "" ? null : Number(values[k]);
+      song.arrangements ||= [];
+      if (id)
+        song.arrangements = song.arrangements.map((a) =>
+          a.id === id ? record : a,
+        );
+      else song.arrangements.push(record);
+      const wasPreferred = song.preferredArrangementId === record.id;
+      if (values.preferred) song.preferredArrangementId = record.id;
+      else if (wasPreferred) delete song.preferredArrangementId;
+      if (wasPreferred || values.preferred) invalidateApproval(song);
+      if (!commitWorkspace(validateWorkspace(next))) return;
+      dialog.close();
+      render();
+      toast(
+        "Arrangement saved. Measurements are your observations, not AI estimates.",
+      );
+    } catch (error) {
+      form.querySelector("#arrangement-error").textContent = error.message;
+    }
+    return;
+  }
+  if (form.id === "copy-plan-form") {
+    const next = clone(state),
+      plan = next.plans.find((p) => p.id === id),
+      copied = copyPlan(plan, {
+        title: values.title.trim(),
+        date: values.date,
+      });
+    next.plans.push(copied);
+    if (!commitWorkspace(validateWorkspace(next))) return;
+    planId = copied.id;
+    dialog.close();
+    render();
+    toast("Independent draft created.");
+    return;
+  }
+  if (form.id === "csv-import-form") {
+    const store = activeStore;
+    try {
+      const file = fd.get("file");
+      if (!file?.size || file.size > 1024 * 1024)
+        throw new Error("Choose a CSV file under 1 MB.");
+      const songs = songsFromCSV(await file.text());
+      if (store !== activeStore || !form.isConnected) return;
+      importDraft = {
+        packId: null,
+        depth: null,
+        songs,
+        target: view === "library" ? libraryId : "__new__",
+        name:
+          file.name.replace(/\.csv$/i, "").slice(0, 100) || "Imported songs",
+      };
+      importDialog();
+    } catch (error) {
+      if (form.isConnected)
+        form.querySelector("#import-error").textContent = error.message;
+    }
+    return;
+  }
+  if (form.id === "collection-import-form") {
+    try {
+      const selected = new Set(fd.getAll("songs"));
+      const songs = importDraft.songs.filter((song) => selected.has(song.id));
+      const result = importSongs(state, songs, {
+        libraryId: values.target === "__new__" ? null : values.target,
+        libraryName: values.name,
+        collectionId: importDraft.packId,
+        depth: importDraft.depth,
+      });
+      if (!commitWorkspace(result.workspace)) return;
+      libraryId = result.libraryId;
+      view = "library";
+      songPage = 1;
+      query = themeFilter = approvalFilter = typeFilter = reviewFilter = "";
+      dialog.close();
+      render();
+      toast(
+        `${result.added} new records; ${result.saved} songs added to the library. Existing reviews retained.`,
+      );
+    } catch (error) {
+      form.querySelector("#import-error").textContent = error.message;
+    }
+    return;
+  }
+  if (form.id === "rename-library-form") {
+    const name = values.name.trim();
+    if (
+      !name ||
+      state.libraries.some(
+        (l) => l.id !== id && l.name.toLowerCase() === name.toLowerCase(),
+      )
+    ) {
+      form.querySelector("#library-error").textContent =
+        "Choose a distinct library name.";
+      return;
+    }
+    state.libraries.find((l) => l.id === id).name = name;
+    persist();
+    dialog.close();
+    render();
+    return;
+  }
   if (form.id === "criteria-form") {
     const error = form.querySelector("#criteria-error"),
       submit =
@@ -1137,6 +1667,7 @@ document.addEventListener("submit", async (event) => {
     return;
   }
   if (form.id === "index-search-form") {
+    indexPageNumber = 1;
     indexQuery = values.query;
     render();
     return;
@@ -1151,6 +1682,7 @@ document.addEventListener("submit", async (event) => {
   if (form.id === "index-filter-form") {
     if (indexRules.length >= 30)
       return toast("You can combine up to 30 filters.");
+    indexPageNumber = 1;
     indexRules.push({
       field: values.field,
       op: values.op,
@@ -1387,7 +1919,9 @@ document.addEventListener("submit", async (event) => {
     state.songs.push(song);
     selected = song.id;
     view = "discover";
-    query = "";
+    query = song.title;
+    songPage = 1;
+    themeFilter = approvalFilter = typeFilter = reviewFilter = "";
     toast("Song added. Start an assessment when ready.");
   } else if (form.id === "review-form") {
     const song = state.songs.find((s) => s.id === id),
@@ -1480,7 +2014,12 @@ document.addEventListener("submit", async (event) => {
     toast("Worship plan saved.");
   } else if (form.id === "add-to-plan-form") {
     const p = state.plans.find((p) => p.id === values.plan);
+    const song = state.songs.find((s) => s.id === id),
+      arrangement = song.arrangements?.find((a) => a.id === values.arrangement);
     p.items.push({
+      ...(arrangement
+        ? { arrangementId: arrangement.id, arrangementName: arrangement.name }
+        : {}),
       id: uid(),
       type: "song",
       songId: id,

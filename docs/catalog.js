@@ -1,4 +1,5 @@
 import { seedSongs } from "./seeds.js";
+import { additionalSongs, mixedStarterTitles } from "./repertoire-data.js";
 import { overall } from "./core.js";
 import { withProfileDefaults } from "./profile.js";
 import { reviewForDisplay } from "./profile.js";
@@ -465,7 +466,15 @@ function makeSong([
   };
 }
 
-export const catalogSongs = [...seedSongs, ...additions.map(makeSong)];
+export const traditionalCatalog = [
+  ...seedSongs,
+  ...additions.map(makeSong),
+].map((song) => ({ ...song, category: "traditional" }));
+export const allCatalogSongs = [...traditionalCatalog, ...additionalSongs];
+export const catalogSongs = [
+  ...traditionalCatalog,
+  ...additionalSongs.filter((song) => mixedStarterTitles.includes(song.title)),
+];
 export const CATALOG_REVISION = 1;
 export const approvalLabels = {
   unreviewed: "Not reviewed",
@@ -482,6 +491,12 @@ export function syncCatalog(
   const result = structuredClone(workspace);
   result.profile = withProfileDefaults(result.profile);
   const existing = new Map(result.songs.map((s) => [s.id, s]));
+  if (catalog === catalogSongs) {
+    const defaults = new Set(catalogSongs.map((s) => s.id));
+    catalog = allCatalogSongs.filter(
+      (s) => defaults.has(s.id) || existing.has(s.id),
+    );
+  }
   for (const entry of catalog) {
     let song = existing.get(entry.id);
     if (!song) {
@@ -497,6 +512,7 @@ export function syncCatalog(
     song.catalogReview = structuredClone(entry.review);
     song.catalogThemes = structuredClone(entry.themes);
     song.catalogRevision = revision;
+    song.category ||= entry.category;
   }
   const catalogIds = new Set(catalog.map((s) => s.id));
   for (const song of result.songs) {

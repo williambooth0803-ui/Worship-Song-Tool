@@ -1,6 +1,14 @@
 import { overall, dimensions } from "./core.js";
 import { reviewForDisplay, themesForDisplay } from "./profile.js";
 import { approvalLabels } from "./catalog.js";
+import { songTypes } from "./repertoire-data.js";
+import {
+  selectedArrangement,
+  rangeSpan,
+  songUsage,
+  buildUsageIndex,
+} from "./planning.js";
+import { textStats } from "./text-stats.js";
 
 // Key-aware text normalization: C# and C must remain different values.
 export const indexText = (value) =>
@@ -14,9 +22,26 @@ export const indexText = (value) =>
 export function indexFields(songs) {
   const fields = [
     ["title", "Title"],
-    ["author", "Writer"],
+    ["author", "Attribution"],
+    ["category", "Song type"],
+    ["arrangements", "Arrangement names"],
+    ["arrangementKeys", "All arrangement keys"],
+    ["selectedArrangement", "Preferred arrangement"],
+    ["rangeSpan", "Vocal span (semitones)", "number"],
+    ["largestLeap", "Largest vocal jump (semitones)", "number"],
+    ["wordlessSeconds", "Wordless vocals (seconds)", "number"],
+    ["instrumentalSeconds", "Instrumentals (seconds)", "number"],
+    ["plannedServices", "Saved service plans", "number"],
+    ["completedServices", "Completed services", "number"],
+    ["lastUsedDate", "Last recorded use"],
     ["firstLine", "Opening line"],
     ["lyrics", "Song words"],
+    ["wordCount", "Stored word count", "number"],
+    ["uniqueWords", "Unique stored words", "number"],
+    ["justCount", "Occurrences of “just”", "number"],
+    ["interiorJust", "Interior “just” occurrences", "number"],
+    ["ohCount", "Occurrences of “oh”", "number"],
+    ["repeatedLines", "Repeated stored lines", "number"],
     ["textCoverage", "Text coverage"],
     ["themes", "Themes"],
     ["key", "Preferred key"],
@@ -64,8 +89,56 @@ export function indexFields(songs) {
     ...[...custom.values()].sort((a, b) => a.label.localeCompare(b.label)),
   ];
 }
-export function indexedValue(song, field, profile, libraries = []) {
+export function indexedValue(song, field, profile, libraries = [], plans = []) {
   const review = reviewForDisplay(song, profile.aiMode);
+  if (
+    [
+      "wordCount",
+      "uniqueWords",
+      "justCount",
+      "interiorJust",
+      "ohCount",
+      "repeatedLines",
+    ].includes(field)
+  )
+    return textStats(song)[field];
+  const arrangement = selectedArrangement(song);
+  if (field === "category") return songTypes[song.category || "other"];
+  if (field === "arrangements")
+    return (song.arrangements || []).map((a) => a.name);
+  if (field === "arrangementKeys")
+    return (song.arrangements || []).map((a) => a.key).filter(Boolean);
+  if (field === "selectedArrangement") return arrangement?.name || null;
+  if (field === "rangeSpan") return rangeSpan(arrangement);
+  if (["largestLeap", "wordlessSeconds", "instrumentalSeconds"].includes(field))
+    return arrangement?.[field] ?? null;
+  if (
+    ["plannedServices", "completedServices", "lastUsedDate"].includes(field)
+  ) {
+    const usage = songUsage(plans, song.id);
+    return {
+      plannedServices: usage.planned,
+      completedServices: usage.completed,
+      lastUsedDate: usage.lastUsed,
+    }[field];
+  }
+  if (
+    arrangement &&
+    [
+      "key",
+      "minutes",
+      "tempo",
+      "timeSignature",
+      "vocalDifficulty",
+      "instrumentalDifficulty",
+      "instruments",
+    ].includes(field)
+  )
+    return arrangement[field];
+  if (arrangement && field === "range")
+    return arrangement.lowNote && arrangement.highNote
+      ? `${arrangement.lowNote}–${arrangement.highNote}`
+      : null;
   if (field.startsWith("custom:"))
     return (
       song.metadata?.custom?.find(
@@ -105,7 +178,14 @@ export function indexedValue(song, field, profile, libraries = []) {
   if (field in review) return review[field];
   return song.metadata?.[field] ?? null;
 }
-export function indexEntries(songs, field, profile, libraries = []) {
+export function indexEntries(
+  songs,
+  field,
+  profile,
+  libraries = [],
+  plans = [],
+) {
+  plans = buildUsageIndex(plans);
   const entries = new Map();
   for (const song of songs) {
     const value = indexedValue(
@@ -113,6 +193,7 @@ export function indexEntries(songs, field, profile, libraries = []) {
       field === "words" ? "lyrics" : field,
       profile,
       libraries,
+      plans,
     );
     const values =
       field === "words"
@@ -186,33 +267,43 @@ export function filterIndex(
   { query = "", rules = [], sort = "title", descending = false } = {},
   profile,
   libraries = [],
+  plans = [],
 ) {
-  const fields = indexFields(songs);
-  const terms = indexText(query).split(" ").filter(Boolean);
+  plans = buildUsageIndex(plans);
+  const fields = indexFields(songs),
+    terms = indexText(query).split(" ").filter(Boolean),
+    values = new Map();
+  const valueFor = (song, field) => {
+    let row = values.get(song.id);
+    if (!row) {
+      row = new Map();
+      values.set(song.id, row);
+    }
+    if (!row.has(field))
+      row.set(field, indexedValue(song, field, profile, libraries, plans));
+    return row.get(field);
+  };
   const result = songs.filter((song) => {
+    if (
+      !rules.every((rule) => matchesIndexRule(valueFor(song, rule.field), rule))
+    )
+      return false;
+    if (!terms.length) return true;
     const text = indexText(
       fields
         .map((f) => {
-          const value = indexedValue(song, f.id, profile, libraries);
+          const value = valueFor(song, f.id);
           return Array.isArray(value) ? value.join(" ") : (value ?? "");
         })
         .join(" "),
     );
-    return (
-      terms.every((t) => text.includes(t)) &&
-      rules.every((rule) =>
-        matchesIndexRule(
-          indexedValue(song, rule.field, profile, libraries),
-          rule,
-        ),
-      )
-    );
+    return terms.every((term) => text.includes(term));
   });
   const numeric = fields.find((f) => f.id === sort)?.type === "number";
   return result.sort((a, b) => {
-    const av = indexedValue(a, sort, profile, libraries),
-      bv = indexedValue(b, sort, profile, libraries);
-    const missing = (v) => v === null || v === undefined || v === "";
+    const av = valueFor(a, sort),
+      bv = valueFor(b, sort),
+      missing = (v) => v === null || v === undefined || v === "";
     if (missing(av) !== missing(bv)) return missing(av) ? 1 : -1;
     const compared = numeric
       ? (Number(av) || 0) - (Number(bv) || 0)
@@ -222,7 +313,8 @@ export function filterIndex(
     );
   });
 }
-export function indexCSV(songs, fields, profile, libraries) {
+export function indexCSV(songs, fields, profile, libraries, plans = []) {
+  plans = buildUsageIndex(plans);
   const cell = (value) => {
     let text = Array.isArray(value) ? value.join("; ") : String(value ?? "");
     if (/^[=+\-@\t\r]/.test(text)) text = "'" + text;
@@ -232,7 +324,7 @@ export function indexCSV(songs, fields, profile, libraries) {
     fields.map((f) => cell(f.label)).join(","),
     ...songs.map((s) =>
       fields
-        .map((f) => cell(indexedValue(s, f.id, profile, libraries)))
+        .map((f) => cell(indexedValue(s, f.id, profile, libraries, plans)))
         .join(","),
     ),
   ].join("\r\n");
