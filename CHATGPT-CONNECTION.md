@@ -1,8 +1,11 @@
 # Read-only ChatGPT connection
 
-The connector implementation is ready for Supabase deployment. **It is not live until
-`supabase/mcp.sql`, the Edge function and native OAuth configuration are deployed.**
-The public website and account sign-in can continue to work before that step.
+The project's connector is deployed: its public health, resource metadata, OAuth
+discovery and unauthenticated 401 challenge have been verified. Each account still
+needs to authorize the connection and check its own saved records in ChatGPT.
+For a new project, deploy `supabase/mcp.sql`, the Edge function and native OAuth
+configuration before connecting. The public website and account sign-in can work
+before that step.
 No OpenAI API key or paid OpenAI API billing is used. ChatGPT answers in your own
 ChatGPT session; Supabase hosts the read tools within your project's existing quotas.
 
@@ -75,14 +78,18 @@ keys, expiration, role, user ID, client ID, and an explicit approved account gra
 
 ## Connect in ChatGPT
 
-For an account with custom app creation available (Plus/Pro availability and menus
-can vary), open ChatGPT Settings → Apps → Advanced settings and turn on Developer
-mode. Create an app named **Faithful Repertoire**, choose OAuth authentication, and
-enter:
+In ChatGPT's **Plugins** interface, open **Settings → Plugins → Browse directory →
+Add → Add custom MCP server**. Name it **Faithful Repertoire**, choose OAuth if
+prompted, and enter:
 
 ```
 https://inhqxwratimjvzsnuwik.supabase.co/functions/v1/faithful-mcp
 ```
+
+Menus vary by account and interface. Interfaces using **Apps** may instead expose
+custom creation under **Advanced settings → Developer mode**. Do not enter a
+Supabase personal access token in either connection form. The connector supports
+native OAuth discovery and dynamic client registration.
 
 Open the authorization prompt, sign in with your Faithful Repertoire account, choose
 what to share and approve. Libraries, profile and existing plans start checked;
@@ -93,6 +100,11 @@ excerpt only when explicitly requested. Shared records go to ChatGPT when used.
 Save your workspace using **Account sync → Save to account** first. Browser-only edits
 are unavailable to this connection. Profile preferences save separately; the backend
 uses the saved profile's AI visibility even when the workspace was saved earlier.
+
+If a newly installed plugin is unavailable in an existing conversation, start a
+fresh ChatGPT conversation, select Faithful Repertoire if needed, and ask
+“Using Faithful Repertoire, list my libraries.” A successful account lookup is
+required to verify the private connection; public endpoint checks alone do not.
 
 Examples: “List my libraries,” “What notes did I save for Forever?” (with notes shared),
 “Show my saved service outline,” or an explicitly requested tentative search of one
