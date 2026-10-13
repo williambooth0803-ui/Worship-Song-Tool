@@ -208,6 +208,13 @@ export async function checkAccountFlows(browser, base) {
     .getByRole("button", { name: "Save assessment", exact: true })
     .click();
   await keepAIIfOffered(page);
+  await reveal(page, "button", { name: "Manage recording links", exact: true });
+  await page.getByRole("button", { name: "Manage recording links", exact: true }).click();
+  await page.getByLabel("Recording platform").selectOption("youtube");
+  await page.getByLabel("Recording link", { exact: true }).fill("https://www.youtube.com/watch?v=abcdefghijk");
+  await page.getByLabel("Version label", { exact: true }).fill("Account recording");
+  await page.getByRole("button", { name: "Save recording link", exact: true }).click();
+  await page.getByRole("button", { name: "Close", exact: true }).click();
   await reveal(page, "button", { name: "My account", exact: true });
   await page.getByRole("button", { name: "My account", exact: true }).click();
   await reveal(page, "button", { name: "Save account backup" });
@@ -220,6 +227,7 @@ export async function checkAccountFlows(browser, base) {
   await saving;
   assert.equal(workspaces.get(users["one@example.test"].id).indexViews.length, 1);
   assert.equal(workspaces.get(users["one@example.test"].id).planTemplates.length, 2);
+  assert.ok(workspaces.get(users["one@example.test"].id).songs.some(s => s.recordings?.some(r => r.label === "Account recording")));
   await page.getByRole("button", { name: "My account", exact: true }).waitFor();
   await page.locator("#account-save-strip summary").click();
   await page

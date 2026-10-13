@@ -13,6 +13,7 @@ import { MAX_SONG_FILE_BYTES, deviceFile, filePath } from "./song-files.js";
 import { humanFirst } from "./song-state.js";
 import { closestSongs } from "./fuzzy-search.js";
 import { songResourceLinks } from "./song-resources.js";
+import { recordingPlatforms, recordingLinks, recordingURL, validateRecordings } from "./recordings.js";
 import { evaluationPrompt, parseEvaluation, applyEvaluation } from "./evaluation.js";
 import {
   catalogSongs,
@@ -577,7 +578,7 @@ function collectionBody(pack) {
   const shown = songs.slice((page - 1) * 30, page * 30);
   return `<p class="muted">${e(pack.description)}</p><div class="collection-bulk-actions"><button class="button primary" data-action="collection-import-all" data-id="${e(pack.id)}">Import all songs</button><button class="button" data-action="collection-preview" data-id="${e(pack.id)}">Preview & import</button></div><ul class="collection-songs">${shown.map(record => {
     const song = existingMatch(state, record) || record;
-    return `<li><div><button class="text-button collection-song-title" data-action="collection-song-action" data-song-action="index-open" data-id="${e(record.id)}">${e(song.title)}</button><small>${e(song.author)}</small></div><details class="more-menu"><summary aria-label="Actions for ${e(song.title)}">Actions</summary><div class="menu-items">${[["save-song","Add to library"],["add-to-plan","Add to plan"],["blacklist-song","Add to blacklist"],["song-files","Add files to song"],["new-arrangement","Add arrangement"],["edit-review","Add human evaluation"],["edit-index","Edit song details"],...(state.profile.aiMode === "manual" ? [] : [["chatgpt-evaluation","Generate AI evaluation"]])].map(([action,label]) => `<button class="text-button" data-action="collection-song-action" data-song-action="${action}" data-id="${e(record.id)}">${label}</button>`).join("")}</div></details></li>`;
+    return `<li><div><button class="text-button collection-song-title" data-action="collection-song-action" data-song-action="index-open" data-id="${e(record.id)}">${e(song.title)}</button><small>${e(song.author)}</small></div><details class="more-menu"><summary aria-label="Actions for ${e(song.title)}">Actions</summary><div class="menu-items">${[["save-song","Add to library"],["add-to-plan","Add to plan"],["blacklist-song","Add to blacklist"],["song-recordings","Listen / recording links"],["song-files","Add files to song"],["new-arrangement","Add arrangement"],["edit-review","Add human evaluation"],["edit-index","Edit song details"],...(state.profile.aiMode === "manual" ? [] : [["chatgpt-evaluation","Generate AI evaluation"]])].map(([action,label]) => `<button class="text-button" data-action="collection-song-action" data-song-action="${action}" data-id="${e(record.id)}">${label}</button>`).join("")}</div></details></li>`;
   }).join("") || '<li>No visible songs at this depth.</li>'}</ul>${songs.length > 30 ? `<div class="pagination"><span>${(page-1)*30+1}–${Math.min(page*30,songs.length)} of ${songs.length}</span><button class="button" data-action="collection-page" data-id="${e(pack.id)}" data-page="${page-1}" ${page===1 ? "disabled" : ""}>Previous</button><button class="button" data-action="collection-page" data-id="${e(pack.id)}" data-page="${page+1}" ${page*30>=songs.length ? "disabled" : ""}>Next</button></div>` : ""}`;
 }
 function collectionsPage() {
@@ -621,6 +622,12 @@ function songCard(s, active) {
   const displayedReview = reviewForDisplay(s, state.profile.aiMode);
   const score = overall(displayedReview, state.profile);
   return `<button class="song-card ${active ? "selected" : ""}" data-action="song-select" data-id="${e(s.id)}"><div class="song-card-top"><span class="song-symbol">♫</span><span class="card-score">${score ?? "—"}${aiLabel(s, displayedReview, "scores")}<small>/10</small></span></div><h3>${e(s.title)}</h3><p>${e(s.author)}</p><div class="tags">${tagList(themesForDisplay(s, state.profile.aiMode).slice(0, 2))}${aiLabel(s, displayedReview, "themes")}</div><div class="card-bottom"><span>${e(s.approval?.status !== "unreviewed" ? approvalLabels[s.approval.status] : statusLabel(displayedReview))}</span><span>›</span></div></button>`;
+}
+function recordingMarkup(song, manage = true) {
+  return `<div class="recording-links">${recordingLinks(song).map(link => `<a class="button" data-provider="${link.provider}" data-recording-kind="${link.exact ? "saved" : "search"}" href="${e(link.url)}" target="_blank" rel="noopener noreferrer" aria-label="${e(link.exact ? `Listen on ${link.platform}${link.label ? ": " + link.label : ""}` : `Find recordings on ${link.platform}`)}"><span>${e(link.platform)} ↗</span><small>${link.exact ? "Saved recording" : "Search recordings"}</small></a>`).join("")}</div>${manage ? `<button class="text-button" data-action="song-recordings" data-id="${e(song.id)}">Manage recording links</button>` : ""}`;
+}
+function recordingsDialog(song) {
+  modal(`<h2>Recordings for ${e(song.title)}</h2><p class="muted">Save links to the versions you use.</p>${recordingMarkup({ ...song, recordings: [] }, false)}<ul class="saved-recordings">${(song.recordings || []).map(r => `<li><div><a href="${e(r.url)}" target="_blank" rel="noopener noreferrer">${e(r.label || song.title)}</a><small>${e(recordingPlatforms[r.provider])}</small></div>${song.recordings.find(first => first.provider === r.provider)?.id === r.id ? '<span class="tag">Preferred link</span>' : `<button class="text-button" data-action="prefer-recording" data-id="${e(song.id)}" data-recording="${e(r.id)}">Make preferred</button>`}<button class="text-button danger" data-action="remove-recording" data-id="${e(song.id)}" data-recording="${e(r.id)}">Remove link</button></li>`).join("")}</ul><form id="recording-form" data-id="${e(song.id)}"><label>Platform<select name="provider" aria-label="Recording platform">${Object.entries(recordingPlatforms).map(([key,label]) => `<option value="${key}">${label}</option>`).join("")}</select></label><label>Recording link<input name="url" type="url" maxlength="2000" required placeholder="Paste a song or video link"></label><label>Version label<input name="label" maxlength="300" placeholder="Official audio · album version · acoustic performance"></label><p id="recording-error" role="alert"></p><div class="form-actions"><button class="button" type="button" data-action="close">Close</button><button class="button primary">Save recording link</button></div></form>`);
 }
 function aiLabel(song, review, field) {
   return state.profile.aiLabels && isAiField(song, review, field)
@@ -672,6 +679,7 @@ function songDetail(song, lib) {
     )
     .join("")}</div></details>`;
   const attrs = {
+    recordings: section("recordings", "Listen · recordings", recordingMarkup(song), true),
     rating: ratingMarkup,
     key: section("key", "Preferred key", r.key ? `<p>${e(r.key)}</p>` : ""),
     duration: section(
@@ -761,7 +769,7 @@ function songDetail(song, lib) {
   return `<article class="detail-panel"><div class="detail-header"><span class="status-badge">${e(statusLabel(r))}</span><button class="text-button" data-action="customize-details" data-id="${e(song.id)}">Customize details</button></div><h2>${e(song.title)}</h2>${objectiveDetails(song)}<p class="version">${e(song.version)}</p><div class="detail-actions"><button class="button" data-action="blacklist-song" data-id="${e(song.id)}">Blacklist song</button><button class="button" data-action="song-files" data-id="${e(song.id)}">Files</button><button class="button primary" data-action="save-song" data-id="${e(song.id)}">${saved ? "✓ Saved · manage libraries" : "+ Save to library"}</button><button class="button" data-action="add-to-plan" data-id="${e(song.id)}">Add to plan ›</button><details class="more-menu"><summary>Edit</summary><div class="menu-items"><button class="text-button" data-action="edit-review" data-id="${e(song.id)}">Edit assessment</button><button class="text-button" data-action="edit-index" data-id="${e(song.id)}">Edit index details</button><button class="text-button" data-action="edit-fact" data-id="${e(song.id)}">Edit artist / attribution</button>${state.profile.aiMode !== "manual" ? `<button class="text-button" data-action="ai-review" data-id="${e(song.id)}">${state.profile.aiMode === "limited" ? "Get limited assistance" : "Draft with AI"}</button>` : ""}</div></details></div><div class="song-resources"><a class="button" href="${e(songResourceLinks(song).lyrics)}" target="_blank" rel="noopener noreferrer">Find lyrics ↗</a><a class="button" href="${e(songResourceLinks(song).reviews)}" target="_blank" rel="noopener noreferrer">Find public reviews ↗</a>${state.profile.aiMode !== "manual" ? `<button class="button" data-action="chatgpt-evaluation" data-id="${e(song.id)}">Generate AI evaluation</button>` : ""}</div>${churchDecision(song)}${evaluationBox(song, r)}${attributeOrder(
     song,
   )
-    .filter((k) => !hidden.has(k) && ["musical", "arrangements", "text", "usage", "notes"].includes(k) || !hidden.has(k) && k.startsWith("custom:"))
+    .filter((k) => !hidden.has(k) && ["recordings", "musical", "arrangements", "text", "usage", "notes"].includes(k) || !hidden.has(k) && k.startsWith("custom:"))
     .map((k) => attrs[k] || "")
     .join(
       "",
@@ -1274,6 +1282,15 @@ document.addEventListener("click", async (event) => {
   if (song?.blacklisted && view !== "blacklist") return;
   if (action === "chatgpt-evaluation") return chatGPTEvaluation(song);
   if (action === "song-files") return songFiles(song);
+  if (action === "song-recordings") return recordingsDialog(song);
+  if (["prefer-recording", "remove-recording"].includes(action)) {
+    const next = clone(state), target = next.songs.find(s => s.id === id), index = target?.recordings?.findIndex(r => r.id === button.dataset.recording);
+    if (index === undefined || index < 0) return;
+    const [recording] = target.recordings.splice(index, 1);
+    if (action === "prefer-recording") target.recordings.unshift(recording);
+    if (!commitWorkspace(validateWorkspace(next))) return;
+    render(); recordingsDialog(state.songs.find(s => s.id === id)); return;
+  }
   if (["download-song-file", "delete-song-file"].includes(action)) {
     const file = song?.files?.find(f => f.id === button.dataset.file), store = activeStore;
     if (!file) return;
@@ -1943,6 +1960,15 @@ document.addEventListener("submit", async (event) => {
       .split("\n")
       .map((s) => s.trim())
       .filter(Boolean);
+  if (form.id === "recording-form") {
+    try {
+      const next = clone(state), song = next.songs.find(s => s.id === id);
+      song.recordings = validateRecordings([...(song.recordings || []), { id: uid(), provider: values.provider, url: recordingURL(values.provider, values.url), label: values.label.trim() }]);
+      if (!commitWorkspace(validateWorkspace(next))) return;
+      render(); recordingsDialog(state.songs.find(s => s.id === id)); toast("Recording link saved.");
+    } catch (err) { form.querySelector("#recording-error").textContent = err.message; }
+    return;
+  }
   if (form.id === "song-file-form") {
     const song = state.songs.find(s => s.id === id), file = fd.get("file"), store = activeStore, owner = accounts.user?.id;
     const submit = form.querySelector("button"); submit.disabled = true;

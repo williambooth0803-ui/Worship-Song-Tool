@@ -3,6 +3,7 @@ import { denominations, statements, aiModes } from "./profile.js";
 import { songTypes } from "./repertoire-data.js";
 import { parsePitch } from "./planning.js";
 import { validateIndexView } from "./index-views.js";
+import { validateRecordings } from "./recordings.js";
 
 export const MAX_BACKUP_BYTES = 5 * 1024 * 1024;
 
@@ -142,6 +143,7 @@ export function validateWorkspace(input) {
       themes: texts(song.themes, "themes"),
       review: review(song.review),
     };
+    if (song.recordings !== undefined) result.recordings = validateRecordings(song.recordings);
     for (const key of ["blacklisted", "aiDismissed"]) {
       if (song[key] !== undefined) {
         if (typeof song[key] !== "boolean") fail(`${key} must be true or false.`);

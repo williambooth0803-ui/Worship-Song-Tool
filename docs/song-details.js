@@ -2,6 +2,7 @@ export const detailAttributes = {
   rating: "Rating",
   key: "Preferred key",
   duration: "Planning estimate",
+  recordings: "Recordings",
   summary: "Assessment",
   claims: "Claims",
   uses: "Service uses",

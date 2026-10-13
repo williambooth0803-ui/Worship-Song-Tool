@@ -14,6 +14,7 @@ import { checkRepertoireFlows } from "./repertoire-fixture.mjs";
 import { catalogSongs } from "../public/catalog.js";
 import { checkEvaluationFlows } from "./evaluation-fixture.mjs";
 import { checkDiscoveryFlows } from "./discovery-fixture.mjs";
+import { checkRecordingsFlows } from "./recordings-fixture.mjs";
 
 const root = fileURLToPath(new URL("../docs/", import.meta.url));
 const requests = [];
@@ -342,6 +343,7 @@ try {
   );
   await checkEvaluationFlows(browser, `http://127.0.0.1:${server.address().port}/Worship-Song-Tool/`);
   await checkDiscoveryFlows(browser, `http://127.0.0.1:${server.address().port}/Worship-Song-Tool/`);
+  await checkRecordingsFlows(browser, `http://127.0.0.1:${server.address().port}/Worship-Song-Tool/`);
   console.log(
     "PASS: hosted subdirectory assets, static edition without API calls, backup download, invalid import rejection, cancel preservation, confirmed restore, reload and mobile controls.",
   );

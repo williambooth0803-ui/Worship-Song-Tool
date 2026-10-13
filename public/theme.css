@@ -394,6 +394,15 @@
   .secondary-evaluation { background: transparent; font-size: .85rem; }
   .song-file-list { list-style: none; padding: 0; }
   .song-file-list li { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin: 12px 0; }
+  .recording-links { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; margin: 12px 0; }
+  .recording-links .button { display: flex; flex-direction: column; align-items: start; justify-content: center; gap: 5px; padding: 12px; font-size: .8rem; background: #fff; }
+  .recording-links small { font-size: .68rem; font-weight: 400; color: #596d60; }
+  .recording-links [data-recording-kind="saved"] { border-color: #91b4a1; background: #f1f7f2; }
+  .saved-recordings { list-style: none; padding: 0; margin: 20px 0; }
+  .saved-recordings li { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; padding: 12px 0; border-bottom: 1px solid #dce5de; }
+  .saved-recordings li > div { flex: 1; min-width: 160px; overflow-wrap: anywhere; }
+  .saved-recordings small { display: block; color: #596d60; margin-top: 4px; }
+  #recording-error { color: #8b3329; }
 }
 @media screen and (max-width: 700px) {
   .collection-browse-controls { grid-template-columns: 1fr; gap: 10px; }
@@ -401,4 +410,8 @@
   .collection-body { padding: 0 16px 16px; }
   .objective-facts > div { flex-wrap: wrap; gap: 4px 12px; }
   .objective-facts dt { min-width: 90px; }
+}
+@media screen and (max-width: 390px) {
+  .recording-links { grid-template-columns: 1fr; }
+  .recording-links .button { flex-direction: row; justify-content: space-between; align-items: center; }
 }
