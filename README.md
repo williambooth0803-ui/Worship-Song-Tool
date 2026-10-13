@@ -185,6 +185,13 @@ npm run test:browser
 
 The published static site has no private credentials or personal workspace data. Stored index words and notes belong to browser/account workspaces and their backups. Without a configured account, data stays in this browser. Clearing site data removes it; use **Backup & restore** for a copy. Restoring replaces the current workspace only after validation and confirmation; invalid files and cancellation preserve existing data. Backups are limited to 5 MB.
 
+Live browser checks can use `APP_URL` for the published site,
+`FAITHFUL_BROWSER_PROXY` for the configured network proxy, and
+`FAITHFUL_BROWSER_CERT_DB` for already approved public certificate trust data.
+The runner copies only that certificate database into a disposable profile and
+keeps TLS verification enabled. It uses an isolated browser-only test workspace;
+passing it does not establish actual Apple Passwords or real-account autosave.
+
 Before deploying a paid AI backend for multiple users, add authenticated requests, authorization and rate limits. The current Node backend is for personal/local development. The app does not yet retrieve licensed lyrics, analyze scores/audio, offer a verified 1,000-song AI catalog, or coordinate shared church approvals across multiple users.
 
 The GitHub **App checks** workflow runs unit, scale and hosted browser checks on main pushes and pull requests, then verifies committed Pages output matches the build. Tests require no live AI credentials.

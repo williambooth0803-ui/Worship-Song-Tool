@@ -1,9 +1,28 @@
 import { chromium } from "playwright";
 import assert from "node:assert/strict";
 import { reveal, keepAIIfOffered } from "./disclosure.mjs";
+import { copyFile, mkdir, mkdtemp, rm } from "node:fs/promises";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
 
-const browser = await chromium.launch({ executablePath: process.env.CHROMIUM_PATH || "/usr/bin/chromium", args:["--no-sandbox"] });
-const page = await browser.newPage({viewport:{width:1440,height:1000}}), errors=[];
+// Copy only approved public certificate trust data into a disposable profile.
+// Never copy account sessions, browser passwords or personal workspaces.
+const testProfile = process.env.FAITHFUL_BROWSER_CERT_DB
+  ? await mkdtemp(join(tmpdir(), "faithful-live-check-")) : null;
+if (testProfile) {
+  await mkdir(join(testProfile, "Default"));
+  await copyFile(process.env.FAITHFUL_BROWSER_CERT_DB, join(testProfile, "Default", "ServerCertificate"));
+}
+const options = {
+  executablePath: process.env.CHROMIUM_PATH || "/usr/bin/chromium",
+  args: ["--no-sandbox"],
+  // Live cloud checks use the inherited network proxy without disabling TLS.
+  proxy: process.env.FAITHFUL_BROWSER_PROXY ? { server: process.env.FAITHFUL_BROWSER_PROXY } : undefined,
+};
+const browser = testProfile
+  ? await chromium.launchPersistentContext(testProfile, { ...options, viewport: { width: 1440, height: 1000 } })
+  : await chromium.launch(options);
+const page = testProfile ? await browser.newPage() : await browser.newPage({viewport:{width:1440,height:1000}}), errors=[];
 page.on("pageerror",e=>errors.push(e.message));
 page.on("dialog",d=>d.accept());
 const nav = async view => page.locator(`.nav-item[data-view="${view}"]`).click();
@@ -91,4 +110,7 @@ try {
   await page.screenshot({path:"/tmp/faithful-rating-mobile.png",fullPage:true});
   assert.deepEqual(errors,[]);
   console.log("PASS: login gate, forward collection typing/caret, visible selected details, page jump, focused AI preview, full isolated blacklist, custom scoring, library audit charts/export and mobile layout.");
-} finally { await browser.close(); }
+} finally {
+  await browser.close();
+  if (testProfile) await rm(testProfile, { recursive: true, force: true });
+}

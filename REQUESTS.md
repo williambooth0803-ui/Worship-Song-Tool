@@ -104,13 +104,27 @@ Release evidence: GitHub App checks run 38396583169 and Pages deployment run
 and MCP type checking passed. Public connector metadata responds 200 and its
 anonymous request returns the required OAuth 401 challenge.
 
-Direct live Chromium validation encountered ERR_CERT_AUTHORITY_INVALID because
-Chromium does not trust the environment proxy CA. Automatic approval review
-rejected importing it into Chromium's persistent NSS store: that broadens TLS
-trust beyond this site and requires explicit authorization. No trust bypass or
-certificate-verification disabling was used. HTTPS asset checks use the existing
-trusted Node/proxy route; full browser workflow checks use the hosted test server.
-An approval question for this precise trust change remains pending.
+- [x] Direct live Chromium regression checks. The owner explicitly approved the
+  environment proxy certificate trust change after the initial automatic review
+  rejection. The supplied CA fingerprint was checked against the verified proxy
+  TLS chain. Chromium 154 did not accept NSS imports, so the approved certificate
+  was registered in its active profile certificate database, in a dedicated test
+  profile. TLS verification remained enabled throughout.
+
+The live GitHub Pages site returned HTTP 200 and passed the full request regression:
+sign-in gate and autofill attributes; forward collection typing/caret; selected
+song visibility and page jump; focused AI preview; full isolated blacklist; custom
+scoring; library audit charts/download; unsaved-edit warnings and mobile layout.
+A fresh disposable browser-only workspace was used, with no real account writes.
+This completes live frontend verification, not actual Apple Passwords on the
+owner's device or end-to-end real-account autosave/offline checks.
+
+The test runner now supports an inherited proxy and an approved public certificate
+database. It copies only certificate trust data into a disposable profile, never
+account sessions, browser passwords or personal workspaces. The original test
+profile remains under /tmp/faithful-live-browser-profile in this environment.
+The initial broader trust change was explicitly authorized by the owner; no
+certificate-verification disabling or ignore-certificate-errors flag was used.
 
 Songlink's official GitHub API documentation was inspected; it is dated 2020 and
 links to a newer help document outside the available network policy. No supported
