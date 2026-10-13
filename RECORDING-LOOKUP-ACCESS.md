@@ -54,3 +54,9 @@ plans are sent to lookup services. Worship planning remains human-led.
 
 The previous setup chat's `CONFLICT / stale_base` was real; rereading and retrying
 that stale draft could not fix it. The fresh chat successfully saved the additions.
+
+The catalog link batch and personal-choice preservation were published in release
+594d0ae. The official Songlink GitHub API documentation inspected during continued
+work is dated 2020 and redirects to a newer help site; it did not establish a
+supported replacement for the deprecated anonymous endpoint. Spotify/YouTube
+mapping remains explicitly outstanding.

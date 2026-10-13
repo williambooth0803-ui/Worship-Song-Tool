@@ -158,7 +158,7 @@ When configured:
 5. Run `npm run build:site` with both settings present, then commit the generated `docs/` files and push. They contain only public browser-safe project settings. The local Node server also accepts these environment variables. Alternatively, the public settings can be maintained in `public/config.js` before a build.
 6. Validate real signup/confirmation, password recovery, profile persistence, cross-account isolation and workspace backups against the deployed project. Client tests with a fixture do **not** establish deployed database security or successful email delivery.
 
-User sign-in and a real ChatGPT lookup of the owner’s saved libraries are confirmed; provider-fixture account flows, including saved views and templates, are tested. Production cross-account row isolation has not been independently verified with two real accounts by the development environment. Production email delivery and recovery still need live validation.
+User sign-in and a real ChatGPT lookup of the owner’s saved libraries are confirmed; provider-fixture account flows, including saved views and templates, are tested. Read-only probes against the deployed database verified owner-only workspace reads, exclusion of another identity, and denial of OAuth access to raw workspaces/profiles. Real-user browser isolation with two actual sign-ins remains unverified. Production email delivery and recovery still need live validation.
 
 ## Development and checks
 
