@@ -157,3 +157,12 @@ switch behavior. A dedicated late-response cancellation unit test passed, along
 with the existing account suite. Desktop/mobile and loading screenshots were
 visually inspected. These provider fixtures do not establish real-account offline
 autosave behavior; that earlier verification remains outstanding.
+
+Published as `187c7ea`: [App checks](https://github.com/williambooth0803-ui/Worship-Song-Tool/actions/runs/38415457052)
+and [Pages deployment](https://github.com/williambooth0803-ui/Worship-Song-Tool/actions/runs/38415454323)
+both succeeded. All 97 unit/database tests passed; CI also passed MCP type checking,
+scale and hosted checks. HTTPS readback of app.js, accounts.js and theme.css matches
+the build. The deployed site additionally passed the new startup/Settings browser
+fixtures through the approved certificate trust profile with TLS verification on.
+Those live frontend checks used synthetic provider responses and disposable
+workspaces, with no real-account writes.
