@@ -44,6 +44,22 @@ test("temporary provider failures do not discard a persistent session",async()=>
   const client=new AccountClient(config,{storage:storage(),fetcher:async()=>response({message:"Try later"},503)});
   client.setSession(session);await assert.rejects(client.restoreSession(),/Try later/);assert.equal(client.user.id,user.id);
 });
+test("canceled startup checks preserve a session even when a late provider response arrives", async () => {
+  const controller = new AbortController();
+  let finish, receivedSignal;
+  const client = new AccountClient(config, { storage: storage(), fetcher: (_url, options) => {
+    receivedSignal = options.signal;
+    return new Promise(resolve => { finish = resolve; });
+  } });
+  client.setSession(session);
+  const checking = client.restoreSession({ signal: controller.signal });
+  controller.abort();
+  finish(response({ message: "Late rejection" }, 403));
+  await assert.rejects(checking, { name: "AbortError" });
+  assert.equal(receivedSignal, controller.signal);
+  assert.equal(client.user.id, user.id);
+  assert.equal(new AccountClient(config, { storage: client.storage }).user.id, user.id);
+});
 test("file operations reject other owners before sending a request and send uploads as binary",async()=>{
   const calls=[],client=new AccountClient(config,{storage:storage(),fetcher:async(url,options)=>{calls.push({url,options});return response({Key:"stored"});}});
   client.setSession(session);

@@ -25,7 +25,7 @@ export async function checkPreferencesFlows(browser, base) {
     );
     await page.locator('.nav-item[data-view="settings"]').click();
     await page
-      .getByRole("button", { name: "AI Labels On", exact: true })
+      .getByRole("switch", { name: "AI labels", exact: true })
       .click();
     await page.locator('.nav-item[data-view="discover"]').click();
     assert.equal(await page.locator(".ai-mark").count(), 0);
@@ -33,7 +33,7 @@ export async function checkPreferencesFlows(browser, base) {
     assert.equal(await page.locator(".ai-mark").count(), 0);
     await page.locator('.nav-item[data-view="settings"]').click();
     await page
-      .getByRole("button", { name: "AI Labels Off", exact: true })
+      .getByRole("switch", { name: "AI labels", exact: true })
       .click();
     await page.locator('.nav-item[data-view="discover"]').click();
     assert.ok((await page.locator(".ai-mark").count()) > 0);

@@ -85,6 +85,7 @@ const browsableSongs = () => visibleSongs(state.songs);
 const availableCatalog = () => allCatalogSongs.filter(s => !existingMatch(state, s)?.blacklisted);
 const accounts = new AccountClient(siteConfig);
 let accountReady = !accounts.session;
+let accountCheckController = null, accountCheckVersion = 0, accountCheckSlow = false, accountConnectionMessage = "";
 let wizardDraft = null;
 let importDraft = null,
   collectionDepth = "all",
@@ -179,12 +180,68 @@ function queueAccountSave() {
   if (accounts.user && activeStore !== STORE && accountReady && autosave.enabled && (autosave.running || autosave.pending || accountSave.signature !== workspaceSignature(state))) autosave.enqueue(state);
 }
 function loginScreen(mode = "signin") {
-  return `<main class="login-screen"><section class="profile-panel"><h1>Faithful Repertoire</h1><h2>${mode === "signup" ? "Create your account" : mode === "recover" ? "Reset your password" : "Sign in to keep your repertoire"}</h2><p>Your account keeps your songs, reviews and plans together. Changes save in this browser immediately and autosave to your account when connected.</p>${accounts.configured ? `<form id="auth-form" name="login" method="post" autocomplete="on" data-mode="${mode}"><label for="login-email">Email</label><input id="login-email" name="email" type="email" autocomplete="username" inputmode="email" autocapitalize="none" spellcheck="false" required>${mode !== "recover" ? `<label for="login-password">Password</label><input id="login-password" name="password" type="password" autocomplete="${mode === "signup" ? "new-password" : "current-password"}" ${mode === "signup" ? 'minlength="10"' : ""} required>` : ""}<p id="account-error" role="alert"></p><button type="submit" class="button primary">${mode === "signup" ? "Create account" : mode === "recover" ? "Send reset email" : "Sign in"}</button></form><div class="account-links">${mode !== "signin" ? '<button class="text-button" data-action="account" data-mode="signin">Return to sign in</button>' : ""}<button class="text-button" data-action="account" data-mode="signup">Create an account</button><button class="text-button" data-action="account" data-mode="recover">Forgot password?</button></div>` : '<p>Account sign-in is unavailable in this configuration. No private token is required to use the browser workspace.</p>'}<details><summary>Existing browser-only work or offline use</summary><p>Browser-only work stays on this device and is not saved to an account. Your existing guest workspace has been preserved.</p><button class="button" data-action="guest-opt-in">Use browser-only workspace</button></details></section></main>`;
+  return `<main class="login-screen" data-screen="auth"><section class="profile-panel"><h1>Faithful Repertoire</h1><h2>${mode === "signup" ? "Create your account" : mode === "recover" ? "Reset your password" : "Sign in to keep your repertoire"}</h2>${accountConnectionMessage ? `<p class="connection-notice" role="status">${e(accountConnectionMessage)}</p>` : ""}<p>Your account keeps your songs, reviews and plans together. Changes save in this browser immediately and autosave to your account when connected.</p>${accounts.configured ? `<form id="auth-form" name="login" method="post" autocomplete="on" data-mode="${mode}"><label for="login-email">Email</label><input id="login-email" name="email" type="email" autocomplete="username" inputmode="email" autocapitalize="none" spellcheck="false" required>${mode !== "recover" ? `<label for="login-password">Password</label><input id="login-password" name="password" type="password" autocomplete="${mode === "signup" ? "new-password" : "current-password"}" ${mode === "signup" ? 'minlength="10"' : ""} required>` : ""}<p id="account-error" role="alert"></p><button type="submit" class="button primary">${mode === "signup" ? "Create account" : mode === "recover" ? "Send reset email" : "Sign in"}</button></form><div class="account-links">${mode !== "signin" ? '<button class="text-button" data-action="account" data-mode="signin">Return to sign in</button>' : ""}<button class="text-button" data-action="account" data-mode="signup">Create an account</button><button class="text-button" data-action="account" data-mode="recover">Forgot password?</button></div>` : '<p>Account sign-in is unavailable in this configuration. No private token is required to use the browser workspace.</p>'}<details><summary>Existing browser-only work or offline use</summary><p>Browser-only work stays on this device and is not saved to an account. Your existing guest workspace has been preserved.</p><button class="button" data-action="guest-opt-in">Use browser-only workspace</button></details></section></main>`;
+}
+function settingRow(label, description, action, { value = "", view: targetView = "", id = "", disabled = false } = {}) {
+  const content = `<span class="setting-copy"><span class="setting-label">${e(label)}</span>${description ? `<span class="setting-description">${e(description)}</span>` : ""}</span><span class="setting-trailing">${value ? `<span class="setting-value">${e(value)}</span>` : ""}${action ? '<span class="setting-chevron" aria-hidden="true">›</span>' : ""}</span>`;
+  return action ? `<button class="setting-row" aria-label="${e(label)}" data-action="${action}" ${targetView ? `data-view="${targetView}"` : ""} ${id ? `id="${id}"` : ""} ${disabled ? "disabled" : ""}>${content}</button>` : `<div class="setting-row">${content}</div>`;
 }
 function settingsPage() {
   const signedIn = Boolean(accounts.user && activeStore !== STORE);
-  return `<div class="page-heading"><h1>Settings</h1></div><section class="profile-panel"><h2>Saving & account</h2><p role="status">${signedIn ? e(saveLabel(accountSave,state)) : "Browser-only workspace. Saved on this device, not to an account."}</p>${signedIn ? `<div class="form-actions"><button class="button" data-action="retry-autosave">Save now / retry</button><button class="button" data-action="cloud-load">Review saved account workspace</button></div>` : '<button class="button primary" data-action="account">Sign in</button>'}<p>Changes are saved to browser storage after each action. Signed-in account changes are queued automatically; offline failures and newer copies from another device pause uploads. The leave-page warning appears for pending account saves or unsubmitted edits. Browser storage is not an independent backup.</p><details><summary>Advanced account tools</summary><div class="account-buttons"><button class="button" data-action="backup">Backup & restore</button>${signedIn ? '<button class="button" data-action="sync-profile">Retry profile sync</button><button class="button" data-action="copy-browser">Import previous browser-only workspace</button><button class="button" data-action="chatgpt-connections">ChatGPT connections</button>' : ""}</div></details><h2>Display & profile</h2><button class="button" data-action="setup-profile">Edit church profile</button><button class="button" data-action="nav" data-view="profile">Rating criteria</button><button class="button" data-action="toggle-ai-labels">AI Labels ${state.profile.aiLabels ? "On" : "Off"}</button></section>`;
+  return `<div class="settings-page"><div class="page-heading"><h1>Settings</h1></div><section aria-labelledby="settings-account-heading"><h2 id="settings-account-heading" class="settings-group-title">Account & saving</h2><div class="settings-group">${signedIn ? settingRow("Signed in", accounts.user.email, "account") : settingRow("Sign in", "Keep your repertoire across devices", "account") }<div class="setting-row"><span class="setting-copy"><span class="setting-label">${signedIn ? "Account autosave" : "Browser saving"}</span><span id="settings-save-status" class="setting-description" role="status">${signedIn ? e(saveLabel(accountSave,state)) : "Saved on this device only"}</span></span><span class="setting-trailing"><span id="settings-save-value" class="setting-value">${signedIn ? (accountSave.phase === "saving" ? "Saving…" : autosave.enabled ? "On" : "Paused") : "On"}</span></span></div>${signedIn ? settingRow("Save now / retry", "", "retry-autosave", {id:"settings-save-now",disabled:["saving","checking","conflict","review"].includes(accountSave.phase)}) + settingRow("Review saved account workspace", "", "cloud-load") : ""}</div><p class="settings-footnote">Changes save in this browser after each action. Account uploads pause when offline or when another device has saved a newer copy.</p></section><section aria-labelledby="settings-preferences-heading"><h2 id="settings-preferences-heading" class="settings-group-title">Preferences</h2><div class="settings-group">${settingRow("Edit church profile", "", "setup-profile", {value:denominations[state.profile.denomination]})}${settingRow("Rating criteria", "", "nav", {view:"profile",value:activeCriteria(state.profile).length+" active"})}<button class="setting-row" role="switch" aria-label="AI labels" aria-checked="${state.profile.aiLabels}" data-action="toggle-ai-labels"><span class="setting-copy"><span class="setting-label">AI labels</span><span class="setting-description">Identify generated ratings and content</span></span><span class="setting-switch" aria-hidden="true"></span></button></div></section><details class="settings-advanced" data-disclosure-key="settings:advanced"><summary>Advanced account tools</summary><div class="settings-group">${settingRow("Backup & restore", "Download or restore a workspace copy", "backup")}${signedIn ? settingRow("Retry profile sync", "", "sync-profile") + settingRow("Import previous browser-only workspace", "Review before replacing account data", "copy-browser") + settingRow("ChatGPT connections", "Manage read-only access", "chatgpt-connections") : ""}</div><p class="settings-footnote">Keep an independent backup. Browser storage and account uploads cannot guarantee recovery after every device or network failure.</p></details></div>`;
 }
+function accountLoadingScreen() {
+  return `<main class="account-startup" data-screen="account-loading" aria-busy="true"><div class="account-startup-content"><div class="startup-brand">Faithful Repertoire</div><div class="startup-indicator" aria-hidden="true"></div><h1>Opening your repertoire</h1><p role="status">${accountCheckSlow ? "Your connection is taking a little longer." : "Checking your saved sign-in…"}</p><p class="startup-caption">${accountCheckSlow ? "You can open your saved browser copy while account sync is paused." : "Your saved songs and plans will be ready shortly."}</p>${accountCheckSlow ? '<div class="startup-actions"><button class="button primary" data-action="open-local-account">Open saved browser copy</button><button class="text-button" data-action="retry-account-check">Try again</button></div>' : ""}</div></main>`;
+}
+async function startAccountCheck(confirmation = null) {
+  const version = ++accountCheckVersion, hadSession = Boolean(accounts.user);
+  accountCheckController?.abort();
+  const controller = new AbortController(); accountCheckController = controller;
+  accountReady = false; accountCheckSlow = false; accountConnectionMessage = "";
+  autosave.reset(false);
+  if (accounts.user && activeStore !== STORE) { accountSave.phase = "checking"; updateSaveStrip(); }
+  render();
+  const slowTimer = setTimeout(() => {
+    if (version !== accountCheckVersion || accountReady) return;
+    accountCheckSlow = true;
+    if (accounts.user && activeStore === STORE) render();
+  }, 4000);
+  const deadline = setTimeout(() => controller.abort(new DOMException("Account check timed out", "TimeoutError")), 12000);
+  const finishSignedOut = () => {
+    if (!accounts.user && hadSession) {
+      guestOptIn = false; sessionStorage.removeItem("faithful-guest-opt-in");
+      if (activeStore !== STORE) switchWorkspace();
+    }
+  };
+  try {
+    const type = confirmation
+      ? await accounts.acceptConfirmation(confirmation, {signal:controller.signal})
+      : await accounts.restoreSession({signal:controller.signal});
+    if (version !== accountCheckVersion) return;
+    clearTimeout(slowTimer); clearTimeout(deadline);
+    accountReady = true; accountCheckSlow = false;
+    finishSignedOut();
+    if (accounts.user) {
+      if (activeStore === STORE) switchWorkspace(accounts.user);
+      await loadAccountProfile();
+    }
+    if (version !== accountCheckVersion) return;
+    if (type === "recovery") modal('<h2>Choose a new password</h2><form id="password-form"><label>New password<input name="password" type="password" minlength="10" autocomplete="new-password" required></label><p id="account-error" role="alert"></p><div class="form-actions"><button class="button primary">Update password</button></div></form>');
+    render();
+  } catch (error) {
+    if (version !== accountCheckVersion) return;
+    accountReady = true; accountCheckSlow = false;
+    finishSignedOut();
+    if (accounts.user) {
+      if (activeStore === STORE) switchWorkspace(accounts.user);
+      accountSave.phase = "error"; autosave.reset(false);
+      accountConnectionMessage = "Your saved browser copy is open. Account sync is paused; retry the connection in Settings.";
+    } else accountConnectionMessage = "Your saved sign-in could not be confirmed. Sign in again to open your account.";
+    render();
+    if (accounts.user) toast(accountConnectionMessage);
+  } finally { clearTimeout(slowTimer); clearTimeout(deadline); }
+}
+
 function persist() {
   try {
     localStorage.setItem(activeStore, JSON.stringify(state));
@@ -429,6 +486,10 @@ function saveStrip(open = document.querySelector("#account-save-strip")?.open) {
 function updateSaveStrip() {
   const strip = document.querySelector("#account-save-strip");
   if (strip) strip.outerHTML = saveStrip();
+  const status = document.querySelector("#settings-save-status"), value = document.querySelector("#settings-save-value"), save = document.querySelector("#settings-save-now");
+  if (status && accounts.user) status.textContent = saveLabel(accountSave,state);
+  if (value && accounts.user) value.textContent = accountSave.phase === "saving" ? "Saving…" : autosave.enabled ? "On" : "Paused";
+  if (save) save.disabled = ["saving","checking","conflict","review"].includes(accountSave.phase);
 }
 async function checkAccountCopy() {
   const owner = accounts.user?.id,
@@ -513,11 +574,11 @@ function navigationIcon(id) {
 }
 function render() {
   if (accounts.user && activeStore === STORE) {
-    app.innerHTML = '<main class="login-screen"><section class="profile-panel"><h1>Opening your account…</h1><p role="status">Checking your session before opening your saved workspace.</p></section></main>';
+    app.innerHTML = accountLoadingScreen();
     return;
   }
   if (!accounts.user && !guestOptIn) {
-    if (!app.querySelector(".login-screen")) app.innerHTML = loginScreen();
+    if (!app.querySelector('[data-screen="auth"]')) app.innerHTML = loginScreen();
     return;
   }
   const listScroll = app.querySelector(".song-list")?.scrollTop || 0;
@@ -1720,13 +1781,18 @@ document.addEventListener("click", async (event) => {
     }
     return;
   }
+  if (action === "open-local-account") {
+    if (accounts.user) accountCheckController?.abort();
+    return;
+  }
+  if (action === "retry-account-check") { startAccountCheck(); return; }
   if (action === "guest-opt-in") {
     guestOptIn = true; sessionStorage.setItem("faithful-guest-opt-in", "1");
     render(); toast("Browser-only mode: work is saved on this device, not an account."); return;
   }
   if (action === "retry-autosave") {
     if (["review","conflict","checking"].includes(accountSave.phase)) return toast("Review the saved account workspace before uploading changes.");
-    if (!autosave.enabled) { await checkAccountCopy(); if (!autosave.enabled) return; }
+    if (!autosave.enabled) { await startAccountCheck(); if (!autosave.enabled) return; }
     autosave.enqueue(state); await autosave.retry(); return;
   }
   if (action === "signout") {
@@ -2952,11 +3018,10 @@ window.addEventListener("storage", async event => {
   if (event.key !== "faithful-repertoire-session" && event.key !== null) return;
   if (!accounts.syncStoredSession()) return;
   if (dialog.open) dialog.close();
-  accountReady = true;
+  if (!accounts.user) { guestOptIn = false; sessionStorage.removeItem("faithful-guest-opt-in"); }
   switchWorkspace(accounts.user);
-  try { if (accounts.user) { await accounts.restoreSession(); await loadAccountProfile(); } }
-  catch (err) { toast(err.message); }
-  render();
+  if (accounts.user) await startAccountCheck();
+  else { accountReady = true; render(); }
 });
 render();
 if (!storageProblem) persist();
@@ -2966,28 +3031,7 @@ if (accounts.configured) {
     : null;
   if (confirmation)
     history.replaceState(null, "", location.pathname + location.search);
-  const ready = confirmation
-    ? accounts.acceptConfirmation(confirmation)
-    : accounts.restoreSession();
-  ready
-    .then(async (type) => {
-      accountReady = true;
-      if (accounts.user) {
-        switchWorkspace(accounts.user);
-        await loadAccountProfile();
-      }
-      if (type === "recovery")
-        modal(
-          '<h2>Choose a new password</h2><form id="password-form"><label>New password<input name="password" type="password" minlength="10" autocomplete="new-password" required></label><p id="account-error" role="alert"></p><div class="form-actions"><button class="button primary">Update password</button></div></form>',
-        );
-      render();
-    })
-    .catch((error) => {
-      accountReady = true;
-      if (accounts.user && activeStore === STORE) { switchWorkspace(accounts.user); accountSave.phase = "error"; }
-      toast(error.message);
-      render();
-    });
+  startAccountCheck(confirmation);
 }
 if (storageProblem)
   toast("Saved data could not be loaded. Export any new work before leaving.");

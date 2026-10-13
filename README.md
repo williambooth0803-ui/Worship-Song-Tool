@@ -13,6 +13,11 @@ preserved, but using it requires an explicit choice and a visible device-only
 warning. **Settings** contains backup/restore, advanced account tools, display
 preferences and ChatGPT connections; the account menu contains Settings and sign
 out. Account changes autosave through a serialized queue with conflict protection.
+Settings uses grouped rows for account status and preferences, with advanced tools
+collapsed below. Saved sign-in checks show a progress indicator, offer a saved-copy
+option after four seconds, and time out after twelve seconds. Expired sessions
+return to the native sign-in form; connection failures open the cached account
+workspace with uploads paused. Retry from Settings rechecks sign-in before syncing.
 A different existing account workspace must be reviewed before uploads resume.
 Browser changes save immediately after each action; offline errors retain the
 browser copy and show a retry state. A generic browser leave-page warning covers

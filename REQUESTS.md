@@ -28,7 +28,7 @@ blockers explicitly. Preserve personal assessments, recordings and workspaces.
 - [x] Saving: immediate browser saves, safe account autosave or clear close warning;
   handle offline errors, cross-device conflicts and account changes.
 - [x] Password manager form improvements: stable accessible login form and autofill semantics;
-  actual Apple Passwords/Safari verification remains a live-device check.
+  Apple saved email/password autofill and sign-in are now owner-confirmed.
 - [x] Verify changes, regenerate docs/, and describe publication status accurately.
 
 ## Earlier work to preserve and resume
@@ -40,8 +40,9 @@ blockers explicitly. Preserve personal assessments, recordings and workspaces.
   `PUBLIC_API_ACCESS_DEPRECATED`; keep searches rather than invented IDs.
 - No private Supabase token is needed for frontend development. Existing project
   and public configuration must be preserved.
-- Production cross-account isolation, email recovery and Apple Passwords need
-  live verification; fixture checks must not be described as those checks.
+- Production database isolation is verified below, and Apple saved sign-in is
+  owner-confirmed. End-to-end email recovery remains unverified; fixture checks
+  must not be described as real-device checks.
 - Frontend changes were pushed to main as `594d0ae` and GitHub Pages publication
   succeeded. The production connector scoring function was updated.
 
@@ -69,17 +70,16 @@ The focused request regression is now included in hosted checks and therefore CI
   public.mcp_read_snapshot(), preserving all existing policies, tables and
   function grants. Readback confirms active criteria/customScores support,
   authenticated execution allowed and anonymous execution denied.
-- [ ] Verify actual Apple Passwords on the owner's Safari/device/extension. Native
-  forms, unique field IDs, correct autocomplete and DOM-only autofill are checked;
-  those checks do not prove Apple integration on a real device.
+- [x] Owner confirmed Apple saved email/password worked on their device. Native
+  form and autocomplete behavior remain protected by regression checks.
 - [x] Verify deployed database isolation using read-only production role/JWT
   probes: own workspace count 1, other workspace count 0, another identity
   reading the owner count 0, OAuth raw workspaces/profiles counts 0. Anonymous
   REST workspace reads return 401; connector authentication challenge returns 401.
   These are database/endpoint checks, not real-user browser sign-in tests.
 - [ ] Verify actual production browser autosave/offline recovery with real test
-  accounts and actual Apple Passwords. Dedicated account/device verification
-  remains outstanding; personal workspace data must not be overwritten.
+  accounts. Actual Apple autofill/sign-in is now owner-confirmed; production
+  autosave/offline verification remains outstanding; personal workspace data must not be overwritten.
 - [ ] Continue Spotify/YouTube lookup when a supported public mapping source exists;
   Songlink still returns PUBLIC_API_ACCESS_DEPRECATED.
 
@@ -130,3 +130,30 @@ Songlink's official GitHub API documentation was inspected; it is dated 2020 and
 links to a newer help document outside the available network policy. No supported
 replacement endpoint was established. Do not repeat the deprecated anonymous API
 or label search links as verified Spotify/YouTube recordings.
+
+## Settings and account startup follow-up
+
+- [x] Replace the Settings options panel with grouped line-item rows and consistent
+  labels, separators, disclosure arrows and switch controls, including mobile.
+- [x] Fix first-open account checking that can remain stuck until refresh.
+- [x] Replace plain loading text with a professional, accessible progress state;
+  bound slow checks and provide recovery without a page refresh.
+- [x] Owner confirmed Apple saved email/password successfully autofilled and signed
+  in on their device. Keep the working native form/autocomplete behavior intact.
+
+The expired-session transition previously kept the loading container because it
+shared the sign-in form's CSS class. Rendering now distinguishes the two screens
+and returns to the existing autofill-compatible form. A single 12-second deadline
+covers session validation, refresh requests and waiting for another tab's refresh
+lock. After four seconds, users can open their saved account copy or retry. Slow
+or offline checks preserve the session and local workspace, pause uploads, and
+allow connection recovery from Settings. Canceled late responses cannot clear a
+session. No account data or Supabase configuration was changed.
+
+Verification: hosted browser workflows passed, including expired-session recovery
+without reloading, delayed startup/progress, timeout with cached-note preservation,
+blocked refresh lock cancellation, retry recovery, desktop/mobile Settings and
+switch behavior. A dedicated late-response cancellation unit test passed, along
+with the existing account suite. Desktop/mobile and loading screenshots were
+visually inspected. These provider fixtures do not establish real-account offline
+autosave behavior; that earlier verification remains outstanding.

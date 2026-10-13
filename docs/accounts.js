@@ -136,6 +136,7 @@ export class AccountClient {
       headers = {},
       binary = false,
       responseType = "json",
+      signal,
     } = {},
   ) {
     if (!this.config)
@@ -147,7 +148,7 @@ export class AccountClient {
     const requestToken = authenticated ? this.session.access_token : null;
     const response = await this.fetcher(`${this.config.url}${path}`, {
       method,
-      signal: AbortSignal.timeout(20000),
+      signal: signal || AbortSignal.timeout(20000),
       headers: {
         apikey: this.config.key,
         "Content-Type": "application/json",
@@ -158,6 +159,7 @@ export class AccountClient {
       },
       ...(body === undefined ? {} : { body: binary ? body : JSON.stringify(body) }),
     });
+    signal?.throwIfAborted();
     if (authenticated && owner !== this.user?.id) throw new Error("The signed-in account changed. Please try again.");
     if (
       response.status === 401 &&
@@ -166,7 +168,7 @@ export class AccountClient {
       this.session?.refresh_token
     ) {
       try {
-        await this.refreshSession(requestToken);
+        await this.refreshSession(requestToken, { signal });
       } catch (err) {
         if ([400, 401, 403].includes(err.status)) {
           if (owner === this.user?.id) this.setSession(null);
@@ -182,10 +184,12 @@ export class AccountClient {
         headers,
         binary,
         responseType,
+        signal,
       });
     }
     const data =
       response.status === 204 ? null : response.ok && responseType === "blob" ? await response.blob() : await response.json().catch(() => null);
+    signal?.throwIfAborted();
     if (!response.ok)
       if (response.status === 409 && path.startsWith("/rest/v1/workspaces"))
         throw new WorkspaceConflictError();
@@ -233,7 +237,7 @@ export class AccountClient {
     if (result.access_token) this.setSession(result);
     return { signedIn: Boolean(result.access_token) };
   }
-  async refreshSession(failedToken = this.session?.access_token) {
+  async refreshSession(failedToken = this.session?.access_token, { signal } = {}) {
     // A delayed 401 may refer to a token another tab has already refreshed.
     // Compare the token actually used by that request, not the current token.
     const owner = this.user?.id, token = failedToken;
@@ -243,22 +247,22 @@ export class AccountClient {
       if (token !== this.session?.access_token) return;
       const session = await this.request(
       "/auth/v1/token?grant_type=refresh_token",
-      { method: "POST", body: { refresh_token: this.session.refresh_token } },
+      { method: "POST", body: { refresh_token: this.session.refresh_token }, signal },
     );
       if (owner !== this.user?.id) throw new Error("The signed-in account changed. Please try again.");
       this.setSession(session);
     };
     if (this.refreshing) return this.refreshing;
     this.refreshing = globalThis.navigator?.locks
-      ? globalThis.navigator.locks.request("faithful-repertoire-refresh:" + this.config.url, refresh)
+      ? globalThis.navigator.locks.request("faithful-repertoire-refresh:" + this.config.url, { signal: signal || AbortSignal.timeout(10000) }, refresh)
       : refresh();
     try { await this.refreshing; } finally { this.refreshing = null; }
   }
-  async restoreSession() {
+  async restoreSession({ signal } = {}) {
     if (!this.session) return;
     const originalUserId = this.session.user?.id;
     try {
-      const user = await this.request("/auth/v1/user", { authenticated: true });
+      const user = await this.request("/auth/v1/user", { authenticated: true, signal });
       if (this.session?.user?.id === originalUserId) {
         this.session.user = user;
         this.setSession(this.session);
@@ -268,7 +272,7 @@ export class AccountClient {
       else throw err;
     }
   }
-  async acceptConfirmation(fragment) {
+  async acceptConfirmation(fragment, { signal } = {}) {
     const values = new URLSearchParams(fragment.replace(/^#/, ""));
     if (!values.has("access_token")) return null;
     const access = values.get("access_token"),
@@ -279,6 +283,7 @@ export class AccountClient {
       );
     const user = await this.request("/auth/v1/user", {
       headers: { Authorization: `Bearer ${access}` },
+      signal,
     });
     this.setSession({ access_token: access, refresh_token: refresh, user });
     return values.get("type");
