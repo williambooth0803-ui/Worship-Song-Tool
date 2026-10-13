@@ -18,7 +18,7 @@ blockers explicitly. Preserve personal assessments, recordings and workspaces.
 - [x] Verify desktop/mobile, keyboard tabs, library actions, files, evaluations
   and blacklist behavior. Full hosted checks passed, including the new tab/wheel
   fixture and the previous account, scoring, audit, file and recording regressions.
-- [ ] Publish the tested build and verify deployed files and browser behavior.
+- [x] Publish the tested build and verify deployed files and browser behavior.
 
 The song detail panel has no independent scrollbar or fixed height. Only the
 results list scrolls separately; its boundaries allow normal page scrolling.
@@ -32,6 +32,13 @@ Verification: all 97 unit/database tests and the full hosted checks passed. The 
 passed real wheel scrolling over details, results and result boundaries, deep-list
 selection, arrow/Home/End tab navigation, unchanged workspace after tab changes,
 primary library management, desktop/mobile layouts and blacklist isolation.
+Release `2e3b1b5` is live: [Pages deployment](https://github.com/williambooth0803-ui/Worship-Song-Tool/actions/runs/38419065340)
+succeeded. Public app.js and theme.css readback matches the tested build. The
+new tab/wheel fixture also passed against the deployed site in a disposable
+browser-only workspace with TLS verification enabled, without real account writes.
+[App checks](https://github.com/williambooth0803-ui/Worship-Song-Tool/actions/runs/38419066507)
+also succeeded: unit/database, MCP type, scale, hosted browser checks and generated
+file consistency all passed.
 
 ## Current work
 
