@@ -24,8 +24,8 @@ blockers explicitly. Preserve personal assessments, recordings and workspaces.
   preserve previous decisions/data, simplify the ordinary interface and plan rules.
 - [x] Use Plan History and consistent plan/evaluation/library terminology throughout.
 - [x] Edit artist/attribution directly with a pencil affordance and remove its menu action.
-- [ ] Publish the tested frontend and verify the deployed build. The organization
-  backend is already applied to the existing Supabase project.
+- [x] Publish the tested frontend and verify the deployed build. The organization
+  backend is applied to the existing Supabase project.
 
 Implemented and tested: 1,245 Apple recording artwork URLs across 780 catalog
 records; personal recording lists/removals are preserved. Hymnary uses title-bound
@@ -47,6 +47,19 @@ are denied, the shared file bucket is private, and pre-existing policies are
 unchanged. Anonymous RPC access is denied. Native email login and mandatory email
 confirmation were verified without changing authentication settings. The original
 Supabase project, personal data and public frontend configuration are preserved.
+
+Release `253f868` is live. [Pages deployment](https://github.com/williambooth0803-ui/Worship-Song-Tool/actions/runs/38437019495)
+succeeded, and 14 public frontend files match the tested build. The new planning
+and three-account organization fixtures also passed against the public website
+with TLS verification enabled, synthetic intercepted auth/email requests and
+isolated browser storage. No production user records or emails were created by
+those browser tests. These checks verify frontend behavior; they do not establish
+real provider email delivery or real-user concurrent sessions.
+
+[App checks](https://github.com/williambooth0803-ui/Worship-Song-Tool/actions/runs/38437020012)
+succeeded for the release: all 105 unit/database tests, MCP type checking, scale
+checks, the full hosted browser suite and generated-site consistency passed.
+The final view-only file-dialog checks passed locally and on the public site.
 
 - [ ] Verify real-user invitation email delivery and actual account/offline recovery.
   Tests intercept native sign-in email requests to synthetic addresses; they do
