@@ -132,7 +132,7 @@ export async function checkAccountFlows(browser, base) {
     await form.getByRole("button", { name: "Sign in", exact: true }).click();
     try {
       await page
-        .getByRole("heading", { name: "Your account", exact: true })
+        .getByRole("button", { name: "My account", exact: true })
         .waitFor({ timeout: 5000 });
     } catch {
       throw new Error(
@@ -140,8 +140,6 @@ export async function checkAccountFlows(browser, base) {
           (await page.locator("#account-error").textContent()),
       );
     }
-    await reveal(page, "button", { name: "Close dialog" });
-    await page.getByRole("button", { name: "Close dialog" }).click();
   }
   async function logout() {
     const watching=await context.newPage();await watching.goto(base);
@@ -215,16 +213,7 @@ export async function checkAccountFlows(browser, base) {
   await page.getByLabel("Version label", { exact: true }).fill("Account recording");
   await page.getByRole("button", { name: "Save recording link", exact: true }).click();
   await page.getByRole("button", { name: "Close", exact: true }).click();
-  await reveal(page, "button", { name: "My account", exact: true });
-  await page.getByRole("button", { name: "My account", exact: true }).click();
-  await reveal(page, "button", { name: "Save account backup" });
-  await page.getByRole("button", { name: "Save account backup" }).click();
-  const saving = page.waitForResponse(
-    (r) => r.url().includes("/workspaces") && r.request().method() === "POST",
-  );
-  await reveal(page, "button", { name: "Save this workspace" });
-  await page.getByRole("button", { name: "Save this workspace" }).click();
-  await saving;
+  await page.waitForFunction(() => document.querySelector("#account-save-strip")?.textContent.includes("Saved to your account"));
   assert.equal(workspaces.get(users["one@example.test"].id).indexViews.length, 1);
   assert.equal(workspaces.get(users["one@example.test"].id).planTemplates.length, 2);
   assert.ok(workspaces.get(users["one@example.test"].id).songs.some(s => s.recordings?.some(r => r.label === "Account recording")));
@@ -246,37 +235,14 @@ export async function checkAccountFlows(browser, base) {
   await keepAIIfOffered(page);
   assert.match(
     await page.locator("#account-save-strip").textContent(),
-    /Changes saved in this browser/,
+    /Saved in this browser|Saving/,
   );
   // A second device saved since this browser read the original version.
   versions.set(users["one@example.test"].id, "2026-10-11T12:00:00.000Z");
-  await reveal(page, "button", { name: "Save to account", exact: true });
-  await page
-    .getByRole("button", { name: "Save to account", exact: true })
-    .click();
-  await reveal(page, "button", { name: "Save this workspace", exact: true });
-  await page
-    .getByRole("button", { name: "Save this workspace", exact: true })
-    .click();
-  await page
-    .locator("#account-error")
-    .getByText(/account copy changed/)
-    .waitFor();
-  await reveal(page, "button", { name: "Close dialog", exact: true });
-  await page.getByRole("button", { name: "Close dialog", exact: true }).click();
-  assert.ok(
-    await page
-      .getByRole("button", {
-        name: "Save to account",
-        exact: true,
-        includeHidden: true,
-      })
-      .isDisabled(),
-  );
-  await reveal(page, "button", { name: "Review account copy", exact: true });
-  await page
-    .getByRole("button", { name: "Review account copy", exact: true })
-    .click();
+  await page.waitForFunction(() => document.querySelector("#account-save-strip")?.textContent.includes("Another device saved changes"));
+  await reveal(page, "button", { name: "Save now / retry", exact: true });
+  assert.ok(await page.getByRole("button", {name:"Save now / retry",exact:true}).isDisabled());
+  await page.getByRole("button", {name:"Review saved account workspace",exact:true}).click();
   await reveal(page, "button", { name: "Load this backup", exact: true });
   await page
     .getByRole("button", { name: "Load this backup", exact: true })
@@ -327,8 +293,8 @@ export async function checkAccountFlows(browser, base) {
   );
   await reveal(page, "button", { name: "My account", exact: true });
   await page.getByRole("button", { name: "My account", exact: true }).click();
-  await reveal(page, "button", { name: "Load account backup" });
-  await page.getByRole("button", { name: "Load account backup" }).click();
+  await page.locator("dialog").getByRole("button", {name:"Settings",exact:true}).click();
+  await page.getByRole("button", {name:"Review saved account workspace",exact:true}).click();
   await reveal(page, "button", { name: "Load this backup" });
   await page.getByRole("button", { name: "Load this backup" }).click();
   if (!(await page.locator('[data-attribute="notes"]').evaluate((n) => n.open)))

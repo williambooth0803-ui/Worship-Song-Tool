@@ -70,7 +70,7 @@ export function indexFields(songs) {
     ["claims", "Theological claims"],
     ["concerns", "Assessment concerns"],
     ["languageNotes", "Language observations"],
-    ["timeNotes", "Use-of-time observations"],
+    ["timeNotes", "Arrangement coherence observations"],
     ["libraries", "Libraries"],
     ["version", "Version / arrangement"],
   ].map(([id, label, type = "text"]) => ({ id, label, type }));

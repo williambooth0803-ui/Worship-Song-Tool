@@ -170,6 +170,13 @@ test("real PostgreSQL: native accounts retain writes; OAuth is isolated, project
     data = await snapshot();
     assert.deepEqual(data.profile, {});
     assert.equal(data.songs[0].account_rating, 2);
+    await identity(owner);
+    await db.exec(`update public.workspaces set workspace=jsonb_set(jsonb_set(jsonb_set(workspace,'{profile,criteria}','[{"id":"accuracy","label":"Accuracy","rubric":"Claims","active":false},{"id":"custom-participation","label":"Participation","rubric":"Observed congregation","active":true}]'),' {profile,weights,custom-participation}'::text[],'1'),'{songs,0,review,customScores}','{"custom-participation":10}')`);
+    await identity(owner, true);
+    data = await snapshot();
+    assert.equal(data.songs[0].account_rating, 10, "Connector average respects active custom criteria");
+    assert.deepEqual(data.profile, {}, "Custom weighting does not expose the private profile");
+
     encoded = JSON.stringify(data);
     assert.ok(encoded.includes("SECRET AI summary"));
     assert.ok(encoded.includes("SECRET personal note"));

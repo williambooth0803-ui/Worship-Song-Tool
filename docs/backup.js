@@ -4,6 +4,7 @@ import { songTypes } from "./repertoire-data.js";
 import { parsePitch } from "./planning.js";
 import { validateIndexView } from "./index-views.js";
 import { validateRecordings } from "./recordings.js";
+import { validateCriteria, validateCustomScores } from "./scoring.js";
 
 export const MAX_BACKUP_BYTES = 5 * 1024 * 1024;
 
@@ -102,6 +103,7 @@ export function validateWorkspace(input) {
       "key",
     ])
       result[key] = text(value[key], key);
+    if (value.customScores !== undefined) result.customScores = validateCustomScores(value.customScores);
     for (const key of ["claims", "concerns", "uses", "scriptures"])
       result[key] = texts(value[key], key);
     if (value.themes !== undefined)
@@ -407,6 +409,7 @@ export function validateWorkspace(input) {
     "plans",
   );
   const profile = object(input.profile, "profile");
+  const criteria = profile.criteria === undefined ? undefined : validateCriteria(profile.criteria);
   object(profile.weights, "rating weights");
   const weights = Object.fromEntries(
     Object.keys(dimensions).map((k) => [
@@ -414,8 +417,10 @@ export function validateWorkspace(input) {
       number(profile.weights[k], "rating weight", 0, 100),
     ]),
   );
-  if (!Object.values(weights).some((w) => w > 0))
-    fail("at least one rating weight must be positive.");
+  for (const [key, value] of Object.entries(profile.weights)) {
+    if (/^custom-[a-z0-9-]{1,80}$/.test(key)) weights[key] = number(value, "custom rating weight", 0, 100);
+  }
+  if (!Object.values(weights).some(w => w > 0) || (criteria && !criteria.some(c => c.active && (weights[c.id] ?? 1) > 0))) fail("at least one active rating weight must be positive.");
   const result = {
     version: 1,
     songs,
@@ -423,6 +428,7 @@ export function validateWorkspace(input) {
     plans,
     profile: {
       weights,
+      ...(criteria ? { criteria } : {}),
       principles: text(profile.principles, "rating parameters", 6000, true),
     },
   };

@@ -90,11 +90,11 @@ begin
    r=coalesce(r,jsonb_build_object('status','unreviewed','scores',jsonb_build_object('accuracy',null,'substance',null,'language',null,'time',null),'summary','','concern','none','claims','[]'::jsonb,'concerns','[]'::jsonb,'uses','[]'::jsonb,'scriptures','[]'::jsonb,'sources','[]'::jsonb));
    if mode<>'full' then
     for item in select value from jsonb_array_elements(coalesce(r->'aiFields','[]')) loop
-     if item#>>'{}'='scores' then r=r||jsonb_build_object('scores',jsonb_build_object('accuracy',null,'substance',null,'language',null,'time',null));
+     if item#>>'{}'='scores' then r=r||jsonb_build_object('scores',jsonb_build_object('accuracy',null,'substance',null,'language',null,'time',null),'customScores','{}'::jsonb);
      else r=r-(item#>>'{}'); end if;
     end loop;
    end if;
-   r=public.mcp_pick(r,array['status','scores','summary','concern','claims','concerns','uses','scriptures','sources','language','time','updatedAt','aiFields','model']) || public.mcp_pick(raw,array['musical','key','minutes']);
+   r=public.mcp_pick(r,array['status','scores','customScores','summary','concern','claims','concerns','uses','scriptures','sources','language','time','updatedAt','aiFields','model']) || public.mcp_pick(raw,array['musical','key','minutes']);
    if connection.share_notes then r=r||jsonb_build_object('notes',coalesce(raw->>'notes','')); end if;
    if mode<>'manual' and raw->'assistance' is not null then r=r||jsonb_build_object('assistance',public.mcp_pick(raw->'assistance',array['summary','language','time','model','updatedAt'])); end if;
    m=public.mcp_pick(s->'metadata',array['themes','tags','year','language','tune','meter','tempo','timeSignature','instruments','vocalDifficulty','instrumentalDifficulty','lowNote','highNote','largestLeap','wordlessSeconds','instrumentalSeconds','custom']);
@@ -102,13 +102,16 @@ begin
    select coalesce(jsonb_agg(public.mcp_pick(a,array['id','name','key','minutes','tempo','timeSignature','lowNote','highNote','largestLeap','wordlessSeconds','instrumentalSeconds','instruments','vocalDifficulty','instrumentalDifficulty']) || case when connection.share_notes then public.mcp_pick(a,array['notes']) else '{}'::jsonb end),'[]'::jsonb) into arrangements from jsonb_array_elements(coalesce(s->'arrangements','[]')) a;
    -- Libraries expose the owner's displayed rating without exposing private
    -- profile weights when profile sharing is switched off.
-   select round(sum((r->'scores'->>dimension)::numeric * weight) / nullif(sum(weight),0),1) into account_rating
-   from (select dimension,coalesce((p->'weights'->>dimension)::numeric,default_weight) as weight
-    from (values ('accuracy',35),('substance',30),('language',20),('time',15)) as dimensions(dimension,default_weight)) as weighted
-   where jsonb_typeof(r->'scores'->dimension)='number' and weight>0;
+   select round(sum(score * weight) / nullif(sum(weight),0),1) into account_rating
+   from (
+    select case when criterion->>'id' like 'custom-%' then (r->'customScores'->>(criterion->>'id'))::numeric else (r->'scores'->>(criterion->>'id'))::numeric end as score,
+     coalesce((p->'weights'->>(criterion->>'id'))::numeric,case criterion->>'id' when 'accuracy' then 35 when 'substance' then 30 when 'language' then 20 when 'time' then 15 else 1 end) as weight
+    from jsonb_array_elements(coalesce(p->'criteria','[{"id":"accuracy","active":true},{"id":"substance","active":true},{"id":"language","active":true},{"id":"time","active":true}]'::jsonb)) criterion
+    where coalesce((criterion->>'active')::boolean,false)
+   ) weighted where score is not null and weight>0;
    songs=songs||jsonb_build_array(public.mcp_pick(s,array['id','title','author','version','category','preferredArrangementId'])||jsonb_build_object('review',r,'metadata',m,'arrangements',arrangements,'account_rating',account_rating,
     'facts',(select coalesce(jsonb_object_agg(key,public.mcp_pick(value,case when connection.share_notes then array['confidence','source'] else array['confidence'] end)),'{}'::jsonb) from jsonb_each(coalesce(s->'facts','{}')) where key=any(array['author','key','tempo','minutes','timeSignature','range','tune','meter'])),
-    'aiReview',case when mode='full' and s->'review'->>'status'='manual' and coalesce(s->>'aiDismissed','false')<>'true' then public.mcp_pick(coalesce(s->'aiReview',s->'catalogReview'),array['status','scores','summary','claims','concerns','uses','scriptures','sources','language','time','themes','concern','updatedAt','aiFields','model']) else '{}'::jsonb end,
+    'aiReview',case when mode='full' and s->'review'->>'status'='manual' and coalesce(s->>'aiDismissed','false')<>'true' then public.mcp_pick(coalesce(s->'aiReview',s->'catalogReview'),array['status','scores','customScores','summary','claims','concerns','uses','scriptures','sources','language','time','themes','concern','updatedAt','aiFields','model']) else '{}'::jsonb end,
     'firstLine',case when connection.share_lyrics then coalesce(s->>'firstLine','') else '' end,
     'themes',coalesce(s->'metadata'->'themes',case when mode<>'full' and (raw->>'status'='ai' or raw->'aiFields' ? 'themes') then case when s->'catalogReview'->>'status'='ai' then '[]'::jsonb else s->'catalogThemes' end else s->'themes' end,'[]'),
     'approval',public.mcp_pick(s->'approval',array['status','updatedAt'])||case when connection.share_notes then public.mcp_pick(s->'approval',array['notes']) else '{}'::jsonb end));
@@ -130,7 +133,7 @@ begin
  end if;
  return jsonb_build_object('ai_mode',mode,'updated_at',saved_at,
  'permissions',jsonb_build_object('profile',connection.share_profile,'libraries',connection.share_libraries,'plans',connection.share_plans,'notes',connection.share_notes,'lyrics',connection.share_lyrics),
- 'profile',case when connection.share_profile then public.mcp_pick(p,array['denomination','statement','customStatement','weights','principles','aiMode','aiLabels']) else '{}'::jsonb end,
+ 'profile',case when connection.share_profile then public.mcp_pick(p,array['denomination','statement','customStatement','weights','criteria','principles','aiMode','aiLabels']) else '{}'::jsonb end,
  'songs',songs,'libraries',libraries,'plans',plans);
 end $$;
 revoke all on function public.mcp_read_snapshot() from public,anon;

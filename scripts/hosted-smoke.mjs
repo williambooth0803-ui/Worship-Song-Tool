@@ -1,3 +1,5 @@
+import { execFile } from "node:child_process";
+import { promisify } from "node:util";
 import { checkConnectionFlows } from "./connection-fixture.mjs";
 import { checkNavigationFlows } from "./navigation-fixture.mjs";
 import { checkPreferencesFlows } from "./preferences-fixture.mjs";
@@ -50,6 +52,14 @@ const browser = await chromium.launch({
   executablePath: process.env.CHROMIUM_PATH || "/usr/bin/chromium",
   args: ["--no-sandbox"],
 });
+// These regression workflows intentionally exercise the preserved browser workspace.
+const originalNewPage = browser.newPage.bind(browser);
+browser.newPage = async options => {
+  const page = await originalNewPage(options);
+  await page.addInitScript(() => sessionStorage.setItem("faithful-guest-opt-in", "1"));
+  return page;
+};
+
 try {
   const page = await browser.newPage({
     viewport: { width: 1440, height: 1000 },
@@ -162,7 +172,8 @@ try {
     /Restored from the other browser/,
   );
   await page.setViewportSize({ width: 390, height: 844 });
-  await page.locator(".topbar .more-menu summary").click();
+  await page.locator('.nav-item[data-view="settings"]').click();
+  await page.getByText("Advanced account tools",{exact:true}).click();
   assert.ok(
     await page.getByRole("button", { name: "Backup & restore" }).isVisible(),
   );
@@ -172,6 +183,7 @@ try {
     ),
   );
   await page.setViewportSize({ width: 1440, height: 1000 });
+  await page.locator('.nav-item[data-view="discover"]').click();
   await reveal(page, "button", { name: "Build my profile" });
   await page.getByRole("button", { name: "Build my profile" }).click();
   await page
@@ -344,6 +356,12 @@ try {
   await checkEvaluationFlows(browser, `http://127.0.0.1:${server.address().port}/Worship-Song-Tool/`);
   await checkDiscoveryFlows(browser, `http://127.0.0.1:${server.address().port}/Worship-Song-Tool/`);
   await checkRecordingsFlows(browser, `http://127.0.0.1:${server.address().port}/Worship-Song-Tool/`);
+  const { stdout } = await promisify(execFile)(process.execPath, [fileURLToPath(new URL("./request-regression.mjs", import.meta.url))], {
+    env: { ...process.env, APP_URL: `http://127.0.0.1:${server.address().port}/Worship-Song-Tool/` },
+    timeout: 120000,
+  });
+  console.log(stdout.trim());
+
   console.log(
     "PASS: hosted subdirectory assets, static edition without API calls, backup download, invalid import rejection, cancel preservation, confirmed restore, reload and mobile controls.",
   );

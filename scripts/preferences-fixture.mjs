@@ -23,17 +23,19 @@ export async function checkPreferencesFlows(browser, base) {
         .count(),
       0,
     );
-    await page.locator(".topbar .more-menu > summary").click();
+    await page.locator('.nav-item[data-view="settings"]').click();
     await page
       .getByRole("button", { name: "AI Labels On", exact: true })
       .click();
+    await page.locator('.nav-item[data-view="discover"]').click();
     assert.equal(await page.locator(".ai-mark").count(), 0);
     await page.reload();
     assert.equal(await page.locator(".ai-mark").count(), 0);
-    await page.locator(".topbar .more-menu > summary").click();
+    await page.locator('.nav-item[data-view="settings"]').click();
     await page
       .getByRole("button", { name: "AI Labels Off", exact: true })
       .click();
+    await page.locator('.nav-item[data-view="discover"]').click();
     assert.ok((await page.locator(".ai-mark").count()) > 0);
     await page
       .getByRole("button", { name: "Customize details", exact: true })

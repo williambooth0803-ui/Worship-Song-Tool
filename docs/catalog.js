@@ -8,6 +8,7 @@ import { overall, normalize } from "./core.js";
 import { withProfileDefaults } from "./profile.js";
 import { reviewForDisplay } from "./profile.js";
 import { humanFirst } from "./song-state.js";
+import { catalogRecordings } from "./catalog-recordings.js";
 
 const additions = [
   [
@@ -574,8 +575,10 @@ export function syncCatalog(
       const personalNotes = song.review.notes,
         personalKey = song.review.key,
         personalMinutes = song.review.minutes,
-        personalMusical = song.review.musical;
+        personalMusical = song.review.musical,
+        personalCustomScores = song.review.customScores;
       song.review = structuredClone(entry.review);
+      if (personalCustomScores) song.review.customScores = structuredClone(personalCustomScores);
       if (personalNotes) song.review.notes = personalNotes;
       if (personalKey) song.review.key = personalKey;
       if (personalMinutes) song.review.minutes = personalMinutes;
@@ -588,6 +591,11 @@ export function syncCatalog(
     song.catalogThemes = structuredClone(entry.themes);
     song.catalogRevision = revision;
     song.category ||= entry.category;
+    // A present personal list (even []) owns the choice. Never restore removed
+    // links or append new defaults to a person's preferred versions.
+    if (song.recordings === undefined && song.title === entry.title && song.author === entry.author && catalogRecordings[entry.id]) {
+      song.recordings = structuredClone(catalogRecordings[entry.id]);
+    }
   }
   const catalogIds = new Set(catalog.map((s) => s.id));
   for (const song of result.songs) {

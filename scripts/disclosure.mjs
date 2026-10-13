@@ -5,6 +5,9 @@ export async function keepAIIfOffered(page) {
 }
 export async function reveal(page, role, options) {
   const target = page.getByRole(role, { ...options, includeHidden: true });
+  if (!(await target.count()) && ["Backup & restore", "ChatGPT connections", "Import previous browser-only workspace", "Retry profile sync"].includes(options.name)) {
+    await page.locator('.nav-item[data-view="settings"]').click();
+  }
   const summaries = await target.evaluate((el) => {
     const list = [];
     for (let n = el.parentElement; n; n = n.parentElement)

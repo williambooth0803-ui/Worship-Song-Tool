@@ -1,3 +1,4 @@
+import { activeCriteria, criterionScore } from "./scoring.js";
 export const defaultProfile = {
   weights: { accuracy: 35, substance: 30, language: 20, time: 15 },
   principles:
@@ -7,14 +8,14 @@ export const dimensions = {
   accuracy: "Doctrinal accuracy",
   substance: "Theological substance",
   language: "Language & craftsmanship",
-  time: "Purposeful use of time",
+  time: "Arrangement coherence",
 };
 export function overall(review, profile = defaultProfile) {
   let total = 0,
     weight = 0;
-  for (const key of Object.keys(dimensions)) {
-    const value = review.scores?.[key],
-      w = Number(profile.weights[key]);
+  for (const { id: key } of activeCriteria(profile)) {
+    const value = criterionScore(review, key),
+      w = Number(profile.weights[key] ?? 1);
     if (
       value === null ||
       value === undefined ||
@@ -32,10 +33,9 @@ export function recommendation(review, profile) {
   if (review.concern === "serious") return "Needs doctrinal review";
   const score = overall(review, profile);
   if (score === null) return "Awaiting assessment";
-  const assessed = Object.keys(dimensions)
-    .filter((k) => Number(profile.weights[k]) > 0)
+  const assessed = activeCriteria(profile).map(c => c.id)
     .every(
-      (k) => review.scores?.[k] !== null && review.scores?.[k] !== undefined,
+      (k) => criterionScore(review, k) !== null && criterionScore(review, k) !== undefined,
     );
   if (!assessed) return "Partial assessment";
   return score >= 8

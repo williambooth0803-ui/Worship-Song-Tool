@@ -169,7 +169,7 @@ test("save status compares stable JSONB values and leaves newer local edits unsa
     status = { signature: workspaceSignature(state) };
   assert.equal(saveLabel(status, state), "Saved to your account");
   state.songs[0].review.notes = "Newer change";
-  assert.match(saveLabel(status, state), /Changes saved in this browser/);
+  assert.match(saveLabel(status, state), /Saved in this browser/);
 });
 test("text counts distinguish missing full text, interior words and meaningful praise", () => {
   assert.equal(textStats({ firstLine: "Just as I am" }).justCount, null);

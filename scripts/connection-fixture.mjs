@@ -132,6 +132,8 @@ export async function checkConnectionFlows(browser, base) {
     calls.length = 0;
     await page.goto(base);
     await page.getByRole("button", { name: "My account", exact: true }).click();
+    await page.locator("dialog").getByRole("button", {name:"Settings",exact:true}).click();
+    await page.getByText("Advanced account tools",{exact:true}).click();
     await page
       .getByRole("button", { name: "ChatGPT connections", exact: true })
       .click();

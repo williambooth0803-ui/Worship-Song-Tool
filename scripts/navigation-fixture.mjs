@@ -30,6 +30,7 @@ export async function checkNavigationFlows(browser, base) {
   await page.close();
 
   const touch = await browser.newContext({ viewport: { width: 1024, height: 900 }, hasTouch: true, isMobile: true });
+  await touch.addInitScript(() => sessionStorage.setItem("faithful-guest-opt-in", "1"));
   const touchPage = await touch.newPage();
   await touchPage.goto(base);
   assert.ok(await touchPage.locator("nav .nav-label").first().isVisible());
@@ -37,7 +38,7 @@ export async function checkNavigationFlows(browser, base) {
   await touchPage.getByRole("heading", { name: "Song index", exact: true }).waitFor();
   assert.ok(await touchPage.evaluate(() => document.documentElement.scrollWidth <= innerWidth));
   await touchPage.setViewportSize({ width: 390, height: 844 });
-  assert.equal(await touchPage.locator("nav .nav-label").count(), 7);
+  assert.equal(await touchPage.locator("nav .nav-label").count(), 8);
   for (const label of await touchPage.locator("nav .nav-label").all()) assert.ok(await label.isVisible());
   await touchPage.screenshot({ path: "/tmp/faithful-navigation-touch.png" });
   await touch.close();

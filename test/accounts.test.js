@@ -245,3 +245,21 @@ test("responses for a previous account cannot replace the new account version", 
   await assert.rejects(pending, /account changed/);
   assert.equal(client.workspaceVersion, undefined);
 });
+test("a delayed expired-token response reuses a token already refreshed by another tab", async () => {
+  const values = new Map(), storage = { getItem: k => values.get(k) ?? null, setItem: (k,v) => values.set(k,v), removeItem: k => values.delete(k) };
+  let client, refreshes = 0, requests = 0;
+  client = new AccountClient(config, { storage, fetcher: async (url, options) => {
+    if (url.includes("grant_type=refresh_token")) { refreshes++; return response({...session,access_token:"fixture-newer"}); }
+    requests++;
+    if (requests === 1) {
+      client.setSession({...session,access_token:"fixture-newer"});
+      return response({message:"Delayed expired token"},401);
+    }
+    assert.equal(options.headers.Authorization,"Bearer fixture-newer");
+    return response(session.user);
+  } });
+  client.setSession(session);
+  await client.restoreSession();
+  assert.equal(refreshes,0);
+  assert.equal(requests,2);
+});

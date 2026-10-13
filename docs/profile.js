@@ -144,14 +144,15 @@ export function reviewForDisplay(song, mode = "full") {
     minutes: raw.minutes,
   };
   for (const field of base.aiFields || []) {
-    if (field === "scores")
+    if (field === "scores") {
+      result.customScores = {};
       result.scores = {
         accuracy: null,
         substance: null,
         language: null,
         time: null,
       };
-    else if (
+    } else if (
       ["claims", "concerns", "uses", "scriptures", "themes"].includes(field)
     )
       result[field] = [];

@@ -1,57 +1,56 @@
-# Exact recording lookup: environment handoff
+# Exact recording lookup: access and progress
 
 The website now has Apple Music, Spotify and YouTube searches for all 2,044
 catalog records, plus personal exact recording links, multiple versions and
 preferred links. Searches are not verified direct recordings. This handoff is
 for the remaining bulk recording lookup, not for frontend publication.
 
-The current runtime only allows GitHub, Supabase and package hosts. The proposed
-change below adds two public metadata services, with no credentials or paid AI
-API requirement:
+## Current access
 
-- `itunes.apple.com`: search Apple's public song metadata for track URLs.
-- `api.song.link`: look up corresponding Spotify and YouTube URLs, where available.
+The environment draft was recovered in the next setup chat: the save succeeded
+and readback confirmed both domains, preserving existing settings. Read-only
+requests through the inherited proxy now return:
 
-Saving the change returned `CONFLICT / stale_base`: "The configuration was
-published or changed after this draft was created, so its base version is stale."
-Persistence was not confirmed. The tool explicitly says that reading and
-resubmitting this draft will not fix it.
+- `itunes.apple.com/search`: HTTP 200 with song metadata.
+- `api.song.link/v1-alpha.1/links`: HTTP 401 with
+  `PUBLIC_API_ACCESS_DEPRECATED`. Network access is working, but anonymous
+  cross-platform lookup is no longer available from that API. Do not repeatedly
+  retry this response or invent Spotify/YouTube IDs.
 
-Open a new setup chat from the **current environment settings**, and provide this
-file (download it from GitHub if this workspace is unavailable). The new setup
-task should read its current draft, preserve all existing custom domains and
-presets, and add the two domains above. Do not replace an unknown allowlist or
-change secrets, repository membership, scripts or authentication settings. The
-user must review/save and publish the environment before access is assumed.
+## Metadata lookup
 
-Complete proposed change as prepared in this chat (reconcile against the new
-draft before saving):
+The first completed pass populated **1,245 Apple Music links across 780 of 2,044
+catalog records**, with no failed artist requests. Remaining records retain
+searches; absence of a match does not prove that a recording is unavailable.
 
-```json
-{
-  "config": {
-    "network": {
-      "allowed_domains": [
-        "api.github.com",
-        "api.supabase.com",
-        "inhqxwratimjvzsnuwik.supabase.co",
-        "williambooth0803-ui.github.io",
-        "itunes.apple.com",
-        "api.song.link"
-      ]
-    }
-  }
-}
-```
+Run `NODE_USE_ENV_PROXY=1 node scripts/lookup-recordings.mjs` with Node 24+ in
+this environment. It sends only public catalog recording artists to Apple's US
+song search, caches successful responses in `/tmp/faithful-recording-cache`, and
+spaces sequential requests by at least 3.2 seconds. Each artist search is capped
+at 200 results; this is a bounded first pass, not a complete discography. Failed
+requests are recorded, not retried indefinitely.
 
-After publication, check runtime policy and make read-only requests through the
-inherited proxy with TLS verification enabled. Verify the services' actual
-responses, matching behavior, availability and request limits before building
-the bulk lookup. No live response from either service was tested in this chat.
-Use catalog titles and recording artists only; do not send personal libraries,
-notes, account settings or plans. Match titles and artists conservatively and
-retain uncertainty; never invent track IDs or label a search as a recording.
-Ambiguous and missing recordings stay searchable. Respect region and version
-differences, cache results and use bounded retries/rate limits. Never infer
-duration, key or tempo from a link. Preserve personal preferred versions and
-deletions when adding future catalog links. Keep worship planning human-led.
+Only exact full title and artist matches after punctuation/case normalization
+are accepted. Version qualifiers remain part of the title. Writer-only hymn
+attributions, annotated associations and ambiguous collaboration separators
+are excluded. Up to three matching releases per catalog record retain their
+artist and album labels. Multiple releases are not claims of different audio
+performances. Metadata evidence, source request, timestamp and US region are in
+`data/recording-evidence.json`; frontend links are in
+`public/catalog-recordings.js`.
+
+These are metadata-matched recordings, not listening-verified lyrics, official
+video claims, global availability guarantees or church-use approval. No duration,
+key, tempo or assessment is inferred. Spotify and YouTube remain searches where
+no exact source-backed mapping is available. Resuming those lookups requires a
+supported metadata source; frontend setup requires no private Supabase token.
+
+Catalog refresh supplies defaults only when a matching record has no recording
+list. Any existing personal list, including an empty list after removal, stays
+unchanged. Preferred ordering, alternate versions and deletions survive refresh,
+backups and account saves. A personally changed title or artist does not receive
+links for its former identity. No personal libraries, notes, account settings or
+plans are sent to lookup services. Worship planning remains human-led.
+
+The previous setup chat's `CONFLICT / stale_base` was real; rereading and retrying
+that stale draft could not fix it. The fresh chat successfully saved the additions.

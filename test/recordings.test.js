@@ -4,6 +4,7 @@ import { recordingLinks, recordingSearchLinks, recordingURL, validateRecordings 
 import { allCatalogSongs, syncCatalog } from "../public/catalog.js";
 import { defaultProfile } from "../public/core.js";
 import { validateWorkspace } from "../public/backup.js";
+import { catalogRecordings } from "../public/catalog-recordings.js";
 
 const spotify = "https://open.spotify.com/track/0123456789012345678901";
 const youtube = "https://www.youtube.com/watch?v=abcdefghijk";
@@ -72,4 +73,39 @@ test("duplicate, malformed and oversized recording imports are rejected", () => 
   assert.throws(() => validateRecordings([r, {...r, url: "https://open.spotify.com/track/1111111111111111111111"}]), /distinct/);
   assert.throws(() => validateRecordings([{...r, label: "x".repeat(301)}]), /300/);
   assert.throws(() => validateRecordings(Array(31).fill(r)), /30/);
+});
+
+test("metadata defaults preserve personal choices, removals, assessments and plans through refresh and backup", () => {
+  const entry = allCatalogSongs.find(s => catalogRecordings[s.id]);
+  assert.ok(entry, "Live metadata lookup populated catalog links");
+  const original = { version: 1, profile: defaultProfile, songs: [structuredClone(entry)], libraries: [{ id: "mine", name: "Mine", songIds: [entry.id] }], plans: [] };
+  const next = syncCatalog(original);
+  const song = next.songs.find(s => s.id === entry.id);
+  assert.deepEqual(song.recordings, catalogRecordings[entry.id]);
+  assert.deepEqual(song.review, entry.review);
+  assert.deepEqual(next.plans, original.plans);
+  assert.deepEqual(next.libraries, original.libraries);
+  for (const choices of [[], [{ id: "personal", provider: "youtube", label: "My preferred performance", url: youtube }], song.recordings.slice(1)]) {
+    song.recordings = structuredClone(choices);
+    const restored = syncCatalog(validateWorkspace(JSON.parse(JSON.stringify(next))));
+    assert.deepEqual(restored.songs.find(s => s.id === entry.id).recordings, choices);
+  }
+  const edited = structuredClone(original);
+  edited.songs[0].title = "Personal alternate song";
+  assert.equal(syncCatalog(edited).songs[0].recordings, undefined);
+});
+
+test("catalog recordings use normalized real provider URLs and retained metadata evidence", async () => {
+  const { readFile } = await import("node:fs/promises");
+  const { evidence } = JSON.parse(await readFile(new URL("../data/recording-evidence.json", import.meta.url), "utf8"));
+  for (const [id, links] of Object.entries(catalogRecordings)) {
+    assert.ok(allCatalogSongs.some(s => s.id === id));
+    assert.deepEqual(validateRecordings(links), links);
+    for (const link of links) {
+      const source = evidence[id].find(e => e.url === link.url);
+      assert.ok(source);
+      assert.equal(new URL(source.source).hostname, "itunes.apple.com");
+      assert.ok(source.fetchedAt);
+    }
+  }
 });

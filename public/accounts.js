@@ -144,6 +144,7 @@ export class AccountClient {
       );
     if (authenticated && !this.session) throw new Error("Sign in first.");
     const owner = authenticated ? this.user?.id : null;
+    const requestToken = authenticated ? this.session.access_token : null;
     const response = await this.fetcher(`${this.config.url}${path}`, {
       method,
       signal: AbortSignal.timeout(20000),
@@ -151,7 +152,7 @@ export class AccountClient {
         apikey: this.config.key,
         "Content-Type": "application/json",
         ...(authenticated
-          ? { Authorization: `Bearer ${this.session.access_token}` }
+          ? { Authorization: `Bearer ${requestToken}` }
           : {}),
         ...headers,
       },
@@ -165,7 +166,7 @@ export class AccountClient {
       this.session?.refresh_token
     ) {
       try {
-        await this.refreshSession();
+        await this.refreshSession(requestToken);
       } catch (err) {
         if ([400, 401, 403].includes(err.status)) {
           if (owner === this.user?.id) this.setSession(null);
@@ -232,8 +233,10 @@ export class AccountClient {
     if (result.access_token) this.setSession(result);
     return { signedIn: Boolean(result.access_token) };
   }
-  async refreshSession() {
-    const owner = this.user?.id, token = this.session?.access_token;
+  async refreshSession(failedToken = this.session?.access_token) {
+    // A delayed 401 may refer to a token another tab has already refreshed.
+    // Compare the token actually used by that request, not the current token.
+    const owner = this.user?.id, token = failedToken;
     const refresh = async () => {
       if (this.persisted) this.syncStoredSession();
       if (owner !== this.user?.id) throw new Error("The signed-in account changed. Please try again.");

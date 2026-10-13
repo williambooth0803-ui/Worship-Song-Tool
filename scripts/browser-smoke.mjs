@@ -8,6 +8,14 @@ const browser = await chromium.launch({
   headless: true,
   args: ["--no-sandbox"],
 });
+// These regression workflows intentionally exercise the preserved browser workspace.
+const originalNewPage = browser.newPage.bind(browser);
+browser.newPage = async options => {
+  const page = await originalNewPage(options);
+  await page.addInitScript(() => sessionStorage.setItem("faithful-guest-opt-in", "1"));
+  return page;
+};
+
 const page = await browser.newPage({ viewport: { width: 1440, height: 1050 } });
 const errors = [];
 page.on("pageerror", (error) => errors.push(error.message));
@@ -30,7 +38,7 @@ await page.getByRole("searchbox").fill("amazing grace");
 await reveal(page, "button", { name: "Edit assessment" });
 await page.getByRole("button", { name: "Edit assessment" }).click();
 await page
-  .getByRole("spinbutton", { name: "Purposeful use of time", exact: true })
+  .getByRole("spinbutton", { name: "Arrangement coherence", exact: true })
   .fill("8");
 await page
   .getByLabel("Your notes", { exact: true })
@@ -116,7 +124,7 @@ await page
   .getByRole("button", { name: "Rating profile", exact: false })
   .click();
 await page
-  .getByRole("spinbutton", { name: "Doctrinal accuracy", exact: false })
+  .getByRole("spinbutton", { name: "Doctrinal accuracy weight", exact: true })
   .fill("50");
 await reveal(page, "button", { name: "Save rating profile" });
 await page.getByRole("button", { name: "Save rating profile" }).click();

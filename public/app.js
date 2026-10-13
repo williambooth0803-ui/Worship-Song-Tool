@@ -1,3 +1,6 @@
+import { AutosaveQueue } from "./autosave.js";
+import { libraryAuditPrompt, parseLibraryAudit, auditToken, auditCharts, auditSongs, auditAxes, auditLabels } from "./library-audit.js";
+import { ratingCriteria, activeCriteria, criterionScore, scoringLabels, scoringRubrics, scoreAnchors, suggestedCriteria, validateCriteria } from "./scoring.js";
 import {
   detailAttributes,
   attributeOrder,
@@ -94,6 +97,8 @@ let typeFilter = "",
 const PAGE_SIZE = 24,
   INDEX_PAGE_SIZE = 50;
 const disclosureState = new Map();
+let suppressRailHover = false;
+let guestOptIn = sessionStorage.getItem("faithful-guest-opt-in") === "1", unsavedForm = false, localSaveFailed = false;
 let accountSave = { phase: "local", signature: null, remoteAvailable: false };
 let indexQuery = "",
   indexRules = [],
@@ -156,12 +161,39 @@ function toast(message) {
   clearTimeout(timer);
   timer = setTimeout(() => t.classList.remove("show"), 4500);
 }
+const syncKey = () => activeStore + ":last-account-save";
+function readSyncSignature() { try { return localStorage.getItem(syncKey()); } catch { return null; } }
+function rememberAccountSave(signature) { try { localStorage.setItem(syncKey(), signature); } catch {} }
+const autosave = new AutosaveQueue({
+  save: snapshot => accounts.saveWorkspace(snapshot),
+  onState: result => {
+    if (result.phase === "saving") accountSave.phase = "saving";
+    else if (result.phase === "saved") {
+      accountSave = { phase: "local", signature: result.signature, remoteAvailable: true };
+      rememberAccountSave(result.signature);
+    } else { accountSave.phase = result.phase; if (result.phase === "conflict") accountSave.remoteAvailable = true; }
+    updateSaveStrip();
+  },
+});
+function queueAccountSave() {
+  if (accounts.user && activeStore !== STORE && accountReady && autosave.enabled && (autosave.running || autosave.pending || accountSave.signature !== workspaceSignature(state))) autosave.enqueue(state);
+}
+function loginScreen(mode = "signin") {
+  return `<main class="login-screen"><section class="profile-panel"><h1>Faithful Repertoire</h1><h2>${mode === "signup" ? "Create your account" : mode === "recover" ? "Reset your password" : "Sign in to keep your repertoire"}</h2><p>Your account keeps your songs, reviews and plans together. Changes save in this browser immediately and autosave to your account when connected.</p>${accounts.configured ? `<form id="auth-form" name="login" method="post" autocomplete="on" data-mode="${mode}"><label for="login-email">Email</label><input id="login-email" name="email" type="email" autocomplete="username" inputmode="email" autocapitalize="none" spellcheck="false" required>${mode !== "recover" ? `<label for="login-password">Password</label><input id="login-password" name="password" type="password" autocomplete="${mode === "signup" ? "new-password" : "current-password"}" ${mode === "signup" ? 'minlength="10"' : ""} required>` : ""}<p id="account-error" role="alert"></p><button type="submit" class="button primary">${mode === "signup" ? "Create account" : mode === "recover" ? "Send reset email" : "Sign in"}</button></form><div class="account-links">${mode !== "signin" ? '<button class="text-button" data-action="account" data-mode="signin">Return to sign in</button>' : ""}<button class="text-button" data-action="account" data-mode="signup">Create an account</button><button class="text-button" data-action="account" data-mode="recover">Forgot password?</button></div>` : '<p>Account sign-in is unavailable in this configuration. No private token is required to use the browser workspace.</p>'}<details><summary>Existing browser-only work or offline use</summary><p>Browser-only work stays on this device and is not saved to an account. Your existing guest workspace has been preserved.</p><button class="button" data-action="guest-opt-in">Use browser-only workspace</button></details></section></main>`;
+}
+function settingsPage() {
+  const signedIn = Boolean(accounts.user && activeStore !== STORE);
+  return `<div class="page-heading"><h1>Settings</h1></div><section class="profile-panel"><h2>Saving & account</h2><p role="status">${signedIn ? e(saveLabel(accountSave,state)) : "Browser-only workspace. Saved on this device, not to an account."}</p>${signedIn ? `<div class="form-actions"><button class="button" data-action="retry-autosave">Save now / retry</button><button class="button" data-action="cloud-load">Review saved account workspace</button></div>` : '<button class="button primary" data-action="account">Sign in</button>'}<p>Changes are saved to browser storage after each action. Signed-in account changes are queued automatically; offline failures and newer copies from another device pause uploads. The leave-page warning appears for pending account saves or unsubmitted edits. Browser storage is not an independent backup.</p><details><summary>Advanced account tools</summary><div class="account-buttons"><button class="button" data-action="backup">Backup & restore</button>${signedIn ? '<button class="button" data-action="sync-profile">Retry profile sync</button><button class="button" data-action="copy-browser">Import previous browser-only workspace</button><button class="button" data-action="chatgpt-connections">ChatGPT connections</button>' : ""}</div></details><h2>Display & profile</h2><button class="button" data-action="setup-profile">Edit church profile</button><button class="button" data-action="nav" data-view="profile">Rating criteria</button><button class="button" data-action="toggle-ai-labels">AI Labels ${state.profile.aiLabels ? "On" : "Off"}</button></section>`;
+}
 function persist() {
   try {
     localStorage.setItem(activeStore, JSON.stringify(state));
+    localSaveFailed = false;
+    queueAccountSave();
     updateSaveStrip();
     return true;
   } catch {
+    localSaveFailed = true;
     toast(
       "Browser storage is unavailable or full. Export a backup before leaving.",
     );
@@ -172,9 +204,12 @@ function commitWorkspace(next) {
   try {
     localStorage.setItem(activeStore, JSON.stringify(next));
     state = next;
+    localSaveFailed = false;
+    queueAccountSave();
     updateSaveStrip();
     return true;
   } catch {
+    localSaveFailed = true;
     toast(
       "Browser storage is full or unavailable. The current workspace is preserved; export a backup before adding more data.",
     );
@@ -182,8 +217,10 @@ function commitWorkspace(next) {
   }
 }
 function modal(html) {
+  unsavedForm = false;
   dialog.innerHTML = `<div class="modal-top"><span class="eyebrow">FAITHFUL REPERTOIRE</span><button type="button" data-action="close" class="icon-button" aria-label="Close dialog">×</button></div>${html}`;
-  dialog.showModal();
+  if (!dialog.open) dialog.showModal();
+  dialog.scrollTop = 0;
 }
 const list = (items) =>
   items?.length
@@ -340,6 +377,7 @@ function resetSelection() {
   importDraft = null;
 }
 function switchWorkspace(user = null) {
+  autosave.reset(false);
   accountSave = { phase: "local", signature: null, remoteAvailable: false };
   activeStore = user ? `faithful-repertoire-user:${user.id}` : STORE;
   try {
@@ -377,7 +415,7 @@ async function loadAccountProfile() {
     store = activeStore;
   const profile = await accounts.loadProfile();
   if (accounts.user?.id !== owner || activeStore !== store) return;
-  if (profile) {
+  if (profile && !state.profile.setupComplete) {
     state.profile = withProfileDefaults(profile);
     persist();
     render();
@@ -386,7 +424,7 @@ async function loadAccountProfile() {
 }
 function saveStrip(open = document.querySelector("#account-save-strip")?.open) {
   if (!accounts.user || activeStore === STORE) return "";
-  return `<details class="account-save-strip" id="account-save-strip" ${open ? "open" : ""}><summary>Account sync</summary><div class="sync-menu-content"><span role="status">${e(saveLabel(accountSave, state))}</span><div><button class="text-button" data-action="cloud-save" ${["saving", "checking", "conflict"].includes(accountSave.phase) ? "disabled" : ""}>Save to account</button>${accountSave.remoteAvailable ? '<button class="text-button" data-action="cloud-load">Review account copy</button>' : ""}</div></div></details>`;
+  return `<details class="account-save-strip" id="account-save-strip" ${open ? "open" : ""}><summary>${accountSave.phase === "saving" ? "Saving…" : accountSave.signature === workspaceSignature(state) ? "Saved" : ["error","conflict","review"].includes(accountSave.phase) ? "Save needs attention" : "Autosave"}</summary><div class="sync-menu-content"><span role="status">${e(saveLabel(accountSave, state))}</span><div><button class="text-button" data-action="retry-autosave" ${["saving","checking","conflict","review"].includes(accountSave.phase) ? "disabled" : ""}>Save now / retry</button>${accountSave.remoteAvailable ? '<button class="text-button" data-action="cloud-load">Review saved account workspace</button>' : ""}</div></div></details>`;
 }
 function updateSaveStrip() {
   const strip = document.querySelector("#account-save-strip");
@@ -403,14 +441,15 @@ async function checkAccountCopy() {
     const signature = saved
       ? workspaceSignature(syncCatalog(saved.workspace))
       : null;
-    accountSave = {
-      phase: "local",
-      signature: signature === workspaceSignature(state) ? signature : null,
-      remoteAvailable: Boolean(saved),
-    };
+    const localSignature = workspaceSignature(state), baseline = readSyncSignature();
+    const canSave = !saved || signature === localSignature || signature === baseline;
+    accountSave = { initialSignature: localSignature, phase: canSave ? "local" : "review", signature: signature === localSignature ? signature : baseline, remoteAvailable: Boolean(saved) };
+    autosave.reset(canSave);
+    if (signature === localSignature) rememberAccountSave(signature);
+    if (canSave && saved && signature !== localSignature) queueAccountSave();
   } catch {
     if (accounts.user?.id === owner && activeStore === store)
-      accountSave.phase = "error";
+      { accountSave.phase = "error"; autosave.reset(false); }
   }
   updateSaveStrip();
 }
@@ -421,11 +460,12 @@ function accountDialog(mode = "signin") {
     );
   if (accounts.user)
     return modal(
-      `<h2>Your account</h2><p>${e(accounts.user.email)}</p><p class="muted">This browser keeps a separate workspace for each signed-in account. Account backups include your profile, AI preference, songs, libraries and plans. Save to your account after editing to use this workspace on another device. Newer changes from another device are protected; loading requires confirmation.</p><div class="account-buttons"><button class="button" data-action="sync-profile">Sync my profile</button><button class="button" data-action="copy-browser">Copy browser workspace</button><button class="button primary" data-action="cloud-save">Save account backup</button><button class="button" data-action="cloud-load">Load account backup</button><button class="button" data-action="chatgpt-connections">ChatGPT connections</button><button class="button" data-action="signout">Sign out</button></div><p id="account-error" role="alert"></p>`,
+      `<h2>Your account</h2><p>${e(accounts.user.email)}</p><p role="status">${e(saveLabel(accountSave,state))}</p><div class="account-buttons"><button class="button" data-action="nav" data-view="settings">Settings</button><button class="button" data-action="signout">Sign out</button></div>`,
     );
   const enabled = accounts.configured;
+  if (!guestOptIn && !accounts.user && enabled) { app.innerHTML = loginScreen(mode); return; }
   modal(
-    `<h2>${mode === "signup" ? "Create your account" : mode === "recover" ? "Reset your password" : "Sign in to your repertoire"}</h2><p class="muted">${enabled ? "Your account can store your profile and a backup of your workspace across browsers." : "Accounts are being prepared. The hosted authentication service is not configured yet. You can use the full browser workspace and build your profile now."}</p><form id="auth-form" autocomplete="on" data-mode="${mode}"><label>Email<input id="login-email" name="email" type="email" autocomplete="username" inputmode="email" autocapitalize="none" spellcheck="false" required ${enabled ? "" : "disabled"}></label>${mode !== "recover" ? `<label>Password<input id="login-password" name="password" type="password" ${mode === "signup" ? 'minlength="10"' : ""} autocomplete="${mode === "signup" ? "new-password" : "current-password"}" required ${enabled ? "" : "disabled"}></label>` : ""}<p id="account-error" role="alert"></p><div class="form-actions"><button class="button" type="button" data-action="close">Continue in this browser</button><button class="button primary" ${enabled ? "" : "disabled"}>${mode === "signup" ? "Create account" : mode === "recover" ? "Send reset email" : "Sign in"}</button></div></form><div class="account-links"><button class="text-button" data-action="account" data-mode="${mode === "signup" ? "signin" : "signup"}">${mode === "signup" ? "Already have an account? Sign in" : "Create an account"}</button><button class="text-button" data-action="account" data-mode="recover">Forgot password?</button></div>`,
+    `<h2>${mode === "signup" ? "Create your account" : mode === "recover" ? "Reset your password" : "Sign in to your repertoire"}</h2><p class="muted">${enabled ? "Your account can store your profile and a backup of your workspace across browsers." : "Accounts are being prepared. The hosted authentication service is not configured yet. You can use the full browser workspace and build your profile now."}</p><form id="auth-form" name="login" method="post" autocomplete="on" data-mode="${mode}"><label>Email<input id="login-email" name="email" type="email" autocomplete="username" inputmode="email" autocapitalize="none" spellcheck="false" required ${enabled ? "" : "disabled"}></label>${mode !== "recover" ? `<label>Password<input id="login-password" name="password" type="password" ${mode === "signup" ? 'minlength="10"' : ""} autocomplete="${mode === "signup" ? "new-password" : "current-password"}" required ${enabled ? "" : "disabled"}></label>` : ""}<p id="account-error" role="alert"></p><div class="form-actions"><button class="button" type="button" data-action="close">Cancel</button><button class="button primary" ${enabled ? "" : "disabled"}>${mode === "signup" ? "Create account" : mode === "recover" ? "Send reset email" : "Sign in"}</button></div></form><div class="account-links"><button class="text-button" data-action="account" data-mode="${mode === "signup" ? "signin" : "signup"}">${mode === "signup" ? "Already have an account? Sign in" : "Create an account"}</button><button class="text-button" data-action="account" data-mode="recover">Forgot password?</button></div>`,
   );
 }
 function confirmCloudRestore(saved, title = "Load your account backup?") {
@@ -446,6 +486,8 @@ function confirmCloudRestore(saved, title = "Load your account backup?") {
         signature: saved.updatedAt ? workspaceSignature(state) : null,
         remoteAvailable: Boolean(saved.updatedAt),
       };
+      if (saved.updatedAt) rememberAccountSave(workspaceSignature(state));
+      autosave.reset(true);
       resetSelection();
       dialog.close();
       render();
@@ -464,15 +506,27 @@ function navigationIcon(id) {
     library: '<path d="M4 5c3-1 5-1 8 1 3-2 5-2 8-1v15c-3-1-5-1-8 1-3-2-5-2-8-1zM12 6v15"/>',
     plans: '<rect x="4" y="4" width="16" height="17" rx="3"/><path d="M8 3v3M16 3v3M4 9h16m-12 6 2 2 5-5"/>',
     profile: '<path d="M4 7h5m4 0h7M4 17h9m4 0h3"/><circle cx="11" cy="7" r="2"/><circle cx="15" cy="17" r="2"/>',
+    settings: '<path d="M4 7h5m4 0h7M4 17h9m4 0h3"/><circle cx="11" cy="7" r="2"/><circle cx="15" cy="17" r="2"/>',
     blacklist: '<circle cx="12" cy="12" r="8"/><path d="m6 6 12 12"/>',
   };
   return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${paths[id]}</svg>`;
 }
 function render() {
+  if (accounts.user && activeStore === STORE) {
+    app.innerHTML = '<main class="login-screen"><section class="profile-panel"><h1>Opening your account…</h1><p role="status">Checking your session before opening your saved workspace.</p></section></main>';
+    return;
+  }
+  if (!accounts.user && !guestOptIn) {
+    if (!app.querySelector(".login-screen")) app.innerHTML = loginScreen();
+    return;
+  }
+  const listScroll = app.querySelector(".song-list")?.scrollTop || 0;
+  const previousDetail = app.querySelector(".detail-panel");
+  const detailScroll = previousDetail?.dataset.songId === selected ? previousDetail.scrollTop : 0;
   for (const node of app.querySelectorAll("details[data-disclosure]"))
     disclosureState.set(node.dataset.disclosure, node.open);
   const count = new Set(state.libraries.flatMap((x) => x.songIds).filter(id => browsableSongs().some(s => s.id === id))).size;
-  app.innerHTML = `<aside class="sidebar"><a class="brand" aria-label="Faithful Repertoire" href="#" data-action="nav" data-view="discover"><span class="brand-mark">✣</span><span class="brand-name">Faithful<br>Repertoire</span></a><nav aria-label="Main navigation">${[
+  app.innerHTML = `<aside class="sidebar ${suppressRailHover ? "suppress-hover" : ""}"><a class="brand" aria-label="Faithful Repertoire" href="#" data-action="nav" data-view="discover"><span class="brand-mark">✣</span><span class="brand-name">Faithful<br>Repertoire</span></a><nav aria-label="Main navigation">${[
     ["discover", "", "Discover songs"],
     ["index", "", "Song index"],
     ["collections", "", "Collections"],
@@ -480,6 +534,7 @@ function render() {
     ["plans", "", "Worship plans"],
     ["blacklist", "", "Blacklist"],
     ["profile", "", "Rating profile"],
+    ["settings", "", "Settings"],
   ]
     .map(
       ([id, icon, text]) =>
@@ -487,7 +542,7 @@ function render() {
     )
     .join(
       "",
-    )}</nav><div class="sidebar-bottom"><button class="text-button" data-action="export">↓ Export your data</button></div></aside><main><header class="topbar"><span>Faithful Repertoire <span class="divider">/</span> ${e({ discover: "Discover", index: "Song index", collections: "Collections", library: "Libraries", plans: "Planning", profile: "Preferences", blacklist: "Blacklist" }[view])}</span><div class="topbar-actions">${saveStrip()}<button class="button" data-action="account">${accounts.user && activeStore !== STORE ? "My account" : "Sign in"}</button><details class="more-menu"><summary>More</summary><div class="menu-items"><button class="text-button" data-action="backup">Backup & restore</button><button class="text-button" data-action="setup-profile">Edit profile</button><button class="text-button" data-action="toggle-ai-labels">AI Labels ${state.profile.aiLabels ? "On" : "Off"}</button></div></details></div></header><div class="page">${profilePrompt()}${["discover", "library", "blacklist"].includes(view) ? songWorkspace() : view === "index" ? indexPage() : view === "collections" ? collectionsPage() : view === "plans" ? plansPage() : profilePage()}</div><footer>Faithful Repertoire</footer></main>`;
+    )}</nav><div class="sidebar-bottom"><button class="text-button" data-action="export">↓ Export your data</button></div></aside><main><header class="topbar"><span>Faithful Repertoire <span class="divider">/</span> ${e({ discover: "Discover", index: "Song index", collections: "Collections", library: "Libraries", plans: "Planning", profile: "Preferences", settings: "Settings", blacklist: "Blacklist" }[view])}</span><div class="topbar-actions">${saveStrip()}<button class="button" data-action="account">${accounts.user && activeStore !== STORE ? "My account" : "Sign in"}</button><button class="button" data-action="nav" data-view="settings">Settings</button></div></header><div class="page">${activeStore === STORE ? '<p class="guest-banner" role="status">Browser-only workspace · saved on this device. <button class="text-button" data-action="account">Sign in to save across devices</button></p>' : ""}${profilePrompt()}${["discover", "library", "blacklist"].includes(view) ? songWorkspace() : view === "index" ? indexPage() : view === "collections" ? collectionsPage() : view === "plans" ? plansPage() : view === "settings" ? settingsPage() : profilePage()}</div><footer>Faithful Repertoire</footer></main>`;
   for (const node of app.querySelectorAll("details")) {
     const key = node.dataset.disclosureKey || (node.closest(".detail-panel")
       ? "song:" + selected + ":" + (node.dataset.attribute || node.className)
@@ -497,6 +552,9 @@ function render() {
     node.dataset.disclosure = key;
     if (disclosureState.has(key)) node.open = disclosureState.get(key);
   }
+  const resultList = app.querySelector(".song-list"), detail = app.querySelector(".detail-panel");
+  if (resultList) resultList.scrollTop = listScroll;
+  if (detail) detail.scrollTop = detailScroll;
 }
 function songWorkspace() {
   const isLibrary = view === "library";
@@ -547,7 +605,7 @@ function songWorkspace() {
       (s) => s.id === selected && shown.some((x) => x.id === s.id),
     ) || shown[0];
   if (song) selected = song.id;
-  return `<div class="page-heading"><div><h1>${isBlacklist ? "Blacklist" : isLibrary ? "Your song libraries" : "Discover songs"}</h1></div><button class="button primary" data-action="${isLibrary ? "new-library" : "new-song"}">+ ${isLibrary ? "New library" : "Add a song"}</button></div>${isLibrary ? `${libraryToolbar(lib)}<div class="library-tabs">${state.libraries.map((l) => `<button class="${l.id === lib?.id ? "selected" : ""}" data-action="library-select" data-id="${e(l.id)}">${e(l.name)} <span>${l.songIds.length}</span></button>`).join("")}</div>` : `<div class="collection-prompt"><button class="text-button" data-action="nav" data-view="collections">Browse collections</button></div>`}<div class="search-row"><label class="search-box"><span>⌕</span><input id="search" type="search" value="${e(query)}" placeholder="Search by title, writer, or theme…" aria-label="Search songs"></label><span class="result-count">${songs.length} song${songs.length === 1 ? "" : "s"}</span></div>${isBlacklist ? '<p class="muted">Dismissed songs appear only here. Restore a song to see it elsewhere again.</p>' : ""}${catalogMatches(available)}<details class="filter-panel"><summary>Filters & sorting</summary>${discoveryControls(pool)}</details><div class="song-workspace"><section class="song-list" aria-label="Song results" tabindex="0">${songs.length ? shown.map((s) => songCard(s, s.id === song.id)).join("") : `<div class="empty"><span>♫</span><h3>${query ? "No matching songs" : "A repertoire starts with one song."}</h3><p>${query ? "Try another title or add a song to review." : "Find a song in Discover and save it here."}</p><button class="button" data-action="${query ? "new-song" : "nav"}" data-view="discover">${query ? "Add a song" : "Discover songs"}</button></div>${closestMatches(nearby)}`}${pagination("song", songPage, songs.length, PAGE_SIZE)}<div class="catalog-note">${isLibrary ? "Library membership does not imply church approval." : `${state.songs.length} workspace songs · ${allCatalogSongs.length} records in Collections · includes AI drafts and unrated titles.`}</div></section>${song ? songDetail(song, isLibrary ? lib : null) : '<section class="detail-panel empty"><h2>Your next song belongs here.</h2><p>Save an existing song or add one to begin a review.</p></section>'}</div>`;
+  return `<div class="page-heading"><div><h1>${isBlacklist ? "Blacklist" : isLibrary ? "Your song libraries" : "Discover songs"}</h1></div><button class="button primary" data-action="${isLibrary ? "new-library" : "new-song"}">+ ${isLibrary ? "New library" : "Add a song"}</button></div>${isLibrary ? `${libraryToolbar(lib)}<div class="library-tabs">${state.libraries.map((l) => `<button class="${l.id === lib?.id ? "selected" : ""}" data-action="library-select" data-id="${e(l.id)}">${e(l.name)} <span>${l.songIds.filter(id => browsableSongs().some(s => s.id === id)).length}</span></button>`).join("")}</div>` : `<div class="collection-prompt"><button class="text-button" data-action="nav" data-view="collections">Browse collections</button></div>`}<div class="search-row"><label class="search-box"><span>⌕</span><input id="search" type="search" value="${e(query)}" placeholder="Search by title, writer, or theme…" aria-label="Search songs"></label><span class="result-count">${songs.length} song${songs.length === 1 ? "" : "s"}</span></div>${isBlacklist ? '<p class="muted">Dismissed songs appear only here. Restore a song to see it elsewhere again.</p>' : ""}${catalogMatches(available)}<details class="filter-panel"><summary>Filters & sorting</summary>${discoveryControls(pool)}</details><div class="song-workspace"><section class="song-list" aria-label="Song results" tabindex="0">${songs.length ? shown.map((s) => songCard(s, s.id === song.id)).join("") : `<div class="empty"><span>♫</span><h3>${query ? "No matching songs" : "A repertoire starts with one song."}</h3><p>${query ? "Try another title or add a song to review." : "Find a song in Discover and save it here."}</p><button class="button" data-action="${query ? "new-song" : "nav"}" data-view="discover">${query ? "Add a song" : "Discover songs"}</button></div>${closestMatches(nearby)}`}${pagination("song", songPage, songs.length, PAGE_SIZE)}<div class="catalog-note">${isLibrary ? "Library membership does not imply church approval." : `${state.songs.length} workspace songs · ${allCatalogSongs.length} records in Collections · includes AI drafts and unrated titles.`}</div></section>${song ? songDetail(song, isLibrary ? lib : null) : '<section class="detail-panel empty"><h2>Your next song belongs here.</h2><p>Save an existing song or add one to begin a review.</p></section>'}</div>`;
 }
 function closestMatches(songs) {
   if (!songs.length) return "";
@@ -568,7 +626,7 @@ function catalogMatches(songs) {
 function pagination(kind, page, count, size) {
   const pages = Math.ceil(count / size) || 1;
   if (pages === 1) return "";
-  return `<div class="pagination"><span>${(page - 1) * size + 1}–${Math.min(page * size, count)} of ${count}</span><button class="button" data-action="${kind}-page" data-id="${page - 1}" ${page === 1 ? "disabled" : ""}>Previous</button><span>Page ${page} of ${pages}</span><button class="button" data-action="${kind}-page" data-id="${page + 1}" ${page === pages ? "disabled" : ""}>Next</button></div>`;
+  return `<nav class="pagination" aria-label="${kind === "song" ? "Song" : "Index"} pages"><span>${(page - 1) * size + 1}–${Math.min(page * size, count)} of ${count}</span><button class="button" data-action="${kind}-page" data-id="1" ${page === 1 ? "disabled" : ""}>First</button><button class="button" data-action="${kind}-page" data-id="${page - 1}" ${page === 1 ? "disabled" : ""}>Previous</button><label>Page<input class="page-jump" aria-label="${kind === "song" ? "Song" : "Index"} page" data-page-kind="${kind}" type="number" min="1" max="${pages}" value="${page}"></label><span>of ${pages}</span><button class="button" data-action="${kind}-page" data-id="${page + 1}" ${page === pages ? "disabled" : ""}>Next</button><button class="button" data-action="${kind}-page" data-id="${pages}" ${page === pages ? "disabled" : ""}>Last</button></nav>`;
 }
 function collectionRecords(pack) {
   return collectionSongs(pack, collectionDepth).filter(song => !existingMatch(state, song)?.blacklisted);
@@ -616,7 +674,7 @@ function importDialog() {
   );
 }
 function libraryToolbar(lib) {
-  return `<details class="library-toolbar"><summary>Library tools</summary><div><button class="text-button" data-action="rename-library" data-id="${e(lib?.id)}">Rename</button><button class="text-button" data-action="export-library" data-id="${e(lib?.id)}">Export song list</button><button class="text-button" data-action="csv-import">Import song list</button><button class="text-button danger" data-action="delete-library" data-id="${e(lib?.id)}" ${state.libraries.length === 1 ? "disabled" : ""}>Delete library</button></div></details>`;
+  return `${state.profile.aiMode === "full" ? `<button class="button" data-action="library-audit" data-id="${e(lib?.id)}">Run Library Audit</button>` : `<p class="muted">Library interpretation requires Full AI content in your rating profile.</p>`}<details class="library-toolbar"><summary>Library tools</summary><div><button class="text-button" data-action="rename-library" data-id="${e(lib?.id)}">Rename</button><button class="text-button" data-action="export-library" data-id="${e(lib?.id)}">Export song list</button><button class="text-button" data-action="csv-import">Import song list</button><button class="text-button danger" data-action="delete-library" data-id="${e(lib?.id)}" ${state.libraries.length === 1 ? "disabled" : ""}>Delete library</button></div></details>`;
 }
 function songCard(s, active) {
   const displayedReview = reviewForDisplay(s, state.profile.aiMode);
@@ -637,7 +695,7 @@ function aiLabel(song, review, field) {
 function evaluationBox(song, review, secondary = false) {
   const hidden = new Set(song.detailLayout?.hidden || []), ai = review.status === "ai";
   const title = ai ? secondary ? "AI evaluation · secondary" : "AI evaluation" : "Your evaluation";
-  const scores = Object.entries(dimensions).filter(([key]) => review.scores?.[key] !== null && review.scores?.[key] !== undefined);
+  const scores = activeCriteria(state.profile).map(c => [c.id, c.label]).filter(([key]) => criterionScore(review, key) != null);
   const bodies = {
     summary: significant(review.summary) ? `<h3>Assessment</h3><p>${e(review.summary)}</p>` : "",
     claims: review.claims?.length ? `<h3>Claims</h3>${list(review.claims)}` : "",
@@ -651,13 +709,13 @@ function evaluationBox(song, review, secondary = false) {
   };
   const content = attributeOrder(song).filter(key => !hidden.has(key)).map(key => bodies[key] ? `<section data-attribute="${e(key)}">${bodies[key]}${aiLabel(song, review, key)}</section>` : "").join("");
   const score = overall(review, state.profile);
-  return `<details class="evaluation-box ${secondary ? "secondary-evaluation" : "primary-evaluation"}" data-disclosure-key="evaluation:${e(song.id)}:${secondary ? "secondary" : "primary"}" ${!ai && !secondary ? "open" : ""}><summary><span>${title}${state.profile.aiLabels && ai ? '<span class="ai-mark" aria-label="AI generated">AI</span>' : ""}</span>${score !== null && !hidden.has("rating") ? `<strong>${score}/10</strong>` : ""}</summary><div class="evaluation-content">${ai ? '<p class="muted">AI draft · verify the exact lyric version.</p>' : ""}${!hidden.has("rating") && scores.length ? `<div class="score-grid">${scores.map(([key,label]) => `<div class="score-title">${e(label)} ${aiLabel(song,review,"scores")}<strong>${e(review.scores[key])}/10</strong></div>`).join("")}</div>` : ""}${content || '<p class="muted">No evaluation entered yet.</p>'}${secondary ? `<button class="text-button" data-action="delete-ai-evaluation" data-id="${e(song.id)}">Delete AI evaluation</button>` : ""}</div></details>`;
+  return `<details class="evaluation-box ${secondary ? "secondary-evaluation" : "primary-evaluation"}" data-disclosure-key="evaluation:${e(song.id)}:${secondary ? "secondary" : "primary"}" ${!ai && !secondary ? "open" : ""}><summary><span>${title}${state.profile.aiLabels && ai ? '<span class="ai-mark" aria-label="AI generated">AI</span>' : ""}</span>${score !== null && !hidden.has("rating") ? `<strong>${score}/10</strong>` : ""}</summary><div class="evaluation-content">${ai ? '<p class="muted">AI draft · verify the exact lyric version.</p>' : ""}${!hidden.has("rating") && scores.length ? `<div class="score-grid">${scores.map(([key,label]) => `<div class="score-title">${e(label)} ${aiLabel(song,review,"scores")}<strong>${e(criterionScore(review, key))}/10</strong></div>`).join("")}</div>` : ""}${content || '<p class="muted">No evaluation entered yet.</p>'}${secondary ? `<button class="text-button" data-action="delete-ai-evaluation" data-id="${e(song.id)}">Delete AI evaluation</button>` : ""}</div></details>`;
 }
 function objectiveDetails(song) {
   return `<dl class="objective-facts">${objectiveFacts(song).map(fact => `<div><dt>${e(fact.label)}</dt><dd>${e(fact.value)}${fact.provenance && fact.provenance.confidence !== "confirmed" ? `<span class="fact-confidence" title="${e(fact.provenance.source)}">${fact.provenance.confidence === "ai" && state.profile.aiLabels ? '<span class="ai-mark" aria-label="AI generated">AI</span>' : fact.field === "minutes" ? "Estimate" : "Guess"}</span><button class="text-button" data-action="confirm-fact" data-id="${e(song.id)}" data-field="${fact.field}">Confirm</button><button class="text-button" data-action="edit-fact" data-id="${e(song.id)}" data-field="${fact.field}">Edit</button>` : ""}</dd></div>`).join("")}</dl>`;
 }
 function songDetail(song, lib) {
-  if (song.blacklisted) return `<article class="detail-panel"><h2>${e(song.title)}</h2><p class="author">${e(song.author)}</p><p>This song is hidden from your other views.</p>${song.review.notes ? `<p class="notes-text">${e(song.review.notes)}</p>` : ""}<button class="button primary" data-action="restore-blacklisted" data-id="${e(song.id)}">Restore song</button></article>`;
+
   const visible = reviewForDisplay(song, state.profile.aiMode),
     arrangement = selectedArrangement(song),
     r = arrangement
@@ -766,7 +824,7 @@ function songDetail(song, lib) {
       `<p>${e(metric.value)}</p>`,
     );
   const hidden = new Set(song.detailLayout?.hidden || []);
-  return `<article class="detail-panel"><div class="detail-header"><span class="status-badge">${e(statusLabel(r))}</span><button class="text-button" data-action="customize-details" data-id="${e(song.id)}">Customize details</button></div><h2>${e(song.title)}</h2>${objectiveDetails(song)}<p class="version">${e(song.version)}</p><div class="detail-actions"><button class="button" data-action="blacklist-song" data-id="${e(song.id)}">Blacklist song</button><button class="button" data-action="song-files" data-id="${e(song.id)}">Files</button><button class="button primary" data-action="save-song" data-id="${e(song.id)}">${saved ? "✓ Saved · manage libraries" : "+ Save to library"}</button><button class="button" data-action="add-to-plan" data-id="${e(song.id)}">Add to plan ›</button><details class="more-menu"><summary>Edit</summary><div class="menu-items"><button class="text-button" data-action="edit-review" data-id="${e(song.id)}">Edit assessment</button><button class="text-button" data-action="edit-index" data-id="${e(song.id)}">Edit index details</button><button class="text-button" data-action="edit-fact" data-id="${e(song.id)}">Edit artist / attribution</button>${state.profile.aiMode !== "manual" ? `<button class="text-button" data-action="ai-review" data-id="${e(song.id)}">${state.profile.aiMode === "limited" ? "Get limited assistance" : "Draft with AI"}</button>` : ""}</div></details></div><div class="song-resources"><a class="button" href="${e(songResourceLinks(song).lyrics)}" target="_blank" rel="noopener noreferrer">Find lyrics ↗</a><a class="button" href="${e(songResourceLinks(song).reviews)}" target="_blank" rel="noopener noreferrer">Find public reviews ↗</a>${state.profile.aiMode !== "manual" ? `<button class="button" data-action="chatgpt-evaluation" data-id="${e(song.id)}">Generate AI evaluation</button>` : ""}</div>${churchDecision(song)}${evaluationBox(song, r)}${attributeOrder(
+  return `<article class="detail-panel" data-song-id="${e(song.id)}" tabindex="-1">${song.blacklisted ? `<p class="blacklist-notice">This song is in your Blacklist. It stays out of libraries, suggestions and new plans.</p><button class="button primary" data-action="restore-blacklisted" data-id="${e(song.id)}">Restore song</button>` : ""}<div class="detail-header"><span class="status-badge">${e(statusLabel(r))}</span><button class="text-button" data-action="customize-details" data-id="${e(song.id)}">Customize details</button></div><h2>${e(song.title)}</h2>${objectiveDetails(song)}<p class="version">${e(song.version)}</p><div class="detail-actions">${!song.blacklisted ? `<button class="button" data-action="blacklist-song" data-id="${e(song.id)}">Blacklist song</button>` : ""}<button class="button" data-action="song-files" data-id="${e(song.id)}">Files</button>${!song.blacklisted ? `<button class="button primary" data-action="save-song" data-id="${e(song.id)}">${saved ? "✓ Saved · manage libraries" : "+ Save to library"}</button><button class="button" data-action="add-to-plan" data-id="${e(song.id)}">Add to plan ›</button>` : ""}<details class="more-menu"><summary>Edit</summary><div class="menu-items"><button class="text-button" data-action="edit-review" data-id="${e(song.id)}">Edit assessment</button><button class="text-button" data-action="edit-index" data-id="${e(song.id)}">Edit index details</button><button class="text-button" data-action="edit-fact" data-id="${e(song.id)}">Edit artist / attribution</button>${state.profile.aiMode !== "manual" ? `<button class="text-button" data-action="ai-review" data-id="${e(song.id)}">${state.profile.aiMode === "limited" ? "Get limited assistance" : "Draft with AI"}</button>` : ""}</div></details></div><div class="song-resources"><a class="button" href="${e(songResourceLinks(song).lyrics)}" target="_blank" rel="noopener noreferrer">Find lyrics ↗</a><a class="button" href="${e(songResourceLinks(song).reviews)}" target="_blank" rel="noopener noreferrer">Find public reviews ↗</a>${state.profile.aiMode !== "manual" ? `<button class="button" data-action="chatgpt-evaluation" data-id="${e(song.id)}">Generate AI evaluation</button>` : ""}</div>${churchDecision(song)}${evaluationBox(song, r)}${attributeOrder(
     song,
   )
     .filter((k) => !hidden.has(k) && ["recordings", "musical", "arrangements", "text", "usage", "notes"].includes(k) || !hidden.has(k) && k.startsWith("custom:"))
@@ -781,7 +839,7 @@ function chatGPTEvaluation(song) {
     original = JSON.stringify(song), profile = JSON.stringify(state.profile),
     mode = state.profile.aiMode;
   const prompt = evaluationPrompt(song, state.profile);
-  modal(`<h2>Generate AI evaluation</h2><p>Copy the request into ChatGPT, then paste its JSON response below. Your ChatGPT account generates the evaluation; this website makes no paid API call.</p><p class="muted">${mode === "limited" ? "Your limited assistance setting allows objective observations only. Your ratings and church decision will stay unchanged." : "The request includes your review principles and weights. Review it before copying. Your human evaluation stays primary; an AI draft is secondary. Without a human evaluation, applying a draft resets church approval."} No lyrics or private library notes are included automatically.</p><details class="evaluation-request"><summary>Review the ChatGPT request</summary><label>Evaluation request<textarea id="evaluation-prompt" rows="12" readonly>${e(prompt)}</textarea></label></details><div class="form-actions"><button type="button" class="button" id="copy-evaluation">Copy request</button><a class="button" href="https://chatgpt.com/" target="_blank" rel="noopener noreferrer">Open ChatGPT ↗</a></div><label>ChatGPT evaluation JSON<textarea id="evaluation-json" rows="7" maxlength="65536" placeholder="Paste the JSON response here. Nothing is saved until you preview and apply it."></textarea></label><p id="evaluation-error" role="alert"></p><div class="form-actions"><button class="button" data-action="close">Cancel</button><button type="button" class="button primary" id="preview-evaluation">Preview evaluation</button></div><div id="evaluation-preview" aria-live="polite"></div>`);
+  modal(`<h2>Generate AI evaluation</h2><p>Copy the request into ChatGPT, then paste its JSON response below. Your ChatGPT account generates the evaluation; this website makes no paid API call.</p><p class="muted">${mode === "limited" ? "Your limited assistance setting allows objective observations only. Your ratings and church decision will stay unchanged." : "The request includes your review principles and weights. Review it before copying. Your human evaluation stays primary; an AI draft is secondary. Without a human evaluation, applying a draft resets church approval."} No lyrics or private library notes are included automatically.</p><details class="evaluation-request"><summary>Review the ChatGPT request</summary><label>Evaluation request<textarea id="evaluation-prompt" rows="12" readonly>${e(prompt)}</textarea></label></details><div class="form-actions"><button type="button" class="button" id="copy-evaluation">Copy request</button><a class="button" href="https://chatgpt.com/" target="_blank" rel="noopener noreferrer">Open ChatGPT ↗</a></div><label>ChatGPT evaluation JSON<textarea id="evaluation-json" rows="7" maxlength="65536" placeholder="Paste the JSON response here. Nothing is saved until you preview and apply it."></textarea></label><p id="evaluation-error" role="alert"></p><div class="form-actions"><button class="button" data-action="close">Cancel</button><button type="button" class="button primary" id="preview-evaluation">Preview evaluation</button></div><p id="evaluation-progress" role="status">Step 2: Paste ChatGPT’s response, then preview it. Step 3: Review the report and apply it explicitly.</p><div id="evaluation-preview" tabindex="-1" aria-label="Evaluation report preview"></div>`);
   const unchanged = () => store === activeStore && owner === accounts.user?.id && profile === JSON.stringify(state.profile) && original === JSON.stringify(state.songs.find(s => s.id === song.id));
   const error = message => { dialog.querySelector("#evaluation-error").textContent = message; };
   dialog.querySelector("#copy-evaluation").onclick = async () => {
@@ -790,13 +848,16 @@ function chatGPTEvaluation(song) {
     catch { text.closest("details").open = true; text.focus(); text.select(); toast("Copy the highlighted request with your browser's Copy command."); }
   };
   const preview = dialog.querySelector("#evaluation-preview"), input = dialog.querySelector("#evaluation-json");
-  input.oninput = () => { preview.innerHTML = ""; error(""); };
+  input.oninput = () => { preview.innerHTML = ""; error(""); dialog.querySelector("#evaluation-progress").textContent = "Response changed. Preview it again before applying."; };
   dialog.querySelector("#preview-evaluation").onclick = () => {
     try {
       if (!unchanged()) throw new Error("The account, song or profile changed. Close this dialog and start a new evaluation.");
       const raw = input.value, draft = parseEvaluation(raw, song.id, mode), r = draft.review;
       error("");
-      preview.innerHTML = `<h3>Review before applying ${state.profile.aiLabels ? '<span class="ai-mark" aria-label="AI generated">AI</span>' : ""}</h3>${r.summary ? `<p>${e(r.summary)}</p>` : ""}${mode === "full" ? `<div class="draft-scores">${Object.entries(dimensions).map(([key, label]) => `<p>${e(label)} <strong>${r.scores[key] ?? "Not assessed"}</strong></p>`).join("")}</div><p>Doctrinal concern: ${e(r.concern)}</p>${["claims", "concerns", "uses", "themes", "scriptures"].filter(k => r[k].length).map(k => `<h4>${e({claims:"Claims",concerns:"Concerns",uses:"Service uses",themes:"Themes",scriptures:"Scripture connections"}[k])}</h4>${list(r[k])}`).join("")}` : ""}${r.language ? `<h4>Language</h4><p>${e(r.language)}</p>` : ""}${r.time ? `<h4>Arrangement observations</h4><p>${e(r.time)}</p>` : ""}${r.sources.length ? `<h4>Sources supplied by ChatGPT · verify these</h4><ul>${r.sources.map(s => `<li><a href="${e(s.url)}" target="_blank" rel="noopener noreferrer">${e(s.label)}</a></li>`).join("")}</ul>` : ""}<button type="button" class="button primary" id="apply-evaluation">${mode === "limited" ? "Save AI observations" : "Apply evaluation"}</button>`;
+      preview.innerHTML = `<h3>Review before applying ${state.profile.aiLabels ? '<span class="ai-mark" aria-label="AI generated">AI</span>' : ""}</h3>${r.summary ? `<p>${e(r.summary)}</p>` : ""}${mode === "full" ? `<div class="draft-scores">${activeCriteria(state.profile).map(({id:key,label}) => `<p>${e(label)} <strong>${criterionScore(r,key) ?? "Not assessed"}</strong></p>`).join("")}</div><p>Doctrinal concern: ${e(r.concern)}</p>${["claims", "concerns", "uses", "themes", "scriptures"].filter(k => r[k].length).map(k => `<h4>${e({claims:"Claims",concerns:"Concerns",uses:"Service uses",themes:"Themes",scriptures:"Scripture connections"}[k])}</h4>${list(r[k])}`).join("")}` : ""}${r.language ? `<h4>Language</h4><p>${e(r.language)}</p>` : ""}${r.time ? `<h4>Arrangement observations</h4><p>${e(r.time)}</p>` : ""}${r.sources.length ? `<h4>Sources supplied by ChatGPT · verify these</h4><ul>${r.sources.map(s => `<li><a href="${e(s.url)}" target="_blank" rel="noopener noreferrer">${e(s.label)}</a></li>`).join("")}</ul>` : ""}<button type="button" class="button primary" id="apply-evaluation">${mode === "limited" ? "Save AI observations" : "Apply evaluation"}</button>`;
+      dialog.querySelector("#evaluation-progress").textContent = "Preview ready. Review the report below before applying; nothing has been saved.";
+      preview.focus({ preventScroll: true });
+      preview.scrollIntoView({ block: "start", behavior: "instant" });
       preview.querySelector("#apply-evaluation").onclick = () => {
         try {
           if (!unchanged() || input.value !== raw) throw new Error("The account, song, profile or response changed. Preview a fresh evaluation before applying.");
@@ -1066,26 +1127,54 @@ function plansPage() {
           )}</ol>${!plan.items.length ? '<div class="empty"><h3>No service items yet</h3><p>Add songs, readings, prayer or other items.</p></div>' : ""}<div class="plan-buttons"><button class="button primary" data-action="nav" data-view="discover">+ Choose a song</button><button class="button" data-action="new-item">+ Reading, prayer, or other item</button><button class="text-button" data-action="export-plan">↓ Export plan</button></div></section></div>`
   }`;
 }
+function libraryAuditDialog(id) {
+  if (state.profile.aiMode !== "full") return toast("Library audits require Full AI content.");
+  const library = state.libraries.find(l => l.id === id);
+  if (!library || !auditSongs(state, id).length) return toast("Add songs to this library before auditing it.");
+  const owner = accounts.user?.id, store = activeStore;
+  let requestToken = null, includedWords = false, report = null;
+  modal(`<h2>Run Library Audit</h2><p>${e(library.name)} · ${auditSongs(state,id).length} visible songs</p><p>Describe balance across this library. This does not score songs, select a service, or change your workspace. Unknowns stay visible; equal proportions are not an assumed ideal.</p><label>Audit purpose or desired balance<textarea id="audit-context" maxlength="2000" rows="3" placeholder="Optional: describe your congregation and what you want to understand."></textarea></label><label class="check-label"><input id="audit-words" type="checkbox">Include stored song words in the request</label><p class="muted">By default only titles, artists, versions and recorded tempo are copied. Notes, plans and account settings are excluded. Shared words must be yours to share.</p><button class="button primary" id="prepare-audit">Prepare ChatGPT request</button><details id="audit-request-section" hidden><summary>Review the request</summary><label>Library audit request<textarea id="audit-request" rows="7" readonly></textarea></label></details><div class="form-actions"><button class="button" id="copy-audit" disabled>Copy audit request</button><a class="button" href="https://chatgpt.com/" target="_blank" rel="noopener noreferrer">Open ChatGPT ↗</a></div><label>ChatGPT library audit JSON<textarea id="audit-json" rows="5" maxlength="2500000" placeholder="Paste the report JSON, then preview it."></textarea></label><p id="audit-error" role="alert"></p><p id="audit-status" role="status">Prepare a request before previewing the report.</p><button class="button primary" id="preview-audit" disabled>Preview audit report</button><section id="audit-preview" tabindex="-1" aria-label="Library audit report"></section>`);
+  const input = dialog.querySelector("#audit-json"), preview = dialog.querySelector("#audit-preview"), error = dialog.querySelector("#audit-error"), status = dialog.querySelector("#audit-status");
+  const invalidate = () => { requestToken = null; report = null; preview.innerHTML = ""; dialog.querySelector("#copy-audit").disabled = true; dialog.querySelector("#preview-audit").disabled = true; status.textContent = "Request settings changed. Prepare a fresh request."; };
+  dialog.querySelector("#audit-context").oninput = invalidate;
+  dialog.querySelector("#audit-words").onchange = invalidate;
+  dialog.querySelector("#prepare-audit").onclick = () => {
+    try {
+      includedWords = dialog.querySelector("#audit-words").checked;
+      dialog.querySelector("#audit-request").value = libraryAuditPrompt(state,id,dialog.querySelector("#audit-context").value,includedWords);
+      requestToken = auditToken(state,id,includedWords);
+      dialog.querySelector("#audit-request-section").hidden = false;
+      dialog.querySelector("#copy-audit").disabled = false; dialog.querySelector("#preview-audit").disabled = false;
+      error.textContent = ""; status.textContent = "Request ready. Copy it into ChatGPT, then paste its JSON report here.";
+    } catch (err) { error.textContent = err.message; }
+  };
+  dialog.querySelector("#copy-audit").onclick = async () => {
+    const request = dialog.querySelector("#audit-request");
+    try { await navigator.clipboard.writeText(request.value); status.textContent = "Copied. ChatGPT generates the report after you submit the request."; }
+    catch { request.closest("details").open = true; request.focus(); request.select(); status.textContent = "Copy the selected request using your browser's Copy command."; }
+  };
+  input.oninput = () => { report = null; preview.innerHTML = ""; status.textContent = "Response changed. Preview it again."; };
+  dialog.querySelector("#preview-audit").onclick = () => {
+    try {
+      if (!requestToken || owner !== accounts.user?.id || store !== activeStore || state.profile.aiMode !== "full" || requestToken !== auditToken(state,id,includedWords)) throw new Error("The account, library, evidence or AI mode changed. Prepare a new request.");
+      report = parseLibraryAudit(input.value,state,id);
+      error.textContent = "";
+      const chartMarkup = auditCharts(report,state).map(chart => `<section class="audit-chart"><h4>${e(chart.label)}</h4><p>${chart.known}/${chart.total} with classified evidence. ${chart.multiple ? "Multiple references can overlap; percentages need not sum to 100%." : "One category per song."}${chart.key === "tempo" ? " BPM bands are descriptive; they do not establish perceived energy or suitability." : ""}</p>${Object.entries(chart.counts).map(([category,count]) => `<div class="audit-bar-row"><span>${e(auditLabels[category] || category)}</span><meter min="0" max="${Math.max(1,chart.total)}" value="${count}" aria-label="${e(chart.label + ': ' + (auditLabels[category] || category))}">${count}</meter><strong>${count} (${chart.total ? Math.round(count/chart.total*100) : 0}%)</strong></div>`).join("")}</section>`).join("");
+      preview.innerHTML = `<h3>Library audit report</h3><p class="muted">Provisional AI interpretation · verify the cited text and classifications. Charts are calculated from this response, not invented by the website.</p><p>${e(report.summary)}</p><div class="audit-charts">${chartMarkup}</div><h4>Strong areas</h4>${list(report.strengths)}<h4>Weak areas or imbalances</h4>${list(report.weaknesses)}<h4>Limitations and missing evidence</h4>${list(report.limitations)}<details><summary>Song evidence (${report.songs.length})</summary><ul>${report.songs.map(row => `<li><strong>${e(state.songs.find(s=>s.id===row.id)?.title)}</strong><p>${e(row.evidence)}</p><small>${Object.keys(auditAxes).map(key => e(auditAxes[key].label)+": "+e(Array.isArray(row[key]) ? row[key].map(v=>auditLabels[v]).join(", ") : auditLabels[row[key]])).join(" · ")}</small><ul>${row.sources.map(source => `<li><a href="${e(source.url)}" target="_blank" rel="noopener noreferrer">${e(source.label)}</a></li>`).join("")}</ul></li>`).join("")}</ul></details><p>No song assessments, approvals or worship plans have been changed. Download the report to retain this snapshot.</p><button class="button" id="download-audit">Download audit report</button><button class="button" data-action="close">Close report</button>`;
+      status.textContent = "Report ready. Charts and explanations are below; nothing in your workspace has changed.";
+      preview.querySelector("#download-audit").onclick = () => download("library-audit.json",JSON.stringify({ ...report, libraryName: library.name, charts:auditCharts(report,state) },null,2),"application/json");
+      preview.focus({preventScroll:true}); preview.scrollIntoView({block:"start",behavior:"instant"});
+    } catch (err) { report = null; preview.innerHTML = ""; error.textContent = err.message; }
+  };
+}
+function criterionRow(c) {
+  return `<fieldset class="criterion-row" data-criterion="${e(c.id)}"><legend>${e(c.label)}</legend><label>Name<input name="criterion-label" maxlength="100" value="${e(c.label)}" required></label><label class="check-label"><input name="criterion-active" type="checkbox" ${c.active ? "checked" : ""}>Include in rating</label><label>Weight<input name="criterion-weight" aria-label="${e(c.label)} weight" type="number" min="0" max="100" value="${state.profile.weights[c.id] ?? 1}" required></label><details data-disclosure-key="criterion:${e(c.id)}"><summary>Evidence rubric</summary><label>Rules for this criterion<textarea name="criterion-rubric" rows="3" maxlength="2000">${e(c.rubric)}</textarea></label></details><button type="button" class="text-button danger" data-action="remove-criterion">Remove criterion</button></fieldset>`;
+}
+function rubricMarkup() {
+  return `<details class="score-rubric"><summary>What do 0–10 scores mean?</summary><p>Ten is possible. Unknown evidence is left blank, never scored zero. Judge each criterion independently using the exact version, explain the evidence and uncertainty, and avoid false precision. A high average does not grant church approval.</p><table><thead><tr><th>Score</th><th>Meaning</th><th>Evidence anchor</th></tr></thead><tbody>${scoreAnchors.map(([score,name,rule]) => `<tr><th>${e(score)}</th><td>${e(name)}</td><td>${e(rule)}</td></tr>`).join("")}</tbody></table></details>`;
+}
 function profilePage() {
-  return `<div class="page-heading"><div><div class="eyebrow">YOUR CONVICTIONS, EXPLAINED</div><h1>A rating with reasons.</h1><p>Define what matters to your church. Scores should support your judgment.</p></div></div><form id="profile-form" class="profile-panel"><div class="profile-intro"><span>◎</span><div><h2>${e(denominations[state.profile.denomination])}</h2><p>${e(statements[state.profile.statement].name)}</p><button class="text-button" type="button" data-action="setup-profile">Choose denomination & statement of faith</button><p>Accuracy is the foundation. Substance, craftsmanship, and purposeful time distinguish a useful song from an exceptional one.</p></div></div><label>AI content preference<select name="aiMode" aria-label="AI content preference">${Object.entries(
-    aiModes,
-  )
-    .map(
-      ([key, mode]) =>
-        `<option value="${key}" ${key === state.profile.aiMode ? "selected" : ""}>${e(mode.title)}</option>`,
-    )
-    .join(
-      "",
-    )}</select></label><p class="muted">${e(aiModes[state.profile.aiMode].description)}</p><label>AI Labels<select name="aiLabels" aria-label="AI Labels"><option value="on" ${state.profile.aiLabels ? "selected" : ""}>On</option><option value="off" ${!state.profile.aiLabels ? "selected" : ""}>Off</option></select></label><p class="muted">A small AI badge identifies generated ratings and subjective content.</p><h3>Rating weights</h3><p class="muted">Relative weights are normalized automatically. Unassessed dimensions are excluded and clearly marked. A serious doctrinal concern always triggers review, regardless of the average.</p><div class="weight-fields">${Object.entries(
-    dimensions,
-  )
-    .map(
-      ([key, label]) =>
-        `<label>${e(label)}<div class="weight-input"><input name="${key}" type="number" min="0" max="100" value="${state.profile.weights[key]}" required><span>weight</span></div></label>`,
-    )
-    .join(
-      "",
-    )}</div><label class="field-label">Theological & editorial parameters<textarea name="principles" rows="8" maxlength="6000" required>${e(state.profile.principles)}</textarea></label><p class="muted">Changing weights updates displayed ratings. Changing these parameters affects future AI drafts; existing assessments remain intact.</p><button class="button primary" type="submit">Save rating profile</button><div class="profile-note"><strong>Musical suitability stays separate.</strong><p>A text review cannot establish a melody’s range, leaps, or instrumental demands. Record those observations for a specific arrangement.</p></div></form>`;
+  return `<div class="page-heading"><div><h1>Rating profile</h1><p>Choose what you measure. Ratings support human judgment.</p></div></div><form id="profile-form" class="profile-panel"><h2>${e(denominations[state.profile.denomination])}</h2><p>${e(statements[state.profile.statement].name)}</p><button class="text-button" type="button" data-action="setup-profile">Choose denomination & statement of faith</button><label>AI content preference<select name="aiMode" aria-label="AI content preference">${Object.entries(aiModes).map(([key,mode]) => `<option value="${key}" ${key === state.profile.aiMode ? "selected" : ""}>${e(mode.title)}</option>`).join("")}</select></label><label>AI Labels<select name="aiLabels" aria-label="AI Labels"><option value="on" ${state.profile.aiLabels ? "selected" : ""}>On</option><option value="off" ${!state.profile.aiLabels ? "selected" : ""}>Off</option></select></label><h3>Rating criteria</h3><p>The displayed average uses only active criteria with a positive weight and an assessed score. Missing scores are excluded. Deactivating or removing a criterion never deletes saved scores. Existing weights are preserved; equal weights are available below. Serious doctrinal concerns remain visible independently of the average.</p>${rubricMarkup()}<div id="criterion-rows">${ratingCriteria(state.profile).map(criterionRow).join("")}</div><div class="form-actions"><button type="button" class="button" data-action="add-criterion">Add custom criterion</button><button type="button" class="button" data-action="equal-weights">Use equal weights</button><button type="button" class="button" data-action="restore-criteria">Restore built-in criteria</button></div><details data-disclosure-key="scoring-suggestions"><summary>Other useful criteria</summary><p>These require evidence for the exact text, melody, arrangement or congregation. Add only what serves your review purpose. Avoid double-counting overlapping criteria.</p>${suggestedCriteria.map((c,i) => `<p><strong>${e(c.label)}</strong> — ${e(c.rubric)} <button type="button" class="text-button" data-action="suggest-criterion" data-id="${i}">Add ${e(c.label)}</button></p>`).join("")}</details><label>Theological & editorial parameters<textarea name="principles" rows="7" maxlength="6000" required>${e(state.profile.principles)}</textarea></label><p>Changing criteria updates displayed ratings, not past evaluations. New scores remain blank until reviewed. Arrangement coherence replaces the former time label; it is not a preference for shorter songs.</p><p id="profile-error" role="alert"></p><button class="button primary" type="submit">Save rating profile</button></form>`;
 }
 function newSongDialog() {
   modal(
@@ -1095,12 +1184,10 @@ function newSongDialog() {
 function editReviewDialog(song) {
   const r = reviewForDisplay(song, state.profile.aiMode);
   modal(
-    `<h2>Edit ${e(song.title)}</h2><p class="muted">Use 0–10 scores. Leave a score blank when evidence is missing.</p><form id="review-form" data-id="${e(song.id)}"><div class="weight-fields">${Object.entries(
-      dimensions,
-    )
+    `<h2>Edit ${e(song.title)}</h2><p class="muted">Use 0–10 scores; 10 is allowed. Leave missing evidence blank.</p>${rubricMarkup()}<form id="review-form" data-id="${e(song.id)}"><div class="weight-fields">${ratingCriteria(state.profile).map(c => [c.id, c.label])
       .map(
         ([k, label]) =>
-          `<label>${e(label)}<input type="number" name="score-${k}" min="0" max="10" step="0.1" value="${r.scores[k] ?? ""}" placeholder="Not assessed"></label>`,
+          `<label>${e(label)}<input type="number" name="score-${k}" min="0" max="10" step="0.1" value="${criterionScore(r, k) ?? ""}" placeholder="Not assessed"></label>`,
       )
       .join("")}</div><label>Doctrinal concern<select name="concern">${[
       ["none", "No identified doctrinal concern"],
@@ -1279,7 +1366,7 @@ document.addEventListener("click", async (event) => {
     toast(target.blacklisted ? "Song moved to Blacklist. Notes and service history are preserved." : "Song restored to your visible repertoire.");
     return;
   }
-  if (song?.blacklisted && view !== "blacklist") return;
+  if (song?.blacklisted && (view !== "blacklist" || ["save-song", "add-to-plan"].includes(action))) return;
   if (action === "chatgpt-evaluation") return chatGPTEvaluation(song);
   if (action === "song-files") return songFiles(song);
   if (action === "song-recordings") return recordingsDialog(song);
@@ -1470,6 +1557,7 @@ document.addEventListener("click", async (event) => {
     songPage = Number(id);
     selected = null;
     render();
+    const results = document.querySelector(".song-list"); if (results) results.scrollTop = 0;
     return;
   }
   if (action === "index-page") {
@@ -1544,7 +1632,7 @@ document.addEventListener("click", async (event) => {
   }
   if (action === "index-open") {
     selected = id;
-    view = "discover";
+    view = song.blacklisted ? "blacklist" : "discover";
     query = song.title;
     songPage = 1;
     themeFilter = approvalFilter = typeFilter = reviewFilter = "";
@@ -1592,6 +1680,22 @@ document.addEventListener("click", async (event) => {
     button.closest(".custom-metric-row").remove();
     return;
   }
+  if (["add-criterion", "suggest-criterion", "restore-criteria", "equal-weights", "remove-criterion"].includes(action)) {
+    unsavedForm = true;
+    const rows = document.querySelector("#criterion-rows");
+    if (action === "remove-criterion") button.closest(".criterion-row").remove();
+    else if (action === "equal-weights") rows.querySelectorAll('[name="criterion-weight"]').forEach(input => input.value = "1");
+    else if (action === "restore-criteria") {
+      for (const [id,label] of Object.entries(scoringLabels)) if (!rows.querySelector(`[data-criterion="${id}"]`)) rows.insertAdjacentHTML("beforeend", criterionRow({id,label,rubric:scoringRubrics[id],active:true}));
+    } else {
+      if (rows.children.length >= 20) return toast("Use up to 20 rating criteria.");
+      const preset = action === "suggest-criterion" ? suggestedCriteria[Number(id)] : { label: "New criterion", rubric: "" };
+      rows.insertAdjacentHTML("beforeend", criterionRow({id: "custom-" + uid(), ...preset, active: true}));
+      const input = rows.lastElementChild.querySelector("input"); input.focus(); input.select();
+    }
+    return;
+  }
+  if (action === "library-audit") return libraryAuditDialog(id);
   if (action === "setup-profile") return wizard();
   if (action === "account")
     return accountDialog(button.dataset.mode || "signin");
@@ -1616,7 +1720,19 @@ document.addEventListener("click", async (event) => {
     }
     return;
   }
+  if (action === "guest-opt-in") {
+    guestOptIn = true; sessionStorage.setItem("faithful-guest-opt-in", "1");
+    render(); toast("Browser-only mode: work is saved on this device, not an account."); return;
+  }
+  if (action === "retry-autosave") {
+    if (["review","conflict","checking"].includes(accountSave.phase)) return toast("Review the saved account workspace before uploading changes.");
+    if (!autosave.enabled) { await checkAccountCopy(); if (!autosave.enabled) return; }
+    autosave.enqueue(state); await autosave.retry(); return;
+  }
   if (action === "signout") {
+    if (autosave.enabled && !["error","conflict"].includes(autosave.phase) && (accountSave.remoteAvailable || accountSave.initialSignature !== workspaceSignature(state))) { autosave.enqueue(state); await autosave.flush(); }
+    if (accountSave.signature !== workspaceSignature(state) && (accountSave.remoteAvailable || accountSave.initialSignature !== workspaceSignature(state)) && !confirm("Account changes have not finished saving. Your browser copy is retained. Sign out anyway?")) return;
+    guestOptIn = false; sessionStorage.removeItem("faithful-guest-opt-in");
     accounts
       .signOut()
       .catch(() =>
@@ -1703,7 +1819,9 @@ document.addEventListener("click", async (event) => {
   }
   if (action === "close") return dialog.close();
   if (action === "nav") {
+    if (event.detail > 0) suppressRailHover = true;
     view = button.dataset.view;
+    if (dialog.open) dialog.close();
     query = "";
     themeFilter = approvalFilter = "";
     typeFilter = reviewFilter = "";
@@ -1715,7 +1833,7 @@ document.addEventListener("click", async (event) => {
   if (action === "song-select") {
     selected = id;
     render();
-    if (innerWidth < 850)
+    if (innerWidth < 1000)
       document
         .querySelector(".detail-panel")
         ?.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -1828,10 +1946,17 @@ document.addEventListener("click", async (event) => {
       `<h2>Draft a review with AI</h2><p class="muted">${aiConfigured ? "Your supplied text is sent to the AI provider. The draft needs human review; it does not search the web." : "AI drafting is not available in this edition. You can still edit every assessment manually."}</p><form id="ai-form" data-id="${e(id)}"><label>Song text you have permission to use<textarea name="lyrics" rows="9" maxlength="20000" required placeholder="Paste the exact version for analysis. This text is not saved in your library."></textarea></label><label>Arrangement evidence<textarea name="arrangement" rows="3" maxlength="4000" placeholder="For example: 4 minutes, two verses, repeated chorus, 45 seconds of wordless vocals. Leave blank if unknown."></textarea></label><p class="muted">Current rating parameters will be included. Applying a draft preserves the previous assessment and keeps your personal notes.</p><p id="ai-error" role="alert"></p><div class="form-actions"><button class="button" type="button" data-action="close">Cancel</button><button class="button primary" ${aiConfigured ? "" : "disabled"}>Generate draft</button></div></form>`,
     );
 });
+document.addEventListener("pointermove", event => {
+  if (suppressRailHover && !event.target.closest(".sidebar")) { suppressRailHover = false; document.querySelector(".sidebar")?.classList.remove("suppress-hover"); }
+});
 document.addEventListener("input", (event) => {
+  if (event.target.closest("form") && !event.target.closest("#auth-form") && !event.target.readOnly) unsavedForm = true;
   if (event.target.id === "collection-search") {
+    const start = event.target.selectionStart, end = event.target.selectionEnd;
     collectionQuery = event.target.value; render();
-    const input = document.querySelector("#collection-search"); input.focus(); return;
+    const input = document.querySelector("#collection-search"); input.focus();
+    try { input.setSelectionRange(start, end); } catch {}
+    return;
   }
   if (event.target.id !== "search") return;
   const position = event.target.selectionStart;
@@ -1844,7 +1969,18 @@ document.addEventListener("input", (event) => {
     input.setSelectionRange(position, position);
   } catch {}
 });
+document.addEventListener("keydown", event => {
+  if (event.key === "Enter" && event.target.dataset.pageKind) { event.preventDefault(); event.target.dispatchEvent(new Event("change", {bubbles:true})); }
+});
 document.addEventListener("change", (event) => {
+  if (event.target.closest("form") && !event.target.closest("#auth-form")) unsavedForm = true;
+  if (event.target.dataset.pageKind) {
+    const value = Math.max(1, Math.min(Number(event.target.max), Math.trunc(Number(event.target.value) || 1)));
+    if (event.target.dataset.pageKind === "song") { songPage = value; selected = null; } else indexPageNumber = value;
+    render();
+    const results = document.querySelector(".song-list"); if (results) results.scrollTop = 0;
+    return;
+  }
   if (event.target.id === "collection-group") { collectionGroup = event.target.value; render(); return; }
   if (
     event.target.closest("#add-to-plan-form") &&
@@ -1950,6 +2086,7 @@ document.addEventListener("change", (event) => {
   render();
 });
 document.addEventListener("submit", async (event) => {
+  unsavedForm = false;
   event.preventDefault();
   const form = event.target,
     fd = new FormData(form),
@@ -2417,7 +2554,8 @@ document.addEventListener("submit", async (event) => {
       } else await accounts.signIn(values.email, values.password);
       switchWorkspace(accounts.user);
       await loadAccountProfile();
-      accountDialog();
+      if (dialog.open) dialog.close();
+      render();
       toast("Signed in. Your browser-only workspace is preserved separately.");
     } catch (error) {
       if (form.isConnected)
@@ -2524,7 +2662,7 @@ document.addEventListener("submit", async (event) => {
     };
     state.songs.push(song);
     selected = song.id;
-    view = "discover";
+    view = song.blacklisted ? "blacklist" : "discover";
     query = song.title;
     songPage = 1;
     themeFilter = approvalFilter = typeFilter = reviewFilter = "";
@@ -2544,9 +2682,10 @@ document.addEventListener("submit", async (event) => {
       scores: Object.fromEntries(
         Object.keys(dimensions).map((k) => [
           k,
-          values[`score-${k}`] === "" ? null : Number(values[`score-${k}`]),
+          values[`score-${k}`] === undefined ? song.review.scores[k] : values[`score-${k}`] === "" ? null : Number(values[`score-${k}`]),
         ]),
       ),
+      customScores: { ...song.review.customScores, ...Object.fromEntries(ratingCriteria(state.profile).filter(c => c.id.startsWith("custom-")).map(c => [c.id, values[`score-${c.id}`] === "" ? null : Number(values[`score-${c.id}`])])) },
       summary: values.summary,
       claims: lines("claims"),
       uses: lines("uses"),
@@ -2629,16 +2768,16 @@ document.addEventListener("submit", async (event) => {
     });
     toast("Library choices saved.");
   } else if (form.id === "profile-form") {
-    const weights = Object.fromEntries(
-      Object.keys(dimensions).map((k) => [k, Number(values[k])]),
-    );
-    if (!Object.values(weights).some((w) => w > 0)) {
-      toast("Give at least one dimension a positive weight.");
-      return;
-    }
+    let criteria, weights = {...state.profile.weights};
+    try {
+      criteria = validateCriteria([...form.querySelectorAll(".criterion-row")].map(row => ({id:row.dataset.criterion, label:row.querySelector('[name="criterion-label"]').value, rubric:row.querySelector('[name="criterion-rubric"]').value, active:row.querySelector('[name="criterion-active"]').checked})));
+      for (const row of form.querySelectorAll(".criterion-row")) weights[row.dataset.criterion] = Number(row.querySelector('[name="criterion-weight"]').value);
+      if (!criteria.some(c => c.active && weights[c.id] > 0)) throw new Error("Keep at least one active criterion with a positive weight.");
+    } catch (err) { form.querySelector("#profile-error").textContent = err.message; return; }
     state.profile = {
       ...state.profile,
       weights,
+      criteria,
       principles: values.principles,
       aiMode: values.aiMode,
       aiLabels: values.aiLabels !== "off",
@@ -2789,6 +2928,26 @@ document.addEventListener("submit", async (event) => {
   dialog.close();
   render();
 });
+function hasUnsubmittedEdits() {
+  if (dialog.open && ["#evaluation-json", "#audit-json"].some(selector => dialog.querySelector(selector)?.value.trim())) return true;
+  return [...document.querySelectorAll("form:not(#auth-form)")].some(form => {
+    if (!form.getClientRects().length || (form.closest("dialog") && !form.closest("dialog").open)) return false;
+    return [...form.elements].some(field => {
+      if (field.disabled || field.readOnly || ["submit","button","hidden"].includes(field.type)) return false;
+      if (["checkbox","radio"].includes(field.type)) return field.checked !== field.defaultChecked;
+      if (field.type === "file") return field.files.length > 0;
+      if (field.tagName === "SELECT") return field.value !== ([...field.options].find(o => o.defaultSelected)?.value ?? field.options[0]?.value);
+      return field.value !== field.defaultValue;
+    });
+  });
+}
+window.addEventListener("beforeunload", event => {
+  const accountPending = accounts.user && activeStore !== STORE && accountSave.signature !== workspaceSignature(state) && (accountSave.remoteAvailable || accountSave.initialSignature !== workspaceSignature(state));
+  if (localSaveFailed || unsavedForm || hasUnsubmittedEdits() || accountPending) { event.preventDefault(); event.returnValue = ""; }
+});
+window.addEventListener("online", () => { if (accounts.user && autosave.enabled) autosave.retry(); });
+document.addEventListener("visibilitychange", () => { if (document.visibilityState === "hidden" && autosave.enabled) autosave.flush(); });
+dialog.addEventListener("close", () => { unsavedForm = false; });
 window.addEventListener("storage", async event => {
   if (event.key !== "faithful-repertoire-session" && event.key !== null) return;
   if (!accounts.syncStoredSession()) return;
@@ -2825,6 +2984,7 @@ if (accounts.configured) {
     })
     .catch((error) => {
       accountReady = true;
+      if (accounts.user && activeStore === STORE) { switchWorkspace(accounts.user); accountSave.phase = "error"; }
       toast(error.message);
       render();
     });

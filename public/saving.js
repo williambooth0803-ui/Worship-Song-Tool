@@ -14,11 +14,12 @@ export function saveLabel(status, workspace) {
   if (status.phase === "checking") return "Checking your saved account copy…";
   if (status.phase === "conflict")
     return "Another device saved changes. Review the account copy before saving.";
+  if (status.phase === "review") return "An account workspace is available. Review it before enabling autosave to avoid replacing earlier work.";
   if (status.phase === "error")
     return "Account save failed. Your browser copy is retained.";
   if (status.signature && status.signature === workspaceSignature(workspace))
     return "Saved to your account";
   if (status.remoteAvailable && !status.signature)
     return "An account copy is available. Save or load the version you want to keep.";
-  return "Changes saved in this browser. Save to your account to keep them across devices.";
+  return "Saved in this browser. Account autosave is pending.";
 }

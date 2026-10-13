@@ -51,6 +51,24 @@ export async function checkRecordingsFlows(browser, base) {
     await page.screenshot({path:"/tmp/faithful-recordings-mobile.png",fullPage:true});
     await page.getByRole("button", { name: "Close", exact: true }).click();
     assert.equal(await page.locator('.detail-panel [data-provider="spotify"]').getAttribute("data-recording-kind"), "search");
+    const catalogSong = (await state()).songs.find(s => s.recordings?.some(r => r.id.startsWith("catalog-apple-")));
+    assert.ok(catalogSong, "Starter repertoire includes metadata-matched Apple recordings");
+    await page.evaluate(id => {
+      const data = JSON.parse(localStorage.getItem("hymn-heart-v1"));
+      data.songs.sort((a, b) => Number(b.id === id) - Number(a.id === id));
+      localStorage.setItem("hymn-heart-v1", JSON.stringify(data));
+    }, catalogSong.id);
+    await page.reload();
+    assert.equal(await page.locator('.detail-panel [data-provider="appleMusic"]').getAttribute("data-recording-kind"), "saved");
+    await reveal(page, "button", { name: "Manage recording links", exact: true });
+    await page.getByRole("button", { name: "Manage recording links", exact: true }).click();
+    while (await page.getByRole("button", { name: "Remove link", exact: true }).count()) {
+      await page.getByRole("button", { name: "Remove link", exact: true }).first().click();
+    }
+    await page.getByRole("button", { name: "Close", exact: true }).click();
+    await page.reload();
+    assert.deepEqual((await state()).songs.find(s => s.id === catalogSong.id).recordings, []);
+    assert.equal(await page.locator('.detail-panel [data-provider="appleMusic"]').getAttribute("data-recording-kind"), "search", "Removed catalog defaults stay removed on reload");
     assert.deepEqual(errors, []);
     console.log("PASS: provider searches, validated recording save, duplicate rejection, preferred versions, reload persistence, removal and mobile controls.");
   } finally { await page.close(); }

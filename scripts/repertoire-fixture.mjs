@@ -307,7 +307,7 @@ export async function checkRepertoireFlows(browser, base) {
       () => document.documentElement.scrollWidth <= innerWidth,
     ),
   );
-  assert.equal(await page.locator("nav .nav-item").count(), 7);
+  assert.equal(await page.locator("nav .nav-item").count(), 8);
   await page.screenshot({
     path: "/tmp/faithful-repertoire-collections-mobile.png",
     fullPage: true,
