@@ -8,6 +8,8 @@ export async function reveal(page, role, options) {
   if (!(await target.count()) && ["Backup & restore", "ChatGPT connections", "Import previous browser-only workspace", "Retry profile sync"].includes(options.name)) {
     await page.locator('.nav-item[data-view="settings"]').click();
   }
+  const tab = await target.evaluate(el => el.closest('.song-tab-panel')?.dataset.tab);
+  if (tab) await page.locator(`[data-action="song-tab"][data-tab="${tab}"]`).click();
   const summaries = await target.evaluate((el) => {
     const list = [];
     for (let n = el.parentElement; n; n = n.parentElement)

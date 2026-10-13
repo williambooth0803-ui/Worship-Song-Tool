@@ -61,7 +61,7 @@ export async function checkWorkspaceToolsFlows(page) {
   await page.getByLabel("Notes / reading text / transitions").fill("Psalm 46:1–3");
   await click("Save item");
   await nav("Discover songs");
-  await click("+ Save to library");
+  await click("Add to library");
   await page.locator('#save-song-form input[value="personal"]').check();
   await page.locator("#save-song-form button.primary").click();
   await click("Add to plan ›");

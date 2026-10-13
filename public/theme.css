@@ -415,14 +415,40 @@
   .recording-links { grid-template-columns: 1fr; }
   .recording-links .button { flex-direction: row; justify-content: space-between; align-items: center; }
 }
-/* Working panes keep the chosen record visible without losing result position. */
+/* Only results scroll independently; wheel movement over details scrolls the page. */
+.song-list { overscroll-behavior-y: auto; }
+.song-workspace > .detail-panel { max-height: none; overflow: visible; position: static; scroll-margin-top: 24px; }
 @media (min-width: 1000px) {
   .song-workspace { align-items: start; }
-  .song-list, .song-workspace > .detail-panel {
+  .song-list {
     position: sticky; top: 24px; max-height: calc(100dvh - 48px);
-    overflow-y: auto; overscroll-behavior-y: contain; scrollbar-gutter: stable;
+    overflow-y: auto; overscroll-behavior-y: auto; scrollbar-gutter: stable;
   }
   .song-list { padding: 4px; }
+}
+.song-heading { display: flex; align-items: start; flex-wrap: wrap; gap: 16px; }
+.song-title { flex: 1 1 220px; min-width: 0; }
+.song-title h2 { margin: 0 0 8px; font-size: 30px; }
+.song-title .author { margin: 0; font-size: 13px; }
+.song-primary-actions { display: flex; align-items: center; gap: 8px; margin-left: auto; }
+.song-options > summary { display: grid; place-items: center; font-size: 22px; font-weight: 600; width: 40px; padding: 0; list-style: none; }
+.song-options > summary::-webkit-details-marker { display: none; }
+.song-options .menu-items { width: min(260px, calc(100vw - 64px)); }
+.song-tabs { display: flex; margin-top: 24px; border-bottom: 1px solid var(--line); gap: 4px; }
+.song-tabs button { flex: 1; min-width: 0; padding: 12px 8px; min-height: 48px; border: 0; border-bottom: 2px solid transparent; background: transparent; color: var(--muted); font: 500 13px/1.4 var(--sans); cursor: pointer; }
+.song-tabs button:hover { background: var(--green-light); }
+.song-tabs button[aria-selected="true"] { color: var(--green); border-bottom-color: var(--green); }
+.song-tabs button:focus-visible, .song-tab-panel:focus-visible { outline: 2px solid var(--green); outline-offset: 2px; }
+.song-tab-panel { padding-top: 8px; }
+.song-tab-panel[hidden] { display: none; }
+.song-tab-panel .detail-section:first-child { margin-top: 8px; }
+.evaluation-actions { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; margin: 16px 0; }
+.song-files-section .section-heading { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+@media screen and (max-width: 550px) {
+  .song-title { flex-basis: 100%; }
+  .song-title h2 { font-size: 28px; }
+  .song-tabs { margin-top: 20px; }
+  .song-tabs button { padding-inline: 4px; font-size: 12px; }
 }
 dialog { overflow-y: auto; overscroll-behavior-y: contain; scrollbar-gutter: stable; }
 dialog textarea { max-height: 26dvh; resize: vertical; }

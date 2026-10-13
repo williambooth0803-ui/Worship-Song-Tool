@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { reveal } from "./disclosure.mjs";
 export async function checkPreferencesFlows(browser, base) {
   const page = await browser.newPage({
     viewport: { width: 1440, height: 1000 },
@@ -37,6 +38,7 @@ export async function checkPreferencesFlows(browser, base) {
       .click();
     await page.locator('.nav-item[data-view="discover"]').click();
     assert.ok((await page.locator(".ai-mark").count()) > 0);
+    await reveal(page, "button", {name:"Customize details",exact:true});
     await page
       .getByRole("button", { name: "Customize details", exact: true })
       .click();

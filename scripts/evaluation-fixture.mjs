@@ -21,6 +21,7 @@ export async function checkEvaluationFlows(browser, base) {
     await closest.getByRole("button", { name: /Christ Be Magnified/ }).click();
     assert.equal(await page.locator(".detail-panel h2").textContent(), "Christ Be Magnified");
     const id = await page.locator('[data-action="chatgpt-evaluation"]').getAttribute("data-id");
+    await page.getByRole("tab",{name:"Outside links",exact:true}).click();
     for (const [name, suffix] of [["Find lyrics ↗", "lyrics"], ["Find public reviews ↗", "review"]]) {
       const link = page.getByRole("link", { name, exact: true });
       assert.match(new URL(await link.getAttribute("href")).searchParams.get("q"), /Christ Be Magnified.*Cody Carnes/);
@@ -34,6 +35,7 @@ export async function checkEvaluationFlows(browser, base) {
     await page.getByRole("button", { name: "Save assessment", exact: true }).click();
   await keepAIIfOffered(page);
     const before = await stored();
+    await reveal(page,"button",{name:"Generate AI evaluation",exact:true});
     await page.getByRole("button", { name: "Generate AI evaluation", exact: true }).click();
     const prompt = await page.locator("#evaluation-prompt").inputValue();
     assert.ok(prompt.includes(id) && prompt.includes("faithful-evaluation-v1"));
@@ -65,6 +67,7 @@ export async function checkEvaluationFlows(browser, base) {
     assert.equal(await page.getByText(value.review.summary, { exact: true }).count(), 0);
     await mode("limited");
     const limitedBefore = await stored();
+    await reveal(page,"button",{name:"Generate AI evaluation",exact:true});
     await page.getByRole("button", { name: "Generate AI evaluation", exact: true }).click();
     const limited = structuredClone(value); limited.aiMode = "limited";
     limited.review = { ...limited.review, scores: { accuracy: null, substance: null, language: null, time: null }, summary: "Objective observations only.", claims: [], themes: [] };

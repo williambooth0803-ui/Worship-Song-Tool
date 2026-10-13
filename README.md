@@ -53,7 +53,7 @@ The read-only ChatGPT connection cannot write an evaluation back to the website.
 
 AI Labels default **On** and can be switched off in Settings or Rating profile. Badges mark generated ratings, summaries, themes and interpretive details, including unchanged AI fields carried into an edited assessment. Human notes and arrangement observations are separate. This label preference does not change AI visibility. Human-only/limited modes suppress subjective drafts, including index/export and connector output.
 
-Song details use one collapsed **AI evaluation** box, rather than separate expandable panels for every subjective field. A human evaluation occupies the primary spot; retained AI content is a smaller collapsed option at the bottom. Saving the first human evaluation asks whether to keep or delete the AI version. Deleting it is respected through catalog refreshes. Older drafts with a previous human assessment migrate to this layout. **Customize details** hides or reorders sections inside the evaluation; custom text/number attributes still participate in indexing. Empty musical/language/time fields and vague topical Scripture connections are omitted. Kari Jobe's Forever record retains the owner's personal concern about the grave-battle line.
+Song pages have **Details & files**, **Outside links** and **Evaluation** tabs. The heading has a primary **Add to library** / **Manage libraries** action; secondary controls live in the **…** menu. Outside links groups recordings, lyric/public-review searches and evaluation sources. Files are listed with **Manage files** for uploads/downloads. Evaluation contains the church-use decision and one collapsed **AI evaluation** box. A human evaluation occupies the primary spot; retained AI content is a smaller collapsed option at the bottom. Saving the first human evaluation asks whether to keep or delete the AI version. Deleting it is respected through catalog refreshes. Older drafts with a previous human assessment migrate to this layout. **Customize details** hides or reorders sections inside the evaluation; custom text/number attributes still participate in indexing. Empty musical/language/time fields and vague topical Scripture connections are omitted. Kari Jobe's Forever record retains the owner's personal concern about the grave-battle line.
 
 Objective details are plain text: attribution, populated key/tempo/duration and other recorded measurements. Missing values are omitted. Recording associations from model knowledge and default durations are marked **Guess** or **Estimate**. Their **Confirm** and **Edit** controls let the owner verify or correct a value without creating a theological evaluation. Fact provenance can also mark a value as an AI estimate. No keys, tempos, ranges or exact release years are inferred from titles; era collections do not populate release-year metadata.
 
@@ -121,9 +121,10 @@ backups for complete workspace migration. Imported records keep their selected t
 version separate when attributions differ.
 
 Discovery renders 24 songs per page; the index renders 50 and exports every matching
-result. Both have direct page entry and first/last controls. Desktop results and song
-details scroll independently; selection preserves the result position and resets
-the detail pane to its heading. Mobile selection brings the details into view. History lookup and repeated text calculations are cached during indexing.
+result. Both have direct page entry and first/last controls. Only the results list scrolls independently. Song details use normal page scrolling,
+with no separate scrollbar. Result scrolling continues onto the page at its limits.
+Selection preserves the result position and brings the song heading into view on
+both desktop and mobile. History lookup and repeated text calculations are cached during indexing.
 `npm run test:scale` verifies 1,000 synthetic songs and 1,000 plans; these fixtures
 are not catalog entries or precomputed AI reviews. The account database still stores
 owner-scoped JSON workspaces, with a 5 MB backup-file limit and browser storage quotas.

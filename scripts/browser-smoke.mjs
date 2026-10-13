@@ -50,8 +50,8 @@ await page
   .getByRole("button", { name: "Save assessment", exact: true })
   .click();
   await keepAIIfOffered(page);
-await reveal(page, "button", { name: "+ Save to library" });
-await page.getByRole("button", { name: "+ Save to library" }).click();
+await reveal(page, "button", { name: "Add to library" });
+await page.getByRole("button", { name: "Add to library" }).click();
 await page.getByLabel("My repertoire", { exact: true }).check();
 await page.getByLabel("Songs to review", { exact: true }).check();
 await reveal(page, "button", { name: "Save library choices" });

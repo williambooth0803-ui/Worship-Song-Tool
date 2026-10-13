@@ -36,6 +36,7 @@ export async function checkDiscoveryFlows(browser, base) {
     assert.match(await page.locator(".primary-evaluation > summary").textContent(),/^Your evaluation/);
     assert.equal(await page.locator(".secondary-evaluation").count(),0);
     assert.equal(await page.locator(".objective-facts").getByText("Tempo",{exact:true}).count(),0);
+    await reveal(page,"button",{name:"Blacklist song",exact:true});
     await page.getByRole("button",{name:"Blacklist song",exact:true}).click();
     assert.ok((await state()).songs.find(s=>s.id===id).blacklisted);
     await page.getByRole("searchbox",{name:"Search songs",exact:true}).fill(title);

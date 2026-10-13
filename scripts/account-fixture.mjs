@@ -153,7 +153,8 @@ export async function checkAccountFlows(browser, base) {
     await watching.close();
   }
   await login("one@example.test");
-  await page.getByRole("button",{name:"Files",exact:true}).click();
+  await reveal(page,"button",{name:"Manage files",exact:true});
+  await page.getByRole("button",{name:"Manage files",exact:true}).click();
   await page.locator('#song-file-form input[type="file"]').setInputFiles({name:"Account chart.txt",mimeType:"text/plain",buffer:Buffer.from("Account-only chart")});
   await page.getByRole("button",{name:"Upload file",exact:true}).click();
   await page.getByText("Account chart.txt · 1 KB",{exact:true}).waitFor();
@@ -247,6 +248,7 @@ export async function checkAccountFlows(browser, base) {
   await page
     .getByRole("button", { name: "Load this backup", exact: true })
     .click();
+  await page.getByRole("tab",{name:"Details & files",exact:true}).click();
   if (!(await page.locator('[data-attribute="notes"]').evaluate((n) => n.open)))
     await page.locator('[data-attribute="notes"] > summary').click();
   await page.getByText("Private account-one note", { exact: true }).waitFor();
@@ -297,6 +299,7 @@ export async function checkAccountFlows(browser, base) {
   await page.getByRole("button", {name:"Review saved account workspace",exact:true}).click();
   await reveal(page, "button", { name: "Load this backup" });
   await page.getByRole("button", { name: "Load this backup" }).click();
+  await page.getByRole("tab",{name:"Details & files",exact:true}).click();
   if (!(await page.locator('[data-attribute="notes"]').evaluate((n) => n.open)))
     await page.locator('[data-attribute="notes"] > summary').click();
   await page.getByText("Private account-one note", { exact: true }).waitFor();

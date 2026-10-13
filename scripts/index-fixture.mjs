@@ -105,9 +105,9 @@ export async function checkIndexFlows(browser, base) {
   await page
     .getByRole("button", { name: "Amazing Grace", exact: true })
     .click();
-  await reveal(page, "button", { name: "+ Save to library", exact: true });
+  await reveal(page, "button", { name: "Add to library", exact: true });
   await page
-    .getByRole("button", { name: "+ Save to library", exact: true })
+    .getByRole("button", { name: "Add to library", exact: true })
     .click();
   await page.locator('#save-song-form input[value="personal"]').check();
   await page.locator("#save-song-form button.primary").click();

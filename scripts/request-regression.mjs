@@ -66,6 +66,7 @@ try {
   const preview=await page.locator("#evaluation-preview h3").boundingBox(), dialogRect=await page.locator("dialog").boundingBox();
   assert.ok(preview.y>=dialogRect.y && preview.y<dialogRect.y+dialogRect.height);
   await page.getByRole("button",{name:"Close dialog",exact:true}).click();
+  await reveal(page,"button",{name:"Blacklist song",exact:true});
   await page.getByRole("button",{name:"Blacklist song",exact:true}).click();
   await nav("blacklist");
   await page.getByRole("heading",{name:song.title,exact:true,level:2}).waitFor();
@@ -91,7 +92,7 @@ try {
   const rated=(await state()).songs.find(s=>s.review.customScores?.[customId]===10);assert.ok(rated);
   assert.equal(await page.evaluate(() => { const event = new Event("beforeunload", {cancelable:true}); window.dispatchEvent(event); return event.defaultPrevented; }),false,"Saved browser edits do not trigger a stale warning");
 
-  await page.getByRole("button",{name:"+ Save to library",exact:true}).click();
+  await page.getByRole("button",{name:"Add to library",exact:true}).click();
   await page.getByLabel("My repertoire",{exact:true}).check();await page.getByRole("button",{name:"Save library choices",exact:true}).click();
   await nav("library");
   const before=await state();const library=before.libraries[0];

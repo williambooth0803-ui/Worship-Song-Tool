@@ -98,6 +98,29 @@ let typeFilter = "",
 const PAGE_SIZE = 24,
   INDEX_PAGE_SIZE = 50;
 const disclosureState = new Map();
+const songTabs = [["details", "Details & files"], ["links", "Outside links"], ["evaluation", "Evaluation"]];
+let detailTab = "details";
+function activateSongTab(tab, focus = false) {
+  if (!songTabs.some(([key]) => key === tab)) return;
+  detailTab = tab;
+  closeMenus();
+  for (const button of app.querySelectorAll('[data-action="song-tab"]')) {
+    const active = button.dataset.tab === tab;
+    button.setAttribute("aria-selected", String(active));
+    button.tabIndex = active ? 0 : -1;
+    if (active && focus) button.focus({preventScroll:true});
+  }
+  for (const panel of app.querySelectorAll('.song-tab-panel')) panel.hidden = panel.dataset.tab !== tab;
+}
+function revealSelectedSong() {
+  const detail = app.querySelector('.detail-panel');
+  const heading = detail?.querySelector('.song-detail-top');
+  if (!heading) return;
+  const rect = heading.getBoundingClientRect();
+  if (innerWidth < 1000 || rect.top < 16 || rect.bottom > innerHeight)
+    detail.scrollIntoView({block:"start", behavior:"instant"});
+  detail.focus({preventScroll:true});
+}
 let suppressRailHover = false;
 let guestOptIn = sessionStorage.getItem("faithful-guest-opt-in") === "1", unsavedForm = false, localSaveFailed = false;
 let accountSave = { phase: "local", signature: null, remoteAvailable: false };
@@ -582,8 +605,6 @@ function render() {
     return;
   }
   const listScroll = app.querySelector(".song-list")?.scrollTop || 0;
-  const previousDetail = app.querySelector(".detail-panel");
-  const detailScroll = previousDetail?.dataset.songId === selected ? previousDetail.scrollTop : 0;
   for (const node of app.querySelectorAll("details[data-disclosure]"))
     disclosureState.set(node.dataset.disclosure, node.open);
   const count = new Set(state.libraries.flatMap((x) => x.songIds).filter(id => browsableSongs().some(s => s.id === id))).size;
@@ -613,9 +634,8 @@ function render() {
     node.dataset.disclosure = key;
     if (disclosureState.has(key)) node.open = disclosureState.get(key);
   }
-  const resultList = app.querySelector(".song-list"), detail = app.querySelector(".detail-panel");
+  const resultList = app.querySelector(".song-list");
   if (resultList) resultList.scrollTop = listScroll;
-  if (detail) detail.scrollTop = detailScroll;
 }
 function songWorkspace() {
   const isLibrary = view === "library";
@@ -766,7 +786,6 @@ function evaluationBox(song, review, secondary = false) {
     language: significant(review.language) ? `<h3>Language</h3><p>${e(review.language)}</p>` : "",
     time: significant(review.time) ? `<h3>Meaningful time</h3><p>${e(review.time)}</p>` : "",
     themes: (review.themes || (secondary ? song.catalogThemes : themesForDisplay(song, state.profile.aiMode)))?.length ? `<h3>Themes</h3>${tagList(review.themes || (secondary ? song.catalogThemes : themesForDisplay(song, state.profile.aiMode)))}` : "",
-    sources: review.sources?.length ? `<h3>Sources · verify before use</h3><ul>${review.sources.map(source => `<li><a href="${e(source.url)}" target="_blank" rel="noopener noreferrer">${e(source.label)}</a></li>`).join("")}</ul>` : "",
   };
   const content = attributeOrder(song).filter(key => !hidden.has(key)).map(key => bodies[key] ? `<section data-attribute="${e(key)}">${bodies[key]}${aiLabel(song, review, key)}</section>` : "").join("");
   const score = overall(review, state.profile);
@@ -885,14 +904,29 @@ function songDetail(song, lib) {
       `<p>${e(metric.value)}</p>`,
     );
   const hidden = new Set(song.detailLayout?.hidden || []);
-  return `<article class="detail-panel" data-song-id="${e(song.id)}" tabindex="-1">${song.blacklisted ? `<p class="blacklist-notice">This song is in your Blacklist. It stays out of libraries, suggestions and new plans.</p><button class="button primary" data-action="restore-blacklisted" data-id="${e(song.id)}">Restore song</button>` : ""}<div class="detail-header"><span class="status-badge">${e(statusLabel(r))}</span><button class="text-button" data-action="customize-details" data-id="${e(song.id)}">Customize details</button></div><h2>${e(song.title)}</h2>${objectiveDetails(song)}<p class="version">${e(song.version)}</p><div class="detail-actions">${!song.blacklisted ? `<button class="button" data-action="blacklist-song" data-id="${e(song.id)}">Blacklist song</button>` : ""}<button class="button" data-action="song-files" data-id="${e(song.id)}">Files</button>${!song.blacklisted ? `<button class="button primary" data-action="save-song" data-id="${e(song.id)}">${saved ? "✓ Saved · manage libraries" : "+ Save to library"}</button><button class="button" data-action="add-to-plan" data-id="${e(song.id)}">Add to plan ›</button>` : ""}<details class="more-menu"><summary>Edit</summary><div class="menu-items"><button class="text-button" data-action="edit-review" data-id="${e(song.id)}">Edit assessment</button><button class="text-button" data-action="edit-index" data-id="${e(song.id)}">Edit index details</button><button class="text-button" data-action="edit-fact" data-id="${e(song.id)}">Edit artist / attribution</button>${state.profile.aiMode !== "manual" ? `<button class="text-button" data-action="ai-review" data-id="${e(song.id)}">${state.profile.aiMode === "limited" ? "Get limited assistance" : "Draft with AI"}</button>` : ""}</div></details></div><div class="song-resources"><a class="button" href="${e(songResourceLinks(song).lyrics)}" target="_blank" rel="noopener noreferrer">Find lyrics ↗</a><a class="button" href="${e(songResourceLinks(song).reviews)}" target="_blank" rel="noopener noreferrer">Find public reviews ↗</a>${state.profile.aiMode !== "manual" ? `<button class="button" data-action="chatgpt-evaluation" data-id="${e(song.id)}">Generate AI evaluation</button>` : ""}</div>${churchDecision(song)}${evaluationBox(song, r)}${attributeOrder(
-    song,
-  )
-    .filter((k) => !hidden.has(k) && ["recordings", "musical", "arrangements", "text", "usage", "notes"].includes(k) || !hidden.has(k) && k.startsWith("custom:"))
-    .map((k) => attrs[k] || "")
-    .join(
-      "",
-    )}${r.assistance ? section("assistance", "AI observations", `${state.profile.aiLabels ? '<span class="ai-mark" role="img" aria-label="AI generated">AI</span>' : ""}<p>${e(r.assistance.summary)}</p><p>${e(r.assistance.language)}</p><p>${e(r.assistance.time)}</p>`) : ""}${state.profile.aiMode === "full" && r.status !== "ai" && retainedAiReview(song) ? evaluationBox(song, retainedAiReview(song), true) : ""}${lib ? `<button class="text-button danger" data-action="remove-library-song" data-id="${e(song.id)}">Remove from ${e(lib.name)}</button>` : ""}</article>`;
+  const details = `${objectiveDetails(song)}${song.version ? `<p class="version">${e(song.version)}</p>` : ""}${attributeOrder(song)
+    .filter(k => !hidden.has(k) && (["musical", "arrangements", "text", "usage", "notes"].includes(k) || k.startsWith("custom:")))
+    .map(k => attrs[k] || "").join("")}<section class="detail-section song-files-section"><div class="section-heading"><h3>Files</h3><button class="text-button" data-action="song-files" data-id="${e(song.id)}">Manage files</button></div>${song.files?.length ? `<ul class="song-file-list">${song.files.map(file => `<li><span>${e(file.name)}</span></li>`).join("")}</ul>` : '<p class="muted">No files attached. Add charts, documents, images or audio.</p>'}</section>`;
+  const sources = [
+    [r, "Evaluation sources"],
+    ...(state.profile.aiMode === "full" && r.status !== "ai" && retainedAiReview(song) ? [[retainedAiReview(song), "AI evaluation sources · verify before use"]] : []),
+  ].filter(([review]) => review.sources?.length).map(([review,label]) => `<section class="detail-section"><h3>${e(label)}${aiLabel(song,review,"sources")}</h3><ul class="detail-list">${review.sources.map(source => `<li><a href="${e(source.url)}" target="_blank" rel="noopener noreferrer">${e(source.label)} ↗</a></li>`).join("")}</ul></section>`).join("");
+  const resources = songResourceLinks(song);
+  const links = `${!hidden.has("recordings") ? `<section class="detail-section external-recordings"><h3>Recordings</h3>${recordingMarkup(song)}</section>` : ""}<section class="detail-section"><h3>Lyrics & public reviews</h3><div class="song-resources"><a class="button" href="${e(resources.lyrics)}" target="_blank" rel="noopener noreferrer">Find lyrics ↗</a><a class="button" href="${e(resources.reviews)}" target="_blank" rel="noopener noreferrer">Find public reviews ↗</a></div><p class="muted">Searches help you find the exact version. Search results are not verified recordings or reviews.</p></section>${!hidden.has("sources") ? sources : ""}`;
+  const evaluation = `<div class="evaluation-actions"><span class="status-badge">${e(statusLabel(r))}</span>${state.profile.aiMode !== "manual" ? `<button class="button" data-action="chatgpt-evaluation" data-id="${e(song.id)}">Generate AI evaluation</button>` : ""}</div>${churchDecision(song)}${evaluationBox(song,r)}${r.assistance ? section("assistance", "AI observations", `${state.profile.aiLabels ? '<span class="ai-mark" role="img" aria-label="AI generated">AI</span>' : ""}<p>${e(r.assistance.summary)}</p><p>${e(r.assistance.language)}</p><p>${e(r.assistance.time)}</p>`) : ""}${state.profile.aiMode === "full" && r.status !== "ai" && retainedAiReview(song) ? evaluationBox(song,retainedAiReview(song),true) : ""}${!hidden.has("sources") ? catalogComparison(song) : ""}`;
+  const panes = { details, links, evaluation };
+  const primary = song.blacklisted
+    ? `<button class="button primary" data-action="restore-blacklisted" data-id="${e(song.id)}">Restore song</button>`
+    : `<button class="button primary" data-action="save-song" data-id="${e(song.id)}">${saved ? "Manage libraries" : "Add to library"}</button>`;
+  const actions = [
+    ...(!song.blacklisted ? [["add-to-plan","Add to plan ›"]] : []),
+    ["edit-review","Edit assessment"], ["edit-index","Edit index details"],
+    ["edit-fact","Edit artist / attribution"], ["customize-details","Customize details"],
+    ...(state.profile.aiMode !== "manual" ? [["ai-review", state.profile.aiMode === "limited" ? "Get limited assistance" : "Draft with AI"]] : []),
+    ...(!song.blacklisted ? [["blacklist-song","Blacklist song"]] : []),
+    ...(lib && !song.blacklisted ? [["remove-library-song",`Remove from ${lib.name}`]] : []),
+  ];
+  return `<article class="detail-panel" data-song-id="${e(song.id)}" aria-label="Song details" tabindex="-1"><div class="song-detail-top"><div class="song-heading"><div class="song-title"><h2>${e(song.title)}</h2><p class="author">${e(song.author)}</p></div><div class="song-primary-actions">${primary}<details class="more-menu song-options" data-disclosure-key="song:${e(song.id)}:options"><summary aria-label="More song actions" title="More song actions">···</summary><div class="menu-items">${actions.map(([action,label]) => `<button class="text-button" data-action="${action}" data-id="${e(song.id)}">${e(label)}</button>`).join("")}</div></details></div></div>${song.blacklisted ? '<p class="blacklist-notice">This song is in your Blacklist. It stays out of libraries, suggestions and new plans.</p>' : ""}<div class="song-tabs" role="tablist" aria-label="Song information">${songTabs.map(([key,label]) => `<button type="button" role="tab" id="song-tab-${key}" aria-controls="song-pane-${key}" aria-selected="${detailTab === key}" tabindex="${detailTab === key ? 0 : -1}" data-action="song-tab" data-tab="${key}">${label}</button>`).join("")}</div></div>${songTabs.map(([key]) => `<section class="song-tab-panel" id="song-pane-${key}" role="tabpanel" aria-labelledby="song-tab-${key}" data-tab="${key}" tabindex="0" ${detailTab === key ? "" : "hidden"}>${panes[key]}</section>`).join("")}</article>`;
 }
 function chatGPTEvaluation(song) {
   if (!song || state.profile.aiMode === "manual") return;
@@ -1341,6 +1375,14 @@ document.addEventListener("toggle", event => {
 }, true);
 document.addEventListener("keydown", (event) => {
   if (event.key === "Escape") closeMenus();
+  const tab = event.target.closest?.('[role="tab"][data-action="song-tab"]');
+  if (tab && ["ArrowLeft","ArrowRight","Home","End"].includes(event.key)) {
+    event.preventDefault();
+    const index = songTabs.findIndex(([key]) => key === tab.dataset.tab);
+    const next = event.key === "Home" ? 0 : event.key === "End" ? songTabs.length - 1
+      : (index + (event.key === "ArrowRight" ? 1 : -1) + songTabs.length) % songTabs.length;
+    activateSongTab(songTabs[next][0], true);
+  }
 });
 document.addEventListener("click", async (event) => {
   for (const menu of document.querySelectorAll(
@@ -1355,6 +1397,7 @@ document.addEventListener("click", async (event) => {
     menu.open = false;
     disclosureState.set(menu.dataset.disclosure, false);
   }
+  if (button.dataset.action === "song-tab") { activateSongTab(button.dataset.tab); return; }
   if (button.dataset.action === "toggle-ai-labels") {
     state.profile.aiLabels = !state.profile.aiLabels;
     persist();
@@ -1545,6 +1588,7 @@ document.addEventListener("click", async (event) => {
     songPage = 1;
     themeFilter = approvalFilter = typeFilter = reviewFilter = "";
     render();
+    revealSelectedSong();
     return;
   }
   if (action === "new-arrangement") return arrangementDialog(song);
@@ -1699,6 +1743,7 @@ document.addEventListener("click", async (event) => {
     themeFilter = approvalFilter = typeFilter = reviewFilter = "";
     if (dialog.open) dialog.close();
     render();
+    revealSelectedSong();
     return;
   }
   if (action === "remove-index-filter") {
@@ -1899,10 +1944,7 @@ document.addEventListener("click", async (event) => {
   if (action === "song-select") {
     selected = id;
     render();
-    if (innerWidth < 1000)
-      document
-        .querySelector(".detail-panel")
-        ?.scrollIntoView({ behavior: "smooth", block: "start" });
+    revealSelectedSong();
     return;
   }
   if (action === "library-select") {

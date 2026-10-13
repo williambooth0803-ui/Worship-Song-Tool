@@ -6,6 +6,33 @@ do not treat a new prompt as cancellation unless the owner says so. Mark an item
 complete only with implementation and meaningful verification. Record external
 blockers explicitly. Preserve personal assessments, recordings and workspaces.
 
+## Discover and song detail follow-up
+
+- [x] Make page scrolling easy from Discover; remove the independent details
+  scrollbar and keep selected songs visible while preserving result position.
+- [x] Clean up the song heading, give library membership a clear primary action,
+  and place secondary controls in a “…” menu.
+- [x] Add Details & files, Outside links and Evaluation tabs. Group recording,
+  lyric, public-review and source links together; preserve personal data and
+  custom detail visibility/order. Let longer content use normal page scrolling.
+- [x] Verify desktop/mobile, keyboard tabs, library actions, files, evaluations
+  and blacklist behavior. Full hosted checks passed, including the new tab/wheel
+  fixture and the previous account, scoring, audit, file and recording regressions.
+- [ ] Publish the tested build and verify deployed files and browser behavior.
+
+The song detail panel has no independent scrollbar or fixed height. Only the
+results list scrolls separately; its boundaries allow normal page scrolling.
+Selection reveals the new heading while retaining the list position. Three
+keyboard-accessible tabs show one content panel at a time, preserving tab choice
+through edits. Existing detail visibility/order, private files, recording choices,
+AI modes, personal evaluations and blacklist rules remain intact. No account data
+or environment configuration was changed.
+
+Verification: all 97 unit/database tests and the full hosted checks passed. The new browser fixture
+passed real wheel scrolling over details, results and result boundaries, deep-list
+selection, arrow/Home/End tab navigation, unchanged workspace after tab changes,
+primary library management, desktop/mobile layouts and blacklist isolation.
+
 ## Current work
 
 - [x] AI evaluation dialog: comfortable scrolling; preview visibly replaces or
@@ -13,8 +40,8 @@ blockers explicitly. Preserve personal assessments, recordings and workspaces.
 - [x] Collection search: normal forward typing, cursor and selection preserved.
 - [x] Blacklist: full song information within its own view; excluded from all
   ordinary libraries, search suggestions, imports and new planning choices.
-- [x] Discover: selected details visible at any result-list position; independent
-  scrolling on desktop and clear mobile transition.
+- [x] Discover: selected details visible at any result-list position; results-only
+  scrolling and normal page scrolling for song details, with clear mobile transition.
 - [x] Pagination: direct page selection, first/last and accessible labels.
 - [x] Scoring: explain 0–10 anchors including 10 and 2–3; evidence-based rules;
   reconsider time as arrangement coherence; additional useful criteria.

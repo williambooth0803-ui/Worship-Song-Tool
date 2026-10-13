@@ -27,7 +27,8 @@ Use a calm editorial interface suited to a working song reference:
 - Rounded panels (18–24px), controls (12px), and navigation (14px), with fine borders and subtle shadows.
 - Keep the visual system in theme.css, separate from structural styles and plain print output.
 - Use consistent, quiet line icons for navigation; no decorative icon tiles or animated gradients.
-- On phones, keep song results in a bounded, keyboard-accessible scroll area so the selected record is easy to reach.
+- Keep song results in a bounded, keyboard-accessible scroll area. Song details use normal page scrolling, with no independent scrollbar. Scrolling at the result boundaries continues onto the page. Selection preserves the result position and reveals the song heading.
+- Group song content into Details & files, Outside links and Evaluation tabs. Keep the library action clear in the heading; place secondary actions in an accessible ellipsis menu. Preserve customized detail visibility and ordering within the tabs.
 - With a mouse, navigation collapses to an icon rail and expands on hover or visible keyboard focus without moving page content. Touch navigation retains visible labels.
 - Literal functional copy. Avoid marketing claims and AI magic/sparkle icons.
 - Use tables for indexed data and clear lists for the human service order.
