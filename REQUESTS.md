@@ -22,7 +22,7 @@ blockers explicitly. Preserve personal assessments, recordings and workspaces.
 - [x] Remember me on sign-in: remember email and persist the session when selected,
   support tab-only sign-in when deselected; never store passwords in app storage.
   Preserve native password-manager autocomplete; browser controls biometric prompts.
-- [ ] Publish and verify the released build; earlier external blockers remain tracked.
+- [x] Publish and verify the released build; earlier external blockers remain tracked.
 
 The bound environment draft was re-read once during this follow-up: it remains
 revision 2 with an older base than the running configuration. No update/save or
@@ -41,16 +41,32 @@ recording-choice checks. Final targeted checks verify persistent active inputs,
 IME, direct song matches, independent depth/sort settings, 100-song picker pages
 with retained selections, visible colored save states, remembered email and
 tab-only reload/new-tab isolation. Sampled searches over all 2,044 records took
-about 66–82 ms; the misspelling sample took about 160–174 ms in local Chromium.
+about 65–95 ms; the misspelling samples took about 158–183 ms in local/live Chromium.
 These are sampled fixture timings, not guarantees for every device.
 
-The full 111-test unit/database run passed, along with the added tab-only
-preference-storage-failure regression (112 tests total). Source dates for all
+All 112 unit/database tests passed in release CI, including the tab-only
+preference-storage-failure regression. Source dates for all
 1,245 recording links come from the existing cached Apple responses. Desktop
 and mobile screenshots were inspected. Portrait metadata/bytes and account
 requests are synthetic in these fixtures; actual photo delivery, real biometric
 prompts and production account/offline recovery remain unverified. No passwords
 are retained in app storage, and no real emails/user records were written by tests.
+
+Release `74dada6` is live: [Pages deployment](https://github.com/williambooth0803-ui/Worship-Song-Tool/actions/runs/38459576761)
+and [App checks](https://github.com/williambooth0803-ui/Worship-Song-Tool/actions/runs/38459579392)
+succeeded. CI passed all 112 tests, MCP type checking, scale checks, the full
+hosted browser suite and generated-file consistency. Fourteen public frontend
+files match the tested build. The new search/collection/picker and remembered
+sign-in/save-badge workflows passed against the published site with TLS
+verification enabled, disposable browser profiles and synthetic intercepted
+auth/portrait requests. No production user records or emails were written.
+
+- [ ] Validate actual Wikimedia portrait coverage/image delivery after source
+  access is available. The loader/fallbacks and safe attribution are tested;
+  synthetic images are not evidence of real provider image availability.
+- [ ] Confirm real-device native saved-password/biometric prompt behavior with
+  remembered email. Existing Apple autofill/sign-in is owner-confirmed; this new
+  focus/remembered-email path is fixture-tested, and browser policy controls prompts.
 
 ## Artwork, organizations and planning requests
 
