@@ -52,27 +52,31 @@ export function normalize(value) {
     .replace(/[^a-z0-9]+/g, " ")
     .trim();
 }
+const searchTextCache = new WeakMap();
+function searchableText(song) {
+  const source = [song.title, song.author, song.firstLine, ...(song.themes || [])].join('\u0000');
+  let cached = searchTextCache.get(song);
+  if (!cached || cached.source !== source) {
+    cached = {source, title: normalize(song.title), author: normalize(song.author), firstLine: normalize(song.firstLine), all: normalize(source)};
+    searchTextCache.set(song, cached);
+  }
+  return cached;
+}
 export function searchSongs(songs, query) {
   const terms = normalize(query).split(" ").filter(Boolean);
-  const matches = songs.filter((s) =>
-    terms.every((t) =>
-      normalize(
-        [s.title, s.author, s.firstLine, ...s.themes].join(" "),
-      ).includes(t),
-    ),
-  );
-  if (!terms.length) return matches;
+  if (!terms.length) return [...songs];
   const phrase = terms.join(" ");
   const rank = (s) => {
-    const title = normalize(s.title);
+    const {title, author, firstLine} = searchableText(s);
     if (title === phrase) return 1000;
     if (title.startsWith(phrase)) return 800;
     if (terms.every((term) => title.includes(term))) return 600;
-    if (terms.every((term) => normalize(s.author).includes(term))) return 300;
-    if (terms.every((term) => normalize(s.firstLine).includes(term))) return 200;
+    if (terms.every((term) => author.includes(term))) return 300;
+    if (terms.every((term) => firstLine.includes(term))) return 200;
     return 100;
   };
-  return matches.sort((a, b) => rank(b) - rank(a));
+  return songs.filter(s => terms.every(term => searchableText(s).all.includes(term)))
+    .map(song => ({song, rank: rank(song)})).sort((a,b) => b.rank-a.rank).map(row => row.song);
 }
 export function planDuration(items) {
   return items.reduce((sum, item) => sum + Number(item.minutes || 0), 0);

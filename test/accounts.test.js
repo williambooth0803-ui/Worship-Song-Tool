@@ -279,3 +279,20 @@ test("a delayed expired-token response reuses a token already refreshed by anoth
   assert.equal(refreshes,0);
   assert.equal(requests,2);
 });
+test('Remember me retains only email/preferences and moves sessions between persistent and tab storage',async()=>{
+ const local=storage(),tab=storage(),client=new AccountClient(config,{storage:local,tabStorage:tab,fetcher:async()=>response(session)});
+ client.setRememberMe(false,'fixture@example.com');await client.signIn('fixture@example.com','DO NOT STORE THIS PASSWORD');
+ assert.equal(local.getItem('faithful-repertoire-session'),null);assert.ok(tab.getItem('faithful-repertoire-session'));assert.equal(client.rememberedEmail,'');
+ assert.equal(new AccountClient(config,{storage:local,tabStorage:storage()}).user,null);
+ assert.equal(new AccountClient(config,{storage:local,tabStorage:tab}).user.id,user.id);
+ client.setRememberMe(true,'fixture@example.com');assert.equal(tab.getItem('faithful-repertoire-session'),null);
+ const returning=new AccountClient(config,{storage:local,tabStorage:storage()});assert.equal(returning.user.id,user.id);assert.equal(returning.rememberedEmail,'fixture@example.com');
+ assert.ok(!local.getItem('faithful-repertoire-remember').includes('PASSWORD'));assert.ok(!local.getItem('faithful-repertoire-session').includes('PASSWORD'));
+ client.setSession(null);assert.equal(returning.syncStoredSession(),true);assert.equal(returning.user,null);
+});
+test('tab-only sessions survive reload without promotion when remembering preferences fails',async()=>{
+ const tab=storage(),local=storage();local.setItem=()=>{throw new Error('Storage full');};
+ const client=new AccountClient(config,{storage:local,tabStorage:tab,fetcher:async()=>response(session)});client.setRememberMe(false,user.email);await client.signIn(user.email,'PRIVATE PASSWORD');
+ const restored=new AccountClient(config,{storage:local,tabStorage:tab});assert.equal(restored.user.id,user.id);assert.equal(restored.rememberMe,false);assert.equal(restored.rememberedEmail,'');assert.equal(local.getItem('faithful-repertoire-session'),null);
+ assert.equal(new AccountClient(config,{storage:local,tabStorage:storage()}).user,null);
+});

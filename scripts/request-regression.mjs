@@ -25,6 +25,10 @@ const browser = testProfile
 const page = testProfile ? await browser.newPage() : await browser.newPage({viewport:{width:1440,height:1000}}), errors=[];
 page.on("pageerror",e=>errors.push(e.message));
 page.on("dialog",d=>d.accept());
+// Actual image-source availability is a separate check; regressions use public-source fallbacks.
+await page.route('https://www.wikidata.org/**',route=>route.fulfill({contentType:'application/json',body:'{"entities":{}}'}));
+await page.route('https://*.mzstatic.com/**',route=>route.abort());
+
 const nav = async view => page.locator(`.nav-item[data-view="${view}"]`).click();
 const state = () => page.evaluate(()=>JSON.parse(localStorage.getItem("hymn-heart-v1")));
 try {

@@ -21,7 +21,7 @@ const publicAccountSettings = {
 };
 const accountConfig = validateAccountConfig(publicAccountSettings);
 const contentSecurityPolicy =
-  `default-src 'self'; script-src 'self'; style-src 'self'; connect-src 'self'${accountConfig ? ` ${accountConfig.url}` : ""}; img-src 'self' data: https://*.mzstatic.com; base-uri 'self'; form-action 'self'` +
+  `default-src 'self'; script-src 'self'; style-src 'self'; connect-src 'self' https://www.wikidata.org https://commons.wikimedia.org${accountConfig ? ` ${accountConfig.url}` : ""}; img-src 'self' data: https://*.mzstatic.com https://upload.wikimedia.org; base-uri 'self'; form-action 'self'` +
   (frameAncestors ? `; frame-ancestors ${frameAncestors}` : "");
 const types = {
   ".html": "text/html; charset=utf-8",

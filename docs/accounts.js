@@ -41,7 +41,7 @@ export function validateAccountConfig(config) {
 export class AccountClient {
   constructor(
     config,
-    { storage, fetcher = globalThis.fetch.bind(globalThis) } = {},
+    { storage, tabStorage, fetcher = globalThis.fetch.bind(globalThis) } = {},
   ) {
     this.config = validateAccountConfig(config);
     this.storage = storage;
@@ -60,10 +60,19 @@ export class AccountClient {
       setItem: () => {},
       removeItem: () => {},
     };
+    try { tabStorage ||= !storage && globalThis.sessionStorage; } catch {}
+    const tabValues=new Map();
+    this.tabStorage=tabStorage||{getItem:key=>tabValues.get(key)??null,setItem:(key,value)=>tabValues.set(key,value),removeItem:key=>tabValues.delete(key)};
+    this.rememberMe=true;this.rememberedEmail='';
+    try {
+      const preference=JSON.parse(this.storage.getItem('faithful-repertoire-remember'));
+      if(preference?.project===this.config?.url){this.rememberMe=preference.enabled!==false;this.rememberedEmail=this.rememberMe&&typeof preference.email==='string'&&preference.email.length<=320?preference.email:'';}
+    } catch {}
+    this.sessionStore=this.rememberMe?this.storage:this.tabStorage;
     if (this.config) {
       try {
         const saved = JSON.parse(
-          this.storage.getItem("faithful-repertoire-session"),
+          this.sessionStore.getItem("faithful-repertoire-session"),
         );
         if (
           saved?.project === this.config.url &&
@@ -74,13 +83,15 @@ export class AccountClient {
       } catch {
         /* An unavailable session store leaves the user signed out. */
       }
-      // Upgrade existing tab-only sessions once; credentials stay out of backups.
-      if (!this.session && !storage) {
+      // Keep explicit tab-only sessions tab-only even when preference storage fails.
+      // Older unmarked tab sessions retain their previous migration behavior.
+      if (!this.session) {
         try {
-          const old = JSON.parse(globalThis.sessionStorage?.getItem("faithful-repertoire-session"));
-          if (old?.project === this.config.url && old.session?.access_token && old.session?.refresh_token && old.session?.user?.id)
-            this.setSession(old.session);
-          globalThis.sessionStorage?.removeItem("faithful-repertoire-session");
+          const old = JSON.parse(this.tabStorage.getItem("faithful-repertoire-session"));
+          if (old?.project === this.config.url && old.session?.access_token && old.session?.refresh_token && old.session?.user?.id) {
+            if(old.rememberMe===false){this.rememberMe=false;this.rememberedEmail='';this.sessionStore=this.tabStorage;this.session=old.session;this.persisted=true;}
+            else if(!storage&&this.rememberMe){this.setSession(old.session);if(this.persisted)this.tabStorage.removeItem("faithful-repertoire-session");}
+          }
         } catch { /* Storage may be blocked. */ }
       }
     }
@@ -91,9 +102,17 @@ export class AccountClient {
   get user() {
     return this.session?.user || null;
   }
+  setRememberMe(enabled,email='') {
+    this.rememberMe=Boolean(enabled);
+    this.rememberedEmail=this.rememberMe&&typeof email==='string'&&email.length<=320?email.trim():'';
+    this.sessionStore=this.rememberMe?this.storage:this.tabStorage;
+    try {(this.rememberMe?this.tabStorage:this.storage).removeItem('faithful-repertoire-session');} catch {}
+    try {this.storage.setItem('faithful-repertoire-remember',JSON.stringify({project:this.config?.url,enabled:this.rememberMe,email:this.rememberedEmail}));} catch {}
+    this.setSession(this.session);
+  }
   syncStoredSession() {
     let saved;
-    try { saved = JSON.parse(this.storage.getItem("faithful-repertoire-session")); }
+    try { saved = JSON.parse(this.sessionStore.getItem("faithful-repertoire-session")); }
     catch { return false; }
     const next = saved?.project === this.config?.url && saved.session?.access_token && saved.session?.refresh_token && saved.session?.user?.id ? saved.session : null;
     const changed = this.user?.id !== next?.user?.id;
@@ -115,12 +134,15 @@ export class AccountClient {
     this.session = session;
     try {
       if (session)
-        this.storage.setItem(
+        this.sessionStore.setItem(
           "faithful-repertoire-session",
-          JSON.stringify({ project: this.config.url, session }),
+          JSON.stringify({ project: this.config.url, rememberMe:this.rememberMe, session }),
         );
-      else this.storage.removeItem("faithful-repertoire-session");
-      this.persisted = Boolean(session) && this.storage.getItem("faithful-repertoire-session") !== null;
+      else {
+        this.sessionStore.removeItem("faithful-repertoire-session");
+        this.tabStorage.removeItem("faithful-repertoire-session");
+      }
+      this.persisted = Boolean(session) && this.sessionStore.getItem("faithful-repertoire-session") !== null;
     } catch {
       /* The current tab can remain signed in without persistence. */
       this.persisted = false;

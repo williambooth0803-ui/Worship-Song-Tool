@@ -25,7 +25,10 @@ check after reconnecting or returning to the tab. Revision checks protect writes
 Independent edits merge; overlapping edits pause for review and retain the local
 copy. Switching, revoked membership and changed permissions keep unsynced drafts
 private in this browser. Settings provides draft downloads. Actual email delivery
-and real-user offline recovery still require production verification.
+and real-user offline recovery still require production verification. Read-only
+configuration inspection confirmed no custom SMTP host/sender is configured
+and the custom email hook is disabled;
+production invitation delivery still needs provider setup and a real delivery test.
 
 Browser changes save after each action. Account uploads use a serialized queue;
 offline errors preserve the browser copy and newer account copies require review.
@@ -79,7 +82,8 @@ Objective details are plain text: attribution, populated key/tempo/duration and 
 
 **Plans → Add songs** opens a library picker without navigating away. Search a
 library, select several songs (selection carries across libraries), and add the
-selected count. Existing plans offer an **Add after** position; empty plans skip
+selected count. Large libraries use 100-song pages with selections retained across
+pages and libraries. Existing plans offer an **Add after** position; empty plans skip
 placement controls. Preferred arrangements supply editable keys/duration estimates.
 **Add heading** creates an untimed section label. Drag rows/handles to reorder,
 including with touch, or use the accessible up/down controls. The former service
@@ -97,6 +101,50 @@ plans are drafts; they do not count as completed use. **Plan tools → Export
 importable JSON** provides a portable plan file. Full JSON workspace backups still
 transfer all personal data separately. See [plan-import.js](public/plan-import.js)
 for the exact format and [REQUESTS.md](REQUESTS.md) for verification limits.
+
+## Search and collection browsing
+
+Typing updates result regions without replacing the active search input. Indexed
+identity lookups and cached normalized text avoid scanning/normalizing the same
+catalog repeatedly. Native caret/selection and IME composition are preserved.
+Search results use a short 60 ms coalescing delay; no network search is needed.
+
+Collections search accepts song titles as well as artists, collection names,
+styles, eras and themes. Direct matching songs open from that page. Each expanded
+collection has its own song search, depth and sort controls. Essentials/Standards
+retain their editorial selections; All is the complete available collection.
+Song rows default to A–Z. **Popularity in your plans** counts song occurrences
+only in completed plans in the current workspace, never guessed global chart
+positions. **Recording release** sorts by the earliest supplied date in the
+matched Apple recording links; those dates may describe reissues, not original
+composition/publication. Unknown dates follow dated records. All 1,245 exact
+recording links retain release-date evidence from the cached Apple responses.
+**Preview & import** uses that collection's chosen depth; **Import all songs**
+continues to import the entire collection. Search/sorting change the view only.
+
+Artist/group covers use the fixed subject's Wikidata image property and Wikimedia
+Commons thumbnails with accepted reuse licenses and visible attribution/source
+links. Photos load only near the viewport, with two concurrent requests and
+in-memory deduplication. No private song notes, account data or search terms are
+sent. Unavailable images, logos/record sleeves and unverified identities retain
+monogram covers. Other collection types have simple visual emblems. Production
+image availability remains to be validated: the cloud configuration omits the
+Wikimedia API/image hosts as well as Apple's artwork CDN. No stale environment
+configuration was retried or overwritten.
+
+The header save tracker is red with **× Unsaved changes**, amber while saving,
+and green with **✓ Saved** after the current snapshot is acknowledged. Unapplied
+form edits and failed/conflicting uploads remain red. Browser-only work says
+**Saved on this device**; view-only organizations say **View only**. Color is
+supplemented by text/icons and reduced-motion support.
+
+**Remember me** remembers the email and persists the session in this browser.
+Leave it unchecked on shared devices: sign-in stays in tab storage (including
+reloads), and the email is not retained. Existing persistent sign-ins remain
+compatible. Passwords are never stored by the app. **Use saved password** focuses
+the native password field; the browser/password manager controls credential
+suggestions and any Face ID/Touch ID challenge. The website cannot force that
+challenge or substitute its own biometric prompt.
 
 ## Song index
 
@@ -192,7 +240,7 @@ When configured:
 - Browser workspaces are separate for guests and each signed-in user. Signing out returns to the sign-in screen; the preserved browser-only workspace requires explicit opt-in.
 - Account workspace changes autosave after a short debounce. A serialized queue uploads the newest snapshot, retains edits made during a request, pauses after an offline error, and blocks conflicting writes. Settings provides **Save now / retry**. **Review saved account workspace** requires confirmation before replacing local data. A visible status distinguishes browser storage from account saves. Conditional writes stop when another device has saved a newer copy. Existing account copies are detected at sign-in and can be reviewed before loading. In Personal, a newer account copy pauses autosave until reviewed. Organization workspaces use revision checks and merge independent changes.
 - **Copy browser workspace** transfers the guest workspace into the signed-in account with confirmation. Use **Retry profile sync** under advanced Settings to retry a failed preference save.
-- Access and refresh tokens persist in local storage, outside workspace JSON, so sign-in survives new tabs and return visits in this browser profile. Sign-in/out events synchronize across tabs; refreshes use a browser lock when available. A temporary provider outage preserves the session. This does not sign into other browsers or devices automatically. Workspace exports contain no sign-in credentials. Login forms use stable input IDs, username/current-password autocomplete and no sign-in password-length restriction; the default sign-in screen now uses a stable native form, and autofilled DOM values are tested even without input events. The owner confirmed Apple saved email/password sign-in now works; automated fixtures additionally cover autofilled values without input events.
+- Access and refresh tokens stay outside workspace JSON. Remember me stores the session in local storage; deselecting it uses tab storage. Remembered sign-ins survive new tabs and return visits in this browser profile. Sign-in/out events synchronize remembered sessions across tabs; refreshes use a browser lock when available. A temporary provider outage preserves the session. This does not sign into other browsers or devices automatically. Workspace exports contain no sign-in credentials. Login forms use stable input IDs, username/current-password autocomplete and no sign-in password-length restriction; the default sign-in screen now uses a stable native form, and autofilled DOM values are tested even without input events. The owner confirmed Apple saved email/password sign-in now works; automated fixtures additionally cover autofilled values without input events.
 
 ### Configure a new Supabase project
 

@@ -1,3 +1,5 @@
+import {allCatalogSongs} from "../public/catalog.js";
+import {songCollections} from "../public/collections.js";
 import assert from "node:assert/strict";
 import { reveal } from "./disclosure.mjs";
 export async function checkDiscoveryFlows(browser, base) {
@@ -7,10 +9,16 @@ export async function checkDiscoveryFlows(browser, base) {
   const state=()=>page.evaluate(()=>JSON.parse(localStorage.getItem("hymn-heart-v1")));
   try{
     await page.goto(base);await nav("Collections");
-    await page.getByLabel("Find a collection",{exact:true}).fill("Chris Tomlin");
+    await page.getByLabel("Search collections and songs",{exact:true}).fill("Chris Tomlin");
     const pack=page.locator(".collection-dropdown").filter({has:page.getByRole("heading",{name:"Chris Tomlin",exact:true})});
     await pack.locator(":scope > summary").click();
-    const row=pack.locator(".collection-songs > li").first(),title=await row.locator(".collection-song-title").textContent(),id=await row.locator(".collection-song-title").getAttribute("data-id");
+    // Exercise retained AI with a known evaluated record; alphabetical order is unrelated to assessment status.
+    const collection=songCollections.find(pack=>pack.name==='Chris Tomlin');
+    const evaluated=allCatalogSongs.find(song=>collection.songIds.includes(song.id)&&song.title==='How Great Is Our God'&&song.review.scores.accuracy!==null);
+    assert.ok(evaluated);
+    await pack.locator('[data-collection-search]').fill(evaluated.title);
+    await page.waitForFunction(()=>document.querySelector('.collection-song-results')?.getAttribute('aria-busy')==='false');
+    const row=pack.locator('.collection-songs > li').filter({has:page.locator(`.collection-song-title[data-id="${evaluated.id}"]`)}),title=evaluated.title,id=evaluated.id;
     const act=async name=>{await row.locator(".more-menu > summary").click();await row.getByRole("button",{name,exact:true}).click();};
     await act("Add to library");await page.locator('#save-song-form input[type="checkbox"]').first().check();
     await page.getByRole("button",{name:"Save library choices",exact:true}).click();
@@ -53,7 +61,7 @@ export async function checkDiscoveryFlows(browser, base) {
     await nav("Blacklist");await page.getByRole("heading",{name:title,exact:true,level:2}).waitFor();
     await page.getByRole("button",{name:"Restore song",exact:true}).click();
     assert.equal((await state()).songs.find(s=>s.id===id).blacklisted,false);
-    await nav("Collections");await page.getByLabel("Find a collection",{exact:true}).fill("");
+    await nav("Collections");await page.getByLabel("Search collections and songs",{exact:true}).fill("");
     for(const group of ["Eras","Themes","Artists"]){await page.getByLabel("Browse by",{exact:true}).selectOption(group);assert.ok(await page.locator(".collection-dropdown").count()>0);}
     await page.setViewportSize({width:390,height:844});assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));
     await page.screenshot({path:"/tmp/faithful-collections-mobile.png",fullPage:true});

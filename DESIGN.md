@@ -89,3 +89,21 @@ uses explicit multi-selection and relative insertion, and skips placement for an
 empty plan. Retain keyboard reorder controls alongside dragging. Album images
 must come from matching recording metadata; blank artwork is better than guessing.
 Hymnary links are finding aids unless a specific entry was verified.
+
+## Search, imagery and authentication affordances
+
+Keep active search fields mounted, preserve selection/IME, and refresh result
+regions instead of the whole shell. Cache public lookup text and identity maps,
+invalidate them when data or visibility changes, and continue to exclude
+blacklists and hidden AI content. Collection depth controls remain editorial,
+not empirical popularity. Popularity uses the current workspace's completed-plan
+counts; chronology uses supplied recording-release dates with unknowns/reissues
+visible. Never infer composition dates or chart positions from list order.
+
+Collection portraits use fixed public artist identities and sourced subject
+images with attribution, lazy loading and honest unavailable-image fallbacks.
+Do not send personal data/search terms to image providers or use album covers
+as artist portraits. Save status must identify unacknowledged uploads and
+unapplied form edits with labels/icons as well as color. Remember me controls
+email/session retention without retaining passwords; native credential
+suggestions and biometric prompts remain the browser's responsibility.

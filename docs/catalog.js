@@ -600,6 +600,7 @@ export function syncCatalog(
       for (const recording of song.recordings || []) {
         const source = catalogRecordings[entry.id]?.find(r => r.id === recording.id && r.url === recording.url);
         if (source?.artwork && recording.artwork === undefined) recording.artwork = source.artwork;
+        if (source?.releaseDate && recording.releaseDate === undefined) recording.releaseDate = source.releaseDate;
       }
     }
   }

@@ -19,7 +19,7 @@ export function movePlanItem(plan,id,target,after=false) {
  const [item]=plan.items.splice(from,1);const index=plan.items.findIndex(i=>i.id===target);plan.items.splice(index+(after?1:0),0,item);
 }
 export function openPlanSongPicker({workspace,plan,libraryId,modal,onAdd,stillCurrent}) {
- const chosen=new Set();let selectedLibrary=libraryId||workspace.libraries[0]?.id;
+ const chosen=new Set();let selectedLibrary=libraryId||workspace.libraries[0]?.id,page=1;
  const displayPlan={...plan,items:plan.items.map(i=>({...i,displayTitle:workspace.songs.find(s=>s.id===i.songId)?.title||i.title}))};
  modal(`<h2>Add songs to ${e(plan.title)}</h2><div class="plan-library-picker"><div class="picker-controls"><label>Library<select id="picker-library" aria-label="Choose a library">${workspace.libraries.map(l=>`<option value="${e(l.id)}" ${l.id===selectedLibrary?'selected':''}>${e(l.name)}</option>`).join('')}</select></label><label>Find a song<input id="picker-search" type="search" aria-label="Find library songs" placeholder="Title or artist"></label></div><div id="picker-songs" class="picker-songs" tabindex="0" aria-label="Library songs"></div><p id="picker-count" role="status"></p>${insertionMarkup(displayPlan)}<p id="picker-error" role="alert"></p><div class="form-actions"><button class="button" data-action="close">Cancel</button><button type="button" class="button primary" id="picker-add" disabled>Add 0 songs to plan</button></div></div>`);
  const dialog=document.querySelector('#dialog'),list=dialog.querySelector('#picker-songs'),add=dialog.querySelector('#picker-add');
@@ -27,11 +27,20 @@ export function openPlanSongPicker({workspace,plan,libraryId,modal,onAdd,stillCu
  const update=()=>{add.disabled=chosen.size===0;add.textContent=`Add ${chosen.size} song${chosen.size===1?'':'s'} to plan`;dialog.querySelector('#picker-count').textContent=`${chosen.size} selected across your libraries`;};
  const render=()=>{
   const library=workspace.libraries.find(l=>l.id===selectedLibrary),query=dialog.querySelector('#picker-search').value.toLocaleLowerCase();
-  const songs=available.filter(s=>library?.songIds.includes(s.id)&&[s.title,s.author].join(' ').toLocaleLowerCase().includes(query));
-  list.innerHTML=songs.length?songs.map(s=>`<label class="picker-song ${chosen.has(s.id)?'selected':''}"><input type="checkbox" value="${e(s.id)}" ${chosen.has(s.id)?'checked':''}>${songArtwork(s)?`<img class="album-art picker-art" src="${e(songArtwork(s).url)}" alt="" width="44" height="44" loading="lazy" referrerpolicy="no-referrer">`:''}<span><strong>${e(s.title)}</strong><small>${e(s.author)}</small><small>${e(selectedArrangement(s)?.minutes??s.review.minutes)} min${selectedArrangement(s)||s.facts?.minutes?.confidence==='confirmed'?'':' estimate'}${selectedArrangement(s)?.key||s.review.key?' · '+e(selectedArrangement(s)?.key||s.review.key):''}</small></span></label>`).join(''):'<p class="muted">No matching songs in this library. Add songs to your libraries to choose them here.</p>';
+  const ids=new Set(library?.songIds||[]);
+  const songs=available.filter(s=>ids.has(s.id)&&[s.title,s.author].join(' ').toLocaleLowerCase().includes(query));
+  const pages=Math.ceil(songs.length/100)||1;page=Math.max(1,Math.min(page,pages));
+  const shown=songs.slice((page-1)*100,page*100);
+  list.innerHTML=songs.length?shown.map(s=>`<label class="picker-song ${chosen.has(s.id)?'selected':''}"><input type="checkbox" value="${e(s.id)}" ${chosen.has(s.id)?'checked':''}>${songArtwork(s)?`<img class="album-art picker-art" src="${e(songArtwork(s).url)}" alt="" width="44" height="44" loading="lazy" referrerpolicy="no-referrer">`:''}<span><strong>${e(s.title)}</strong><small>${e(s.author)}</small><small>${e(selectedArrangement(s)?.minutes??s.review.minutes)} min${selectedArrangement(s)||s.facts?.minutes?.confidence==='confirmed'?'':' estimate'}${selectedArrangement(s)?.key||s.review.key?' · '+e(selectedArrangement(s)?.key||s.review.key):''}</small></span></label>`).join(''):'<p class="muted">No matching songs in this library. Add songs to your libraries to choose them here.</p>';
+  dialog.querySelector('#picker-pages')?.remove();
+  if(pages>1) {
+   const navigation=document.createElement('div');navigation.id='picker-pages';navigation.className='pagination';
+   navigation.innerHTML=`<span>${(page-1)*100+1}–${Math.min(page*100,songs.length)} of ${songs.length}</span><button class="button" type="button" id="picker-previous" ${page===1?'disabled':''}>Previous</button><span>Page ${page} of ${pages}</span><button class="button" type="button" id="picker-next" ${page===pages?'disabled':''}>Next</button>`;list.after(navigation);
+   navigation.querySelector('#picker-previous').onclick=()=>{page--;render();list.scrollTop=0;};navigation.querySelector('#picker-next').onclick=()=>{page++;render();list.scrollTop=0;};
+  }
  };
- dialog.querySelector('#picker-library').onchange=event=>{selectedLibrary=event.target.value;render();};
- dialog.querySelector('#picker-search').oninput=render;
+ dialog.querySelector('#picker-library').onchange=event=>{selectedLibrary=event.target.value;page=1;render();};
+ dialog.querySelector('#picker-search').oninput=()=>{page=1;render();};
  list.onchange=event=>{if(event.target.type!=='checkbox')return;event.target.checked?chosen.add(event.target.value):chosen.delete(event.target.value);event.target.closest('.picker-song').classList.toggle('selected',event.target.checked);update();};
  add.onclick=()=>{try{
   if(!stillCurrent())throw new Error('The workspace or selected plan changed. Open the picker again.');

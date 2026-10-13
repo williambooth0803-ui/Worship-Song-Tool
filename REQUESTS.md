@@ -6,6 +6,52 @@ do not treat a new prompt as cancellation unless the owner says so. Mark an item
 complete only with implementation and meaningful verification. Record external
 blockers explicitly. Preserve personal assessments, recordings and workspaces.
 
+## Search, collections, save status and remembered sign-in
+
+- [x] Make search responsive without replacing active inputs; preserve typing,
+  caret/selection, IME composition, blacklists and account isolation.
+- [x] Search collections by song title as well as collection/artist/era/genre;
+  add per-collection song search and independent Essentials/Standards/All controls.
+- [x] Alphabetical default plus popularity and chronology sorting. Use completed
+  plan counts for local popularity and sourced recording release dates for chronology;
+  do not invent global chart rankings or original composition dates.
+- [x] Add artist/group collection portrait covers with source/attribution, lazy
+  loading and an honest fallback when a verified image is unavailable.
+- [x] Colored save tracker: explicit unsaved changes, saving and saved states;
+  include unapplied form changes and distinguish browser storage from account sync.
+- [x] Remember me on sign-in: remember email and persist the session when selected,
+  support tab-only sign-in when deselected; never store passwords in app storage.
+  Preserve native password-manager autocomplete; browser controls biometric prompts.
+- [ ] Publish and verify the released build; earlier external blockers remain tracked.
+
+The bound environment draft was re-read once during this follow-up: it remains
+revision 2 with an older base than the running configuration. No update/save or
+stale retry was attempted. Runtime portrait source/image validation requires
+`www.wikidata.org`, `commons.wikimedia.org`, `upload.wikimedia.org` and Apple's
+`is1-ssl.mzstatic.com` in a fresh draft preserving the existing repository, settings
+and six explicitly allowed hosts. Browser visitors use these public sources
+directly; cloud source availability remains unverified. Native biometric prompts
+are controlled by the browser/password manager and cannot be forced by the site.
+
+
+
+Implementation verification: the full hosted suite passed, including earlier
+organization, planning, account-startup, file, blacklist, scoring, audit and
+recording-choice checks. Final targeted checks verify persistent active inputs,
+IME, direct song matches, independent depth/sort settings, 100-song picker pages
+with retained selections, visible colored save states, remembered email and
+tab-only reload/new-tab isolation. Sampled searches over all 2,044 records took
+about 66–82 ms; the misspelling sample took about 160–174 ms in local Chromium.
+These are sampled fixture timings, not guarantees for every device.
+
+The full 111-test unit/database run passed, along with the added tab-only
+preference-storage-failure regression (112 tests total). Source dates for all
+1,245 recording links come from the existing cached Apple responses. Desktop
+and mobile screenshots were inspected. Portrait metadata/bytes and account
+requests are synthetic in these fixtures; actual photo delivery, real biometric
+prompts and production account/offline recovery remain unverified. No passwords
+are retained in app storage, and no real emails/user records were written by tests.
+
 ## Artwork, organizations and planning requests
 
 - [x] Add source-backed album covers to contemporary songs, preserving preferred
@@ -64,6 +110,10 @@ The final view-only file-dialog checks passed locally and on the public site.
 - [ ] Verify real-user invitation email delivery and actual account/offline recovery.
   Tests intercept native sign-in email requests to synthetic addresses; they do
   not establish SMTP delivery. Membership requires verified email and acceptance.
+  Read-only configuration inspection on October 13 confirmed no custom SMTP
+  host or sender is configured; the custom email hook is disabled. Production
+  invitation delivery requires provider
+  setup and a real delivery test; the native email service is not assumed ready.
 - [ ] Validate image downloads from Apple's artwork CDN in the cloud environment.
   This chat's draft is also stale: revision 2 uses an older base than the running
   configuration. No save or repeated retry was attempted. Existing allowed

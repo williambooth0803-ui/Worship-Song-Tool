@@ -43,8 +43,8 @@ async function main() {
         if (seen.has(link)) continue;
         seen.add(link);
         if (seen.size > 3) break;
-        (recordings[song.id] ||= []).push({ id: `catalog-apple-${track.trackId}`, provider: "appleMusic", label: `${track.artistName} · ${track.collectionName}`, url: link, ...(track.artworkUrl100 ? {artwork: track.artworkUrl100} : {}) });
-        (evidence[song.id] ||= []).push({ trackId: track.trackId, title: track.trackName, artist: track.artistName, album: track.collectionName, artwork: track.artworkUrl100 || null, url: link, country: "US", fetchedAt: response.fetchedAt, source: response.request });
+        (recordings[song.id] ||= []).push({ id: `catalog-apple-${track.trackId}`, provider: "appleMusic", label: `${track.artistName} · ${track.collectionName}`, url: link, ...(track.artworkUrl100 ? {artwork: track.artworkUrl100} : {}), ...(track.releaseDate ? {releaseDate: track.releaseDate.slice(0,10)} : {}) });
+        (evidence[song.id] ||= []).push({ trackId: track.trackId, title: track.trackName, artist: track.artistName, album: track.collectionName, artwork: track.artworkUrl100 || null, releaseDate: track.releaseDate?.slice(0,10) || null, url: link, country: "US", fetchedAt: response.fetchedAt, source: response.request });
       }
       if (recordings[song.id]) count++;
     }

@@ -84,8 +84,10 @@ export async function checkEvaluationFlows(browser, base) {
     await page.reload();
     await page.locator('nav [data-view="library"]').click();
     await search.fill("christ be magnifed");
+    await page.waitForFunction(()=>document.querySelector(".song-workspace")?.getAttribute("aria-busy")==="false");
     assert.equal(await page.locator(".closest-matches button").count(), 1);
     await search.fill("goodbye yesterdya");
+    await page.waitForFunction(()=>document.querySelector(".song-workspace")?.getAttribute("aria-busy")==="false");
     assert.equal(await page.locator(".closest-matches button").count(), 0);
     await page.locator('nav [data-view="discover"]').click();
     await search.fill("all sufficent merit");

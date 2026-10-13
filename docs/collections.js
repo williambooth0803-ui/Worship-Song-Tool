@@ -187,6 +187,7 @@ for (const [id, name, group, titles] of [
   const songIds = titles.flatMap(title => allCatalogSongs.filter(s => normalize(s.title) === normalize(title)).map(s => s.id));
   songCollections.push({ ...selected(id, name, group === "Eras" ? "Songs associated with this worship era; later recordings may differ. This is an editorial grouping, not verified release-year metadata." : "An editorial topic grouping. Check the chosen lyric version before use.", songIds, 5, 12), group });
 }
+const catalogById = new Map(allCatalogSongs.map(s=>[s.id,s]));
 export function collectionSongs(collection, depth = "essentials") {
   if (!collection || !Object.hasOwn(depthLabels, depth))
     throw new Error("Choose a collection and depth.");
@@ -194,8 +195,7 @@ export function collectionSongs(collection, depth = "essentials") {
     0,
     depth === "all" ? undefined : collection.limits[depth],
   );
-  const byId = new Map(allCatalogSongs.map((s) => [s.id, s]));
-  return selected.map((id) => byId.get(id));
+  return selected.map((id) => catalogById.get(id));
 }
 export function existingMatch(workspace, song) {
   return (

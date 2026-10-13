@@ -1,3 +1,4 @@
+import {checkSearchCollectionFlows,checkRememberAndSaveFlows} from "./search-collections-fixture.mjs";
 import { execFile } from "node:child_process";
 import { promisify } from "node:util";
 import { checkConnectionFlows } from "./connection-fixture.mjs";
@@ -61,6 +62,12 @@ const originalNewPage = browser.newPage.bind(browser);
 browser.newPage = async options => {
   const page = await originalNewPage(options);
   await page.addInitScript(() => sessionStorage.setItem("faithful-guest-opt-in", "1"));
+  // Keep ordinary regression tests deterministic and avoid live image-provider traffic.
+  // The dedicated collection fixture installs its synthetic portrait responses afterwards.
+  await page.route('https://www.wikidata.org/**',route=>route.fulfill({contentType:'application/json',body:'{"entities":{}}'}));
+  await page.route('https://commons.wikimedia.org/**',route=>route.abort());
+  await page.route('https://upload.wikimedia.org/**',route=>route.abort());
+  await page.route('https://*.mzstatic.com/**',route=>route.abort());
   return page;
 };
 
@@ -312,6 +319,8 @@ try {
     fullPage: true,
   });
   assert.deepEqual(errors, []);
+  await checkSearchCollectionFlows(browser, `http://127.0.0.1:${server.address().port}/Worship-Song-Tool/`);
+  await checkRememberAndSaveFlows(browser, `http://127.0.0.1:${server.address().port}/Worship-Song-Tool/`);
   await checkPlanningUpgradeFlows(browser, `http://127.0.0.1:${server.address().port}/Worship-Song-Tool/`);
   await checkOrganizationFlows(browser, `http://127.0.0.1:${server.address().port}/Worship-Song-Tool/`);
   await checkSongTabsFlows(browser, `http://127.0.0.1:${server.address().port}/Worship-Song-Tool/`);

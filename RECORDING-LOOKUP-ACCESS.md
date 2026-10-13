@@ -78,3 +78,20 @@ not repeatedly retried or overwritten. A fresh configuration draft must add this
 host while preserving the six existing explicit domains. This affects cloud
 image validation; ordinary website visitors use the public Apple CDN directly.
 No new environment requirement or private frontend Supabase token was added.
+
+## Recording chronology and artist covers
+
+The cached exact Apple responses now supply `releaseDate` for all 1,245 recording
+links. Backup validation retains real calendar dates; matching existing catalog
+links gain that metadata without replacing/removing personal choices. These are
+recording-release dates and may be reissues, not original writing dates. The
+lookup script retains this evidence for future supported Apple lookups. No
+Songlink retry or invented Spotify/YouTube mapping was added.
+
+Artist portraits are separately sourced at browser runtime from fixed Wikipedia
+artist identities through Wikidata P18 and attributed Wikimedia Commons images.
+Album artwork is not used as a portrait. Cloud validation also needs the exact
+hosts `www.wikidata.org`, `commons.wikimedia.org` and `upload.wikimedia.org` in a
+fresh configuration draft, retaining all existing settings. The previously stale
+draft was not saved/retried. Image-source tests use synthetic metadata and
+intercepted image bytes; they do not establish live provider/image availability.

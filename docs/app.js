@@ -1,3 +1,7 @@
+import {loadArtistPortraits,portraitPages} from "./artist-portraits.js";
+import {saveIndicator} from "./save-status.js";
+import {createSongMatcher, completedPlanCounts, recordingRelease, sortCollectionSongs, findCollections} from "./collection-browse.js";
+import {catalogRecordings} from "./catalog-recordings.js";
 import {OrganizationClient,canEditOrganization,organizationRoles} from "./organizations.js";
 import {openOrganizations} from "./organization-ui.js";
 import {mergeWorkspaces} from "./workspace-merge.js";
@@ -37,7 +41,7 @@ import {
   songCollections,
   depthLabels,
   collectionSongs,
-  existingMatch,
+  existingMatch as findExistingMatch,
   importSongs,
   songsFromCSV,
 } from "./collections.js";
@@ -87,8 +91,21 @@ import {
 
 const STORE = "hymn-heart-v1";
 let activeStore = STORE;
-const browsableSongs = () => visibleSongs(state.songs);
-const availableCatalog = () => allCatalogSongs.filter(s => !existingMatch(state, s)?.blacklisted);
+let browseCache=null;
+function browseData() {
+  const mode=effectiveProfile().aiMode;
+  if(!browseCache||browseCache.state!==state||browseCache.mode!==mode) {
+    const match=createSongMatcher(state.songs),visible=visibleSongs(state.songs);
+    const project=song=>({...song,themes:themesForDisplay(song,mode)});
+    browseCache={state,mode,match,visible,visibleIds:new Set(visible.map(s=>s.id)),
+      pool:visible.map(project),catalog:allCatalogSongs.filter(song=>!match(song)?.blacklisted),
+      outside:allCatalogSongs.filter(song=>!match(song)).map(project),counts:completedPlanCounts(state.plans),collections:new Map(),displayRecords:new Map()};
+  }
+  return browseCache;
+}
+const browsableSongs=()=>browseData().visible;
+const availableCatalog=()=>browseData().catalog;
+const existingMatch=(workspace,song)=>workspace===state?browseData().match(song):findExistingMatch(workspace,song);
 const accounts = new AccountClient(siteConfig);
 const organizationsClient = new OrganizationClient(accounts);
 let activeOrganization=null,organizationList=[],organizationInvitations=[],organizationBase=null,organizationRevision=null;
@@ -101,7 +118,9 @@ let importDraft = null,
   songPage = 1,
   indexPageNumber = 1;
 let collectionGroup = "", collectionQuery = "";
-const collectionOpen = new Set(), collectionPages = new Map();
+const collectionOpen = new Set(), collectionPages = new Map(), collectionSettings=new Map();
+let searchUpdateTimer=null;
+const collectionOptions=id=>({depth:collectionDepth,sort:"alphabetical",query:"",...collectionSettings.get(id)});
 let typeFilter = "",
   reviewFilter = "";
 const PAGE_SIZE = 24,
@@ -220,8 +239,12 @@ const autosave = new AutosaveQueue({
 function queueAccountSave() {
   if (accounts.user && activeStore !== STORE && accountReady && autosave.enabled && (autosave.running || autosave.pending || accountSave.signature !== workspaceSignature(state))) autosave.enqueue(state);
 }
+function rememberSignInMarkup(mode) {
+  if(mode==='recover')return '';
+  return `<label class="check-label remember-sign-in"><input id="remember-me" name="remember" type="checkbox" ${accounts.rememberMe?'checked':''}>Remember me</label><p class="sign-in-hint">Keep me signed in and remember my email on this browser. Leave unchecked on a shared device. Your password stays with your browser’s password manager.</p>${mode==='signup'?'':'<button class="text-button" type="button" data-action="saved-password">Use saved password</button>'}`;
+}
 function loginScreen(mode = "signin") {
-  return `<main class="login-screen" data-screen="auth"><section class="profile-panel"><h1>Faithful Repertoire</h1><h2>${mode === "signup" ? "Create your account" : mode === "recover" ? "Reset your password" : "Sign in to keep your repertoire"}</h2>${accountConnectionMessage ? `<p class="connection-notice" role="status">${e(accountConnectionMessage)}</p>` : ""}<p>Your account keeps your songs, libraries and plans together. Changes save in this browser immediately and autosave to your account when connected.</p>${accounts.configured ? `<form id="auth-form" name="login" method="post" autocomplete="on" data-mode="${mode}"><label for="login-email">Email</label><input id="login-email" name="email" type="email" autocomplete="username" inputmode="email" autocapitalize="none" spellcheck="false" required>${mode !== "recover" ? `<label for="login-password">Password</label><input id="login-password" name="password" type="password" autocomplete="${mode === "signup" ? "new-password" : "current-password"}" ${mode === "signup" ? 'minlength="10"' : ""} required>` : ""}<p id="account-error" role="alert"></p><button type="submit" class="button primary">${mode === "signup" ? "Create account" : mode === "recover" ? "Send reset email" : "Sign in"}</button></form><div class="account-links">${mode !== "signin" ? '<button class="text-button" data-action="account" data-mode="signin">Return to sign in</button>' : ""}<button class="text-button" data-action="account" data-mode="signup">Create an account</button><button class="text-button" data-action="account" data-mode="recover">Forgot password?</button></div>` : '<p>Account sign-in is unavailable in this configuration. No private token is required to use the browser workspace.</p>'}<details><summary>Existing browser-only work or offline use</summary><p>Browser-only work stays on this device and is not saved to an account. Your existing guest workspace has been preserved.</p><button class="button" data-action="guest-opt-in">Use browser-only workspace</button></details></section></main>`;
+  return `<main class="login-screen" data-screen="auth"><section class="profile-panel"><h1>Faithful Repertoire</h1><h2>${mode === "signup" ? "Create your account" : mode === "recover" ? "Reset your password" : "Sign in to keep your repertoire"}</h2>${accountConnectionMessage ? `<p class="connection-notice" role="status">${e(accountConnectionMessage)}</p>` : ""}<p>Your account keeps your songs, libraries and plans together. Changes save in this browser immediately and autosave to your account when connected.</p>${accounts.configured ? `<form id="auth-form" name="login" method="post" autocomplete="on" data-mode="${mode}"><label for="login-email">Email</label><input id="login-email" name="email" type="email" value="${e(accounts.rememberedEmail)}" autocomplete="username" inputmode="email" autocapitalize="none" spellcheck="false" required>${mode !== "recover" ? `<label for="login-password">Password</label><input id="login-password" name="password" type="password" ${mode==="signin"&&accounts.rememberedEmail?"autofocus":""} autocomplete="${mode === "signup" ? "new-password" : "current-password"}" ${mode === "signup" ? 'minlength="10"' : ""} required>` : ""}${rememberSignInMarkup(mode)}<p id="account-error" role="alert"></p><button type="submit" class="button primary">${mode === "signup" ? "Create account" : mode === "recover" ? "Send reset email" : "Sign in"}</button></form><div class="account-links">${mode !== "signin" ? '<button class="text-button" data-action="account" data-mode="signin">Return to sign in</button>' : ""}<button class="text-button" data-action="account" data-mode="signup">Create an account</button><button class="text-button" data-action="account" data-mode="recover">Forgot password?</button></div>` : '<p>Account sign-in is unavailable in this configuration. No private token is required to use the browser workspace.</p>'}<details><summary>Existing browser-only work or offline use</summary><p>Browser-only work stays on this device and is not saved to an account. Your existing guest workspace has been preserved.</p><button class="button" data-action="guest-opt-in">Use browser-only workspace</button></details></section></main>`;
 }
 function settingRow(label, description, action, { value = "", view: targetView = "", id = "", disabled = false } = {}) {
   const content = `<span class="setting-copy"><span class="setting-label">${e(label)}</span>${description ? `<span class="setting-description">${e(description)}</span>` : ""}</span><span class="setting-trailing">${value ? `<span class="setting-value">${e(value)}</span>` : ""}${action ? '<span class="setting-chevron" aria-hidden="true">›</span>' : ""}</span>`;
@@ -292,6 +315,7 @@ async function startAccountCheck(confirmation = null) {
 }
 
 function persist() {
+  browseCache=null;
   if(!activeOrganization)personalAI={aiMode:state.profile.aiMode,aiLabels:state.profile.aiLabels};
   if(activeOrganization&&!editableWorkspace()&&organizationBase&&workspaceSignature(state)!==workspaceSignature(organizationBase)) {state=clone(organizationBase);toast("This organization is view only.");return false;}
   try {
@@ -530,9 +554,11 @@ async function loadAccountProfile() {
   }
   await checkAccountCopy();
 }
-function saveStrip(open = document.querySelector("#account-save-strip")?.open) {
-  if (!accounts.user || activeStore === STORE) return "";
-  return `<details class="account-save-strip" id="account-save-strip" ${open ? "open" : ""}><summary>${accountSave.phase === "saving" ? "Saving…" : accountSave.signature === workspaceSignature(state) ? "Saved" : ["error","conflict","review"].includes(accountSave.phase) ? "Save needs attention" : "Autosave"}</summary><div class="sync-menu-content"><span role="status">${e(activeOrganization ? organizationSaveLabel() : saveLabel(accountSave, state))}</span><div><button class="text-button" data-action="retry-autosave" ${["saving","checking","conflict","review"].includes(accountSave.phase) ? "disabled" : ""}>Save now / retry</button>${accountSave.remoteAvailable ? '<button class="text-button" data-action="cloud-load">Review saved account workspace</button>' : ""}</div></div></details>`;
+function saveStrip(open = document.querySelector('#account-save-strip')?.open) {
+  const signedIn=Boolean(accounts.user&&activeStore!==STORE);
+  const indicator=saveIndicator(accountSave,state,{signedIn,formDirty:unsavedForm||hasUnsubmittedEdits(),localFailed:localSaveFailed,viewOnly:activeOrganization&&!editableWorkspace()});
+  const detail=indicator.detail||(signedIn?(activeOrganization?organizationSaveLabel():saveLabel(accountSave,state)):'Saved in this browser only. Sign in to save across devices.');
+  return `<details class="account-save-strip save-${indicator.state}" data-save-state="${indicator.state}" id="account-save-strip" ${open?'open':''}><summary><span class="save-status-icon" aria-hidden="true">${indicator.icon}</span><span role="status" aria-live="polite">${indicator.label}</span></summary><div class="sync-menu-content"><span>${e(detail)}</span><div>${signedIn?`<button class="text-button" data-action="retry-autosave" ${['saving','checking','conflict','review'].includes(accountSave.phase)?'disabled':''}>Save now / retry</button>${accountSave.remoteAvailable?'<button class="text-button" data-action="cloud-load">Review saved account workspace</button>':''}`:'<button class="text-button" data-action="export">Export backup</button>'}</div></div></details>`;
 }
 function updateSaveStrip() {
   const strip = document.querySelector("#account-save-strip");
@@ -578,7 +604,7 @@ function accountDialog(mode = "signin") {
   const enabled = accounts.configured;
   if (!guestOptIn && !accounts.user && enabled) { app.innerHTML = loginScreen(mode); return; }
   modal(
-    `<h2>${mode === "signup" ? "Create your account" : mode === "recover" ? "Reset your password" : "Sign in to your repertoire"}</h2><p class="muted">${enabled ? "Your account can store your profile and a backup of your workspace across browsers." : "Accounts are being prepared. The hosted authentication service is not configured yet. You can use the full browser workspace and build your profile now."}</p><form id="auth-form" name="login" method="post" autocomplete="on" data-mode="${mode}"><label>Email<input id="login-email" name="email" type="email" autocomplete="username" inputmode="email" autocapitalize="none" spellcheck="false" required ${enabled ? "" : "disabled"}></label>${mode !== "recover" ? `<label>Password<input id="login-password" name="password" type="password" ${mode === "signup" ? 'minlength="10"' : ""} autocomplete="${mode === "signup" ? "new-password" : "current-password"}" required ${enabled ? "" : "disabled"}></label>` : ""}<p id="account-error" role="alert"></p><div class="form-actions"><button class="button" type="button" data-action="close">Cancel</button><button class="button primary" ${enabled ? "" : "disabled"}>${mode === "signup" ? "Create account" : mode === "recover" ? "Send reset email" : "Sign in"}</button></div></form><div class="account-links"><button class="text-button" data-action="account" data-mode="${mode === "signup" ? "signin" : "signup"}">${mode === "signup" ? "Already have an account? Sign in" : "Create an account"}</button><button class="text-button" data-action="account" data-mode="recover">Forgot password?</button></div>`,
+    `<h2>${mode === "signup" ? "Create your account" : mode === "recover" ? "Reset your password" : "Sign in to your repertoire"}</h2><p class="muted">${enabled ? "Your account can store your profile and a backup of your workspace across browsers." : "Accounts are being prepared. The hosted authentication service is not configured yet. You can use the full browser workspace and build your profile now."}</p><form id="auth-form" name="login" method="post" autocomplete="on" data-mode="${mode}"><label>Email<input id="login-email" name="email" type="email" value="${e(accounts.rememberedEmail)}" autocomplete="username" inputmode="email" autocapitalize="none" spellcheck="false" required ${enabled ? "" : "disabled"}></label>${mode !== "recover" ? `<label>Password<input id="login-password" name="password" type="password" ${mode==="signin"&&accounts.rememberedEmail?"autofocus":""} ${mode === "signup" ? 'minlength="10"' : ""} autocomplete="${mode === "signup" ? "new-password" : "current-password"}" required ${enabled ? "" : "disabled"}></label>` : ""}${rememberSignInMarkup(mode)}<p id="account-error" role="alert"></p><div class="form-actions"><button class="button" type="button" data-action="close">Cancel</button><button class="button primary" ${enabled ? "" : "disabled"}>${mode === "signup" ? "Create account" : mode === "recover" ? "Send reset email" : "Sign in"}</button></div></form><div class="account-links"><button class="text-button" data-action="account" data-mode="${mode === "signup" ? "signin" : "signup"}">${mode === "signup" ? "Already have an account? Sign in" : "Create an account"}</button><button class="text-button" data-action="account" data-mode="recover">Forgot password?</button></div>`,
   );
 }
 function confirmCloudRestore(saved, title = "Load your account backup?") {
@@ -624,7 +650,35 @@ function navigationIcon(id) {
   };
   return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${paths[id]}</svg>`;
 }
+function cancelSearchUpdate() {clearTimeout(searchUpdateTimer);searchUpdateTimer=null;}
+function scheduleSearchUpdate(kind,id=null) {
+  cancelSearchUpdate();const store=activeStore,currentView=view;
+  const region=kind==='songs'?app.querySelector('.song-workspace'):kind==='collections'?app.querySelector('.collection-list'):app.querySelector(`[data-collection="${id}"] .collection-song-results`);region?.setAttribute('aria-busy','true');
+  searchUpdateTimer=setTimeout(()=>{
+    searchUpdateTimer=null;if(activeStore!==store||view!==currentView)return;
+    if(kind==='collection'){updateCollectionResults(id);return;}
+    if(kind==='collections'){
+      app.querySelector('.collection-search-results').innerHTML=collectionMatchesMarkup();
+      app.querySelector('.collection-list').innerHTML=collectionListMarkup();app.querySelector('.collection-list').setAttribute('aria-busy','false');
+      hydrateCollectionPortraits();restrictOrganizationControls();return;
+    }
+    const oldSelected=selected,oldDetail=app.querySelector('.detail-panel');
+    const template=document.createElement('template');template.innerHTML=songWorkspace();
+    const fresh=template.content;
+    app.querySelector('.result-count').textContent=fresh.querySelector('.result-count').textContent;
+    app.querySelector('.catalog-search-results').replaceChildren(...fresh.querySelector('.catalog-search-results').childNodes);
+    const workspace=fresh.querySelector('.song-workspace');
+    if(oldSelected===selected&&oldDetail&&!oldDetail.classList.contains('empty')&&!workspace.querySelector('.detail-panel').classList.contains('empty'))workspace.querySelector('.detail-panel').replaceWith(oldDetail);
+    app.querySelector('.song-workspace').replaceWith(workspace);restrictOrganizationControls();
+  },60);
+}
+document.addEventListener('compositionend',event=>{
+  if(event.target.id==='search'){query=event.target.value;songPage=1;scheduleSearchUpdate('songs');}
+  else if(event.target.id==='collection-search'){collectionQuery=event.target.value;scheduleSearchUpdate('collections');}
+  else if(event.target.dataset.collectionSearch){const id=event.target.dataset.collectionSearch;collectionSettings.set(id,{...collectionSettings.get(id),query:event.target.value});collectionPages.set(id,1);scheduleSearchUpdate('collection',id);}
+});
 function render() {
+  cancelSearchUpdate();browseCache=null;
   if (accounts.user && activeStore === STORE) {
     app.innerHTML = accountLoadingScreen();
     return;
@@ -636,7 +690,7 @@ function render() {
   const listScroll = app.querySelector(".song-list")?.scrollTop || 0;
   for (const node of app.querySelectorAll("details[data-disclosure]"))
     disclosureState.set(node.dataset.disclosure, node.open);
-  const count = new Set(state.libraries.flatMap((x) => x.songIds).filter(id => browsableSongs().some(s => s.id === id))).size;
+  const count = new Set(state.libraries.flatMap((x) => x.songIds).filter(id => browseData().visibleIds.has(id))).size;
   app.innerHTML = `<aside class="sidebar ${suppressRailHover ? "suppress-hover" : ""}"><a class="brand" aria-label="Faithful Repertoire" href="#" data-action="nav" data-view="discover"><span class="brand-mark">✣</span><span class="brand-name">Faithful<br>Repertoire</span></a><nav aria-label="Main navigation">${[
     ["discover", "", "Discover songs"],
     ["index", "", "Song index"],
@@ -666,20 +720,15 @@ function render() {
   const resultList = app.querySelector(".song-list");
   if (resultList) resultList.scrollTop = listScroll;
   updateWorkspaceSwitcher();restrictOrganizationControls();
+  hydrateCollectionPortraits();
 }
 function songWorkspace() {
   const isLibrary = view === "library";
   const isBlacklist = view === "blacklist";
   const lib =
     state.libraries.find((x) => x.id === libraryId) || state.libraries[0];
-  const pool = (
-    isLibrary
-      ? browsableSongs().filter((s) => lib?.songIds.includes(s.id))
-      : isBlacklist ? state.songs.filter(s => s.blacklisted) : browsableSongs()
-  ).map((song) => ({
-    ...song,
-    themes: themesForDisplay(song, effectiveProfile().aiMode),
-  }));
+  const pool = isLibrary ? browseData().pool.filter(song=>lib?.songIds.includes(song.id))
+    : isBlacklist ? state.songs.filter(song=>song.blacklisted).map(song=>({...song,themes:themesForDisplay(song,effectiveProfile().aiMode)})) : browseData().pool;
   const songs = discoverSongs(
     searchSongs(pool, query).filter(
       (s) =>
@@ -695,13 +744,7 @@ function songWorkspace() {
   );
   const available =
     query.trim() && !isLibrary && !isBlacklist
-      ? searchSongs(
-          availableCatalog().map((s) => ({
-            ...s,
-            themes: themesForDisplay(s, effectiveProfile().aiMode),
-          })),
-          query,
-        ).filter((song) => !existingMatch(state, song))
+      ? searchSongs(browseData().outside, query)
       : [];
   songPage = Math.max(
     1,
@@ -709,14 +752,14 @@ function songWorkspace() {
   );
   const shown = songs.slice((songPage - 1) * PAGE_SIZE, songPage * PAGE_SIZE);
   const nearby = query.trim() && !searchSongs(pool, query).length && !available.length
-    ? closestSongs(isLibrary || isBlacklist ? pool : [...pool, ...availableCatalog().filter(s => !existingMatch(state, s))], query)
+    ? closestSongs(isLibrary || isBlacklist ? pool : [...pool, ...browseData().outside], query)
     : [];
   const song =
     state.songs.find(
       (s) => s.id === selected && shown.some((x) => x.id === s.id),
     ) || shown[0];
   if (song) selected = song.id;
-  return `<div class="page-heading"><div><h1>${isBlacklist ? "Blacklist" : isLibrary ? "Your song libraries" : "Discover songs"}</h1></div><button class="button primary" data-action="${isLibrary ? "new-library" : "new-song"}">+ ${isLibrary ? "New library" : "Add a song"}</button></div>${isLibrary ? `${libraryToolbar(lib)}<div class="library-tabs">${state.libraries.map((l) => `<button class="${l.id === lib?.id ? "selected" : ""}" data-action="library-select" data-id="${e(l.id)}">${e(l.name)} <span>${l.songIds.filter(id => browsableSongs().some(s => s.id === id)).length}</span></button>`).join("")}</div>` : `<div class="collection-prompt"><button class="text-button" data-action="nav" data-view="collections">Browse collections</button></div>`}<div class="search-row"><label class="search-box"><span>⌕</span><input id="search" type="search" value="${e(query)}" placeholder="Search by title, writer, or theme…" aria-label="Search songs"></label><span class="result-count">${songs.length} song${songs.length === 1 ? "" : "s"}</span></div>${isBlacklist ? '<p class="muted">Dismissed songs appear only here. Restore a song to see it elsewhere again.</p>' : ""}${catalogMatches(available)}<details class="filter-panel"><summary>Filters & sorting</summary>${discoveryControls(pool)}</details><div class="song-workspace"><section class="song-list" aria-label="Song results" tabindex="0">${songs.length ? shown.map((s) => songCard(s, s.id === song.id)).join("") : `<div class="empty"><span>♫</span><h3>${query ? "No matching songs" : "A repertoire starts with one song."}</h3><p>${query ? "Try another title or add a song to review." : "Find a song in Discover and save it here."}</p><button class="button" data-action="${query ? "new-song" : "nav"}" data-view="discover">${query ? "Add a song" : "Discover songs"}</button></div>${closestMatches(nearby)}`}${pagination("song", songPage, songs.length, PAGE_SIZE)}<div class="catalog-note">${isLibrary ? "Organize decisions with libraries; evaluations remain separate." : `${state.songs.length} workspace songs · ${allCatalogSongs.length} records in Collections · includes AI drafts and unrated titles.`}</div></section>${song ? songDetail(song, isLibrary ? lib : null) : '<section class="detail-panel empty"><h2>Your next song belongs here.</h2><p>Save an existing song or add one to begin a review.</p></section>'}</div>`;
+  return `<div class="page-heading"><div><h1>${isBlacklist ? "Blacklist" : isLibrary ? "Your song libraries" : "Discover songs"}</h1></div><button class="button primary" data-action="${isLibrary ? "new-library" : "new-song"}">+ ${isLibrary ? "New library" : "Add a song"}</button></div>${isLibrary ? `${libraryToolbar(lib)}<div class="library-tabs">${state.libraries.map((l) => `<button class="${l.id === lib?.id ? "selected" : ""}" data-action="library-select" data-id="${e(l.id)}">${e(l.name)} <span>${l.songIds.filter(id => browseData().visibleIds.has(id)).length}</span></button>`).join("")}</div>` : `<div class="collection-prompt"><button class="text-button" data-action="nav" data-view="collections">Browse collections</button></div>`}<div class="search-row"><label class="search-box"><span>⌕</span><input id="search" type="search" value="${e(query)}" placeholder="Search by title, writer, or theme…" aria-label="Search songs"></label><span class="result-count" role="status" aria-live="polite">${songs.length} song${songs.length === 1 ? "" : "s"}</span></div>${isBlacklist ? '<p class="muted">Dismissed songs appear only here. Restore a song to see it elsewhere again.</p>' : ""}<div class="catalog-search-results">${catalogMatches(available)}</div><details class="filter-panel"><summary>Filters & sorting</summary>${discoveryControls(pool)}</details><div class="song-workspace" aria-busy="false"><section class="song-list" aria-label="Song results" tabindex="0">${songs.length ? shown.map((s) => songCard(s, s.id === song.id)).join("") : `<div class="empty"><span>♫</span><h3>${query ? "No matching songs" : "A repertoire starts with one song."}</h3><p>${query ? "Try another title or add a song to review." : "Find a song in Discover and save it here."}</p><button class="button" data-action="${query ? "new-song" : "nav"}" data-view="discover">${query ? "Add a song" : "Discover songs"}</button></div>${closestMatches(nearby)}`}${pagination("song", songPage, songs.length, PAGE_SIZE)}<div class="catalog-note">${isLibrary ? "Organize decisions with libraries; evaluations remain separate." : `${state.songs.length} workspace songs · ${allCatalogSongs.length} records in Collections · includes AI drafts and unrated titles.`}</div></section>${song ? songDetail(song, isLibrary ? lib : null) : '<section class="detail-panel empty"><h2>Your next song belongs here.</h2><p>Save an existing song or add one to begin a review.</p></section>'}</div>`;
 }
 function closestMatches(songs) {
   if (!songs.length) return "";
@@ -739,22 +782,100 @@ function pagination(kind, page, count, size) {
   if (pages === 1) return "";
   return `<nav class="pagination" aria-label="${kind === "song" ? "Song" : "Index"} pages"><span>${(page - 1) * size + 1}–${Math.min(page * size, count)} of ${count}</span><button class="button" data-action="${kind}-page" data-id="1" ${page === 1 ? "disabled" : ""}>First</button><button class="button" data-action="${kind}-page" data-id="${page - 1}" ${page === 1 ? "disabled" : ""}>Previous</button><label>Page<input class="page-jump" aria-label="${kind === "song" ? "Song" : "Index"} page" data-page-kind="${kind}" type="number" min="1" max="${pages}" value="${page}"></label><span>of ${pages}</span><button class="button" data-action="${kind}-page" data-id="${page + 1}" ${page === pages ? "disabled" : ""}>Next</button><button class="button" data-action="${kind}-page" data-id="${pages}" ${page === pages ? "disabled" : ""}>Last</button></nav>`;
 }
-function collectionRecords(pack) {
-  return collectionSongs(pack, collectionDepth).filter(song => !existingMatch(state, song)?.blacklisted);
+function collectionRecords(pack, depth=collectionOptions(pack.id).depth) {
+  const cache=browseData(),key=pack.id+":"+depth;
+  if(!cache.collections.has(key))cache.collections.set(key,collectionSongs(pack,depth).filter(song=>!cache.match(song)?.blacklisted));
+  return cache.collections.get(key);
+}
+function collectionDisplayRecords(pack) {
+  const cache=browseData();
+  return collectionRecords(pack).map(record=>{
+    if(!cache.displayRecords.has(record.id)) {
+      const song=existingMatch(state,record)||record;
+      cache.displayRecords.set(record.id,{...song,id:record.id,themes:themesForDisplay(song,effectiveProfile().aiMode),recordings:song.recordings??catalogRecordings[record.id]??[]});
+    }
+    return cache.displayRecords.get(record.id);
+  });
+}
+function collectionRows(pack) {
+  const options=collectionOptions(pack.id),counts=new Map();
+  for(const record of collectionRecords(pack)){const original=existingMatch(state,record);counts.set(record.id,browseData().counts.get(original?.id||record.id)||0);}
+  return sortCollectionSongs(searchSongs(collectionDisplayRecords(pack),options.query),options.sort,counts);
+}
+function collectionSongResults(pack) {
+  const options=collectionOptions(pack.id),songs=collectionRows(pack),pages=Math.ceil(songs.length/30)||1;
+  const page=Math.min(collectionPages.get(pack.id)||1,pages),shown=songs.slice((page-1)*30,page*30);
+  const explanation=options.sort==='popularity'?'Popularity is the number of uses in completed plans in this workspace. No global chart ranking is assumed.'
+    : ['oldest','newest'].includes(options.sort)?'Dates are the earliest supplied release of your matched Apple recordings, which may be reissues. Unknown dates follow dated songs.':'Songs are listed alphabetically by title.';
+  return `<p class="collection-sort-help muted">${explanation}</p><p class="muted" role="status">${songs.length} matching songs · ${depthLabels[options.depth]}</p><ul class="collection-songs">${shown.map(song=>{
+    const release=recordingRelease(song),original=existingMatch(state,song);
+    return `<li>${coverMarkup(song,'collection-song-art')}<div><button class="text-button collection-song-title" data-action="collection-song-action" data-song-action="index-open" data-id="${e(song.id)}">${e(song.title)}</button><small>${e(song.author)}</small>${['oldest','newest'].includes(options.sort)?`<small>Recording release: ${e(release||'Unknown')}</small>`:options.sort==='popularity'?`<small>${browseData().counts.get(original?.id||song.id)||0} completed plan uses</small>`:''}</div><details class="more-menu"><summary aria-label="Actions for ${e(song.title)}">Actions</summary><div class="menu-items">${[['save-song','Add to library'],['add-to-plan','Add to plan'],['blacklist-song','Add to blacklist'],['song-recordings','Listen / recording links'],['song-files','Add files to song'],['new-arrangement','Add arrangement'],['edit-review','Add human evaluation'],['edit-index','Edit song details'],...(effectiveProfile().aiMode==='manual'?[]:[['chatgpt-evaluation','Generate AI evaluation']])].map(([action,label])=>`<button class="text-button" data-action="collection-song-action" data-song-action="${action}" data-id="${e(song.id)}">${label}</button>`).join('')}</div></details></li>`;
+  }).join('')||'<li>No matching songs at this depth. Try All or clear this collection’s search.</li>'}</ul>${pages>1?`<nav class="pagination" aria-label="${e(pack.name)} song pages"><span>${(page-1)*30+1}–${Math.min(page*30,songs.length)} of ${songs.length}</span><button class="button" data-action="collection-page" data-id="${e(pack.id)}" data-page="${page-1}" ${page===1?'disabled':''}>Previous</button><label>Page<input aria-label="${e(pack.name)} page" type="number" min="1" max="${pages}" value="${page}" data-collection-page="${e(pack.id)}"></label><span>of ${pages}</span><button class="button" data-action="collection-page" data-id="${e(pack.id)}" data-page="${page+1}" ${page===pages?'disabled':''}>Next</button></nav>`:''}`;
 }
 function collectionBody(pack) {
-  const songs = collectionRecords(pack), page = Math.min(collectionPages.get(pack.id) || 1, Math.ceil(songs.length / 30) || 1);
-  const shown = songs.slice((page - 1) * 30, page * 30);
-  return `<p class="muted">${e(pack.description)}</p><div class="collection-bulk-actions"><button class="button primary" data-action="collection-import-all" data-id="${e(pack.id)}">Import all songs</button><button class="button" data-action="collection-preview" data-id="${e(pack.id)}">Preview & import</button></div><ul class="collection-songs">${shown.map(record => {
-    const song = existingMatch(state, record) || record;
-    return `<li><div><button class="text-button collection-song-title" data-action="collection-song-action" data-song-action="index-open" data-id="${e(record.id)}">${e(song.title)}</button><small>${e(song.author)}</small></div><details class="more-menu"><summary aria-label="Actions for ${e(song.title)}">Actions</summary><div class="menu-items">${[["save-song","Add to library"],["add-to-plan","Add to plan"],["blacklist-song","Add to blacklist"],["song-recordings","Listen / recording links"],["song-files","Add files to song"],["new-arrangement","Add arrangement"],["edit-review","Add human evaluation"],["edit-index","Edit song details"],...(effectiveProfile().aiMode === "manual" ? [] : [["chatgpt-evaluation","Generate AI evaluation"]])].map(([action,label]) => `<button class="text-button" data-action="collection-song-action" data-song-action="${action}" data-id="${e(record.id)}">${label}</button>`).join("")}</div></details></li>`;
-  }).join("") || '<li>No visible songs at this depth.</li>'}</ul>${songs.length > 30 ? `<div class="pagination"><span>${(page-1)*30+1}–${Math.min(page*30,songs.length)} of ${songs.length}</span><button class="button" data-action="collection-page" data-id="${e(pack.id)}" data-page="${page-1}" ${page===1 ? "disabled" : ""}>Previous</button><button class="button" data-action="collection-page" data-id="${e(pack.id)}" data-page="${page+1}" ${page*30>=songs.length ? "disabled" : ""}>Next</button></div>` : ""}`;
+  const options=collectionOptions(pack.id);
+  return `<p class="muted">${e(pack.description)}</p><div class="collection-local-controls"><label>Search this collection<input type="search" aria-label="Search songs in ${e(pack.name)}" data-collection-search="${e(pack.id)}" value="${e(options.query)}" placeholder="Song title or artist"></label><label>Depth<select data-collection-depth="${e(pack.id)}" aria-label="${e(pack.name)} depth">${Object.entries(depthLabels).map(([id,label])=>`<option value="${id}" ${options.depth===id?'selected':''}>${label}</option>`).join('')}</select></label><label>Sort<select data-collection-sort="${e(pack.id)}" aria-label="${e(pack.name)} song sort">${[['alphabetical','Title · A–Z'],['popularity','Popularity in your plans'],['oldest','Recording release · oldest first'],['newest','Recording release · newest first']].map(([id,label])=>`<option value="${id}" ${options.sort===id?'selected':''}>${label}</option>`).join('')}</select></label></div><div class="collection-bulk-actions"><button class="button primary" data-action="collection-import-all" data-id="${e(pack.id)}">Import all songs</button><button class="button" data-action="collection-preview" data-id="${e(pack.id)}">Preview & import</button></div><p class="muted">Preview & import uses the selected depth. Import all songs includes the entire collection. Search and sorting change this view only.</p><div class="collection-song-results">${collectionSongResults(pack)}</div>`;
+}
+let portraitObserver=null,portraitActive=0;
+const portraitQueue=[],portraitPending=new WeakSet(),portraitResults=new Map();
+function collectionPortraitMarkup(pack) {
+  const initials=pack.name.split(/\s+/).filter(word=>/[A-Za-z]/.test(word)).slice(0,2).map(word=>word[0]).join('');
+  return `<div class="collection-portrait ${pack.group==='Artists'?'artist-portrait':'collection-emblem'}" ${pack.group==='Artists'?`data-artist-portrait="${e(pack.id)}"`:''}><span aria-hidden="true">${e(pack.group==='Artists'?initials:pack.group==='Eras'?'◷':pack.group==='Themes'?'✦':'♫')}</span></div>`;
+}
+function paintPortrait(node,portraits) {
+  if(!node.isConnected||!portraits.length)return;
+  node.classList.add('has-portrait');const fallback=node.textContent;node.replaceChildren();const placeholder=document.createElement('span');placeholder.textContent=fallback;placeholder.setAttribute('aria-hidden','true');node.append(placeholder);
+  for(const photo of portraits.slice(0,2)) {
+    const image=document.createElement('img');image.src=photo.url;image.alt=photo.subject;image.width=96;image.height=96;image.loading='lazy';image.decoding='async';image.referrerPolicy='no-referrer';image.hidden=true;image.onload=()=>{image.hidden=false;placeholder.remove();};image.onerror=()=>{image.remove();if(!node.querySelector('img')){node.classList.remove('has-portrait');node.replaceChildren(placeholder);node.closest('summary')?.querySelector('.portrait-credit')?.remove();}};node.append(image);
+  }
+  const heading=node.closest('summary').querySelector('h2').parentElement;
+  heading.querySelector('.portrait-credit')?.remove();
+  const credit=document.createElement('small');credit.className='portrait-credit';
+  for(const photo of portraits.slice(0,2)) {const link=document.createElement('a');link.href=photo.source;link.target='_blank';link.rel='noopener noreferrer';link.textContent='Photo: '+photo.credit+' · '+photo.license;link.title=photo.subject+' · '+photo.credit+' · '+photo.license;credit.append(link,document.createTextNode(' '));}
+  heading.append(credit);
+}
+async function runPortraitQueue() {
+  while(portraitActive<2&&portraitQueue.length) {
+    const {node,pack}=portraitQueue.shift();if(!node.isConnected)continue;
+    portraitActive++;
+    loadArtistPortraits(pack.name).then(photos=>{portraitResults.set(pack.id,photos);paintPortrait(node,photos);}).finally(()=>{portraitActive--;runPortraitQueue();});
+  }
+}
+function hydrateCollectionPortraits() {
+  portraitObserver?.disconnect();
+  if(view!=='collections')return;
+  portraitObserver=new IntersectionObserver(entries=>{
+    for(const entry of entries)if(entry.isIntersecting) {
+      portraitObserver.unobserve(entry.target);const node=entry.target,id=node.dataset.artistPortrait,pack=songCollections.find(pack=>pack.id===id);
+      if(portraitResults.has(id)){paintPortrait(node,portraitResults.get(id));continue;}
+      if(!pack||!portraitPages(pack.name).length||portraitPending.has(node))continue;
+      portraitPending.add(node);portraitQueue.push({node,pack});runPortraitQueue();
+    }
+  },{rootMargin:'180px'});
+  for(const node of app.querySelectorAll('[data-artist-portrait]')) {
+    if(portraitResults.has(node.dataset.artistPortrait))paintPortrait(node,portraitResults.get(node.dataset.artistPortrait));
+    else portraitObserver.observe(node);
+  }
+}
+function collectionListMarkup() {
+  const packs=findCollections(songCollections,collectionDisplayRecords,collectionQuery,collectionGroup);
+  return packs.map(pack=>`<details class="collection-row collection-dropdown" data-collection="${e(pack.id)}" data-disclosure-key="collection:${e(pack.id)}" ${collectionOpen.has(pack.id)?'open':''}><summary>${collectionPortraitMarkup(pack)}<div><h2>${e(pack.name)}</h2><small class="collection-subtitle">${e(pack.group)} · ${depthLabels[collectionOptions(pack.id).depth]}</small></div><div class="collection-count"><strong>${collectionRecords(pack).length}</strong><span>songs</span></div></summary><div class="collection-body">${collectionOpen.has(pack.id)?collectionBody(pack):''}</div></details>`).join('')||'<p>No collections match. Try All depth or another title, artist, era or style.</p>';
+}
+function collectionMatchesMarkup() {
+  if(!collectionQuery.trim())return '';
+  const unique=new Map();for(const pack of songCollections.filter(pack=>!collectionGroup||pack.group===collectionGroup))for(const song of collectionDisplayRecords(pack))unique.set(song.id,song);
+  const matches=searchSongs([...unique.values()],collectionQuery);
+  if(!matches.length)return '';
+  return `<section class="collection-title-matches" aria-label="Matching songs"><h2>Matching songs</h2><p class="muted">${matches.length} matches within the selected collection depths${matches.length>20?' · showing the first 20; enter more of the title to narrow your search':''}.</p><ul class="collection-songs">${matches.slice(0,20).map(song=>`<li>${coverMarkup(song,'collection-song-art')}<div><strong>${e(song.title)}</strong><small>${e(song.author)}</small></div><button class="button" data-action="collection-song-action" data-song-action="index-open" data-id="${e(song.id)}">Open song</button></li>`).join('')}</ul></section>`;
 }
 function collectionsPage() {
-  const packs = songCollections.filter(pack => (!collectionGroup || pack.group === collectionGroup) && normalize(pack.name).includes(normalize(collectionQuery)));
-  return `<div class="page-heading"><div><h1>Song collections</h1><p>Explore beyond your repertoire. Save the songs you use.</p></div><div class="index-heading-actions"><button class="button primary" data-action="import-entire-catalog">Import entire catalog</button><button class="button" data-action="csv-import">Import your song list</button></div></div><div class="collection-browse-controls"><label>Find a collection<input id="collection-search" type="search" value="${e(collectionQuery)}" placeholder="Artist, era or theme"></label><label>Browse by<select id="collection-group" aria-label="Browse by"><option value="">All collections</option>${["Artists","Eras","Styles","Themes"].map(group => `<option ${collectionGroup===group ? "selected" : ""}>${group}</option>`).join("")}</select></label><label>Collection depth<select id="collection-depth" aria-label="Collection depth">${Object.entries(depthLabels).map(([id,label]) => `<option value="${id}" ${id === collectionDepth ? "selected" : ""}>${label}</option>`).join("")}</select></label></div><p class="index-help">${availableCatalog().length} available song/version records · blacklisted songs are hidden. Recording associations and unrated titles still need review.</p><div class="collection-list">${packs.map(pack => `<details class="collection-row collection-dropdown" data-collection="${e(pack.id)}" data-disclosure-key="collection:${e(pack.id)}" ${collectionOpen.has(pack.id) ? "open" : ""}><summary><div><h2>${e(pack.name)}</h2><small>${e(pack.group)}</small></div><div class="collection-count"><strong>${collectionRecords(pack).length}</strong><span>songs</span></div></summary><div class="collection-body">${collectionOpen.has(pack.id) ? collectionBody(pack) : ""}</div></details>`).join("") || '<p>No collections match.</p>'}</div>`;
+  return `<div class="page-heading"><div><h1>Song collections</h1><p>Explore beyond your repertoire. Save the songs you use.</p></div><div class="index-heading-actions"><button class="button primary" data-action="import-entire-catalog">Import entire catalog</button><button class="button" data-action="csv-import">Import your song list</button></div></div><div class="collection-browse-controls"><label>Search collections and songs<input id="collection-search" type="search" value="${e(collectionQuery)}" placeholder="Song title, artist, era or style"></label><label>Browse by<select id="collection-group" aria-label="Browse by"><option value="">All collections</option>${['Artists','Eras','Styles','Themes'].map(group=>`<option ${collectionGroup===group?'selected':''}>${group}</option>`).join('')}</select></label><label>Default depth<select id="collection-depth" aria-label="Collection depth">${Object.entries(depthLabels).map(([id,label])=>`<option value="${id}" ${id===collectionDepth?'selected':''}>${label}</option>`).join('')}</select></label></div><p class="index-help">${availableCatalog().length} available song/version records · blacklisted songs are hidden. Recording associations and unrated titles still need evaluation.</p><div class="collection-search-results">${collectionMatchesMarkup()}</div><div class="collection-list" aria-busy="false">${collectionListMarkup()}</div>`;
 }
-function previewCollection(pack, depth = collectionDepth, bulk = false) {
+function updateCollectionResults(id) {
+  const pack=songCollections.find(pack=>pack.id===id),row=app.querySelector(`[data-collection="${id}"]`);
+  if(row&&pack){row.querySelector('.collection-song-results').innerHTML=collectionSongResults(pack);row.querySelector('.collection-song-results').setAttribute('aria-busy','false');row.querySelector('.collection-count strong').textContent=collectionRecords(pack).length;row.querySelector('.collection-subtitle').textContent=pack.group+' · '+depthLabels[collectionOptions(pack.id).depth];restrictOrganizationControls();}
+}
+function previewCollection(pack, depth = collectionOptions(pack.id).depth, bulk = false) {
   importDraft = {
     packId: pack.id,
     depth,
@@ -1422,6 +1543,8 @@ document.addEventListener("keydown", (event) => {
   }
 });
 document.addEventListener("click", async (event) => {
+  const savedPassword=event.target.closest('[data-action="saved-password"]');
+  if(savedPassword){event.preventDefault();savedPassword.closest('form').querySelector('[name="password"]').focus();return;}
   for (const menu of document.querySelectorAll(
     ".more-menu[open],.account-save-strip[open]",
   ))
@@ -1500,7 +1623,7 @@ document.addEventListener("click", async (event) => {
     if (!commitWorkspace(validateWorkspace(syncCatalog(next)))) return;
     id = chosen.id; song = state.songs.find(s => s.id === id); action = button.dataset.songAction;
   }
-  if (action === "collection-page") { collectionPages.set(id, Number(button.dataset.page)); render(); return; }
+  if (action === "collection-page") { collectionPages.set(id, Number(button.dataset.page)); updateCollectionResults(id); return; }
   if (action === "collection-import-all") return previewCollection(songCollections.find(p => p.id === id), "all", true);
   if (action === "import-entire-catalog") {
     importDraft = { packId: null, depth: null, songs: availableCatalog(), target: "__new__", name: "Complete song reference", bulk: true };
@@ -2116,26 +2239,15 @@ document.addEventListener("pointermove", event => {
 document.addEventListener("input", (event) => {
   if(event.target.id==="plan-import-json"||event.target.closest(".plan-library-picker,.import-plan-rows"))unsavedForm=true;
   if (event.target.closest("form") && !event.target.closest("#auth-form") && !event.target.readOnly) unsavedForm = true;
-  if (event.target.id === "collection-search") {
-    const start = event.target.selectionStart, end = event.target.selectionEnd;
-    collectionQuery = event.target.value; render();
-    const input = document.querySelector("#collection-search"); input.focus();
-    try { input.setSelectionRange(start, end); } catch {}
-    return;
-  }
-  if (event.target.id !== "search") return;
-  const position = event.target.selectionStart;
-  query = event.target.value;
-  songPage = 1;
-  render();
-  const input = document.querySelector("#search");
-  input.focus();
-  try {
-    input.setSelectionRange(position, position);
-  } catch {}
+  if(unsavedForm)updateSaveStrip();
+  if(event.isComposing)return;
+  if(event.target.id==='collection-search') {collectionQuery=event.target.value;collectionPages.clear();scheduleSearchUpdate('collections');return;}
+  if(event.target.dataset.collectionSearch) {const id=event.target.dataset.collectionSearch;collectionSettings.set(id,{...collectionSettings.get(id),query:event.target.value});collectionPages.set(id,1);scheduleSearchUpdate('collection',id);return;}
+  if(event.target.id==='search') {query=event.target.value;songPage=1;scheduleSearchUpdate('songs');}
+
 });
 document.addEventListener("keydown", event => {
-  if (event.key === "Enter" && event.target.dataset.pageKind) { event.preventDefault(); event.target.dispatchEvent(new Event("change", {bubbles:true})); }
+  if (event.key === "Enter" && (event.target.dataset.pageKind||event.target.dataset.collectionPage)) { event.preventDefault(); event.target.dispatchEvent(new Event("change", {bubbles:true})); }
 });
 document.addEventListener("change", (event) => {
   if(event.target.closest(".plan-library-picker,.import-plan-rows"))unsavedForm=true;
@@ -2144,7 +2256,7 @@ document.addEventListener("change", (event) => {
     if(value==="__manage__"){updateWorkspaceSwitcher();organizationDialog();return;}
     switchOrganization(value==="personal"?null:organizationList.find(o=>o.id===value)).catch(error=>{updateWorkspaceSwitcher();toast(error.message);});return;
   }
-  if (event.target.closest("form") && !event.target.closest("#auth-form")) unsavedForm = true;
+  if (event.target.closest("form") && !event.target.closest("#auth-form")) {unsavedForm = true;updateSaveStrip();}
   if (event.target.dataset.pageKind) {
     const value = Math.max(1, Math.min(Number(event.target.max), Math.trunc(Number(event.target.value) || 1)));
     if (event.target.dataset.pageKind === "song") { songPage = value; selected = null; } else indexPageNumber = value;
@@ -2164,7 +2276,14 @@ document.addEventListener("change", (event) => {
     form.elements.minutes.value = a?.minutes ?? song.review.minutes;
     return;
   }
+  const collectionId=event.target.dataset.collectionDepth||event.target.dataset.collectionSort||event.target.dataset.collectionPage;
+  if(collectionId) {
+    if(event.target.dataset.collectionPage)collectionPages.set(collectionId,Math.max(1,Number(event.target.value)||1));
+    else {collectionSettings.set(collectionId,{...collectionSettings.get(collectionId),[event.target.dataset.collectionDepth?'depth':'sort']:event.target.value});collectionPages.set(collectionId,1);}
+    updateCollectionResults(collectionId);return;
+  }
   if (event.target.id === "collection-depth") {
+    collectionPages.clear();
     collectionDepth = event.target.value;
     render();
     return;
@@ -2717,6 +2836,7 @@ document.addEventListener("submit", async (event) => {
         );
         return;
       }
+      accounts.setRememberMe(values.remember==='on',values.email);
       if (form.dataset.mode === "signup") {
         const result = await accounts.signUp(
           values.email,
@@ -3128,7 +3248,7 @@ window.addEventListener("beforeunload", event => {
 });
 window.addEventListener("online", () => { if (accounts.user && autosave.enabled) autosave.retry(); });
 document.addEventListener("visibilitychange", () => { if (document.visibilityState === "hidden" && autosave.enabled) autosave.flush(); });
-dialog.addEventListener("close", () => { unsavedForm = false; });
+dialog.addEventListener("close", () => { unsavedForm = false; updateSaveStrip(); });
 window.addEventListener("storage", async event => {
   if (event.key !== "faithful-repertoire-session" && event.key !== null) return;
   if (!accounts.syncStoredSession()) return;

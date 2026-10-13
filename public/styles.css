@@ -2355,8 +2355,8 @@ footer {
   display: block !important;
   position: relative;
   font-size: 12px;
-  border: 0 !important;
-  background: transparent !important;
+  border: 0;
+  background: transparent;
   margin: 0 !important;
   padding: 0 !important;
 }

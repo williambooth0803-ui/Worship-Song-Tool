@@ -55,7 +55,8 @@ export function validateRecordings(value) {
   const result = value.map(item => {
     if (!item || typeof item !== "object" || typeof item.id !== "string" || !item.id.trim() || item.id.length > 200 || typeof item.label !== "string" || item.label.length > 300)
       throw new Error("A recording needs a valid ID and a label of up to 300 characters.");
-    return { id: item.id, provider: item.provider, label: item.label.trim(), url: recordingURL(item.provider, item.url), ...(item.artwork !== undefined ? {artwork: artworkURL(item.artwork)} : {}) };
+    if (item.releaseDate !== undefined && (typeof item.releaseDate !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(item.releaseDate) || !Number.isFinite(Date.parse(item.releaseDate)) || new Date(item.releaseDate).toISOString().slice(0,10)!==item.releaseDate)) throw new Error('Use a real recording release date.');
+    return { id: item.id, ...(item.releaseDate !== undefined ? {releaseDate: item.releaseDate} : {}), provider: item.provider, label: item.label.trim(), url: recordingURL(item.provider, item.url), ...(item.artwork !== undefined ? {artwork: artworkURL(item.artwork)} : {}) };
   });
   if (new Set(result.map(r => r.id)).size !== result.length) throw new Error("Recording IDs must be distinct.");
   if (new Set(result.map(r => r.provider + ":" + r.url)).size !== result.length) throw new Error("This recording link is already saved.");
