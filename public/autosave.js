@@ -27,9 +27,9 @@ export class AutosaveQueue {
     this.pending = null; this.phase = "saving"; this.onState({ phase: "saving", snapshot });
     this.running = (async () => {
       try {
-        await this.save(snapshot);
+        const saved = await this.save(snapshot);
         if (generation !== this.generation) return;
-        this.phase = "idle"; this.onState({ phase: "saved", snapshot, signature: workspaceSignature(snapshot) });
+        this.phase = "idle"; this.onState({ phase: "saved", snapshot: saved?.workspace || snapshot, originalSnapshot: snapshot, signature: workspaceSignature(saved?.workspace || snapshot) });
       } catch (error) {
         if (generation !== this.generation) return;
         this.pending ||= snapshot;

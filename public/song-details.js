@@ -13,7 +13,7 @@ export const detailAttributes = {
   musical: "Musical notes",
   arrangements: "Arrangements",
   text: "Word index",
-  usage: "Service history",
+  usage: "Plan history",
   notes: "Your notes",
   concerns: "Concerns",
   sources: "Sources",

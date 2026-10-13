@@ -64,7 +64,7 @@ export function indexFields(songs) {
     ...Object.entries(dimensions).map(([id, label]) => [id, label, "number"]),
     ["status", "Assessment source"],
     ["concern", "Doctrinal concern"],
-    ["approval", "Church-use decision"],
+    ["approval", "Previous decision (legacy)"],
     ["notes", "Your notes"],
     ["summary", "Assessment summary"],
     ["claims", "Theological claims"],

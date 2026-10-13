@@ -37,6 +37,7 @@ export async function checkAccountStartupFlows(browser, base) {
         refreshCalls++;
         return mode === "expired" ? answer({ message: "Invalid refresh token" }, 400) : answer(session);
       }
+      if (url.pathname.endsWith("/rpc/org_list")) return answer({organizations:[],invitations:[]});
       if (route.request().method() !== "GET") {
         writes++;
         return answer([{ updated_at: "2026-10-13T12:00:00.000Z" }]);

@@ -148,18 +148,18 @@ export async function checkRepertoireFlows(browser, base) {
     .click();
   await page
     .locator("nav")
-    .getByRole("button", { name: "Worship plans", exact: true })
+    .getByRole("button", { name: "Plans", exact: true })
     .click();
-  await reveal(page, "button", { name: "+ New worship plan", exact: true });
+  await reveal(page, "button", { name: "+ New plan", exact: true });
   await page
-    .getByRole("button", { name: "+ New worship plan", exact: true })
+    .getByRole("button", { name: "+ New plan", exact: true })
     .click();
   await page
-    .getByLabel("Service name", { exact: true })
+    .getByLabel("Plan name", { exact: true })
     .fill("Sunday human-built outline");
   await page.getByLabel("Date", { exact: true }).fill("2026-10-11");
   await page
-    .getByLabel("Service status", { exact: true })
+    .getByLabel("Plan status", { exact: true })
     .selectOption("completed");
   await reveal(page, "button", { name: "Create plan", exact: true });
   await page.getByRole("button", { name: "Create plan", exact: true }).click();
@@ -174,8 +174,8 @@ export async function checkRepertoireFlows(browser, base) {
   await page.getByRole("button", { name: "Add to plan", exact: false }).click();
   const add = page.locator("#add-to-plan-form");
   assert.equal(
-    await add.locator('[name="role"]').inputValue(),
-    "",
+    await add.locator('[name="role"]').count(),
+    0,
     "the planner must not choose a service role",
   );
   assert.equal(await add.locator('[name="key"]').inputValue(), "D");
@@ -190,7 +190,7 @@ export async function checkRepertoireFlows(browser, base) {
     .getByRole("button", { name: "Duplicate plan", exact: true })
     .click();
   await page
-    .getByLabel("Service name", { exact: true })
+    .getByLabel("Plan name", { exact: true })
     .fill("Next Sunday draft");
   await reveal(page, "button", { name: "Create copy", exact: true });
   await page.getByRole("button", { name: "Create copy", exact: true }).click();
@@ -242,7 +242,7 @@ export async function checkRepertoireFlows(browser, base) {
   assert.ok(
     (
       await page
-        .getByRole("heading", { name: "Use in your services", exact: true })
+        .getByRole("heading", { name: "Plan history", exact: true })
         .locator("..")
         .textContent()
     ).includes("1 marked completed"),

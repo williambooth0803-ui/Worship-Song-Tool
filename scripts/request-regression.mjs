@@ -84,11 +84,11 @@ try {
   await page.getByRole("button",{name:"Save rating profile",exact:true}).click();
   assert.ok((await state()).profile.criteria.some(c=>c.id===customId));
   await nav("discover");
-  await reveal(page,"button",{name:"Edit assessment",exact:true});await page.getByRole("button",{name:"Edit assessment",exact:true}).click();
+  await reveal(page,"button",{name:"Edit evaluation",exact:true});await page.getByRole("button",{name:"Edit evaluation",exact:true}).click();
   await page.getByLabel("Corporate participation",{exact:true}).fill("10");
   assert.equal(await page.evaluate(() => { const event = new Event("beforeunload", {cancelable:true}); window.dispatchEvent(event); return event.defaultPrevented; }),true,"Unsubmitted edits trigger the leave warning");
 
-  await page.getByRole("button",{name:"Save assessment",exact:true}).click();await keepAIIfOffered(page);
+  await page.getByRole("button",{name:"Save evaluation",exact:true}).click();await keepAIIfOffered(page);
   const rated=(await state()).songs.find(s=>s.review.customScores?.[customId]===10);assert.ok(rated);
   assert.equal(await page.evaluate(() => { const event = new Event("beforeunload", {cancelable:true}); window.dispatchEvent(event); return event.defaultPrevented; }),false,"Saved browser edits do not trigger a stale warning");
 

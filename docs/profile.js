@@ -79,7 +79,7 @@ export const statements = {
 };
 export const aiModes = {
   manual: {
-    title: "Human reviews only",
+    title: "Human evaluations only",
     description:
       "Show your reviews and editorial catalog notes. Hide AI drafts and assistance; send no AI requests.",
   },

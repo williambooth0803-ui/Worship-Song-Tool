@@ -596,6 +596,12 @@ export function syncCatalog(
     if (song.recordings === undefined && song.title === entry.title && song.author === entry.author && catalogRecordings[entry.id]) {
       song.recordings = structuredClone(catalogRecordings[entry.id]);
     }
+    if (song.title === entry.title && song.author === entry.author) {
+      for (const recording of song.recordings || []) {
+        const source = catalogRecordings[entry.id]?.find(r => r.id === recording.id && r.url === recording.url);
+        if (source?.artwork && recording.artwork === undefined) recording.artwork = source.artwork;
+      }
+    }
   }
   const catalogIds = new Set(catalog.map((s) => s.id));
   for (const song of result.songs) {
@@ -621,8 +627,10 @@ export function syncCatalog(
 }
 
 export function invalidateApproval(song) {
-  if (song.approval?.status !== "unreviewed")
+  if (song.approval && song.approval.status !== "unreviewed") {
+    song.legacyApproval = structuredClone(song.approval);
     song.approval = { ...song.approval, status: "unreviewed", updatedAt: null };
+  }
 }
 
 export function discoverSongs(

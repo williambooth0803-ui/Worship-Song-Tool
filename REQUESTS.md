@@ -6,6 +6,59 @@ do not treat a new prompt as cancellation unless the owner says so. Mark an item
 complete only with implementation and meaningful verification. Record external
 blockers explicitly. Preserve personal assessments, recordings and workspaces.
 
+## Artwork, organizations and planning requests
+
+- [x] Add source-backed album covers to contemporary songs, preserving preferred
+  recordings and leaving uncertain/unmatched covers blank; add Hymnary finding links.
+- [x] Organization workspaces: create, invite by email, accept/decline, multiple
+  memberships and easy switching, owner/admin/editor/viewer roles, removal, leaving,
+  ownership transfer, shared libraries/plans, fast automatic updates and protected
+  concurrent edits. Preserve a private personal workspace for every user.
+- [x] Import an existing service from ChatGPT transcription of a screenshot/PDF,
+  with a documented JSON format, uncertainty handling and human correction; no
+  redundant confirmation for an unambiguous validated import.
+- [x] Plan headings and drag ordering; add songs in a modal library picker while
+  staying on Plans, allow multiple songs and relative insertion, skip placement
+  questions for empty plans; remove the service-role prompt.
+- [x] Reframe approval around user-owned libraries with optional starter libraries;
+  preserve previous decisions/data, simplify the ordinary interface and plan rules.
+- [x] Use Plan History and consistent plan/evaluation/library terminology throughout.
+- [x] Edit artist/attribution directly with a pencil affordance and remove its menu action.
+- [ ] Publish the tested frontend and verify the deployed build. The organization
+  backend is already applied to the existing Supabase project.
+
+Implemented and tested: 1,245 Apple recording artwork URLs across 780 catalog
+records; personal recording lists/removals are preserved. Hymnary uses title-bound
+searches, not invented hymn page IDs. Planning import is transcription of the
+user's existing service order; it does not choose songs. Approval is organized
+with user-owned libraries, with explicit optional migration of previous decisions.
+
+All 105 unit/database tests and the full hosted browser suite passed. The new
+three-account browser fixture runs every organization RPC against the real SQL
+in isolated PostgreSQL: invitations, acceptance, Personal isolation, role changes,
+view-only denial, concurrent independent edits, automatic updates, ownership
+transfer, membership removal and multiple workspaces. Plan tests cover desktop
+and mobile, escaped inline attribution, headings, drag ordering, multiselection,
+certain imports without extra confirmation and uncertain identity/duration review.
+
+The additive organization migration is deployed to project
+`inhqxwratimjvzsnuwik`; all four tables have row-level security, direct table writes
+are denied, the shared file bucket is private, and pre-existing policies are
+unchanged. Anonymous RPC access is denied. Native email login and mandatory email
+confirmation were verified without changing authentication settings. The original
+Supabase project, personal data and public frontend configuration are preserved.
+
+- [ ] Verify real-user invitation email delivery and actual account/offline recovery.
+  Tests intercept native sign-in email requests to synthetic addresses; they do
+  not establish SMTP delivery. Membership requires verified email and acceptance.
+- [ ] Validate image downloads from Apple's artwork CDN in the cloud environment.
+  This chat's draft is also stale: revision 2 uses an older base than the running
+  configuration. No save or repeated retry was attempted. Existing allowed
+  domains include both `itunes.apple.com` and `api.song.link`; artwork uses
+  `is1-ssl.mzstatic.com`, which needs a fresh configuration draft retaining all
+  existing settings. The cloud image request was cancelled; no HTTP status
+  or successful image download was observed.
+
 ## Discover and song detail follow-up
 
 - [x] Make page scrolling easy from Discover; remove the independent details

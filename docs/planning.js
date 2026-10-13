@@ -99,11 +99,11 @@ export function planOutline(plan, songs) {
     `Estimated duration: ${minutes} minutes`,
     "",
     ...plan.items.map((item, i) => {
-      const song = songs.find((s) => s.id === item.songId),
-        approval = song?.approval;
+      if (item.type === "heading") return `\n${item.title.toUpperCase()}\n` ;
+      const song = songs.find((s) => s.id === item.songId);
       const timing = elapsedTime(elapsed);
       elapsed += item.minutes;
-      return `${i + 1}. ${timing} · ${song?.title || item.title} — ${item.minutes} min\n   ${item.role || ""}${item.key ? ` · Key: ${item.key}` : ""}${item.arrangementName ? ` · Arrangement: ${item.arrangementName}` : ""}\n   ${item.notes || ""}${approval?.status === "context" ? `\n   Conditions: ${approval.notes}` : ""}${song && !["approved", "context"].includes(approval?.status) ? "\n   Church-use review required." : ""}`;
+      return `${i + 1}. ${timing} · ${song?.title || item.title} — ${item.minutes} min\n   ${item.role || ""}${item.key ? ` · Key: ${item.key}` : ""}${item.arrangementName ? ` · Arrangement: ${item.arrangementName}` : ""}\n   ${item.notes || ""}`;
     }),
   ]
     .filter((v) => v !== undefined)

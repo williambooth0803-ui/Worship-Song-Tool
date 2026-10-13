@@ -28,8 +28,8 @@ export async function checkDiscoveryFlows(browser, base) {
     const downloading=page.waitForEvent("download");await page.getByRole("button",{name:"Download",exact:true}).click();const file=await downloading;assert.equal(file.suggestedFilename(),"Chart.txt");
     await page.getByRole("button",{name:"Close dialog",exact:true}).click();
     await act("Add human evaluation");
-    await page.getByLabel("Assessment summary",{exact:true}).fill("My primary human evaluation");
-    await reveal(page,"button",{name:"Save assessment",exact:true});await page.getByRole("button",{name:"Save assessment",exact:true}).click();
+    await page.getByLabel("Evaluation summary",{exact:true}).fill("My primary human evaluation");
+    await reveal(page,"button",{name:"Save evaluation",exact:true});await page.getByRole("button",{name:"Save evaluation",exact:true}).click();
     await page.getByRole("button",{name:"Delete AI evaluation",exact:true}).click();
     assert.equal((await state()).songs.find(s=>s.id===id).aiDismissed,true);
     await row.locator(".collection-song-title").click();

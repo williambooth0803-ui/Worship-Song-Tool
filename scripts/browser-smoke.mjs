@@ -22,11 +22,11 @@ page.on("pageerror", (error) => errors.push(error.message));
 await page.goto(process.env.APP_URL || "http://127.0.0.1:3000");
 await page.getByRole("heading", { name: "Discover songs" }).waitFor();
 await page.screenshot({ path: "/tmp/worship-discover.png", fullPage: true });
-await reveal(page, "button", { name: "Worship plans", exact: false });
-await page.getByRole("button", { name: "Worship plans", exact: false }).click();
-await reveal(page, "button", { name: "+ New worship plan" });
-await page.getByRole("button", { name: "+ New worship plan" }).click();
-await page.getByLabel("Service name").fill("Sunday · Grace and assurance");
+await reveal(page, "button", { name: "Plans", exact: false });
+await page.getByRole("button", { name: "Plans", exact: false }).click();
+await reveal(page, "button", { name: "+ New plan" });
+await page.getByRole("button", { name: "+ New plan" }).click();
+await page.getByLabel("Plan name").fill("Sunday · Grace and assurance");
 await page.getByLabel("Date", { exact: true }).fill("2026-10-18");
 await page.getByLabel("Theme", { exact: true }).fill("Salvation by grace");
 await page.getByLabel("Sermon passage").fill("Ephesians 2:1–10");
@@ -35,8 +35,8 @@ await page.getByRole("button", { name: "Create plan", exact: true }).click();
 await reveal(page, "button", { name: "Discover songs" });
 await page.getByRole("button", { name: "Discover songs" }).click();
 await page.getByRole("searchbox").fill("amazing grace");
-await reveal(page, "button", { name: "Edit assessment" });
-await page.getByRole("button", { name: "Edit assessment" }).click();
+await reveal(page, "button", { name: "Edit evaluation" });
+await page.getByRole("button", { name: "Edit evaluation" }).click();
 await page
   .getByRole("spinbutton", { name: "Arrangement coherence", exact: true })
   .fill("8");
@@ -45,15 +45,15 @@ await page
   .fill("Use three verses; acoustic arrangement. Teach grace before singing.");
 await page.getByLabel("Preferred key").fill("D");
 await page.getByLabel("Planning duration (minutes)").fill("3.5");
-await reveal(page, "button", { name: "Save assessment", exact: true });
+await reveal(page, "button", { name: "Save evaluation", exact: true });
 await page
-  .getByRole("button", { name: "Save assessment", exact: true })
+  .getByRole("button", { name: "Save evaluation", exact: true })
   .click();
   await keepAIIfOffered(page);
 await reveal(page, "button", { name: "Add to library" });
 await page.getByRole("button", { name: "Add to library" }).click();
 await page.getByLabel("My repertoire", { exact: true }).check();
-await page.getByLabel("Songs to review", { exact: true }).check();
+await page.getByLabel("Needs evaluation", { exact: true }).check();
 await reveal(page, "button", { name: "Save library choices" });
 await page.getByRole("button", { name: "Save library choices" }).click();
 await reveal(page, "button", { name: "Add to plan" });
@@ -62,15 +62,14 @@ await page
   .locator("#add-to-plan-form")
   .getByRole("button", { name: "Add to plan" })
   .click();
-await reveal(page, "button", { name: "+ Reading, prayer, or other item" });
+await reveal(page, "button", { name: "Add item" });
 await page
-  .getByRole("button", { name: "+ Reading, prayer, or other item" })
+  .getByRole("button", { name: "Add item" })
   .click();
 await page.getByLabel("Item title").fill("Scripture reading");
-await page.getByLabel("Place in the service").fill("Assurance");
 await page.getByLabel("Duration (minutes)").fill("2");
 await page
-  .getByLabel("Notes / reading text / transitions")
+  .getByLabel("Notes")
   .fill("Ephesians 2:1–10");
 await reveal(page, "button", { name: "Save item", exact: true });
 await page.getByRole("button", { name: "Save item", exact: true }).click();
@@ -88,8 +87,8 @@ assert.equal(
 assert.equal(await page.locator(".duration-total strong").textContent(), "5.5");
 await page.screenshot({ path: "/tmp/worship-plan.png", fullPage: true });
 await page.reload();
-await reveal(page, "button", { name: "Worship plans", exact: false });
-await page.getByRole("button", { name: "Worship plans", exact: false }).click();
+await reveal(page, "button", { name: "Plans", exact: false });
+await page.getByRole("button", { name: "Plans", exact: false }).click();
 assert.equal(await page.locator(".service-items li").count(), 2);
 assert.equal(await page.locator(".duration-total strong").textContent(), "5.5");
 await reveal(page, "button", { name: "Song libraries", exact: false });

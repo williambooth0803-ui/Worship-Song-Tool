@@ -167,8 +167,8 @@ export function validateWorkspace(input) {
     if (song.files !== undefined) {
       result.files = array(song.files, "song files", 50).map(file => {
         object(file, "song file");
-        const checked = { id: id(file.id), name: text(file.name, "file name", 200, true), size: number(file.size, "file size", 1, 10 * 1024 * 1024), mime: text(file.mime, "file type", 200), storage: choice(file.storage, "file storage", ["device", "account"]), path: text(file.path, "file path", 600, true) };
-        if (checked.storage === "account" && !/^[0-9a-f-]{36}\/[a-zA-Z0-9_-]{1,200}\/[a-zA-Z0-9._-]{1,200}$/i.test(checked.path)) fail("invalid account file path.");
+        const checked = { id: id(file.id), name: text(file.name, "file name", 200, true), size: number(file.size, "file size", 1, 10 * 1024 * 1024), mime: text(file.mime, "file type", 200), storage: choice(file.storage, "file storage", ["device", "account", "organization"]), path: text(file.path, "file path", 600, true) };
+        if (["account", "organization"].includes(checked.storage) && !/^[0-9a-f-]{36}\/[a-zA-Z0-9_-]{1,200}\/[a-zA-Z0-9._-]{1,200}$/i.test(checked.path)) fail("invalid account file path.");
         return checked;
       });
       unique(result.files.map(file => file.id), "file IDs");
@@ -324,6 +324,11 @@ export function validateWorkspace(input) {
           fail("the decision date is invalid.");
       }
     }
+    if (song.legacyApproval !== undefined) {
+      const value=object(song.legacyApproval,"previous decision");
+      result.legacyApproval={status:choice(value.status,"previous decision",["unreviewed","approved","context","avoid"]),notes:text(value.notes,"previous decision notes"),updatedAt:value.updatedAt==null?null:text(value.updatedAt,"previous decision date",100)};
+      if(result.legacyApproval.updatedAt!==null&&!Number.isFinite(Date.parse(result.legacyApproval.updatedAt)))fail("invalid previous decision date.");
+    }
     return result;
   });
   unique(
@@ -354,8 +359,8 @@ export function validateWorkspace(input) {
       object(item, "service item");
       const result = {
         id: id(item.id),
-        type: choice(item.type, "item type", ["song", "other"]),
-        minutes: number(item.minutes, "item duration", 0.5, 180),
+        type: choice(item.type, "item type", ["song", "other", "heading"]),
+        minutes: number(item.minutes, "item duration", item.type === "heading" ? 0 : 0.5, item.type === "heading" ? 0 : 180),
         role: text(item.role, "item role", 100),
         notes: text(item.notes, "item notes"),
       };
@@ -401,6 +406,11 @@ export function validateWorkspace(input) {
         "ready",
         "completed",
       ]);
+    if (plan.importSource !== undefined) {
+      object(plan.importSource, "plan import source");
+      checkedPlan.importSource = { label: text(plan.importSource.label, "source label", 200), importedAt: text(plan.importSource.importedAt, "import date", 100), schema: choice(plan.importSource.schema, "import schema", ["faithful-plan-v1"]), uncertaintyReviewed: plan.importSource.uncertaintyReviewed === true };
+      if (!Number.isFinite(Date.parse(checkedPlan.importSource.importedAt))) fail("invalid import date.");
+    }
     return checkedPlan;
   };
   const plans = array(input.plans, "plans", 1000).map(validatePlan);

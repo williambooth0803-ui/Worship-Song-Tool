@@ -8,21 +8,35 @@ The public website is hosted at https://williambooth0803-ui.github.io/Worship-So
 
 ## Current workflow
 
-Sign-in is the default entry screen. The existing browser-only workspace is
-preserved, but using it requires an explicit choice and a visible device-only
-warning. **Settings** contains backup/restore, advanced account tools, display
-preferences and ChatGPT connections; the account menu contains Settings and sign
-out. Account changes autosave through a serialized queue with conflict protection.
-Settings uses grouped rows for account status and preferences, with advanced tools
-collapsed below. Saved sign-in checks show a progress indicator, offer a saved-copy
-option after four seconds, and time out after twelve seconds. Expired sessions
-return to the native sign-in form; connection failures open the cached account
-workspace with uploads paused. Retry from Settings rechecks sign-in before syncing.
-A different existing account workspace must be reviewed before uploads resume.
-Browser changes save immediately after each action; offline errors retain the
-browser copy and show a retry state. A generic browser leave-page warning covers
-pending account uploads and unsubmitted edits. Storage, network and browser
-shutdown failures cannot be guaranteed away; retain independent backups.
+Sign-in is the default entry. Personal is your private workspace; the existing
+browser-only copy stays separate and requires an explicit choice to use it.
+The **Workspace** selector opens Personal, your organizations, and invitations.
+Organizations share their own songs, libraries, evaluations, files and plans.
+Owners control ownership and deletion; administrators manage editors and viewers;
+editors change shared content, while viewers browse/download without shared writes.
+Create a separate organization rather than sharing a password. Invitations are
+bound to a verified email, expire after 14 days and require explicit acceptance.
+The existing Supabase email provider sends a native sign-in link; organization
+membership is granted only after the recipient signs in and accepts. Delivery
+errors keep the invitation available for retry or a copied link.
+
+Shared updates are checked every three seconds while visible, with an immediate
+check after reconnecting or returning to the tab. Revision checks protect writes.
+Independent edits merge; overlapping edits pause for review and retain the local
+copy. Switching, revoked membership and changed permissions keep unsynced drafts
+private in this browser. Settings provides draft downloads. Actual email delivery
+and real-user offline recovery still require production verification.
+
+Browser changes save after each action. Account uploads use a serialized queue;
+offline errors preserve the browser copy and newer account copies require review.
+The page-leaving warning covers pending uploads and unsubmitted forms. Storage,
+network and browser shutdown failures cannot be guaranteed away; keep backups.
+Settings uses grouped rows, with advanced account tools below. Saved sign-in
+checks show progress, offer a saved-copy option after four seconds and stop after
+twelve. Expired sessions return to the working autofill-compatible sign-in form.
+Per-account AI visibility and labels still apply when viewing an organization;
+shared rating criteria and church context belong to that organization. The
+read-only ChatGPT connection continues to read Personal, not organization data.
 
 [Request ledger](REQUESTS.md) tracks all outstanding owner requests and external
 verification needs. [Scoring guide](SCORING-GUIDE.md) explains 0–10 anchors,
@@ -31,13 +45,13 @@ evidence rubrics, selectable/custom criteria, equal weighting and library balanc
 
 - Build a profile from the prominent setup prompt: denomination, a named statement-of-faith starting point, custom convictions and personal AI-content visibility.
 - Start with 69 mixed hymn, modern hymn, worship, CCM and gospel records. Browse 2,044 song/version records across 58 collections, including all 40 requested artists plus Elevation RHYTHM and Red Rocks Worship. Expand a collection to browse paginated song rows and actions: library, plan, blacklist, files, arrangement, human evaluation, AI evaluation and details. Filter collections by artist, era, style or theme. **Import all songs** imports a whole collection without selecting checkboxes; **Import entire catalog** does the same for every visible record. Essentials, Standards and All remain available. These are editorial selections, not complete verified discographies or rankings.
-- Search ranks matching titles ahead of author/theme matches. With no text matches, it keeps the no-matches message and lists the closest title/artist spellings below it. Library searches stay within the chosen library. Opening a catalog record does not add it to a library. Filter by song type, assessment status, theme and church-use decision.
+- Search ranks matching titles ahead of author/theme matches. With no text matches, it keeps the no-matches message and lists the closest title/artist spellings below it. Library searches stay within the chosen library. Opening a catalog record does not add it to a library. Filter by song type, evaluation status and theme.
 - **Blacklist** dismisses a song record from discovery, libraries, collections, index and new song choices. Existing service items retain their position and duration but display a generic placeholder. The blacklist tab shows full song details, recordings and evaluations, with restoration available. It does not offer library or plan additions while a song is blacklisted. Notes, arrangements, attachments, library membership and history are preserved; repeated imports do not restore dismissed records. Blacklist flags sync and survive validated backups, and the read-only connection excludes them.
 - Use **Find lyrics** or **Find public reviews** for a title-and-recording-specific web search. These are search links, not a claim that a verified review or licensed lyric page exists for every title.
 - **Listen · recordings** provides Apple Music, Spotify and YouTube searches for every catalog record. **Manage recording links** saves exact song/video URLs with version labels; the first saved version per platform becomes its preferred button. Searches remain available to find alternate recordings. Links are validated and normalized, not verified for song identity, availability or official status. No audio is downloaded or analyzed. Saved links travel with workspace backups and account autosave. The catalog now supplies a first batch of Apple Music recordings matched against exact title/artist metadata from Apple’s US catalog, with album labels and retained source evidence. These defaults never replace a personal recording list or restore removed links. Matching metadata does not verify lyrics, official status or availability in every region. Spotify and YouTube remain searches until source-backed direct mappings are available; Songlink currently rejects anonymous lookup with `PUBLIC_API_ACCESS_DEPRECATED`. See [Recording lookup access](RECORDING-LOOKUP-ACCESS.md) for coverage and reproducible lookup steps.
 - Edit assessments, personal notes, Scripture connections, source links, arrangement observations, key and duration.
 - Compare your current review with the separately preserved catalog assessment.
-- Mark songs as not reviewed, approved, approved with context or to avoid. Context/avoid decisions require reasoning; approving requires acknowledgement of the exact version and concerns. Changes to the assessment require fresh approval. Avoided songs require reconsideration before being added to a plan.
+- Evaluate and organize songs in your own libraries. Use your own libraries to record readiness and conditions for use. Optional starter libraries provide Ready to use, Needs evaluation, Use with context and Not for our church. Previous decisions/notes are retained and can be copied into those libraries explicitly; evaluations do not reclassify songs or block human plan choices.
 - Save songs to multiple libraries; rename them, import/export CSV title lists, or delete a library while keeping its song records. Build and reorder services with songs, readings, prayer and other items; duplicate an independent draft, export a timed text outline, or print/save a PDF. Completed services supply recorded song-use history. Save your own service orders as templates, optionally replacing selected songs with manually filled placeholders; create independent, dated drafts from them. Templates do not count as services or recorded song use.
 - Export and restore validated JSON backups, including backups from the original four-song version. Existing personal reviews, libraries and plans survive catalog expansion.
 
@@ -47,17 +61,42 @@ evidence rubrics, selectable/custom criteria, equal weighting and library balanc
 
 1. Review and copy the song-specific request, then paste it into ChatGPT. Full mode includes the account's review principles and weights; limited mode requests objective observations only. Personal song notes, lyrics, account credentials, libraries and plans are not included automatically.
 2. Paste ChatGPT's JSON response back into the dialog and preview its ratings, observations and supplied sources. The importer checks the song ID, AI mode, score ranges, list/text limits and safe source URLs. Source links and theological claims still need human verification.
-3. Apply the draft explicitly. A human evaluation stays primary; the new AI draft is stored separately without changing the human assessment or its approval. Without a human assessment, it becomes the primary AI draft and resets approval. Personal notes, key, duration, musical observations and custom attributes are preserved. Limited observations are separate. Human-only mode hides this action. Editing the response invalidates its preview; account/profile/song changes block stale application.
+3. Apply the draft explicitly. A human evaluation stays primary; the new AI draft is stored separately without changing the human assessment or library membership. Without a human assessment, it becomes the primary AI draft; previous church-use decisions are archived, not deleted. Personal notes, key, duration, musical observations and custom attributes are preserved. Limited observations are separate. Human-only mode hides this action. Editing the response invalidates its preview; account/profile/song changes block stale application.
 
 The read-only ChatGPT connection cannot write an evaluation back to the website. This copy/preview/apply workflow is deliberate; evaluating a song does not recommend songs or build a service plan.
 
 AI Labels default **On** and can be switched off in Settings or Rating profile. Badges mark generated ratings, summaries, themes and interpretive details, including unchanged AI fields carried into an edited assessment. Human notes and arrangement observations are separate. This label preference does not change AI visibility. Human-only/limited modes suppress subjective drafts, including index/export and connector output.
 
-Song pages have **Details & files**, **Outside links** and **Evaluation** tabs. The heading has a primary **Add to library** / **Manage libraries** action; secondary controls live in the **…** menu. Outside links groups recordings, lyric/public-review searches and evaluation sources. Files are listed with **Manage files** for uploads/downloads. Evaluation contains the church-use decision and one collapsed **AI evaluation** box. A human evaluation occupies the primary spot; retained AI content is a smaller collapsed option at the bottom. Saving the first human evaluation asks whether to keep or delete the AI version. Deleting it is respected through catalog refreshes. Older drafts with a previous human assessment migrate to this layout. **Customize details** hides or reorders sections inside the evaluation; custom text/number attributes still participate in indexing. Empty musical/language/time fields and vague topical Scripture connections are omitted. Kari Jobe's Forever record retains the owner's personal concern about the grave-battle line.
+Album covers come from exact Apple title/artist recording matches: 1,245 recording artwork URLs for 780 records. Traditional hymns remain text-only. Personal recording lists, removals and preferred ordering stay intact. Hymns include a title-bound **Find hymn on Hymnary** search. Artist/attribution text can be edited directly with its pencil, Enter/Save and Escape/Cancel. Unmatched artwork remains blank.
+
+Song pages have **Details & files**, **Outside links** and **Evaluation** tabs. The heading has a primary **Add to library** / **Manage libraries** action; secondary controls live in the **…** menu. Outside links groups recordings, lyric/public-review searches and evaluation sources. Files are listed with **Manage files** for uploads/downloads. Evaluation contains the song assessment and one collapsed **AI evaluation** box. A human evaluation occupies the primary spot; retained AI content is a smaller collapsed option at the bottom. Saving the first human evaluation asks whether to keep or delete the AI version. Deleting it is respected through catalog refreshes. Older drafts with a previous human assessment migrate to this layout. **Customize details** hides or reorders sections inside the evaluation; custom text/number attributes still participate in indexing. Empty musical/language/time fields and vague topical Scripture connections are omitted. Kari Jobe's Forever record retains the owner's personal concern about the grave-battle line.
 
 Objective details are plain text: attribution, populated key/tempo/duration and other recorded measurements. Missing values are omitted. Recording associations from model knowledge and default durations are marked **Guess** or **Estimate**. Their **Confirm** and **Edit** controls let the owner verify or correct a value without creating a theological evaluation. Fact provenance can also mark a value as an AI estimate. No keys, tempos, ranges or exact release years are inferred from titles; era collections do not populate release-year metadata.
 
-**Files** accepts up to 50 attachments per song, each up to 10 MB. Signed-in uploads use a private Supabase bucket with owner-folder policies that deny read-only OAuth access. Guest uploads use IndexedDB on this device. Workspace JSON contains references, never file bytes or credentials; export/download important files separately. Account file references can only be downloaded by their owner. Run `supabase/files.sql` to provision storage (the deployment workflow includes it).
+**Files** accepts up to 50 attachments per song, each up to 10 MB. Organization files use a separate private bucket with member/role policies. Signed-in uploads use a private Supabase bucket with owner-folder policies that deny read-only OAuth access. Guest uploads use IndexedDB on this device. Workspace JSON contains references, never file bytes or credentials; export/download important files separately. Account file references can only be downloaded by their owner. Run `supabase/files.sql` for personal storage and `supabase/organizations.sql` for shared storage. Both migrations are deployed to the existing project.
+
+## Plan editing and import
+
+**Plans → Add songs** opens a library picker without navigating away. Search a
+library, select several songs (selection carries across libraries), and add the
+selected count. Existing plans offer an **Add after** position; empty plans skip
+placement controls. Preferred arrangements supply editable keys/duration estimates.
+**Add heading** creates an untimed section label. Drag rows/handles to reorder,
+including with touch, or use the accessible up/down controls. The former service
+role prompt is removed; existing role text remains in backups and exports.
+
+**Import plan** prepares a ChatGPT request for your existing Planning Center
+screenshot/PDF. Attach the document in ChatGPT, copy the request, then return the
+JSON response or upload its JSON file here. This is transcription of your chosen
+order, not AI song selection. The request includes library song identities but no
+lyrics, song notes, scores or credentials. `faithful-plan-v1` preserves headings,
+songs, other items, notes, timing and date. Missing durations, ambiguous versions,
+unknown songs or declared uncertainty require correction/review. A certain,
+validated import saves directly without another confirmation dialog. Imported
+plans are drafts; they do not count as completed use. **Plan tools → Export
+importable JSON** provides a portable plan file. Full JSON workspace backups still
+transfer all personal data separately. See [plan-import.js](public/plan-import.js)
+for the exact format and [REQUESTS.md](REQUESTS.md) for verification limits.
 
 ## Song index
 
@@ -76,7 +115,7 @@ Old backups remain supported.
 difficulty, instruments, language, tags and optional song words. Custom text or
 numeric metrics extend the index. These details are human-entered. Arrangement records store selected-key vocal bounds, jumps, instrumental difficulty, durations, and observed wordless/instrumental seconds. Pitch spans are calculated from supplied note names, never inferred from lyrics. Arrangement measurements in the index use the preferred arrangement; All arrangement keys is a separate index field. Without full
 words the concordance covers only the opening line, which is labeled in the UI.
-Text/theme changes and preferred-arrangement changes require a fresh church-use approval. Local text counts make “just,” interior “just,” “oh,” unique words and repeated lines searchable without AI; counts are observations, not automatic quality penalties. Song-use history distinguishes saved plans from services explicitly marked completed.
+Previous church-use decisions are retained as history when a song changes; current readiness is organized with your libraries. Local text counts make “just,” interior “just,” “oh,” unique words and repeated lines searchable without AI; counts are observations, not automatic quality penalties. Plan History distinguishes saved plans from plans explicitly marked completed.
 
 **AI criteria search** is an explicit, optional lookup within a selected personal
 library. With Full AI content, the public website prepares a request you can copy
@@ -139,7 +178,7 @@ Preferences are personal to each profile/account; full AI content is the default
 - **AI observations only:** show limited text/arrangement assistance, without AI theological scores, Scripture proposals or recommendations. Assistance is stored separately and does not replace your assessment.
 - **Full AI content:** display AI draft song assessments and ratings. Explicit subjective library searches are optional. Worship planning remains human-led. Applying a draft requires an explicit action; church approval is always a human decision.
 
-Changing visibility preserves the underlying reviews. A profile in human-only mode may show its previous human review or the editorial catalog baseline instead of an AI draft. Its personal notes, arrangement settings and approval decision remain visible. Restoring full content brings the retained AI draft back.
+Changing visibility preserves the underlying reviews. A profile in human-only mode may show its previous human review or the editorial catalog baseline instead of an AI draft. Its personal notes, arrangement settings and library memberships remain visible. Restoring full content brings the retained AI draft back.
 
 The public GitHub Pages edition has no live AI backend. To draft with AI locally, use Node 22+ and configure a server-side `WORSHIP_AI_KEY` and optional `WORSHIP_AI_MODEL` (default `gpt-4.1-mini`). Never publish this credential. Requests use `https://api.openai.com/v1/chat/completions` and analyze supplied text, not web search. Supply only song text you have permission to use. Text supplied only for a review request is not retained. Words explicitly entered in Index details are stored in workspace backups and account saves. Limited assistance is restricted on both client and server. A live provider review has not yet been validated.
 
@@ -151,7 +190,7 @@ When configured:
 
 - Profile choices automatically save to the account and load on sign-in. This includes denomination, faith statement, custom review parameters and AI-content preference.
 - Browser workspaces are separate for guests and each signed-in user. Signing out returns to the sign-in screen; the preserved browser-only workspace requires explicit opt-in.
-- Account workspace changes autosave after a short debounce. A serialized queue uploads the newest snapshot, retains edits made during a request, pauses after an offline error, and blocks conflicting writes. Settings provides **Save now / retry**. **Load account backup** requires confirmation before replacing local data. A visible status distinguishes browser storage from account saves. Conditional writes stop when another device has saved a newer copy. Existing account copies are detected at sign-in and can be reviewed before loading. This is not live collaboration; a newer account copy pauses autosave until it is reviewed.
+- Account workspace changes autosave after a short debounce. A serialized queue uploads the newest snapshot, retains edits made during a request, pauses after an offline error, and blocks conflicting writes. Settings provides **Save now / retry**. **Load account backup** requires confirmation before replacing local data. A visible status distinguishes browser storage from account saves. Conditional writes stop when another device has saved a newer copy. Existing account copies are detected at sign-in and can be reviewed before loading. In Personal, a newer account copy pauses autosave until reviewed. Organization workspaces use revision checks and merge independent changes.
 - **Copy browser workspace** transfers the guest workspace into the signed-in account with confirmation. Use **Retry profile sync** under advanced Settings to retry a failed preference save.
 - Access and refresh tokens persist in local storage, outside workspace JSON, so sign-in survives new tabs and return visits in this browser profile. Sign-in/out events synchronize across tabs; refreshes use a browser lock when available. A temporary provider outage preserves the session. This does not sign into other browsers or devices automatically. Workspace exports contain no sign-in credentials. Login forms use stable input IDs, username/current-password autocomplete and no sign-in password-length restriction; the default sign-in screen now uses a stable native form, and autofilled DOM values are tested even without input events. Actual Apple Passwords behavior still requires validation on Safari or the extension.
 
@@ -187,7 +226,7 @@ npm run check:mcp
 npm run test:browser
 ```
 
-`test:hosted` builds the GitHub Pages edition and starts a temporary local server under the repository path. It checks restoration, guided profiles, approval rules, AI labels, customizable/collapsible details, OAuth consent, mobile layout and a simulated account service with isolated users and synced profiles. It also checks typo alternatives, library scope, lyric/review links and the ChatGPT evaluation import, including preview-only behavior, escaping, preserved notes and AI visibility modes. `test:browser` covers reviews, multiple libraries, plans and a simulated AI draft. It also exercises collection imports, CSV/library management, arrangements, plan copies, print/PDF output and completed-use history. These fixtures are not real provider integration tests. Chromium is expected at `/usr/bin/chromium`; set `CHROMIUM_PATH` for another executable. `APP_URL` overrides the development test address.
+`test:hosted` builds the GitHub Pages edition and starts a temporary local server under the repository path. It checks restoration, guided profiles, preserved historical decisions and optional starter libraries, AI labels, customizable/collapsible details, OAuth consent, mobile layout and a simulated account service with isolated users and synced profiles. It also checks typo alternatives, library scope, lyric/review links and the ChatGPT evaluation import, including preview-only behavior, escaping, preserved notes and AI visibility modes. `test:browser` covers reviews, multiple libraries, plans and a simulated AI draft. It also exercises collection imports, CSV/library management, arrangements, plan copies, print/PDF output and completed-use history. These fixtures are not real provider integration tests. Chromium is expected at `/usr/bin/chromium`; set `CHROMIUM_PATH` for another executable. `APP_URL` overrides the development test address.
 
 The published static site has no private credentials or personal workspace data. Stored index words and notes belong to browser/account workspaces and their backups. Without a configured account, data stays in this browser. Clearing site data removes it; use **Backup & restore** for a copy. Restoring replaces the current workspace only after validation and confirmation; invalid files and cancellation preserve existing data. Backups are limited to 5 MB.
 
@@ -198,7 +237,7 @@ The runner copies only that certificate database into a disposable profile and
 keeps TLS verification enabled. It uses an isolated browser-only test workspace;
 passing it does not establish actual Apple Passwords or real-account autosave.
 
-Before deploying a paid AI backend for multiple users, add authenticated requests, authorization and rate limits. The current Node backend is for personal/local development. The app does not yet retrieve licensed lyrics, analyze scores/audio, offer a verified 1,000-song AI catalog, or coordinate shared church approvals across multiple users.
+Before deploying a paid AI backend for multiple users, add authenticated requests, authorization and rate limits. The current Node backend is for personal/local development. The app does not yet retrieve licensed lyrics, analyze scores/audio, offer a verified 1,000-song AI catalog, or make shared church-use decisions automatically. Organization members organize those decisions in their own libraries.
 
 The GitHub **App checks** workflow runs unit, scale and hosted browser checks on main pushes and pull requests, then verifies committed Pages output matches the build. Tests require no live AI credentials.
 

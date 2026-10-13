@@ -77,6 +77,7 @@ export async function checkAccountFlows(browser, base) {
       return route.fulfill({contentType:"application/octet-stream",body,headers:{"Access-Control-Allow-Origin":"*"}});
     }
     if (url.pathname.endsWith("/user")) return answer(user);
+    if (url.pathname.endsWith("/rpc/org_list")) return answer({organizations:[],invitations:[]});
     if (url.pathname.endsWith("/logout")) return answer(null, 204);
     const table = url.pathname.endsWith("/profiles") ? profiles : workspaces;
     const field = table === profiles ? "profile" : "workspace";
@@ -185,7 +186,7 @@ export async function checkAccountFlows(browser, base) {
     .selectOption("london1689");
   await reveal(page, "button", { name: "Continue", exact: true });
   await page.getByRole("button", { name: "Continue", exact: true }).click();
-  await page.getByRole("radio", { name: /Human reviews only/ }).check();
+  await page.getByRole("radio", { name: /Human evaluations only/ }).check();
   const syncing = page.waitForResponse(
     (r) => r.url().includes("/profiles") && r.request().method() === "POST",
   );
@@ -197,14 +198,14 @@ export async function checkAccountFlows(browser, base) {
     profiles.get(users["one@example.test"].id).statement,
     "london1689",
   );
-  await reveal(page, "button", { name: "Edit assessment" });
-  await page.getByRole("button", { name: "Edit assessment" }).click();
+  await reveal(page, "button", { name: "Edit evaluation" });
+  await page.getByRole("button", { name: "Edit evaluation" }).click();
   await page
     .getByLabel("Your notes", { exact: true })
     .fill("Private account-one note");
-  await reveal(page, "button", { name: "Save assessment", exact: true });
+  await reveal(page, "button", { name: "Save evaluation", exact: true });
   await page
-    .getByRole("button", { name: "Save assessment", exact: true })
+    .getByRole("button", { name: "Save evaluation", exact: true })
     .click();
   await keepAIIfOffered(page);
   await reveal(page, "button", { name: "Manage recording links", exact: true });
@@ -224,14 +225,14 @@ export async function checkAccountFlows(browser, base) {
     .locator("#account-save-strip")
     .getByText("Saved to your account", { exact: true })
     .waitFor();
-  await reveal(page, "button", { name: "Edit assessment" });
-  await page.getByRole("button", { name: "Edit assessment" }).click();
+  await reveal(page, "button", { name: "Edit evaluation" });
+  await page.getByRole("button", { name: "Edit evaluation" }).click();
   await page
     .getByLabel("Your notes", { exact: true })
     .fill("Private account-one note, newer browser edit");
-  await reveal(page, "button", { name: "Save assessment", exact: true });
+  await reveal(page, "button", { name: "Save evaluation", exact: true });
   await page
-    .getByRole("button", { name: "Save assessment", exact: true })
+    .getByRole("button", { name: "Save evaluation", exact: true })
     .click();
   await keepAIIfOffered(page);
   assert.match(

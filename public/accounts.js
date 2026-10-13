@@ -201,6 +201,7 @@ export class AccountClient {
           "The account request failed. Please try again.",
       );
       error.status = response.status;
+      error.code = data?.code;
       throw error;
     }
     return data;

@@ -12,6 +12,8 @@ import assert from "node:assert/strict";
 import { chromium } from "playwright";
 import { checkAccountFlows } from "./account-fixture.mjs";
 import { checkAccountStartupFlows } from "./startup-fixture.mjs";
+import { checkOrganizationFlows } from "./organizations-fixture.mjs";
+import { checkPlanningUpgradeFlows } from "./planning-upgrade-fixture.mjs";
 import { checkSongTabsFlows } from "./song-tabs-fixture.mjs";
 import { checkIndexFlows } from "./index-fixture.mjs";
 import { checkRepertoireFlows } from "./repertoire-fixture.mjs";
@@ -85,14 +87,14 @@ try {
   assert.ok(requests.includes("/Worship-Song-Tool/app.js"));
   assert.ok(!requests.some((url) => url.includes("/api/")));
 
-  await reveal(page, "button", { name: "Edit assessment" });
-  await page.getByRole("button", { name: "Edit assessment" }).click();
+  await reveal(page, "button", { name: "Edit evaluation" });
+  await page.getByRole("button", { name: "Edit evaluation" }).click();
   await page
     .getByLabel("Your notes", { exact: true })
     .fill("Restore this personal note.");
-  await reveal(page, "button", { name: "Save assessment", exact: true });
+  await reveal(page, "button", { name: "Save evaluation", exact: true });
   await page
-    .getByRole("button", { name: "Save assessment", exact: true })
+    .getByRole("button", { name: "Save evaluation", exact: true })
     .click();
   await keepAIIfOffered(page);
   const before = await page.evaluate(() =>
@@ -198,7 +200,7 @@ try {
     .selectOption("augsburg");
   await reveal(page, "button", { name: "Continue", exact: true });
   await page.getByRole("button", { name: "Continue", exact: true }).click();
-  await page.getByRole("radio", { name: /Human reviews only/ }).check();
+  await page.getByRole("radio", { name: /Human evaluations only/ }).check();
   await reveal(page, "button", { name: "Save my profile" });
   await page.getByRole("button", { name: "Save my profile" }).click();
   const profile = await page.evaluate(
@@ -211,51 +213,30 @@ try {
     await page.getByRole("button", { name: "Draft with AI" }).count(),
     0,
   );
-  await reveal(page, "button", { name: "Review decision" });
-  await page.getByRole("button", { name: "Review decision" }).click();
-  await page
-    .getByLabel("Church-use decision", { exact: true })
-    .selectOption("context");
-  await page
-    .getByLabel("Reasoning or conditions for use")
-    .fill("Explain the hymn’s archaic language.");
-  await page
-    .getByLabel("I have reviewed the exact version and any concerns.")
-    .check();
-  await reveal(page, "button", { name: "Save church-use decision" });
-  await page.getByRole("button", { name: "Save church-use decision" }).click();
-  await page.locator(".filter-panel > summary").click();
-  await page.getByLabel("Church use", { exact: true }).selectOption("context");
-  assert.equal(await page.locator(".song-card").count(), 1);
-  await reveal(page, "button", { name: "Edit assessment" });
-  await page.getByRole("button", { name: "Edit assessment" }).click();
-  await reveal(page, "button", { name: "Save assessment", exact: true });
-  await page
-    .getByRole("button", { name: "Save assessment", exact: true })
-    .click();
+  await page.evaluate(() => {
+    const saved=JSON.parse(localStorage.getItem("hymn-heart-v1"));
+    saved.songs[0].approval={status:"context",notes:"Explain the hymn’s archaic language.",updatedAt:null};
+    localStorage.setItem("hymn-heart-v1",JSON.stringify(saved));
+  });
+  await page.reload();
+  await page.locator('.nav-item[data-view="library"]').click();
+  await reveal(page,"button",{name:"Starter libraries",exact:true});
+  await page.getByRole("button",{name:"Starter libraries",exact:true}).click();
+  await page.locator("#migrate-decisions").check();
+  await page.getByRole("button",{name:"Add starter libraries",exact:true}).click();
+  const migrated=await page.evaluate(()=>JSON.parse(localStorage.getItem("hymn-heart-v1")));
+  assert.ok(migrated.libraries.find(l=>l.name==="Use with context").songIds.includes(migrated.songs[0].id));
+  assert.equal(migrated.songs[0].approval.notes,"Explain the hymn’s archaic language.");
+  await page.locator('.nav-item[data-view="discover"]').click();
+  assert.equal(await page.getByRole("button",{name:"Review decision",exact:true}).count(),0);
+  assert.equal(await page.getByLabel("Church use",{exact:true}).count(),0);
+  await reveal(page,"button",{name:"Edit evaluation",exact:true});
+  await page.getByRole("button",{name:"Edit evaluation",exact:true}).click();
+  await reveal(page,"button",{name:"Save evaluation",exact:true});
+  await page.getByRole("button",{name:"Save evaluation",exact:true}).click();
   await keepAIIfOffered(page);
-  const edited = await page.evaluate(
-    () => JSON.parse(localStorage.getItem("hymn-heart-v1")).songs[0],
-  );
-  assert.equal(edited.approval.status, "unreviewed");
-  assert.ok(edited.approval.notes);
-  await reveal(page, "button", { name: "Clear filters" });
-  await page.getByRole("button", { name: "Clear filters" }).click();
-  await reveal(page, "button", { name: "Review decision" });
-  await page.getByRole("button", { name: "Review decision" }).click();
-  await page
-    .getByLabel("Church-use decision", { exact: true })
-    .selectOption("avoid");
-  await page
-    .getByLabel("Reasoning or conditions for use")
-    .fill("Testing a church-use restriction.");
-  await reveal(page, "button", { name: "Save church-use decision" });
-  await page.getByRole("button", { name: "Save church-use decision" }).click();
-  await reveal(page, "button", { name: "Add to plan" });
-  await page.getByRole("button", { name: "Add to plan" }).click();
-  await page.locator("#approval-form").waitFor();
-  await reveal(page, "button", { name: "Cancel", exact: true });
-  await page.getByRole("button", { name: "Cancel", exact: true }).click();
+  const afterEvaluation=await page.evaluate(()=>JSON.parse(localStorage.getItem("hymn-heart-v1")));
+  assert.deepEqual(afterEvaluation.libraries,migrated.libraries,"Evaluations do not reclassify libraries");
   await page.evaluate(() => {
     const state = JSON.parse(localStorage.getItem("hymn-heart-v1"));
     const song = state.songs[0],
@@ -331,6 +312,8 @@ try {
     fullPage: true,
   });
   assert.deepEqual(errors, []);
+  await checkPlanningUpgradeFlows(browser, `http://127.0.0.1:${server.address().port}/Worship-Song-Tool/`);
+  await checkOrganizationFlows(browser, `http://127.0.0.1:${server.address().port}/Worship-Song-Tool/`);
   await checkSongTabsFlows(browser, `http://127.0.0.1:${server.address().port}/Worship-Song-Tool/`);
   await checkPreferencesFlows(
     browser,

@@ -60,3 +60,21 @@ The catalog link batch and personal-choice preservation were published in releas
 work is dated 2020 and redirects to a newer help site; it did not establish a
 supported replacement for the deprecated anonymous endpoint. Spotify/YouTube
 mapping remains explicitly outstanding.
+
+## Album artwork and hymn finding links
+
+The retained Apple responses provide artwork for all 1,245 matched recording
+links (780 records). These URLs now accompany the saved default recordings;
+existing matching catalog links gain only artwork metadata. Personal recording
+choices/order, empty lists and removed links are preserved. Traditional hymns do
+not show album covers. Hymns have title-bound Hymnary searches; no unverified
+Hymnary entry IDs are fabricated. Covers remain blank without exact evidence.
+
+The only artwork CDN host in the retained metadata is `is1-ssl.mzstatic.com`.
+Its image fetch could not be verified from this cloud environment; the current
+allowlist omits that host. This chat's configuration draft is stale again: its
+base version is older than the running configuration. It was read, preserved and
+not repeatedly retried or overwritten. A fresh configuration draft must add this
+host while preserving the six existing explicit domains. This affects cloud
+image validation; ordinary website visitors use the public Apple CDN directly.
+No new environment requirement or private frontend Supabase token was added.

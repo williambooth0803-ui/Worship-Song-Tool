@@ -1,3 +1,4 @@
+import { artworkURL } from "./song-visuals.js";
 export const recordingPlatforms = {
   appleMusic: "Apple Music",
   spotify: "Spotify",
@@ -54,7 +55,7 @@ export function validateRecordings(value) {
   const result = value.map(item => {
     if (!item || typeof item !== "object" || typeof item.id !== "string" || !item.id.trim() || item.id.length > 200 || typeof item.label !== "string" || item.label.length > 300)
       throw new Error("A recording needs a valid ID and a label of up to 300 characters.");
-    return { id: item.id, provider: item.provider, label: item.label.trim(), url: recordingURL(item.provider, item.url) };
+    return { id: item.id, provider: item.provider, label: item.label.trim(), url: recordingURL(item.provider, item.url), ...(item.artwork !== undefined ? {artwork: artworkURL(item.artwork)} : {}) };
   });
   if (new Set(result.map(r => r.id)).size !== result.length) throw new Error("Recording IDs must be distinct.");
   if (new Set(result.map(r => r.provider + ":" + r.url)).size !== result.length) throw new Error("This recording link is already saved.");

@@ -28,7 +28,7 @@ export async function checkSongTabsFlows(browser, base) {
     await page.screenshot({ path: "/tmp/faithful-song-links-desktop.png" });
     await page.keyboard.press("ArrowRight");
     assert.equal(await tab("Evaluation").getAttribute("aria-selected"), "true");
-    assert.ok(await page.getByRole("button", { name: "Review decision", exact: true }).isVisible());
+    assert.equal(await page.getByRole("button", { name: "Review decision", exact: true }).count(),0);
     assert.ok(await page.getByRole("button", { name: "Generate AI evaluation", exact: true }).isVisible());
     await page.screenshot({ path: "/tmp/faithful-song-evaluation-desktop.png" });
     await page.keyboard.press("Home");
@@ -102,7 +102,7 @@ export async function checkSongTabsFlows(browser, base) {
     assert.equal(await page.locator('.detail-panel [data-action="save-song"]').count(), 0);
     assert.equal(await page.locator('.detail-panel [data-action="add-to-plan"]').count(), 0);
     await tab("Evaluation").click();
-    assert.ok(await page.getByRole("button", { name: "Review decision", exact: true }).isVisible());
+    assert.equal(await page.getByRole("button", { name: "Review decision", exact: true }).count(),0);
     assert.deepEqual(errors, []);
     console.log("PASS: song tabs, keyboard selection, unified links, library membership, natural detail/page wheel scrolling, retained result position, mobile layout and full isolated blacklist.");
   } finally { await page.close(); }

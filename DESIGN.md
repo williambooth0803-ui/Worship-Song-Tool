@@ -1,7 +1,9 @@
 # Faithful Repertoire design and product constraints
 
 Worship plans are built by people. Do not add song recommendations, suggested
-service selections, automated setlists, or AI plan generation. The index is a
+service selections, automated setlists, or AI plan generation. Transcribing an existing human plan from a supplied
+screenshot/PDF is allowed: preserve its order, never fill missing evidence, and
+require review of uncertainty. Certain validated imports need no extra confirmation. The index is a
 deterministic lookup of recorded song data, using filters selected by the user.
 AI song assessment is optional per account and does not select worship songs.
 An explicitly requested AI search may list tentative matches to a user-defined
@@ -65,3 +67,25 @@ The ChatGPT MCP connection reads saved account records through explicit OAuth co
 It exposes six read tools and no writes or automated service selection. Notes and song
 text start unshared. Enforce owner isolation, visibility and consent inside PostgreSQL,
 not only in tool descriptions. Revoke data access before attempting provider grant removal.
+
+## Shared workspaces and readiness
+
+Personal data remains private. Organizations are separate shared workspaces, not
+shared passwords. Membership/roles, ownership and verified-email invitations are
+checked inside PostgreSQL; OAuth connection tokens cannot read organizational
+rows/files. Clients check changes every three seconds while visible. Conditional
+revision writes and three-way merging preserve independent edits; conflicting
+fields/order require review with a retained browser draft. View-only access is
+blocked both in the interface and server. Transfer ownership atomically to an
+existing member; never leave an ownerless organization. Native sign-in emails
+use the configured provider, without privileged browser credentials.
+
+Users organize song readiness through their own libraries. Offer starter library
+names optionally, preserve prior decisions/notes as history, and never infer
+library placement from a score. Evaluation/scoring stays optional and separate.
+Use Plans, Plan templates, Plan items and Plan History consistently. Untimed
+headings separate portions of an order. The plan library picker stays on Plans,
+uses explicit multi-selection and relative insertion, and skips placement for an
+empty plan. Retain keyboard reorder controls alongside dragging. Album images
+must come from matching recording metadata; blank artwork is better than guessing.
+Hymnary links are finding aids unless a specific entry was verified.

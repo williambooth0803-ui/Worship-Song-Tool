@@ -28,11 +28,11 @@ export async function checkEvaluationFlows(browser, base) {
       assert.ok((await link.getAttribute("href")).includes(suffix));
       assert.equal(await link.getAttribute("rel"), "noopener noreferrer");
     }
-    await reveal(page, "button", { name: "Edit assessment", exact: true });
-    await page.getByRole("button", { name: "Edit assessment", exact: true }).click();
+    await reveal(page, "button", { name: "Edit evaluation", exact: true });
+    await page.getByRole("button", { name: "Edit evaluation", exact: true }).click();
     await page.getByLabel("Your notes", { exact: true }).fill("Personal note to preserve");
-    await reveal(page, "button", { name: "Save assessment", exact: true });
-    await page.getByRole("button", { name: "Save assessment", exact: true }).click();
+    await reveal(page, "button", { name: "Save evaluation", exact: true });
+    await page.getByRole("button", { name: "Save evaluation", exact: true }).click();
   await keepAIIfOffered(page);
     const before = await stored();
     await reveal(page,"button",{name:"Generate AI evaluation",exact:true});

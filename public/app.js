@@ -1,3 +1,9 @@
+import {OrganizationClient,canEditOrganization,organizationRoles} from "./organizations.js";
+import {openOrganizations} from "./organization-ui.js";
+import {mergeWorkspaces} from "./workspace-merge.js";
+import {songArtwork,hymnaryLink,addStarterLibraries,previousDecision} from "./song-visuals.js";
+import {openPlanSongPicker,openPlanImport,insertionMarkup,insertPlanItems,movePlanItem} from "./plan-ui.js";
+import {exportPlanJSON} from "./plan-import.js";
 import { AutosaveQueue } from "./autosave.js";
 import { libraryAuditPrompt, parseLibraryAudit, auditToken, auditCharts, auditSongs, auditAxes, auditLabels } from "./library-audit.js";
 import { ratingCriteria, activeCriteria, criterionScore, scoringLabels, scoringRubrics, scoreAnchors, suggestedCriteria, validateCriteria } from "./scoring.js";
@@ -84,6 +90,9 @@ let activeStore = STORE;
 const browsableSongs = () => visibleSongs(state.songs);
 const availableCatalog = () => allCatalogSongs.filter(s => !existingMatch(state, s)?.blacklisted);
 const accounts = new AccountClient(siteConfig);
+const organizationsClient = new OrganizationClient(accounts);
+let activeOrganization=null,organizationList=[],organizationInvitations=[],organizationBase=null,organizationRevision=null;
+let organizationLoadVersion=0,organizationSyncing=false,organizationServiceAvailable=false,pendingOrganizationRemote=null;
 let accountReady = !accounts.session;
 let accountCheckController = null, accountCheckVersion = 0, accountCheckSlow = false, accountConnectionMessage = "";
 let wizardDraft = null;
@@ -151,7 +160,7 @@ const freshState = () => ({
   profile: clone(defaultProfile),
   libraries: [
     { id: "personal", name: "My repertoire", songIds: [] },
-    { id: "review", name: "Songs to review", songIds: [] },
+    { id: "review", name: "Needs evaluation", songIds: [] },
   ],
   plans: [],
   indexViews: [],
@@ -168,6 +177,7 @@ try {
   state = syncCatalog(freshState());
   storageProblem = true;
 }
+let personalAI={aiMode:state.profile.aiMode,aiLabels:state.profile.aiLabels};
 let view = "discover",
   query = "",
   selected = state.songs[0]?.id,
@@ -189,10 +199,18 @@ const syncKey = () => activeStore + ":last-account-save";
 function readSyncSignature() { try { return localStorage.getItem(syncKey()); } catch { return null; } }
 function rememberAccountSave(signature) { try { localStorage.setItem(syncKey(), signature); } catch {} }
 const autosave = new AutosaveQueue({
-  save: snapshot => accounts.saveWorkspace(snapshot),
+  save: snapshot => saveActiveWorkspace(snapshot),
   onState: result => {
     if (result.phase === "saving") accountSave.phase = "saving";
     else if (result.phase === "saved") {
+      if(activeOrganization) {
+        try {
+          const merged=validateWorkspace(mergeWorkspaces(result.originalSnapshot,state,result.snapshot));
+          const changed=workspaceSignature(merged)!==workspaceSignature(state);state=merged;cacheOrganization();
+          if(changed)render();
+          if(workspaceSignature(state)!==result.signature)autosave.enqueue(state);
+        }catch{accountSave.phase="conflict";autosave.reset(false);updateSaveStrip();return;}
+      }
       accountSave = { phase: "local", signature: result.signature, remoteAvailable: true };
       rememberAccountSave(result.signature);
     } else { accountSave.phase = result.phase; if (result.phase === "conflict") accountSave.remoteAvailable = true; }
@@ -203,7 +221,7 @@ function queueAccountSave() {
   if (accounts.user && activeStore !== STORE && accountReady && autosave.enabled && (autosave.running || autosave.pending || accountSave.signature !== workspaceSignature(state))) autosave.enqueue(state);
 }
 function loginScreen(mode = "signin") {
-  return `<main class="login-screen" data-screen="auth"><section class="profile-panel"><h1>Faithful Repertoire</h1><h2>${mode === "signup" ? "Create your account" : mode === "recover" ? "Reset your password" : "Sign in to keep your repertoire"}</h2>${accountConnectionMessage ? `<p class="connection-notice" role="status">${e(accountConnectionMessage)}</p>` : ""}<p>Your account keeps your songs, reviews and plans together. Changes save in this browser immediately and autosave to your account when connected.</p>${accounts.configured ? `<form id="auth-form" name="login" method="post" autocomplete="on" data-mode="${mode}"><label for="login-email">Email</label><input id="login-email" name="email" type="email" autocomplete="username" inputmode="email" autocapitalize="none" spellcheck="false" required>${mode !== "recover" ? `<label for="login-password">Password</label><input id="login-password" name="password" type="password" autocomplete="${mode === "signup" ? "new-password" : "current-password"}" ${mode === "signup" ? 'minlength="10"' : ""} required>` : ""}<p id="account-error" role="alert"></p><button type="submit" class="button primary">${mode === "signup" ? "Create account" : mode === "recover" ? "Send reset email" : "Sign in"}</button></form><div class="account-links">${mode !== "signin" ? '<button class="text-button" data-action="account" data-mode="signin">Return to sign in</button>' : ""}<button class="text-button" data-action="account" data-mode="signup">Create an account</button><button class="text-button" data-action="account" data-mode="recover">Forgot password?</button></div>` : '<p>Account sign-in is unavailable in this configuration. No private token is required to use the browser workspace.</p>'}<details><summary>Existing browser-only work or offline use</summary><p>Browser-only work stays on this device and is not saved to an account. Your existing guest workspace has been preserved.</p><button class="button" data-action="guest-opt-in">Use browser-only workspace</button></details></section></main>`;
+  return `<main class="login-screen" data-screen="auth"><section class="profile-panel"><h1>Faithful Repertoire</h1><h2>${mode === "signup" ? "Create your account" : mode === "recover" ? "Reset your password" : "Sign in to keep your repertoire"}</h2>${accountConnectionMessage ? `<p class="connection-notice" role="status">${e(accountConnectionMessage)}</p>` : ""}<p>Your account keeps your songs, libraries and plans together. Changes save in this browser immediately and autosave to your account when connected.</p>${accounts.configured ? `<form id="auth-form" name="login" method="post" autocomplete="on" data-mode="${mode}"><label for="login-email">Email</label><input id="login-email" name="email" type="email" autocomplete="username" inputmode="email" autocapitalize="none" spellcheck="false" required>${mode !== "recover" ? `<label for="login-password">Password</label><input id="login-password" name="password" type="password" autocomplete="${mode === "signup" ? "new-password" : "current-password"}" ${mode === "signup" ? 'minlength="10"' : ""} required>` : ""}<p id="account-error" role="alert"></p><button type="submit" class="button primary">${mode === "signup" ? "Create account" : mode === "recover" ? "Send reset email" : "Sign in"}</button></form><div class="account-links">${mode !== "signin" ? '<button class="text-button" data-action="account" data-mode="signin">Return to sign in</button>' : ""}<button class="text-button" data-action="account" data-mode="signup">Create an account</button><button class="text-button" data-action="account" data-mode="recover">Forgot password?</button></div>` : '<p>Account sign-in is unavailable in this configuration. No private token is required to use the browser workspace.</p>'}<details><summary>Existing browser-only work or offline use</summary><p>Browser-only work stays on this device and is not saved to an account. Your existing guest workspace has been preserved.</p><button class="button" data-action="guest-opt-in">Use browser-only workspace</button></details></section></main>`;
 }
 function settingRow(label, description, action, { value = "", view: targetView = "", id = "", disabled = false } = {}) {
   const content = `<span class="setting-copy"><span class="setting-label">${e(label)}</span>${description ? `<span class="setting-description">${e(description)}</span>` : ""}</span><span class="setting-trailing">${value ? `<span class="setting-value">${e(value)}</span>` : ""}${action ? '<span class="setting-chevron" aria-hidden="true">›</span>' : ""}</span>`;
@@ -211,7 +229,7 @@ function settingRow(label, description, action, { value = "", view: targetView =
 }
 function settingsPage() {
   const signedIn = Boolean(accounts.user && activeStore !== STORE);
-  return `<div class="settings-page"><div class="page-heading"><h1>Settings</h1></div><section aria-labelledby="settings-account-heading"><h2 id="settings-account-heading" class="settings-group-title">Account & saving</h2><div class="settings-group">${signedIn ? settingRow("Signed in", accounts.user.email, "account") : settingRow("Sign in", "Keep your repertoire across devices", "account") }<div class="setting-row"><span class="setting-copy"><span class="setting-label">${signedIn ? "Account autosave" : "Browser saving"}</span><span id="settings-save-status" class="setting-description" role="status">${signedIn ? e(saveLabel(accountSave,state)) : "Saved on this device only"}</span></span><span class="setting-trailing"><span id="settings-save-value" class="setting-value">${signedIn ? (accountSave.phase === "saving" ? "Saving…" : autosave.enabled ? "On" : "Paused") : "On"}</span></span></div>${signedIn ? settingRow("Save now / retry", "", "retry-autosave", {id:"settings-save-now",disabled:["saving","checking","conflict","review"].includes(accountSave.phase)}) + settingRow("Review saved account workspace", "", "cloud-load") : ""}</div><p class="settings-footnote">Changes save in this browser after each action. Account uploads pause when offline or when another device has saved a newer copy.</p></section><section aria-labelledby="settings-preferences-heading"><h2 id="settings-preferences-heading" class="settings-group-title">Preferences</h2><div class="settings-group">${settingRow("Edit church profile", "", "setup-profile", {value:denominations[state.profile.denomination]})}${settingRow("Rating criteria", "", "nav", {view:"profile",value:activeCriteria(state.profile).length+" active"})}<button class="setting-row" role="switch" aria-label="AI labels" aria-checked="${state.profile.aiLabels}" data-action="toggle-ai-labels"><span class="setting-copy"><span class="setting-label">AI labels</span><span class="setting-description">Identify generated ratings and content</span></span><span class="setting-switch" aria-hidden="true"></span></button></div></section><details class="settings-advanced" data-disclosure-key="settings:advanced"><summary>Advanced account tools</summary><div class="settings-group">${settingRow("Backup & restore", "Download or restore a workspace copy", "backup")}${signedIn ? settingRow("Retry profile sync", "", "sync-profile") + settingRow("Import previous browser-only workspace", "Review before replacing account data", "copy-browser") + settingRow("ChatGPT connections", "Manage read-only access", "chatgpt-connections") : ""}</div><p class="settings-footnote">Keep an independent backup. Browser storage and account uploads cannot guarantee recovery after every device or network failure.</p></details></div>`;
+  return `<div class="settings-page"><div class="page-heading"><h1>Settings</h1></div><section aria-labelledby="settings-account-heading"><h2 id="settings-account-heading" class="settings-group-title">Account & saving</h2><div class="settings-group">${signedIn ? settingRow("Signed in", accounts.user.email, "account") + settingRow("Organizations", "Shared libraries, plans and member access", "organizations") + settingRow("Change password", "", "change-password") : settingRow("Sign in", "Keep your repertoire across devices", "account") }<div class="setting-row"><span class="setting-copy"><span class="setting-label">${signedIn ? (activeOrganization ? "Shared sync" : "Account autosave") : "Browser saving"}</span><span id="settings-save-status" class="setting-description" role="status">${signedIn ? e(activeOrganization?organizationSaveLabel():saveLabel(accountSave,state)) : "Saved on this device only"}</span></span><span class="setting-trailing"><span id="settings-save-value" class="setting-value">${signedIn ? (accountSave.phase === "saving" ? "Saving…" : autosave.enabled ? "On" : "Paused") : "On"}</span></span></div>${signedIn ? settingRow("Save now / retry", "", "retry-autosave", {id:"settings-save-now",disabled:["saving","checking","conflict","review"].includes(accountSave.phase)}) + settingRow("Review saved account workspace", "", "cloud-load") : ""}</div><p class="settings-footnote">Changes save in this browser after each action. Account uploads pause when offline or when another device has saved a newer copy.</p></section><section aria-labelledby="settings-preferences-heading"><h2 id="settings-preferences-heading" class="settings-group-title">Preferences</h2><div class="settings-group">${settingRow("Edit church profile", "", "setup-profile", {value:denominations[state.profile.denomination]})}${settingRow("Rating criteria", "", "nav", {view:"profile",value:activeCriteria(state.profile).length+" active"})}<button class="setting-row" role="switch" aria-label="AI labels" aria-checked="${effectiveProfile().aiLabels}" data-action="toggle-ai-labels"><span class="setting-copy"><span class="setting-label">AI labels</span><span class="setting-description">Identify generated ratings and content</span></span><span class="setting-switch" aria-hidden="true"></span></button></div></section><details class="settings-advanced" data-disclosure-key="settings:advanced"><summary>Advanced account tools</summary><div class="settings-group">${settingRow("Backup & restore", "Download or restore a workspace copy", "backup")}${signedIn ? settingRow("Retry profile sync", "", "sync-profile") + settingRow("Private organization drafts", "Unsynced copies kept in this browser", "organization-drafts") + settingRow("Previous church-use decisions", "Move previous decisions into optional libraries", "starter-libraries") + (!activeOrganization ? settingRow("Import previous browser-only workspace", "Review before replacing account data", "copy-browser") : "") + settingRow("ChatGPT connections", "Manage read-only access", "chatgpt-connections") : ""}</div><p class="settings-footnote">Keep an independent backup. Browser storage and account uploads cannot guarantee recovery after every device or network failure.</p></details></div>`;
 }
 function accountLoadingScreen() {
   return `<main class="account-startup" data-screen="account-loading" aria-busy="true"><div class="account-startup-content"><div class="startup-brand">Faithful Repertoire</div><div class="startup-indicator" aria-hidden="true"></div><h1>Opening your repertoire</h1><p role="status">${accountCheckSlow ? "Your connection is taking a little longer." : "Checking your saved sign-in…"}</p><p class="startup-caption">${accountCheckSlow ? "You can open your saved browser copy while account sync is paused." : "Your saved songs and plans will be ready shortly."}</p>${accountCheckSlow ? '<div class="startup-actions"><button class="button primary" data-action="open-local-account">Open saved browser copy</button><button class="text-button" data-action="retry-account-check">Try again</button></div>' : ""}</div></main>`;
@@ -247,10 +265,18 @@ async function startAccountCheck(confirmation = null) {
     if (accounts.user) {
       if (activeStore === STORE) switchWorkspace(accounts.user);
       await loadAccountProfile();
+      try {
+        await refreshOrganizations();
+        if(!activeOrganization) {
+          const last=localStorage.getItem(`faithful-repertoire-last-organization:${accounts.user.id}`),org=organizationList.find(o=>o.id===last);
+          if(org)await switchOrganization(org);
+        }
+      }catch{organizationServiceAvailable=false;}
     }
     if (version !== accountCheckVersion) return;
     if (type === "recovery") modal('<h2>Choose a new password</h2><form id="password-form"><label>New password<input name="password" type="password" minlength="10" autocomplete="new-password" required></label><p id="account-error" role="alert"></p><div class="form-actions"><button class="button primary">Update password</button></div></form>');
     render();
+    if(organizationInvitations.length && (confirmation || new URLSearchParams(location.search).has("invitation")))await organizationDialog();
   } catch (error) {
     if (version !== accountCheckVersion) return;
     accountReady = true; accountCheckSlow = false;
@@ -266,6 +292,8 @@ async function startAccountCheck(confirmation = null) {
 }
 
 function persist() {
+  if(!activeOrganization)personalAI={aiMode:state.profile.aiMode,aiLabels:state.profile.aiLabels};
+  if(activeOrganization&&!editableWorkspace()&&organizationBase&&workspaceSignature(state)!==workspaceSignature(organizationBase)) {state=clone(organizationBase);toast("This organization is view only.");return false;}
   try {
     localStorage.setItem(activeStore, JSON.stringify(state));
     localSaveFailed = false;
@@ -281,9 +309,11 @@ function persist() {
   }
 }
 function commitWorkspace(next) {
+  if(!editableWorkspace()){toast("This organization is view only.");return false;}
   try {
     localStorage.setItem(activeStore, JSON.stringify(next));
     state = next;
+    if(!activeOrganization)personalAI={aiMode:state.profile.aiMode,aiLabels:state.profile.aiLabels};
     localSaveFailed = false;
     queueAccountSave();
     updateSaveStrip();
@@ -311,10 +341,10 @@ const tagList = (items) =>
 function statusLabel(review) {
   return (
     {
-      starter: "Starter assessment",
-      manual: "Your assessment",
-      ai: "AI draft · review required",
-    }[review.status] || "Awaiting assessment"
+      starter: "Catalog evaluation",
+      manual: "Your evaluation",
+      ai: "AI evaluation · verify before use",
+    }[review.status] || "Not evaluated"
   );
 }
 function discoveryControls(pool) {
@@ -328,16 +358,7 @@ function discoveryControls(pool) {
     )
     .join(
       "",
-    )}</select></label><label>Assessment<select id="review-filter" aria-label="Assessment"><option value="">All assessments</option><option value="unreviewed" ${reviewFilter === "unreviewed" ? "selected" : ""}>Awaiting assessment</option><option value="assessed" ${reviewFilter === "assessed" ? "selected" : ""}>Has an assessment</option></select></label><label>Theme<select id="theme-filter" aria-label="Theme"><option value="">All themes</option>${themes.map((t) => `<option value="${e(t)}" ${t === themeFilter ? "selected" : ""}>${e(t)}</option>`).join("")}</select></label><label>Church use<select id="approval-filter" aria-label="Church use"><option value="">All decisions</option>${Object.entries(
-    approvalLabels,
-  )
-    .map(
-      ([value, label]) =>
-        `<option value="${value}" ${value === approvalFilter ? "selected" : ""}>${e(label)}</option>`,
-    )
-    .join(
-      "",
-    )}</select></label><label>Sort by<select id="sort-order" aria-label="Sort by">${[
+    )}</select></label><label>Evaluation<select id="review-filter" aria-label="Evaluation"><option value="">All evaluations</option><option value="unreviewed" ${reviewFilter === "unreviewed" ? "selected" : ""}>Not evaluated</option><option value="assessed" ${reviewFilter === "assessed" ? "selected" : ""}>Has an evaluation</option></select></label><label>Theme<select id="theme-filter" aria-label="Theme"><option value="">All themes</option>${themes.map((t) => `<option value="${e(t)}" ${t === themeFilter ? "selected" : ""}>${e(t)}</option>`).join("")}</select></label><label>Sort by<select id="sort-order" aria-label="Sort by">${[
     ["default", "Catalog order"],
     ["title", "Title A–Z"],
     ["rating", "Overall rating"],
@@ -358,13 +379,13 @@ function churchDecision(song) {
 function catalogComparison(song) {
   if (
     !song.catalogReview ||
-    (state.profile.aiMode !== "full" && song.catalogReview.status === "ai")
+    (effectiveProfile().aiMode !== "full" && song.catalogReview.status === "ai")
   )
     return "";
   const base = song.catalogReview;
   if (base.status === "unreviewed")
     return '<details class="catalog-comparison"><summary>Catalog title record</summary><p class="muted">This catalog entry identifies a title and attribution or associated recording. No lyric assessment, musical measurement, source verification or church approval is implied.</p></details>';
-  const displayed = reviewForDisplay(song, state.profile.aiMode);
+  const displayed = reviewForDisplay(song, effectiveProfile().aiMode);
   return `<details class="catalog-comparison"><summary>${song.review.status === "starter" ? "Catalog assessment & provenance" : "Compare with the catalog assessment"}</summary><p class="muted">${base.status === "ai" ? "Prewritten AI draft" : "Catalog assessment"} · revision ${e(song.catalogRevision)}. Verify the exact version. ${aiLabel(song, base, "summary")}</p><table><caption>Assessment scores</caption><thead><tr><th>Dimension</th><th>Catalog</th><th>Current</th></tr></thead><tbody>${Object.entries(
     dimensions,
   )
@@ -379,7 +400,7 @@ function catalogComparison(song) {
 function approvalDialog(song) {
   const decision = song.approval;
   modal(
-    `<h2>Review ${e(song.title)}</h2><p class="muted">This is your church’s decision, separate from the song’s score. Confirm the exact version and any concerns before approving it.</p>${reviewForDisplay(song, state.profile.aiMode).concern === "serious" ? '<p class="approval-warning">This assessment identifies a serious doctrinal concern. Explain your reasoning if you approve its use.</p>' : ""}<form id="approval-form" data-id="${e(song.id)}"><label>Church-use decision<select name="status" aria-label="Church-use decision">${Object.entries(
+    `<h2>Review ${e(song.title)}</h2><p class="muted">This is your church’s decision, separate from the song’s score. Confirm the exact version and any concerns before approving it.</p>${reviewForDisplay(song, effectiveProfile().aiMode).concern === "serious" ? '<p class="approval-warning">This assessment identifies a serious doctrinal concern. Explain your reasoning if you approve its use.</p>' : ""}<form id="approval-form" data-id="${e(song.id)}"><label>Church-use decision<select name="status" aria-label="Church-use decision">${Object.entries(
       approvalLabels,
     )
       .map(
@@ -398,16 +419,17 @@ function updateApprovalRequirements(form, song) {
   form.elements.notes.required =
     ["context", "avoid"].includes(value) ||
     (value === "approved" &&
-      reviewForDisplay(song, state.profile.aiMode).concern === "serious");
+      reviewForDisplay(song, effectiveProfile().aiMode).concern === "serious");
 }
 function profilePrompt() {
+  if(!editableWorkspace())return "";
   if (view === "profile") return "";
   if (!state.profile.setupComplete)
     return `<section class="onboarding-prompt"><div><span class="eyebrow">START WITH YOUR CHURCH</span><h2>Make this repertoire your own.</h2><p>Choose your denomination, a statement of faith, and how much AI content you want to see.</p></div><button class="button primary" data-action="setup-profile">Build my profile</button></section>`;
   return "";
 }
 function wizard(step = 1) {
-  if (step === 1) wizardDraft = withProfileDefaults(state.profile);
+  if (step === 1) wizardDraft = withProfileDefaults(effectiveProfile());
   const draft = wizardDraft;
   let fields;
   if (step === 1)
@@ -457,6 +479,8 @@ function resetSelection() {
   importDraft = null;
 }
 function switchWorkspace(user = null) {
+  activeOrganization=null;organizationBase=null;organizationRevision=null;pendingOrganizationRemote=null;organizationLoadVersion++;
+  if(!user){organizationList=[];organizationInvitations=[];}
   autosave.reset(false);
   accountSave = { phase: "local", signature: null, remoteAvailable: false };
   activeStore = user ? `faithful-repertoire-user:${user.id}` : STORE;
@@ -472,12 +496,14 @@ function switchWorkspace(user = null) {
     );
     return false;
   }
+  personalAI={aiMode:state.profile.aiMode,aiLabels:state.profile.aiLabels};
   resetSelection();
   persist();
   render();
   return true;
 }
 async function saveAccountProfile() {
+  if(activeOrganization){await savePersonalAIPreferences();return true;}
   if (!accounts.user) return false;
   try {
     await accounts.saveProfile(state.profile);
@@ -490,6 +516,7 @@ async function saveAccountProfile() {
   }
 }
 async function loadAccountProfile() {
+  if(activeOrganization){await syncOrganization(true);return;}
   if (!accounts.user) return;
   const owner = accounts.user.id,
     store = activeStore;
@@ -497,6 +524,7 @@ async function loadAccountProfile() {
   if (accounts.user?.id !== owner || activeStore !== store) return;
   if (profile && !state.profile.setupComplete) {
     state.profile = withProfileDefaults(profile);
+    personalAI={aiMode:state.profile.aiMode,aiLabels:state.profile.aiLabels};
     persist();
     render();
   }
@@ -504,17 +532,18 @@ async function loadAccountProfile() {
 }
 function saveStrip(open = document.querySelector("#account-save-strip")?.open) {
   if (!accounts.user || activeStore === STORE) return "";
-  return `<details class="account-save-strip" id="account-save-strip" ${open ? "open" : ""}><summary>${accountSave.phase === "saving" ? "Saving…" : accountSave.signature === workspaceSignature(state) ? "Saved" : ["error","conflict","review"].includes(accountSave.phase) ? "Save needs attention" : "Autosave"}</summary><div class="sync-menu-content"><span role="status">${e(saveLabel(accountSave, state))}</span><div><button class="text-button" data-action="retry-autosave" ${["saving","checking","conflict","review"].includes(accountSave.phase) ? "disabled" : ""}>Save now / retry</button>${accountSave.remoteAvailable ? '<button class="text-button" data-action="cloud-load">Review saved account workspace</button>' : ""}</div></div></details>`;
+  return `<details class="account-save-strip" id="account-save-strip" ${open ? "open" : ""}><summary>${accountSave.phase === "saving" ? "Saving…" : accountSave.signature === workspaceSignature(state) ? "Saved" : ["error","conflict","review"].includes(accountSave.phase) ? "Save needs attention" : "Autosave"}</summary><div class="sync-menu-content"><span role="status">${e(activeOrganization ? organizationSaveLabel() : saveLabel(accountSave, state))}</span><div><button class="text-button" data-action="retry-autosave" ${["saving","checking","conflict","review"].includes(accountSave.phase) ? "disabled" : ""}>Save now / retry</button>${accountSave.remoteAvailable ? '<button class="text-button" data-action="cloud-load">Review saved account workspace</button>' : ""}</div></div></details>`;
 }
 function updateSaveStrip() {
   const strip = document.querySelector("#account-save-strip");
   if (strip) strip.outerHTML = saveStrip();
   const status = document.querySelector("#settings-save-status"), value = document.querySelector("#settings-save-value"), save = document.querySelector("#settings-save-now");
-  if (status && accounts.user) status.textContent = saveLabel(accountSave,state);
+  if (status && accounts.user) status.textContent = activeOrganization ? organizationSaveLabel() : saveLabel(accountSave,state);
   if (value && accounts.user) value.textContent = accountSave.phase === "saving" ? "Saving…" : autosave.enabled ? "On" : "Paused";
   if (save) save.disabled = ["saving","checking","conflict","review"].includes(accountSave.phase);
 }
 async function checkAccountCopy() {
+  if(activeOrganization){await syncOrganization(true);return;}
   const owner = accounts.user?.id,
     store = activeStore;
   accountSave.phase = "checking";
@@ -613,7 +642,7 @@ function render() {
     ["index", "", "Song index"],
     ["collections", "", "Collections"],
     ["library", "", "Song libraries"],
-    ["plans", "", "Worship plans"],
+    ["plans", "", "Plans"],
     ["blacklist", "", "Blacklist"],
     ["profile", "", "Rating profile"],
     ["settings", "", "Settings"],
@@ -624,7 +653,7 @@ function render() {
     )
     .join(
       "",
-    )}</nav><div class="sidebar-bottom"><button class="text-button" data-action="export">↓ Export your data</button></div></aside><main><header class="topbar"><span>Faithful Repertoire <span class="divider">/</span> ${e({ discover: "Discover", index: "Song index", collections: "Collections", library: "Libraries", plans: "Planning", profile: "Preferences", settings: "Settings", blacklist: "Blacklist" }[view])}</span><div class="topbar-actions">${saveStrip()}<button class="button" data-action="account">${accounts.user && activeStore !== STORE ? "My account" : "Sign in"}</button><button class="button" data-action="nav" data-view="settings">Settings</button></div></header><div class="page">${activeStore === STORE ? '<p class="guest-banner" role="status">Browser-only workspace · saved on this device. <button class="text-button" data-action="account">Sign in to save across devices</button></p>' : ""}${profilePrompt()}${["discover", "library", "blacklist"].includes(view) ? songWorkspace() : view === "index" ? indexPage() : view === "collections" ? collectionsPage() : view === "plans" ? plansPage() : view === "settings" ? settingsPage() : profilePage()}</div><footer>Faithful Repertoire</footer></main>`;
+    )}</nav><div class="sidebar-bottom"><button class="text-button" data-action="export">↓ Export your data</button></div></aside><main><header class="topbar"><span>Faithful Repertoire <span class="divider">/</span> ${e({ discover: "Discover", index: "Song index", collections: "Collections", library: "Libraries", plans: "Plans", profile: "Preferences", settings: "Settings", blacklist: "Blacklist" }[view])}</span><div class="topbar-actions">${accounts.user&&activeStore!==STORE?`<label class="workspace-switch"><span class="workspace-label-small">Workspace</span><select id="workspace-select" aria-label="Workspace"><option value="personal">Personal</option></select></label>`:""}${saveStrip()}<button class="button" data-action="account">${accounts.user && activeStore !== STORE ? "My account" : "Sign in"}</button><button class="button" data-action="nav" data-view="settings">Settings</button></div></header><div class="page">${activeStore === STORE ? '<p class="guest-banner" role="status">Browser-only workspace · saved on this device. <button class="text-button" data-action="account">Sign in to save across devices</button></p>' : ""}${activeOrganization?`<p class="organization-banner" role="status"><strong>${e(activeOrganization.name)}</strong> · ${e(organizationRoles[activeOrganization.role])}${editableWorkspace()?" · Shared changes sync automatically":" · Changes are disabled in this workspace"}</p>`:""}${profilePrompt()}${["discover", "library", "blacklist"].includes(view) ? songWorkspace() : view === "index" ? indexPage() : view === "collections" ? collectionsPage() : view === "plans" ? plansPage() : view === "settings" ? settingsPage() : profilePage()}</div><footer>Faithful Repertoire</footer></main>`;
   for (const node of app.querySelectorAll("details")) {
     const key = node.dataset.disclosureKey || (node.closest(".detail-panel")
       ? "song:" + selected + ":" + (node.dataset.attribute || node.className)
@@ -636,6 +665,7 @@ function render() {
   }
   const resultList = app.querySelector(".song-list");
   if (resultList) resultList.scrollTop = listScroll;
+  updateWorkspaceSwitcher();restrictOrganizationControls();
 }
 function songWorkspace() {
   const isLibrary = view === "library";
@@ -648,7 +678,7 @@ function songWorkspace() {
       : isBlacklist ? state.songs.filter(s => s.blacklisted) : browsableSongs()
   ).map((song) => ({
     ...song,
-    themes: themesForDisplay(song, state.profile.aiMode),
+    themes: themesForDisplay(song, effectiveProfile().aiMode),
   }));
   const songs = discoverSongs(
     searchSongs(pool, query).filter(
@@ -656,8 +686,8 @@ function songWorkspace() {
         (!typeFilter || (s.category || "other") === typeFilter) &&
         (!reviewFilter ||
           (reviewFilter === "unreviewed"
-            ? reviewForDisplay(s, state.profile.aiMode).status === "unreviewed"
-            : reviewForDisplay(s, state.profile.aiMode).status !==
+            ? reviewForDisplay(s, effectiveProfile().aiMode).status === "unreviewed"
+            : reviewForDisplay(s, effectiveProfile().aiMode).status !==
               "unreviewed")),
     ),
     { theme: themeFilter, approval: approvalFilter, sort: sortOrder },
@@ -668,7 +698,7 @@ function songWorkspace() {
       ? searchSongs(
           availableCatalog().map((s) => ({
             ...s,
-            themes: themesForDisplay(s, state.profile.aiMode),
+            themes: themesForDisplay(s, effectiveProfile().aiMode),
           })),
           query,
         ).filter((song) => !existingMatch(state, song))
@@ -686,7 +716,7 @@ function songWorkspace() {
       (s) => s.id === selected && shown.some((x) => x.id === s.id),
     ) || shown[0];
   if (song) selected = song.id;
-  return `<div class="page-heading"><div><h1>${isBlacklist ? "Blacklist" : isLibrary ? "Your song libraries" : "Discover songs"}</h1></div><button class="button primary" data-action="${isLibrary ? "new-library" : "new-song"}">+ ${isLibrary ? "New library" : "Add a song"}</button></div>${isLibrary ? `${libraryToolbar(lib)}<div class="library-tabs">${state.libraries.map((l) => `<button class="${l.id === lib?.id ? "selected" : ""}" data-action="library-select" data-id="${e(l.id)}">${e(l.name)} <span>${l.songIds.filter(id => browsableSongs().some(s => s.id === id)).length}</span></button>`).join("")}</div>` : `<div class="collection-prompt"><button class="text-button" data-action="nav" data-view="collections">Browse collections</button></div>`}<div class="search-row"><label class="search-box"><span>⌕</span><input id="search" type="search" value="${e(query)}" placeholder="Search by title, writer, or theme…" aria-label="Search songs"></label><span class="result-count">${songs.length} song${songs.length === 1 ? "" : "s"}</span></div>${isBlacklist ? '<p class="muted">Dismissed songs appear only here. Restore a song to see it elsewhere again.</p>' : ""}${catalogMatches(available)}<details class="filter-panel"><summary>Filters & sorting</summary>${discoveryControls(pool)}</details><div class="song-workspace"><section class="song-list" aria-label="Song results" tabindex="0">${songs.length ? shown.map((s) => songCard(s, s.id === song.id)).join("") : `<div class="empty"><span>♫</span><h3>${query ? "No matching songs" : "A repertoire starts with one song."}</h3><p>${query ? "Try another title or add a song to review." : "Find a song in Discover and save it here."}</p><button class="button" data-action="${query ? "new-song" : "nav"}" data-view="discover">${query ? "Add a song" : "Discover songs"}</button></div>${closestMatches(nearby)}`}${pagination("song", songPage, songs.length, PAGE_SIZE)}<div class="catalog-note">${isLibrary ? "Library membership does not imply church approval." : `${state.songs.length} workspace songs · ${allCatalogSongs.length} records in Collections · includes AI drafts and unrated titles.`}</div></section>${song ? songDetail(song, isLibrary ? lib : null) : '<section class="detail-panel empty"><h2>Your next song belongs here.</h2><p>Save an existing song or add one to begin a review.</p></section>'}</div>`;
+  return `<div class="page-heading"><div><h1>${isBlacklist ? "Blacklist" : isLibrary ? "Your song libraries" : "Discover songs"}</h1></div><button class="button primary" data-action="${isLibrary ? "new-library" : "new-song"}">+ ${isLibrary ? "New library" : "Add a song"}</button></div>${isLibrary ? `${libraryToolbar(lib)}<div class="library-tabs">${state.libraries.map((l) => `<button class="${l.id === lib?.id ? "selected" : ""}" data-action="library-select" data-id="${e(l.id)}">${e(l.name)} <span>${l.songIds.filter(id => browsableSongs().some(s => s.id === id)).length}</span></button>`).join("")}</div>` : `<div class="collection-prompt"><button class="text-button" data-action="nav" data-view="collections">Browse collections</button></div>`}<div class="search-row"><label class="search-box"><span>⌕</span><input id="search" type="search" value="${e(query)}" placeholder="Search by title, writer, or theme…" aria-label="Search songs"></label><span class="result-count">${songs.length} song${songs.length === 1 ? "" : "s"}</span></div>${isBlacklist ? '<p class="muted">Dismissed songs appear only here. Restore a song to see it elsewhere again.</p>' : ""}${catalogMatches(available)}<details class="filter-panel"><summary>Filters & sorting</summary>${discoveryControls(pool)}</details><div class="song-workspace"><section class="song-list" aria-label="Song results" tabindex="0">${songs.length ? shown.map((s) => songCard(s, s.id === song.id)).join("") : `<div class="empty"><span>♫</span><h3>${query ? "No matching songs" : "A repertoire starts with one song."}</h3><p>${query ? "Try another title or add a song to review." : "Find a song in Discover and save it here."}</p><button class="button" data-action="${query ? "new-song" : "nav"}" data-view="discover">${query ? "Add a song" : "Discover songs"}</button></div>${closestMatches(nearby)}`}${pagination("song", songPage, songs.length, PAGE_SIZE)}<div class="catalog-note">${isLibrary ? "Organize decisions with libraries; evaluations remain separate." : `${state.songs.length} workspace songs · ${allCatalogSongs.length} records in Collections · includes AI drafts and unrated titles.`}</div></section>${song ? songDetail(song, isLibrary ? lib : null) : '<section class="detail-panel empty"><h2>Your next song belongs here.</h2><p>Save an existing song or add one to begin a review.</p></section>'}</div>`;
 }
 function closestMatches(songs) {
   if (!songs.length) return "";
@@ -717,7 +747,7 @@ function collectionBody(pack) {
   const shown = songs.slice((page - 1) * 30, page * 30);
   return `<p class="muted">${e(pack.description)}</p><div class="collection-bulk-actions"><button class="button primary" data-action="collection-import-all" data-id="${e(pack.id)}">Import all songs</button><button class="button" data-action="collection-preview" data-id="${e(pack.id)}">Preview & import</button></div><ul class="collection-songs">${shown.map(record => {
     const song = existingMatch(state, record) || record;
-    return `<li><div><button class="text-button collection-song-title" data-action="collection-song-action" data-song-action="index-open" data-id="${e(record.id)}">${e(song.title)}</button><small>${e(song.author)}</small></div><details class="more-menu"><summary aria-label="Actions for ${e(song.title)}">Actions</summary><div class="menu-items">${[["save-song","Add to library"],["add-to-plan","Add to plan"],["blacklist-song","Add to blacklist"],["song-recordings","Listen / recording links"],["song-files","Add files to song"],["new-arrangement","Add arrangement"],["edit-review","Add human evaluation"],["edit-index","Edit song details"],...(state.profile.aiMode === "manual" ? [] : [["chatgpt-evaluation","Generate AI evaluation"]])].map(([action,label]) => `<button class="text-button" data-action="collection-song-action" data-song-action="${action}" data-id="${e(record.id)}">${label}</button>`).join("")}</div></details></li>`;
+    return `<li><div><button class="text-button collection-song-title" data-action="collection-song-action" data-song-action="index-open" data-id="${e(record.id)}">${e(song.title)}</button><small>${e(song.author)}</small></div><details class="more-menu"><summary aria-label="Actions for ${e(song.title)}">Actions</summary><div class="menu-items">${[["save-song","Add to library"],["add-to-plan","Add to plan"],["blacklist-song","Add to blacklist"],["song-recordings","Listen / recording links"],["song-files","Add files to song"],["new-arrangement","Add arrangement"],["edit-review","Add human evaluation"],["edit-index","Edit song details"],...(effectiveProfile().aiMode === "manual" ? [] : [["chatgpt-evaluation","Generate AI evaluation"]])].map(([action,label]) => `<button class="text-button" data-action="collection-song-action" data-song-action="${action}" data-id="${e(record.id)}">${label}</button>`).join("")}</div></details></li>`;
   }).join("") || '<li>No visible songs at this depth.</li>'}</ul>${songs.length > 30 ? `<div class="pagination"><span>${(page-1)*30+1}–${Math.min(page*30,songs.length)} of ${songs.length}</span><button class="button" data-action="collection-page" data-id="${e(pack.id)}" data-page="${page-1}" ${page===1 ? "disabled" : ""}>Previous</button><button class="button" data-action="collection-page" data-id="${e(pack.id)}" data-page="${page+1}" ${page*30>=songs.length ? "disabled" : ""}>Next</button></div>` : ""}`;
 }
 function collectionsPage() {
@@ -751,16 +781,16 @@ function importDialog() {
             )
             .join("")}</select></label>`
         : ""
-    }<label>Save into<select name="target" aria-label="Import target"><option value="__new__" ${draft.target === "__new__" ? "selected" : ""}>A new library</option>${state.libraries.map((l) => `<option value="${e(l.id)}" ${draft.target === l.id ? "selected" : ""}>${e(l.name)}</option>`).join("")}</select></label><label>New library name<input name="name" maxlength="100" value="${e(draft.name)}" ${draft.target === "__new__" ? "required" : "disabled"}></label>${draft.bulk ? '<p>All visible songs will be imported. Existing reviews and notes are preserved.</p>' : `<div class="selection-actions"><button type="button" class="text-button" data-action="import-select-all">Select all</button><button type="button" class="text-button" data-action="import-select-none">Select none</button></div><div class="import-song-list">${draft.songs.map((s) => `<label class="import-song"><input type="checkbox" name="songs" value="${e(s.id)}" checked><span><strong>${e(s.title)}</strong><small>${e(s.author)}</small><small>${existingMatch(state, s) ? "Existing record · your review will be kept" : s.review.status === "ai" ? "AI draft rating · verify text" : "Catalog assessment"}</small></span></label>`).join("")}</div>`}<p class="index-help">Library membership is separate from approval. No lyrics are downloaded and no AI requests are sent. CSV title-list imports do not restore ratings; use a JSON backup to transfer complete reviews.</p><p id="import-error" role="alert"></p><div class="form-actions"><button type="button" class="button" data-action="close">Cancel</button><button class="button primary">${draft.bulk ? "Import all songs" : "Import selected songs"}</button></div></form>`,
+    }<label>Save into<select name="target" aria-label="Import target"><option value="__new__" ${draft.target === "__new__" ? "selected" : ""}>A new library</option>${state.libraries.map((l) => `<option value="${e(l.id)}" ${draft.target === l.id ? "selected" : ""}>${e(l.name)}</option>`).join("")}</select></label><label>New library name<input name="name" maxlength="100" value="${e(draft.name)}" ${draft.target === "__new__" ? "required" : "disabled"}></label>${draft.bulk ? '<p>All visible songs will be imported. Existing reviews and notes are preserved.</p>' : `<div class="selection-actions"><button type="button" class="text-button" data-action="import-select-all">Select all</button><button type="button" class="text-button" data-action="import-select-none">Select none</button></div><div class="import-song-list">${draft.songs.map((s) => `<label class="import-song"><input type="checkbox" name="songs" value="${e(s.id)}" checked><span><strong>${e(s.title)}</strong><small>${e(s.author)}</small><small>${existingMatch(state, s) ? "Existing record · your review will be kept" : s.review.status === "ai" ? "AI draft rating · verify text" : "Catalog assessment"}</small></span></label>`).join("")}</div>`}<p class="index-help">Use your own libraries to organize decisions. No lyrics are downloaded and no AI requests are sent. CSV title-list imports do not restore ratings; use a JSON backup to transfer complete reviews.</p><p id="import-error" role="alert"></p><div class="form-actions"><button type="button" class="button" data-action="close">Cancel</button><button class="button primary">${draft.bulk ? "Import all songs" : "Import selected songs"}</button></div></form>`,
   );
 }
 function libraryToolbar(lib) {
-  return `${state.profile.aiMode === "full" ? `<button class="button" data-action="library-audit" data-id="${e(lib?.id)}">Run Library Audit</button>` : `<p class="muted">Library interpretation requires Full AI content in your rating profile.</p>`}<details class="library-toolbar"><summary>Library tools</summary><div><button class="text-button" data-action="rename-library" data-id="${e(lib?.id)}">Rename</button><button class="text-button" data-action="export-library" data-id="${e(lib?.id)}">Export song list</button><button class="text-button" data-action="csv-import">Import song list</button><button class="text-button danger" data-action="delete-library" data-id="${e(lib?.id)}" ${state.libraries.length === 1 ? "disabled" : ""}>Delete library</button></div></details>`;
+  return `${effectiveProfile().aiMode === "full" ? `<button class="button" data-action="library-audit" data-id="${e(lib?.id)}">Run Library Audit</button>` : `<p class="muted">Library interpretation requires Full AI content in your rating profile.</p>`}<details class="library-toolbar"><summary>Library tools</summary><div><button class="text-button" data-action="starter-libraries">Starter libraries</button><button class="text-button" data-action="rename-library" data-id="${e(lib?.id)}">Rename</button><button class="text-button" data-action="export-library" data-id="${e(lib?.id)}">Export song list</button><button class="text-button" data-action="csv-import">Import song list</button><button class="text-button danger" data-action="delete-library" data-id="${e(lib?.id)}" ${state.libraries.length === 1 ? "disabled" : ""}>Delete library</button></div></details>`;
 }
 function songCard(s, active) {
-  const displayedReview = reviewForDisplay(s, state.profile.aiMode);
+  const displayedReview = reviewForDisplay(s, effectiveProfile().aiMode);
   const score = overall(displayedReview, state.profile);
-  return `<button class="song-card ${active ? "selected" : ""}" data-action="song-select" data-id="${e(s.id)}"><div class="song-card-top"><span class="song-symbol">♫</span><span class="card-score">${score ?? "—"}${aiLabel(s, displayedReview, "scores")}<small>/10</small></span></div><h3>${e(s.title)}</h3><p>${e(s.author)}</p><div class="tags">${tagList(themesForDisplay(s, state.profile.aiMode).slice(0, 2))}${aiLabel(s, displayedReview, "themes")}</div><div class="card-bottom"><span>${e(s.approval?.status !== "unreviewed" ? approvalLabels[s.approval.status] : statusLabel(displayedReview))}</span><span>›</span></div></button>`;
+  return `<button class="song-card ${active ? "selected" : ""}" data-action="song-select" data-id="${e(s.id)}"><div class="song-card-top">${coverMarkup(s,"card-art") || '<span class="song-symbol">♫</span>'}<span class="card-score">${score ?? "—"}${aiLabel(s, displayedReview, "scores")}<small>/10</small></span></div><h3>${e(s.title)}</h3><p>${e(s.author)}</p><div class="tags">${tagList(themesForDisplay(s, effectiveProfile().aiMode).slice(0, 2))}${aiLabel(s, displayedReview, "themes")}</div><div class="card-bottom"><span>${e(statusLabel(displayedReview))}</span><span>›</span></div></button>`;
 }
 function recordingMarkup(song, manage = true) {
   return `<div class="recording-links">${recordingLinks(song).map(link => `<a class="button" data-provider="${link.provider}" data-recording-kind="${link.exact ? "saved" : "search"}" href="${e(link.url)}" target="_blank" rel="noopener noreferrer" aria-label="${e(link.exact ? `Listen on ${link.platform}${link.label ? ": " + link.label : ""}` : `Find recordings on ${link.platform}`)}"><span>${e(link.platform)} ↗</span><small>${link.exact ? "Saved recording" : "Search recordings"}</small></a>`).join("")}</div>${manage ? `<button class="text-button" data-action="song-recordings" data-id="${e(song.id)}">Manage recording links</button>` : ""}`;
@@ -769,7 +799,7 @@ function recordingsDialog(song) {
   modal(`<h2>Recordings for ${e(song.title)}</h2><p class="muted">Save links to the versions you use.</p>${recordingMarkup({ ...song, recordings: [] }, false)}<ul class="saved-recordings">${(song.recordings || []).map(r => `<li><div><a href="${e(r.url)}" target="_blank" rel="noopener noreferrer">${e(r.label || song.title)}</a><small>${e(recordingPlatforms[r.provider])}</small></div>${song.recordings.find(first => first.provider === r.provider)?.id === r.id ? '<span class="tag">Preferred link</span>' : `<button class="text-button" data-action="prefer-recording" data-id="${e(song.id)}" data-recording="${e(r.id)}">Make preferred</button>`}<button class="text-button danger" data-action="remove-recording" data-id="${e(song.id)}" data-recording="${e(r.id)}">Remove link</button></li>`).join("")}</ul><form id="recording-form" data-id="${e(song.id)}"><label>Platform<select name="provider" aria-label="Recording platform">${Object.entries(recordingPlatforms).map(([key,label]) => `<option value="${key}">${label}</option>`).join("")}</select></label><label>Recording link<input name="url" type="url" maxlength="2000" required placeholder="Paste a song or video link"></label><label>Version label<input name="label" maxlength="300" placeholder="Official audio · album version · acoustic performance"></label><p id="recording-error" role="alert"></p><div class="form-actions"><button class="button" type="button" data-action="close">Close</button><button class="button primary">Save recording link</button></div></form>`);
 }
 function aiLabel(song, review, field) {
-  return state.profile.aiLabels && isAiField(song, review, field)
+  return effectiveProfile().aiLabels && isAiField(song, review, field)
     ? '<span class="ai-mark" role="img" aria-label="AI generated" title="AI-generated content · review before use">AI</span>'
     : "";
 }
@@ -785,18 +815,18 @@ function evaluationBox(song, review, secondary = false) {
     scriptures: specificScriptures(review.scriptures).length ? `<h3>Scripture connections</h3>${list(specificScriptures(review.scriptures))}` : "",
     language: significant(review.language) ? `<h3>Language</h3><p>${e(review.language)}</p>` : "",
     time: significant(review.time) ? `<h3>Meaningful time</h3><p>${e(review.time)}</p>` : "",
-    themes: (review.themes || (secondary ? song.catalogThemes : themesForDisplay(song, state.profile.aiMode)))?.length ? `<h3>Themes</h3>${tagList(review.themes || (secondary ? song.catalogThemes : themesForDisplay(song, state.profile.aiMode)))}` : "",
+    themes: (review.themes || (secondary ? song.catalogThemes : themesForDisplay(song, effectiveProfile().aiMode)))?.length ? `<h3>Themes</h3>${tagList(review.themes || (secondary ? song.catalogThemes : themesForDisplay(song, effectiveProfile().aiMode)))}` : "",
   };
   const content = attributeOrder(song).filter(key => !hidden.has(key)).map(key => bodies[key] ? `<section data-attribute="${e(key)}">${bodies[key]}${aiLabel(song, review, key)}</section>` : "").join("");
   const score = overall(review, state.profile);
-  return `<details class="evaluation-box ${secondary ? "secondary-evaluation" : "primary-evaluation"}" data-disclosure-key="evaluation:${e(song.id)}:${secondary ? "secondary" : "primary"}" ${!ai && !secondary ? "open" : ""}><summary><span>${title}${state.profile.aiLabels && ai ? '<span class="ai-mark" aria-label="AI generated">AI</span>' : ""}</span>${score !== null && !hidden.has("rating") ? `<strong>${score}/10</strong>` : ""}</summary><div class="evaluation-content">${ai ? '<p class="muted">AI draft · verify the exact lyric version.</p>' : ""}${!hidden.has("rating") && scores.length ? `<div class="score-grid">${scores.map(([key,label]) => `<div class="score-title">${e(label)} ${aiLabel(song,review,"scores")}<strong>${e(criterionScore(review, key))}/10</strong></div>`).join("")}</div>` : ""}${content || '<p class="muted">No evaluation entered yet.</p>'}${secondary ? `<button class="text-button" data-action="delete-ai-evaluation" data-id="${e(song.id)}">Delete AI evaluation</button>` : ""}</div></details>`;
+  return `<details class="evaluation-box ${secondary ? "secondary-evaluation" : "primary-evaluation"}" data-disclosure-key="evaluation:${e(song.id)}:${secondary ? "secondary" : "primary"}" ${!ai && !secondary ? "open" : ""}><summary><span>${title}${effectiveProfile().aiLabels && ai ? '<span class="ai-mark" aria-label="AI generated">AI</span>' : ""}</span>${score !== null && !hidden.has("rating") ? `<strong>${score}/10</strong>` : ""}</summary><div class="evaluation-content">${ai ? '<p class="muted">AI draft · verify the exact lyric version.</p>' : ""}${!hidden.has("rating") && scores.length ? `<div class="score-grid">${scores.map(([key,label]) => `<div class="score-title">${e(label)} ${aiLabel(song,review,"scores")}<strong>${e(criterionScore(review, key))}/10</strong></div>`).join("")}</div>` : ""}${content || '<p class="muted">No evaluation entered yet.</p>'}${secondary ? `<button class="text-button" data-action="delete-ai-evaluation" data-id="${e(song.id)}">Delete AI evaluation</button>` : ""}</div></details>`;
 }
 function objectiveDetails(song) {
-  return `<dl class="objective-facts">${objectiveFacts(song).map(fact => `<div><dt>${e(fact.label)}</dt><dd>${e(fact.value)}${fact.provenance && fact.provenance.confidence !== "confirmed" ? `<span class="fact-confidence" title="${e(fact.provenance.source)}">${fact.provenance.confidence === "ai" && state.profile.aiLabels ? '<span class="ai-mark" aria-label="AI generated">AI</span>' : fact.field === "minutes" ? "Estimate" : "Guess"}</span><button class="text-button" data-action="confirm-fact" data-id="${e(song.id)}" data-field="${fact.field}">Confirm</button><button class="text-button" data-action="edit-fact" data-id="${e(song.id)}" data-field="${fact.field}">Edit</button>` : ""}</dd></div>`).join("")}</dl>`;
+  return `<dl class="objective-facts">${objectiveFacts(song).map(fact => `<div><dt>${e(fact.label)}</dt><dd><span class="attribution-display">${fact.field === "author" ? `<button class="text-button inline-attribution" data-action="inline-attribution" data-id="${e(song.id)}" aria-label="Edit artist / attribution">${e(fact.value)} <span aria-hidden="true">✎</span></button>` : e(fact.value)}</span>${fact.provenance && fact.provenance.confidence !== "confirmed" ? `<span class="fact-confidence" title="${e(fact.provenance.source)}">${fact.provenance.confidence === "ai" && effectiveProfile().aiLabels ? '<span class="ai-mark" aria-label="AI generated">AI</span>' : fact.field === "minutes" ? "Estimate" : "Guess"}</span><button class="text-button" data-action="confirm-fact" data-id="${e(song.id)}" data-field="${fact.field}">Confirm</button><button class="text-button" data-action="edit-fact" data-id="${e(song.id)}" data-field="${fact.field}">Edit</button>` : ""}</dd></div>`).join("")}</dl>`;
 }
 function songDetail(song, lib) {
 
-  const visible = reviewForDisplay(song, state.profile.aiMode),
+  const visible = reviewForDisplay(song, effectiveProfile().aiMode),
     arrangement = selectedArrangement(song),
     r = arrangement
       ? { ...visible, key: arrangement.key, minutes: arrangement.minutes }
@@ -807,7 +837,7 @@ function songDetail(song, lib) {
     body
       ? `<details class="detail-section attribute-panel" data-attribute="${e(key)}" ${open ? "open" : ""}><summary>${e(title)}${aiLabel(song, r, key)}</summary>${body}</details>`
       : "";
-  const ratingMarkup = `<div class="rating-banner"><div class="overall-score">${score ?? "—"}${aiLabel(song, r, "scores")}<span>/10</span></div><div><strong>${e(recommendation(r, state.profile))}</strong><p>${r.status === "ai" ? "Provisional AI assessment" : score === null ? "Awaiting assessment" : "Your weighted rating"}</p></div></div><details class="rating-details"><summary>Rating breakdown</summary><div class="score-grid">${Object.entries(
+  const ratingMarkup = `<div class="rating-banner"><div class="overall-score">${score ?? "—"}${aiLabel(song, r, "scores")}<span>/10</span></div><div><strong>${e(recommendation(r, state.profile))}</strong><p>${r.status === "ai" ? "Provisional AI assessment" : score === null ? "Not evaluated" : "Your weighted rating"}</p></div></div><details class="rating-details"><summary>Rating breakdown</summary><div class="score-grid">${Object.entries(
     dimensions,
   )
     .filter(([key]) => r.scores[key] != null)
@@ -844,8 +874,8 @@ function songDetail(song, lib) {
     themes: section(
       "themes",
       "Themes",
-      themesForDisplay(song, state.profile.aiMode).length
-        ? `<div class="tags">${tagList(themesForDisplay(song, state.profile.aiMode))}</div>`
+      themesForDisplay(song, effectiveProfile().aiMode).length
+        ? `<div class="tags">${tagList(themesForDisplay(song, effectiveProfile().aiMode))}</div>`
         : "",
     ),
     scriptures: section(
@@ -885,7 +915,7 @@ function songDetail(song, lib) {
             '">Add arrangement</button>',
     ),
     text: section("text", "Word index", textStatsSection(song)),
-    usage: section("usage", "Service history", usageSection(song)),
+    usage: section("usage", "Plan history", usageSection(song)),
     notes: section(
       "notes",
       "Your notes",
@@ -909,33 +939,33 @@ function songDetail(song, lib) {
     .map(k => attrs[k] || "").join("")}<section class="detail-section song-files-section"><div class="section-heading"><h3>Files</h3><button class="text-button" data-action="song-files" data-id="${e(song.id)}">Manage files</button></div>${song.files?.length ? `<ul class="song-file-list">${song.files.map(file => `<li><span>${e(file.name)}</span></li>`).join("")}</ul>` : '<p class="muted">No files attached. Add charts, documents, images or audio.</p>'}</section>`;
   const sources = [
     [r, "Evaluation sources"],
-    ...(state.profile.aiMode === "full" && r.status !== "ai" && retainedAiReview(song) ? [[retainedAiReview(song), "AI evaluation sources · verify before use"]] : []),
+    ...(effectiveProfile().aiMode === "full" && r.status !== "ai" && retainedAiReview(song) ? [[retainedAiReview(song), "AI evaluation sources · verify before use"]] : []),
   ].filter(([review]) => review.sources?.length).map(([review,label]) => `<section class="detail-section"><h3>${e(label)}${aiLabel(song,review,"sources")}</h3><ul class="detail-list">${review.sources.map(source => `<li><a href="${e(source.url)}" target="_blank" rel="noopener noreferrer">${e(source.label)} ↗</a></li>`).join("")}</ul></section>`).join("");
   const resources = songResourceLinks(song);
-  const links = `${!hidden.has("recordings") ? `<section class="detail-section external-recordings"><h3>Recordings</h3>${recordingMarkup(song)}</section>` : ""}<section class="detail-section"><h3>Lyrics & public reviews</h3><div class="song-resources"><a class="button" href="${e(resources.lyrics)}" target="_blank" rel="noopener noreferrer">Find lyrics ↗</a><a class="button" href="${e(resources.reviews)}" target="_blank" rel="noopener noreferrer">Find public reviews ↗</a></div><p class="muted">Searches help you find the exact version. Search results are not verified recordings or reviews.</p></section>${!hidden.has("sources") ? sources : ""}`;
-  const evaluation = `<div class="evaluation-actions"><span class="status-badge">${e(statusLabel(r))}</span>${state.profile.aiMode !== "manual" ? `<button class="button" data-action="chatgpt-evaluation" data-id="${e(song.id)}">Generate AI evaluation</button>` : ""}</div>${churchDecision(song)}${evaluationBox(song,r)}${r.assistance ? section("assistance", "AI observations", `${state.profile.aiLabels ? '<span class="ai-mark" role="img" aria-label="AI generated">AI</span>' : ""}<p>${e(r.assistance.summary)}</p><p>${e(r.assistance.language)}</p><p>${e(r.assistance.time)}</p>`) : ""}${state.profile.aiMode === "full" && r.status !== "ai" && retainedAiReview(song) ? evaluationBox(song,retainedAiReview(song),true) : ""}${!hidden.has("sources") ? catalogComparison(song) : ""}`;
+  const links = `${!hidden.has("recordings") ? `<section class="detail-section external-recordings"><h3>Recordings</h3>${recordingMarkup(song)}</section>` : ""}<section class="detail-section"><h3>Lyrics & public reviews</h3><div class="song-resources">${hymnaryLink(song) ? `<a class="button" href="${e(hymnaryLink(song))}" target="_blank" rel="noopener noreferrer">Find hymn on Hymnary ↗</a>` : ""}<a class="button" href="${e(resources.lyrics)}" target="_blank" rel="noopener noreferrer">Find lyrics ↗</a><a class="button" href="${e(resources.reviews)}" target="_blank" rel="noopener noreferrer">Find public reviews ↗</a></div><p class="muted">Searches help you find the exact version. Search results are not verified recordings or reviews.</p></section>${!hidden.has("sources") ? sources : ""}`;
+  const evaluation = `<div class="evaluation-actions"><span class="status-badge">${e(statusLabel(r))}</span>${effectiveProfile().aiMode !== "manual" ? `<button class="button" data-action="chatgpt-evaluation" data-id="${e(song.id)}">Generate AI evaluation</button>` : ""}</div>${evaluationBox(song,r)}${r.assistance ? section("assistance", "AI observations", `${effectiveProfile().aiLabels ? '<span class="ai-mark" role="img" aria-label="AI generated">AI</span>' : ""}<p>${e(r.assistance.summary)}</p><p>${e(r.assistance.language)}</p><p>${e(r.assistance.time)}</p>`) : ""}${effectiveProfile().aiMode === "full" && r.status !== "ai" && retainedAiReview(song) ? evaluationBox(song,retainedAiReview(song),true) : ""}${!hidden.has("sources") ? catalogComparison(song) : ""}`;
   const panes = { details, links, evaluation };
   const primary = song.blacklisted
     ? `<button class="button primary" data-action="restore-blacklisted" data-id="${e(song.id)}">Restore song</button>`
     : `<button class="button primary" data-action="save-song" data-id="${e(song.id)}">${saved ? "Manage libraries" : "Add to library"}</button>`;
   const actions = [
     ...(!song.blacklisted ? [["add-to-plan","Add to plan ›"]] : []),
-    ["edit-review","Edit assessment"], ["edit-index","Edit index details"],
-    ["edit-fact","Edit artist / attribution"], ["customize-details","Customize details"],
-    ...(state.profile.aiMode !== "manual" ? [["ai-review", state.profile.aiMode === "limited" ? "Get limited assistance" : "Draft with AI"]] : []),
+    ["edit-review","Edit evaluation"], ["edit-index","Edit index details"],
+    ["customize-details","Customize details"],
+    ...(effectiveProfile().aiMode !== "manual" ? [["ai-review", effectiveProfile().aiMode === "limited" ? "Get limited assistance" : "Draft with AI"]] : []),
     ...(!song.blacklisted ? [["blacklist-song","Blacklist song"]] : []),
     ...(lib && !song.blacklisted ? [["remove-library-song",`Remove from ${lib.name}`]] : []),
   ];
-  return `<article class="detail-panel" data-song-id="${e(song.id)}" aria-label="Song details" tabindex="-1"><div class="song-detail-top"><div class="song-heading"><div class="song-title"><h2>${e(song.title)}</h2><p class="author">${e(song.author)}</p></div><div class="song-primary-actions">${primary}<details class="more-menu song-options" data-disclosure-key="song:${e(song.id)}:options"><summary aria-label="More song actions" title="More song actions">···</summary><div class="menu-items">${actions.map(([action,label]) => `<button class="text-button" data-action="${action}" data-id="${e(song.id)}">${e(label)}</button>`).join("")}</div></details></div></div>${song.blacklisted ? '<p class="blacklist-notice">This song is in your Blacklist. It stays out of libraries, suggestions and new plans.</p>' : ""}<div class="song-tabs" role="tablist" aria-label="Song information">${songTabs.map(([key,label]) => `<button type="button" role="tab" id="song-tab-${key}" aria-controls="song-pane-${key}" aria-selected="${detailTab === key}" tabindex="${detailTab === key ? 0 : -1}" data-action="song-tab" data-tab="${key}">${label}</button>`).join("")}</div></div>${songTabs.map(([key]) => `<section class="song-tab-panel" id="song-pane-${key}" role="tabpanel" aria-labelledby="song-tab-${key}" data-tab="${key}" tabindex="0" ${detailTab === key ? "" : "hidden"}>${panes[key]}</section>`).join("")}</article>`;
+  return `<article class="detail-panel" data-song-id="${e(song.id)}" aria-label="Song details" tabindex="-1"><div class="song-detail-top"><div class="song-heading">${coverMarkup(song,"detail-art")}<div class="song-title"><h2>${e(song.title)}</h2><div class="attribution-display"><button class="text-button inline-attribution" data-action="inline-attribution" data-id="${e(song.id)}" aria-label="Edit artist / attribution"><span>${e(song.author || "Attribution not set")}</span><span aria-hidden="true">✎</span></button></div></div><div class="song-primary-actions">${primary}<details class="more-menu song-options" data-disclosure-key="song:${e(song.id)}:options"><summary aria-label="More song actions" title="More song actions">···</summary><div class="menu-items">${actions.map(([action,label]) => `<button class="text-button" data-action="${action}" data-id="${e(song.id)}">${e(label)}</button>`).join("")}</div></details></div></div>${song.blacklisted ? '<p class="blacklist-notice">This song is in your Blacklist. It stays out of libraries, suggestions and new plans.</p>' : ""}<div class="song-tabs" role="tablist" aria-label="Song information">${songTabs.map(([key,label]) => `<button type="button" role="tab" id="song-tab-${key}" aria-controls="song-pane-${key}" aria-selected="${detailTab === key}" tabindex="${detailTab === key ? 0 : -1}" data-action="song-tab" data-tab="${key}">${label}</button>`).join("")}</div></div>${songTabs.map(([key]) => `<section class="song-tab-panel" id="song-pane-${key}" role="tabpanel" aria-labelledby="song-tab-${key}" data-tab="${key}" tabindex="0" ${detailTab === key ? "" : "hidden"}>${panes[key]}</section>`).join("")}</article>`;
 }
 function chatGPTEvaluation(song) {
-  if (!song || state.profile.aiMode === "manual") return;
+  if (!song || effectiveProfile().aiMode === "manual") return;
   const store = activeStore, owner = accounts.user?.id,
-    original = JSON.stringify(song), profile = JSON.stringify(state.profile),
-    mode = state.profile.aiMode;
-  const prompt = evaluationPrompt(song, state.profile);
-  modal(`<h2>Generate AI evaluation</h2><p>Copy the request into ChatGPT, then paste its JSON response below. Your ChatGPT account generates the evaluation; this website makes no paid API call.</p><p class="muted">${mode === "limited" ? "Your limited assistance setting allows objective observations only. Your ratings and church decision will stay unchanged." : "The request includes your review principles and weights. Review it before copying. Your human evaluation stays primary; an AI draft is secondary. Without a human evaluation, applying a draft resets church approval."} No lyrics or private library notes are included automatically.</p><details class="evaluation-request"><summary>Review the ChatGPT request</summary><label>Evaluation request<textarea id="evaluation-prompt" rows="12" readonly>${e(prompt)}</textarea></label></details><div class="form-actions"><button type="button" class="button" id="copy-evaluation">Copy request</button><a class="button" href="https://chatgpt.com/" target="_blank" rel="noopener noreferrer">Open ChatGPT ↗</a></div><label>ChatGPT evaluation JSON<textarea id="evaluation-json" rows="7" maxlength="65536" placeholder="Paste the JSON response here. Nothing is saved until you preview and apply it."></textarea></label><p id="evaluation-error" role="alert"></p><div class="form-actions"><button class="button" data-action="close">Cancel</button><button type="button" class="button primary" id="preview-evaluation">Preview evaluation</button></div><p id="evaluation-progress" role="status">Step 2: Paste ChatGPT’s response, then preview it. Step 3: Review the report and apply it explicitly.</p><div id="evaluation-preview" tabindex="-1" aria-label="Evaluation report preview"></div>`);
-  const unchanged = () => store === activeStore && owner === accounts.user?.id && profile === JSON.stringify(state.profile) && original === JSON.stringify(state.songs.find(s => s.id === song.id));
+    original = JSON.stringify(song), profile = JSON.stringify(effectiveProfile()),
+    mode = effectiveProfile().aiMode;
+  const prompt = evaluationPrompt(song, effectiveProfile());
+  modal(`<h2>Generate AI evaluation</h2><p>Copy the request into ChatGPT, then paste its JSON response below. Your ChatGPT account generates the evaluation; this website makes no paid API call.</p><p class="muted">${mode === "limited" ? "Your limited assistance setting allows objective observations only. Your ratings and library memberships will stay unchanged." : "The request includes your review principles and weights. Review it before copying. Your human evaluation stays primary; an AI draft is secondary. Library membership does not change when a draft is applied."} No lyrics or private library notes are included automatically.</p><details class="evaluation-request"><summary>Review the ChatGPT request</summary><label>Evaluation request<textarea id="evaluation-prompt" rows="12" readonly>${e(prompt)}</textarea></label></details><div class="form-actions"><button type="button" class="button" id="copy-evaluation">Copy request</button><a class="button" href="https://chatgpt.com/" target="_blank" rel="noopener noreferrer">Open ChatGPT ↗</a></div><label>ChatGPT evaluation JSON<textarea id="evaluation-json" rows="7" maxlength="65536" placeholder="Paste the JSON response here. Nothing is saved until you preview and apply it."></textarea></label><p id="evaluation-error" role="alert"></p><div class="form-actions"><button class="button" data-action="close">Cancel</button><button type="button" class="button primary" id="preview-evaluation">Preview evaluation</button></div><p id="evaluation-progress" role="status">Step 2: Paste ChatGPT’s response, then preview it. Step 3: Review the report and apply it explicitly.</p><div id="evaluation-preview" tabindex="-1" aria-label="Evaluation report preview"></div>`);
+  const unchanged = () => store === activeStore && owner === accounts.user?.id && profile === JSON.stringify(effectiveProfile()) && original === JSON.stringify(state.songs.find(s => s.id === song.id));
   const error = message => { dialog.querySelector("#evaluation-error").textContent = message; };
   dialog.querySelector("#copy-evaluation").onclick = async () => {
     const text = dialog.querySelector("#evaluation-prompt");
@@ -949,7 +979,7 @@ function chatGPTEvaluation(song) {
       if (!unchanged()) throw new Error("The account, song or profile changed. Close this dialog and start a new evaluation.");
       const raw = input.value, draft = parseEvaluation(raw, song.id, mode), r = draft.review;
       error("");
-      preview.innerHTML = `<h3>Review before applying ${state.profile.aiLabels ? '<span class="ai-mark" aria-label="AI generated">AI</span>' : ""}</h3>${r.summary ? `<p>${e(r.summary)}</p>` : ""}${mode === "full" ? `<div class="draft-scores">${activeCriteria(state.profile).map(({id:key,label}) => `<p>${e(label)} <strong>${criterionScore(r,key) ?? "Not assessed"}</strong></p>`).join("")}</div><p>Doctrinal concern: ${e(r.concern)}</p>${["claims", "concerns", "uses", "themes", "scriptures"].filter(k => r[k].length).map(k => `<h4>${e({claims:"Claims",concerns:"Concerns",uses:"Service uses",themes:"Themes",scriptures:"Scripture connections"}[k])}</h4>${list(r[k])}`).join("")}` : ""}${r.language ? `<h4>Language</h4><p>${e(r.language)}</p>` : ""}${r.time ? `<h4>Arrangement observations</h4><p>${e(r.time)}</p>` : ""}${r.sources.length ? `<h4>Sources supplied by ChatGPT · verify these</h4><ul>${r.sources.map(s => `<li><a href="${e(s.url)}" target="_blank" rel="noopener noreferrer">${e(s.label)}</a></li>`).join("")}</ul>` : ""}<button type="button" class="button primary" id="apply-evaluation">${mode === "limited" ? "Save AI observations" : "Apply evaluation"}</button>`;
+      preview.innerHTML = `<h3>Review before applying ${effectiveProfile().aiLabels ? '<span class="ai-mark" aria-label="AI generated">AI</span>' : ""}</h3>${r.summary ? `<p>${e(r.summary)}</p>` : ""}${mode === "full" ? `<div class="draft-scores">${activeCriteria(state.profile).map(({id:key,label}) => `<p>${e(label)} <strong>${criterionScore(r,key) ?? "Not assessed"}</strong></p>`).join("")}</div><p>Doctrinal concern: ${e(r.concern)}</p>${["claims", "concerns", "uses", "themes", "scriptures"].filter(k => r[k].length).map(k => `<h4>${e({claims:"Claims",concerns:"Concerns",uses:"Service uses",themes:"Themes",scriptures:"Scripture connections"}[k])}</h4>${list(r[k])}`).join("")}` : ""}${r.language ? `<h4>Language</h4><p>${e(r.language)}</p>` : ""}${r.time ? `<h4>Arrangement observations</h4><p>${e(r.time)}</p>` : ""}${r.sources.length ? `<h4>Sources supplied by ChatGPT · verify these</h4><ul>${r.sources.map(s => `<li><a href="${e(s.url)}" target="_blank" rel="noopener noreferrer">${e(s.label)}</a></li>`).join("")}</ul>` : ""}<button type="button" class="button primary" id="apply-evaluation">${mode === "limited" ? "Save AI observations" : "Apply evaluation"}</button>`;
       dialog.querySelector("#evaluation-progress").textContent = "Preview ready. Review the report below before applying; nothing has been saved.";
       preview.focus({ preventScroll: true });
       preview.scrollIntoView({ block: "start", behavior: "instant" });
@@ -960,7 +990,7 @@ function chatGPTEvaluation(song) {
           next.songs[next.songs.findIndex(s => s.id === song.id)] = applyEvaluation(song, draft, mode);
           if (!commitWorkspace(validateWorkspace(next))) return;
           dialog.close(); render();
-          toast(mode === "limited" ? "AI observations saved. Your assessment is unchanged." : "AI evaluation saved as a draft. Review it before approving church use.");
+          toast(mode === "limited" ? "AI observations saved. Your evaluation is unchanged." : "AI evaluation saved as a draft. Review it before approving church use.");
         } catch (err) { error(err.message); }
       };
     } catch (err) { preview.innerHTML = ""; error(err.message); }
@@ -981,7 +1011,11 @@ function customizeDetails(song) {
   );
 }
 function songFiles(song) {
-  modal(`<h2>Files for ${e(song.title)}</h2><p class="muted">${accounts.user ? "Files are private to your account. Save the workspace to sync its file references." : "Files stay on this device. Sign in before uploading to store files across devices."}</p><ul class="song-file-list">${(song.files || []).map(file => `<li><span>${e(file.name)} · ${Math.ceil(file.size/1024)} KB</span><button class="text-button" data-action="download-song-file" data-id="${e(song.id)}" data-file="${e(file.id)}">Download</button><button class="text-button danger" data-action="delete-song-file" data-id="${e(song.id)}" data-file="${e(file.id)}">Remove file</button></li>`).join("")}</ul><form id="song-file-form" data-id="${e(song.id)}"><label>Add a file<input name="file" type="file" required></label><p>Up to 10 MB per file · charts, documents, images or audio.</p><p id="file-error" role="alert"></p><button class="button primary">Upload file</button></form>`);
+  modal(`<h2>Files for ${e(song.title)}</h2><p class="muted">${activeOrganization ? "Files are shared with this organization; view-only members can download. File references sync with the workspace." : accounts.user ? "Files are private to your account. Save the workspace to sync its file references." : "Files stay on this device. Sign in before uploading to store files across devices."}</p><ul class="song-file-list">${(song.files || []).map(file => `<li><span>${e(file.name)} · ${Math.ceil(file.size/1024)} KB</span><button class="text-button" data-action="download-song-file" data-id="${e(song.id)}" data-file="${e(file.id)}">Download</button><button class="text-button danger" data-action="delete-song-file" data-id="${e(song.id)}" data-file="${e(file.id)}">Remove file</button></li>`).join("")}</ul><form id="song-file-form" data-id="${e(song.id)}"><label>Add a file<input name="file" type="file" required></label><p>Up to 10 MB per file · charts, documents, images or audio.</p><p id="file-error" role="alert"></p><button class="button primary">Upload file</button></form>`);
+  if (!editableWorkspace()) {
+    dialog.querySelector('#song-file-form')?.remove();
+    for (const button of dialog.querySelectorAll('[data-action="delete-song-file"]')) button.remove();
+  }
 }
 async function connectionsDialog() {
   const owner = accounts.user?.id;
@@ -991,7 +1025,7 @@ async function connectionsDialog() {
     const rows = await accounts.listConnections();
     if (accounts.user?.id !== owner) return;
     modal(
-      `<h2>ChatGPT connections</h2><p>Read your saved profile, song libraries, and existing plans in ChatGPT. Save browser changes to your account first.</p><label>Connector URL<input readonly value="${e(mcpEndpoint(siteConfig))}" aria-label="Connector URL"></label><p class="muted">In ChatGPT, open Settings → Plugins → Browse directory → Add → Add custom MCP server. Use this URL and OAuth authentication. Menus vary; interfaces using Apps may require Developer mode.</p>${rows.map((row) => `<div class="connection-row"><strong>${e(row.client_name)}</strong><p>${row.enabled ? "Connected" : "Access disabled"} · ${["profile", "libraries", "plans", "notes", "lyrics"].filter((k) => row["share_" + k]).join(", ")}</p><button class="button" data-action="revoke-connection" data-id="${e(row.client_id)}">Revoke access</button></div>`).join("") || "<p>No connections yet.</p>"}<p id="connection-error" role="alert"></p>`,
+      `<h2>ChatGPT connections</h2><p>Read your Personal workspace's saved profile, song libraries, and existing plans in ChatGPT. Organization workspaces are not shared through this connection. Save browser changes to your account first.</p><label>Connector URL<input readonly value="${e(mcpEndpoint(siteConfig))}" aria-label="Connector URL"></label><p class="muted">In ChatGPT, open Settings → Plugins → Browse directory → Add → Add custom MCP server. Use this URL and OAuth authentication. Menus vary; interfaces using Apps may require Developer mode.</p>${rows.map((row) => `<div class="connection-row"><strong>${e(row.client_name)}</strong><p>${row.enabled ? "Connected" : "Access disabled"} · ${["profile", "libraries", "plans", "notes", "lyrics"].filter((k) => row["share_" + k]).join(", ")}</p><button class="button" data-action="revoke-connection" data-id="${e(row.client_id)}">Revoke access</button></div>`).join("") || "<p>No connections yet.</p>"}<p id="connection-error" role="alert"></p>`,
     );
   } catch {
     modal(
@@ -1022,15 +1056,16 @@ function indexViewDialog(existing = null, rename = false) {
 }
 function templatesDialog() {
   const templates = state.planTemplates || [];
-  modal(`<h2>Service templates</h2>${templates.length ? `<ul class="template-list">${templates.map((t) => `<li><div><strong>${e(t.title)}</strong><small>${t.items.length} items · ${planDuration(t.items)} min</small></div><button class="button" data-action="use-plan-template" data-id="${e(t.id)}">Use template</button><details class="more-menu"><summary>Manage</summary><div class="menu-items"><button class="text-button" data-action="rename-plan-template" data-id="${e(t.id)}">Rename template</button><button class="text-button danger" data-action="delete-plan-template" data-id="${e(t.id)}">Delete template</button></div></details></li>`).join("")}</ul>` : '<p>Open a plan, then use Plan tools → Save as template to reuse your service order.</p>'}<button class="button" data-action="close">Close templates</button>`);
+  modal(`<h2>Plan templates</h2>${templates.length ? `<ul class="template-list">${templates.map((t) => `<li><div><strong>${e(t.title)}</strong><small>${t.items.length} items · ${planDuration(t.items)} min</small></div><button class="button" data-action="use-plan-template" data-id="${e(t.id)}">Use template</button><details class="more-menu"><summary>Manage</summary><div class="menu-items"><button class="text-button" data-action="rename-plan-template" data-id="${e(t.id)}">Rename template</button><button class="text-button danger" data-action="delete-plan-template" data-id="${e(t.id)}">Delete template</button></div></details></li>`).join("")}</ul>` : '<p>Open a plan, then use Plan tools → Save as template to reuse your service order.</p>'}<button class="button" data-action="close">Close templates</button>`);
 }
 function templateDialog(template = null, rename = false) {
   const source = template || getPlan();
-  modal(`<h2>${rename ? "Rename template" : template ? "Create plan from template" : "Save service template"}</h2><form id="template-form" data-id="${e(source.id)}" data-mode="${rename ? "rename" : template ? "use" : "save"}"><label>${template && !rename ? "Service name" : "Template name"}<input name="title" maxlength="200" value="${e(source.title)}" required></label>${template && !rename ? '<label>Date<input name="date" type="date"></label><p class="muted">Creates an independent draft with the service order you saved. Check its songs and details before use.</p>' : !rename ? '<label class="check-label"><input name="keepSongs" type="checkbox" checked>Keep selected songs</label><p class="muted">Uncheck to replace songs with placeholders you fill manually. Templates keep your order, notes and timings and do not count as services.</p>' : ""}<p id="template-error" role="alert"></p><div class="form-actions"><button type="button" class="button" data-action="close">Cancel</button><button class="button primary">${template && !rename ? "Create draft" : "Save template"}</button></div></form>`);
+  modal(`<h2>${rename ? "Rename template" : template ? "Create plan from template" : "Save service template"}</h2><form id="template-form" data-id="${e(source.id)}" data-mode="${rename ? "rename" : template ? "use" : "save"}"><label>${template && !rename ? "Plan name" : "Template name"}<input name="title" maxlength="200" value="${e(source.title)}" required></label>${template && !rename ? '<label>Date<input name="date" type="date"></label><p class="muted">Creates an independent draft with the service order you saved. Check its songs and details before use.</p>' : !rename ? '<label class="check-label"><input name="keepSongs" type="checkbox" checked>Keep selected songs</label><p class="muted">Uncheck to replace songs with placeholders you fill manually. Templates keep your order, notes and timings and do not count as services.</p>' : ""}<p id="template-error" role="alert"></p><div class="form-actions"><button type="button" class="button" data-action="close">Cancel</button><button class="button primary">${template && !rename ? "Create draft" : "Save template"}</button></div></form>`);
 }
 function prepareChatGPTCriteria(form) {
+  if(activeOrganization)throw new Error("The ChatGPT connection currently reads your Personal workspace, not organization data.");
   if (!form.reportValidity()) return;
-  if (state.profile.aiMode !== "full") throw new Error("This search requires Full AI content.");
+  if (effectiveProfile().aiMode !== "full") throw new Error("This search requires Full AI content.");
   if (!accounts.user || activeStore === STORE) throw new Error("Sign in and save this library to your account before searching it in ChatGPT.");
   const values = Object.fromEntries(new FormData(form));
   const library = state.libraries.find((l) => l.id === values.library);
@@ -1078,7 +1113,7 @@ function indexPage() {
     return (
       e(Array.isArray(value) ? value.join(", ") : (value ?? "—")) +
       (value != null && value !== ""
-        ? aiLabel(song, reviewForDisplay(song, state.profile.aiMode), aiField)
+        ? aiLabel(song, reviewForDisplay(song, effectiveProfile().aiMode), aiField)
         : "")
     );
   };
@@ -1129,7 +1164,7 @@ function customMetricRow(item = { name: "", type: "text", value: "" }) {
   return `<div class="custom-metric-row"><label>Metric name<input name="metric-name" maxlength="100" value="${e(item.name)}" placeholder="Hymnal number"></label><label>Type<select name="metric-type" aria-label="Metric type"><option value="text" ${item.type === "text" ? "selected" : ""}>Text</option><option value="number" ${item.type === "number" ? "selected" : ""}>Number</option></select></label><label>Metric value<input name="metric-value" maxlength="1000" value="${e(item.value)}"></label><button type="button" class="icon-button" data-action="remove-metric" aria-label="Remove custom metric">×</button></div>`;
 }
 function criteriaDialog() {
-  const eligible = state.profile.aiMode === "full";
+  const eligible = effectiveProfile().aiMode === "full";
   modal(
     `<h2>Search a subjective criterion</h2><p class="muted">Look for tentative matches in a library you select. You review the evidence and choose your worship songs.</p>${!eligible ? "<p>Your profile hides subjective AI content. This search requires Full AI content.</p>" : ""}<form id="criteria-form"><label>Your library<select name="library" aria-label="Your library" required>${state.libraries.map((l) => `<option value="${e(l.id)}">${e(l.name)} (${l.songIds.length} songs)</option>`).join("")}</select></label><label>Your criterion<textarea name="criteria" rows="4" maxlength="1000" required placeholder="For example: songs that express dependence on God using concrete, well-structured language."></textarea></label>${aiConfigured ? '<p class="muted">The local AI search uses supplied record excerpts for 1–100 songs. You can also take the request to your connected ChatGPT account.</p>' : '<p class="muted">Prepare a request for your connected ChatGPT account. Save your library to your account first. This uses your ChatGPT connection; the website sends no AI request.</p>'}<p id="criteria-error" role="alert"></p><div class="form-actions"><button class="button" type="button" data-action="close">Cancel</button>${aiConfigured ? `<button class="button" type="button" data-action="prepare-chatgpt-criteria" ${eligible ? "" : "disabled"}>Prepare ChatGPT search</button>` : ""}<button class="button primary" ${eligible ? "" : "disabled"}>${aiConfigured ? "Search with AI" : "Prepare ChatGPT search"}</button></div></form>`,
   );
@@ -1137,7 +1172,7 @@ function criteriaDialog() {
 function indexDetailsDialog(song) {
   const m = song.metadata || {};
   modal(
-    `<h2>Index details</h2><p>${e(song.title)}</p><p class="muted">Enter details for your chosen text and arrangement. These are your records; no AI fills these fields.</p><form id="index-details-form" data-id="${e(song.id)}"><label>Themes, separated by commas<input name="themes" maxlength="1000" value="${e(themesForDisplay(song, state.profile.aiMode).join(", "))}"></label><div class="form-columns">${[
+    `<h2>Index details</h2><p>${e(song.title)}</p><p class="muted">Enter details for your chosen text and arrangement. These are your records; no AI fills these fields.</p><form id="index-details-form" data-id="${e(song.id)}"><label>Themes, separated by commas<input name="themes" maxlength="1000" value="${e(themesForDisplay(song, effectiveProfile().aiMode).join(", "))}"></label><div class="form-columns">${[
       ["tune", "Tune"],
       ["meter", "Poetic meter"],
       ["timeSignature", "Time signature"],
@@ -1192,38 +1227,42 @@ function textStatsSection(song) {
       "",
     )}</dl><p class="muted">These are counts from the text you stored, calculated without AI. They do not establish poor grammar or wasted time. Read “just” and repeated lines in context; meaningful words such as “alleluia” are not treated as “oh”.</p></section>`;
 }
+function coverMarkup(song, className) {
+  const art = songArtwork(song);
+  return art ? `<img class="album-art ${className}" src="${e(art.url)}" alt="Album artwork: ${e(art.label)}" width="64" height="64" loading="lazy" decoding="async" referrerpolicy="no-referrer">` : "";
+}
 function usageSection(song) {
   const usage = songUsage(state.plans, song.id);
-  return `<section class="detail-section"><h3>Use in your services</h3><p>${usage.planned} saved plan${usage.planned === 1 ? "" : "s"} · ${usage.completed} marked completed${usage.lastUsed ? ` · Last recorded use: ${e(usage.lastUsed)}` : ""}</p><small class="muted">Only services you mark completed count as recorded use.</small></section>`;
+  return `<section class="detail-section"><h3>Plan history</h3><p>${usage.planned} saved plan${usage.planned === 1 ? "" : "s"} · ${usage.completed} marked completed${usage.lastUsed ? ` · Last completed plan: ${e(usage.lastUsed)}` : ""}</p><small class="muted">Only plans marked completed count as completed use.</small></section>`;
+}
+function planDisplay(plan) {
+  return {...plan, items:plan.items.map(i=>({...i,displayTitle:state.songs.find(s=>s.id===i.songId)?.title || i.title}))};
+}
+function planPicker() {
+  const plan=getPlan(),store=activeStore;
+  if (!plan) return toast("Create a plan first.");
+  openPlanSongPicker({workspace:clone(state),plan:clone(plan),libraryId,modal,
+    stillCurrent:()=>activeStore===store && planId===plan.id,
+    onAdd:(items,after)=>{const next=clone(state),target=next.plans.find(p=>p.id===plan.id);if(!target)throw new Error("This plan is no longer available.");insertPlanItems(target,items,after);if(!commitWorkspace(validateWorkspace(next)))return;dialog.close();view="plans";render();toast(`${items.length} song${items.length===1?"":"s"} added to your plan.`);}});
+}
+function planImportDialog() {
+  const store=activeStore;
+  openPlanImport({workspace:clone(state),catalog:availableCatalog(),modal,stillCurrent:()=>activeStore===store,
+    onImport:(plan,songs)=>{const next=clone(state);if(next.plans.some(p=>p.title===plan.title&&p.date===plan.date&&JSON.stringify(p.items.map(({id,...item})=>item))===JSON.stringify(plan.items.map(({id,...item})=>item))))throw new Error("This plan has already been imported.");next.songs.push(...clone(songs));next.plans.push(plan);if(!commitWorkspace(validateWorkspace(next)))return;planId=plan.id;view="plans";dialog.close();render();toast("Plan imported.");}});
+}
+function starterLibrariesDialog() {
+  const store=activeStore;
+  modal(`<h2>Starter libraries</h2><p>Use libraries to record your own decisions. These names are optional; rename them or build your own system.</p><ul><li>Ready to use</li><li>Needs evaluation</li><li>Use with context</li><li>Not for our church</li></ul><label class="check-label"><input id="migrate-decisions" type="checkbox">Copy previous church-use decisions into these libraries</label><p>Existing library membership, previous decision notes, evaluations and plans are kept.</p>${state.songs.some(s=>previousDecision(s)?.notes||previousDecision(s)?.status!=="unreviewed")?`<details><summary>Previous church-use decisions</summary><ul>${state.songs.filter(s=>previousDecision(s)?.notes||previousDecision(s)?.status!=="unreviewed").map(s=>`<li><strong>${e(s.title)}</strong> · ${e(approvalLabels[previousDecision(s)?.status]||"Not recorded")}${previousDecision(s)?.notes?`<p>${e(previousDecision(s).notes)}</p>`:""}</li>`).join("")}</ul></details>`:""}<p id="starter-library-error" role="alert"></p><button class="button primary" id="add-starter-libraries">Add starter libraries</button>`);
+  dialog.querySelector("#add-starter-libraries").onclick=()=>{try{if(store!==activeStore)throw new Error("The active workspace changed.");if(!commitWorkspace(validateWorkspace(addStarterLibraries(state,dialog.querySelector("#migrate-decisions").checked))))return;dialog.close();render();toast("Starter libraries added. Your existing work was kept.");}catch(error){dialog.querySelector("#starter-library-error").textContent=error.message;}};
 }
 function plansPage() {
-  const plan = state.plans.find((p) => p.id === planId) || state.plans[0];
-  if (plan) planId = plan.id;
-  const newSongs = plan?.items.filter(
-    (i) =>
-      i.type === "song" &&
-      !["approved", "context"].includes(
-        state.songs.find((s) => s.id === i.songId)?.approval?.status,
-      ),
-  ).length;
-  let elapsed = 0;
-  return `<div class="page-heading"><div><h1>Service plans</h1></div><div class="index-heading-actions"><button class="button" data-action="plan-templates">Service templates</button><button class="button primary" data-action="new-plan">+ New worship plan</button></div></div>${
-    !plan
-      ? `<section class="empty full-empty"><h2>No service plans yet</h2><p>Create a plan or start from one of your saved templates.</p><button class="button primary" data-action="new-plan">Create a worship plan</button></section>`
-      : `<div class="plan-layout"><aside class="plan-list">${state.plans.map((p) => `<button data-action="plan-select" data-id="${e(p.id)}" class="${p.id === plan.id ? "selected" : ""}"><strong>${e(p.title)}</strong><span>${e(p.date || "No date set")} · ${planDuration(p.items)} min</span></button>`).join("")}</aside><section class="plan-sheet"><div class="plan-sheet-header"><div><div class="eyebrow">${e(plan.date || "DATE TO BE CONFIRMED")}</div><h2>${e(plan.title)}</h2><p>${e(plan.theme || "")}</p>${plan.passage ? `<span class="tag">${e(plan.passage)}</span>` : ""}</div><div class="duration-total"><strong>${planDuration(plan.items)}</strong><span>minutes</span></div></div><div class="plan-toolbar"><button class="text-button" data-action="edit-plan">Edit service details</button><details class="more-menu"><summary>Plan tools</summary><div class="menu-items"><button class="text-button" data-action="copy-plan">Duplicate plan</button><button class="text-button" data-action="save-plan-template">Save as template</button><button class="text-button" data-action="print-plan">Print / Save PDF</button><button class="text-button danger" data-action="delete-plan">Delete plan</button></div></details><span class="plan-state">${e(plan.status || "draft")}</span></div>${newSongs ? `<div class="plan-notice">${newSongs} song${newSongs === 1 ? "" : "s"} ${newSongs === 1 ? "has" : "have"} not been approved for your church. Confirm suitability before use.</div>` : ""}<ol class="service-items">${plan.items
-          .map((item, i) => {
-            const song = state.songs.find((s) => s.id === item.songId);
-            const offset = elapsedTime(elapsed);
-            elapsed += item.minutes;
-            return `<li><span class="item-number">${String(i + 1).padStart(2, "0")}</span><div class="service-item-content"><span class="eyebrow">${e(item.role || item.type)} · ${offset} from start</span><h3>${e(song?.blacklisted ? "Blacklisted song" : song?.title || item.title)}</h3><p>${song ? `<span class="plan-song-meta">${e(item.key || "Key not set")}${item.arrangementName ? ` · ${e(item.arrangementName)}` : ""}</span>` : ""}${e(item.notes || (song ? themesForDisplay(song, state.profile.aiMode).join(", ") : ""))}${song?.approval?.status === "context" ? `<span class="plan-conditions">Conditions: ${e(song.approval.notes)}</span>` : ""}</p></div><span class="item-time">${e(item.minutes)} min</span><div class="item-buttons"><button class="icon-button" data-action="move-item" data-id="${e(item.id)}" data-direction="-1" aria-label="Move ${e(song?.blacklisted ? "Blacklisted song" : song?.title || item.title)} up" ${i === 0 ? "disabled" : ""}>↑</button><button class="icon-button" data-action="move-item" data-id="${e(item.id)}" data-direction="1" aria-label="Move ${e(song?.blacklisted ? "Blacklisted song" : song?.title || item.title)} down" ${i === plan.items.length - 1 ? "disabled" : ""}>↓</button><button class="icon-button" data-action="edit-item" data-id="${e(item.id)}" aria-label="Edit ${e(song?.blacklisted ? "Blacklisted song" : song?.title || item.title)}">✎</button><button class="icon-button danger" data-action="remove-item" data-id="${e(item.id)}" aria-label="Remove ${e(song?.blacklisted ? "Blacklisted song" : song?.title || item.title)}">×</button></div></li>`;
-          })
-          .join(
-            "",
-          )}</ol>${!plan.items.length ? '<div class="empty"><h3>No service items yet</h3><p>Add songs, readings, prayer or other items.</p></div>' : ""}<div class="plan-buttons"><button class="button primary" data-action="nav" data-view="discover">+ Choose a song</button><button class="button" data-action="new-item">+ Reading, prayer, or other item</button><button class="text-button" data-action="export-plan">↓ Export plan</button></div></section></div>`
-  }`;
+  const plan=state.plans.find(p=>p.id===planId)||state.plans[0];if(plan)planId=plan.id;
+  let elapsed=0;
+  const title=item=>{const song=state.songs.find(s=>s.id===item.songId);return song?.blacklisted?"Blacklisted song":song?.title||item.title;};
+  return `<div class="page-heading"><h1>Plans</h1><div class="index-heading-actions"><button class="button" data-action="import-plan">Import plan</button><button class="button" data-action="plan-templates">Plan templates</button><button class="button primary" data-action="new-plan">+ New plan</button></div></div>${!plan?`<section class="empty full-empty"><h2>No plans yet</h2><p>Create a plan, import an existing order or start from a saved template.</p><button class="button primary" data-action="new-plan">Create a plan</button></section>`:`<div class="plan-layout"><aside class="plan-list">${state.plans.map(p=>`<button data-action="plan-select" data-id="${e(p.id)}" class="${p.id===plan.id?"selected":""}"><strong>${e(p.title)}</strong><span>${e(p.date||"No date set")} · ${planDuration(p.items)} min</span></button>`).join("")}</aside><section class="plan-sheet"><div class="plan-sheet-header"><div><div class="eyebrow">${e(plan.date||"DATE TO BE CONFIRMED")}</div><h2>${e(plan.title)}</h2><p>${e(plan.theme||"")}</p>${plan.passage?`<span class="tag">${e(plan.passage)}</span>`:""}</div><div class="duration-total"><strong>${planDuration(plan.items)}</strong><span>minutes</span></div></div><div class="plan-toolbar"><button class="text-button" data-action="edit-plan">Edit plan details</button><details class="more-menu"><summary>Plan tools</summary><div class="menu-items"><button class="text-button" data-action="copy-plan">Duplicate plan</button><button class="text-button" data-action="save-plan-template">Save as template</button><button class="text-button" data-action="export-plan-json">Export importable JSON</button><button class="text-button" data-action="print-plan">Print / Save PDF</button><button class="text-button danger" data-action="delete-plan">Delete plan</button></div></details><span class="plan-state">${e(plan.status||"draft")}</span></div><ol class="service-items">${plan.items.map((item,i)=>{const name=title(item),heading=item.type==="heading",offset=elapsedTime(elapsed);elapsed+=item.minutes;return `<li class="${heading?"plan-heading-item":""}" data-plan-item="${e(item.id)}" draggable="true"><button class="plan-drag-handle icon-button" aria-label="Drag ${e(name)}" title="Drag to reorder">⠿</button><span class="item-number">${heading?"":String(i+1).padStart(2,"0")}</span><div class="service-item-content">${heading?"":`<span class="eyebrow">${e(item.role||item.type)} · ${offset} from start</span>`}<h3>${e(name)}</h3>${item.type==="song"?`<small>${e(item.key||"Key not set")}${item.arrangementName?` · ${e(item.arrangementName)}`:""}</small>`:""}${item.notes?`<p>${e(item.notes)}</p>`:""}</div>${heading?"":`<span class="item-time">${e(item.minutes)} min</span>`}<div class="item-buttons"><button class="icon-button" data-action="move-item" data-id="${e(item.id)}" data-direction="-1" aria-label="Move ${e(name)} up" ${i===0?"disabled":""}>↑</button><button class="icon-button" data-action="move-item" data-id="${e(item.id)}" data-direction="1" aria-label="Move ${e(name)} down" ${i===plan.items.length-1?"disabled":""}>↓</button><button class="icon-button" data-action="edit-item" data-id="${e(item.id)}" aria-label="Edit ${e(name)}">✎</button><button class="icon-button danger" data-action="remove-item" data-id="${e(item.id)}" aria-label="Remove ${e(name)}">×</button></div></li>`;}).join("")}</ol>${!plan.items.length?'<div class="empty"><h3>No plan items yet</h3><p>Add songs, headings, readings, prayer or other items.</p></div>':""}<div class="plan-buttons"><button class="button primary" data-action="pick-plan-songs">Add songs</button><button class="button" data-action="new-heading">Add heading</button><button class="button" data-action="new-item">Add item</button><button class="text-button" data-action="export-plan">Export plan</button></div></section></div>`}`;
 }
 function libraryAuditDialog(id) {
-  if (state.profile.aiMode !== "full") return toast("Library audits require Full AI content.");
+  if (effectiveProfile().aiMode !== "full") return toast("Library audits require Full AI content.");
   const library = state.libraries.find(l => l.id === id);
   if (!library || !auditSongs(state, id).length) return toast("Add songs to this library before auditing it.");
   const owner = accounts.user?.id, store = activeStore;
@@ -1236,7 +1275,7 @@ function libraryAuditDialog(id) {
   dialog.querySelector("#prepare-audit").onclick = () => {
     try {
       includedWords = dialog.querySelector("#audit-words").checked;
-      dialog.querySelector("#audit-request").value = libraryAuditPrompt(state,id,dialog.querySelector("#audit-context").value,includedWords);
+      dialog.querySelector("#audit-request").value = libraryAuditPrompt({...state,profile:effectiveProfile()},id,dialog.querySelector("#audit-context").value,includedWords);
       requestToken = auditToken(state,id,includedWords);
       dialog.querySelector("#audit-request-section").hidden = false;
       dialog.querySelector("#copy-audit").disabled = false; dialog.querySelector("#preview-audit").disabled = false;
@@ -1251,11 +1290,11 @@ function libraryAuditDialog(id) {
   input.oninput = () => { report = null; preview.innerHTML = ""; status.textContent = "Response changed. Preview it again."; };
   dialog.querySelector("#preview-audit").onclick = () => {
     try {
-      if (!requestToken || owner !== accounts.user?.id || store !== activeStore || state.profile.aiMode !== "full" || requestToken !== auditToken(state,id,includedWords)) throw new Error("The account, library, evidence or AI mode changed. Prepare a new request.");
+      if (!requestToken || owner !== accounts.user?.id || store !== activeStore || effectiveProfile().aiMode !== "full" || requestToken !== auditToken(state,id,includedWords)) throw new Error("The account, library, evidence or AI mode changed. Prepare a new request.");
       report = parseLibraryAudit(input.value,state,id);
       error.textContent = "";
       const chartMarkup = auditCharts(report,state).map(chart => `<section class="audit-chart"><h4>${e(chart.label)}</h4><p>${chart.known}/${chart.total} with classified evidence. ${chart.multiple ? "Multiple references can overlap; percentages need not sum to 100%." : "One category per song."}${chart.key === "tempo" ? " BPM bands are descriptive; they do not establish perceived energy or suitability." : ""}</p>${Object.entries(chart.counts).map(([category,count]) => `<div class="audit-bar-row"><span>${e(auditLabels[category] || category)}</span><meter min="0" max="${Math.max(1,chart.total)}" value="${count}" aria-label="${e(chart.label + ': ' + (auditLabels[category] || category))}">${count}</meter><strong>${count} (${chart.total ? Math.round(count/chart.total*100) : 0}%)</strong></div>`).join("")}</section>`).join("");
-      preview.innerHTML = `<h3>Library audit report</h3><p class="muted">Provisional AI interpretation · verify the cited text and classifications. Charts are calculated from this response, not invented by the website.</p><p>${e(report.summary)}</p><div class="audit-charts">${chartMarkup}</div><h4>Strong areas</h4>${list(report.strengths)}<h4>Weak areas or imbalances</h4>${list(report.weaknesses)}<h4>Limitations and missing evidence</h4>${list(report.limitations)}<details><summary>Song evidence (${report.songs.length})</summary><ul>${report.songs.map(row => `<li><strong>${e(state.songs.find(s=>s.id===row.id)?.title)}</strong><p>${e(row.evidence)}</p><small>${Object.keys(auditAxes).map(key => e(auditAxes[key].label)+": "+e(Array.isArray(row[key]) ? row[key].map(v=>auditLabels[v]).join(", ") : auditLabels[row[key]])).join(" · ")}</small><ul>${row.sources.map(source => `<li><a href="${e(source.url)}" target="_blank" rel="noopener noreferrer">${e(source.label)}</a></li>`).join("")}</ul></li>`).join("")}</ul></details><p>No song assessments, approvals or worship plans have been changed. Download the report to retain this snapshot.</p><button class="button" id="download-audit">Download audit report</button><button class="button" data-action="close">Close report</button>`;
+      preview.innerHTML = `<h3>Library audit report</h3><p class="muted">Provisional AI interpretation · verify the cited text and classifications. Charts are calculated from this response, not invented by the website.</p><p>${e(report.summary)}</p><div class="audit-charts">${chartMarkup}</div><h4>Strong areas</h4>${list(report.strengths)}<h4>Weak areas or imbalances</h4>${list(report.weaknesses)}<h4>Limitations and missing evidence</h4>${list(report.limitations)}<details><summary>Song evidence (${report.songs.length})</summary><ul>${report.songs.map(row => `<li><strong>${e(state.songs.find(s=>s.id===row.id)?.title)}</strong><p>${e(row.evidence)}</p><small>${Object.keys(auditAxes).map(key => e(auditAxes[key].label)+": "+e(Array.isArray(row[key]) ? row[key].map(v=>auditLabels[v]).join(", ") : auditLabels[row[key]])).join(" · ")}</small><ul>${row.sources.map(source => `<li><a href="${e(source.url)}" target="_blank" rel="noopener noreferrer">${e(source.label)}</a></li>`).join("")}</ul></li>`).join("")}</ul></details><p>No song evaluations, libraries or plans have been changed. Download the report to retain this snapshot.</p><button class="button" id="download-audit">Download audit report</button><button class="button" data-action="close">Close report</button>`;
       status.textContent = "Report ready. Charts and explanations are below; nothing in your workspace has changed.";
       preview.querySelector("#download-audit").onclick = () => download("library-audit.json",JSON.stringify({ ...report, libraryName: library.name, charts:auditCharts(report,state) },null,2),"application/json");
       preview.focus({preventScroll:true}); preview.scrollIntoView({block:"start",behavior:"instant"});
@@ -1266,10 +1305,10 @@ function criterionRow(c) {
   return `<fieldset class="criterion-row" data-criterion="${e(c.id)}"><legend>${e(c.label)}</legend><label>Name<input name="criterion-label" maxlength="100" value="${e(c.label)}" required></label><label class="check-label"><input name="criterion-active" type="checkbox" ${c.active ? "checked" : ""}>Include in rating</label><label>Weight<input name="criterion-weight" aria-label="${e(c.label)} weight" type="number" min="0" max="100" value="${state.profile.weights[c.id] ?? 1}" required></label><details data-disclosure-key="criterion:${e(c.id)}"><summary>Evidence rubric</summary><label>Rules for this criterion<textarea name="criterion-rubric" rows="3" maxlength="2000">${e(c.rubric)}</textarea></label></details><button type="button" class="text-button danger" data-action="remove-criterion">Remove criterion</button></fieldset>`;
 }
 function rubricMarkup() {
-  return `<details class="score-rubric"><summary>What do 0–10 scores mean?</summary><p>Ten is possible. Unknown evidence is left blank, never scored zero. Judge each criterion independently using the exact version, explain the evidence and uncertainty, and avoid false precision. A high average does not grant church approval.</p><table><thead><tr><th>Score</th><th>Meaning</th><th>Evidence anchor</th></tr></thead><tbody>${scoreAnchors.map(([score,name,rule]) => `<tr><th>${e(score)}</th><td>${e(name)}</td><td>${e(rule)}</td></tr>`).join("")}</tbody></table></details>`;
+  return `<details class="score-rubric"><summary>What do 0–10 scores mean?</summary><p>Ten is possible. Unknown evidence is left blank, never scored zero. Judge each criterion independently using the exact version, explain the evidence and uncertainty, and avoid false precision. A high average does not decide whether you use a song.</p><table><thead><tr><th>Score</th><th>Meaning</th><th>Evidence anchor</th></tr></thead><tbody>${scoreAnchors.map(([score,name,rule]) => `<tr><th>${e(score)}</th><td>${e(name)}</td><td>${e(rule)}</td></tr>`).join("")}</tbody></table></details>`;
 }
 function profilePage() {
-  return `<div class="page-heading"><div><h1>Rating profile</h1><p>Choose what you measure. Ratings support human judgment.</p></div></div><form id="profile-form" class="profile-panel"><h2>${e(denominations[state.profile.denomination])}</h2><p>${e(statements[state.profile.statement].name)}</p><button class="text-button" type="button" data-action="setup-profile">Choose denomination & statement of faith</button><label>AI content preference<select name="aiMode" aria-label="AI content preference">${Object.entries(aiModes).map(([key,mode]) => `<option value="${key}" ${key === state.profile.aiMode ? "selected" : ""}>${e(mode.title)}</option>`).join("")}</select></label><label>AI Labels<select name="aiLabels" aria-label="AI Labels"><option value="on" ${state.profile.aiLabels ? "selected" : ""}>On</option><option value="off" ${!state.profile.aiLabels ? "selected" : ""}>Off</option></select></label><h3>Rating criteria</h3><p>The displayed average uses only active criteria with a positive weight and an assessed score. Missing scores are excluded. Deactivating or removing a criterion never deletes saved scores. Existing weights are preserved; equal weights are available below. Serious doctrinal concerns remain visible independently of the average.</p>${rubricMarkup()}<div id="criterion-rows">${ratingCriteria(state.profile).map(criterionRow).join("")}</div><div class="form-actions"><button type="button" class="button" data-action="add-criterion">Add custom criterion</button><button type="button" class="button" data-action="equal-weights">Use equal weights</button><button type="button" class="button" data-action="restore-criteria">Restore built-in criteria</button></div><details data-disclosure-key="scoring-suggestions"><summary>Other useful criteria</summary><p>These require evidence for the exact text, melody, arrangement or congregation. Add only what serves your review purpose. Avoid double-counting overlapping criteria.</p>${suggestedCriteria.map((c,i) => `<p><strong>${e(c.label)}</strong> — ${e(c.rubric)} <button type="button" class="text-button" data-action="suggest-criterion" data-id="${i}">Add ${e(c.label)}</button></p>`).join("")}</details><label>Theological & editorial parameters<textarea name="principles" rows="7" maxlength="6000" required>${e(state.profile.principles)}</textarea></label><p>Changing criteria updates displayed ratings, not past evaluations. New scores remain blank until reviewed. Arrangement coherence replaces the former time label; it is not a preference for shorter songs.</p><p id="profile-error" role="alert"></p><button class="button primary" type="submit">Save rating profile</button></form>`;
+  return `<div class="page-heading"><div><h1>Rating profile</h1><p>Choose what you measure. Ratings support human judgment.</p></div></div><form id="profile-form" class="profile-panel"><h2>${e(denominations[state.profile.denomination])}</h2><p>${e(statements[state.profile.statement].name)}</p><button class="text-button" type="button" data-action="setup-profile">Choose denomination & statement of faith</button><label>AI content preference<select name="aiMode" aria-label="AI content preference">${Object.entries(aiModes).map(([key,mode]) => `<option value="${key}" ${key === effectiveProfile().aiMode ? "selected" : ""}>${e(mode.title)}</option>`).join("")}</select></label><label>AI Labels<select name="aiLabels" aria-label="AI Labels"><option value="on" ${effectiveProfile().aiLabels ? "selected" : ""}>On</option><option value="off" ${!effectiveProfile().aiLabels ? "selected" : ""}>Off</option></select></label><h3>Rating criteria</h3><p>The displayed average uses only active criteria with a positive weight and an assessed score. Missing scores are excluded. Deactivating or removing a criterion never deletes saved scores. Existing weights are preserved; equal weights are available below. Serious doctrinal concerns remain visible independently of the average.</p>${rubricMarkup()}<div id="criterion-rows">${ratingCriteria(state.profile).map(criterionRow).join("")}</div><div class="form-actions"><button type="button" class="button" data-action="add-criterion">Add custom criterion</button><button type="button" class="button" data-action="equal-weights">Use equal weights</button><button type="button" class="button" data-action="restore-criteria">Restore built-in criteria</button></div><details data-disclosure-key="scoring-suggestions"><summary>Other useful criteria</summary><p>These require evidence for the exact text, melody, arrangement or congregation. Add only what serves your review purpose. Avoid double-counting overlapping criteria.</p>${suggestedCriteria.map((c,i) => `<p><strong>${e(c.label)}</strong> — ${e(c.rubric)} <button type="button" class="text-button" data-action="suggest-criterion" data-id="${i}">Add ${e(c.label)}</button></p>`).join("")}</details><label>Theological & editorial parameters<textarea name="principles" rows="7" maxlength="6000" required>${e(state.profile.principles)}</textarea></label><p>Changing criteria updates displayed ratings, not past evaluations. New scores remain blank until reviewed. Arrangement coherence replaces the former time label; it is not a preference for shorter songs.</p><p id="profile-error" role="alert"></p><button class="button primary" type="submit">Save rating profile</button></form>`;
 }
 function newSongDialog() {
   modal(
@@ -1277,7 +1316,7 @@ function newSongDialog() {
   );
 }
 function editReviewDialog(song) {
-  const r = reviewForDisplay(song, state.profile.aiMode);
+  const r = reviewForDisplay(song, effectiveProfile().aiMode);
   modal(
     `<h2>Edit ${e(song.title)}</h2><p class="muted">Use 0–10 scores; 10 is allowed. Leave missing evidence blank.</p>${rubricMarkup()}<form id="review-form" data-id="${e(song.id)}"><div class="weight-fields">${ratingCriteria(state.profile).map(c => [c.id, c.label])
       .map(
@@ -1294,7 +1333,7 @@ function editReviewDialog(song) {
           `<option value="${v}" ${r.concern === v ? "selected" : ""}>${l}</option>`,
       )
       .join("")}</select></label>${[
-      ["summary", "Assessment summary", r.summary],
+      ["summary", "Evaluation summary", r.summary],
       ["claims", "Specific claims · one per line", r.claims.join("\n")],
       ["uses", "Good use cases · one per line", r.uses.join("\n")],
       [
@@ -1318,12 +1357,12 @@ function editReviewDialog(song) {
       )
       .join(
         "",
-      )}<div class="form-columns"><label>Preferred key<input name="key" maxlength="30" value="${e(r.key)}" placeholder="e.g. D"></label><label>Planning duration (minutes)<input name="minutes" type="number" min="0.5" max="60" step="0.5" value="${e(r.minutes)}" required></label></div><label>Source links · one HTTPS URL per line<textarea name="sources" rows="2">${e(r.sources.map((s) => s.url).join("\n"))}</textarea></label><div class="form-actions"><button class="button" type="button" data-action="close">Cancel</button><button class="button primary">Save assessment</button></div></form>`,
+      )}<div class="form-columns"><label>Preferred key<input name="key" maxlength="30" value="${e(r.key)}" placeholder="e.g. D"></label><label>Planning duration (minutes)<input name="minutes" type="number" min="0.5" max="60" step="0.5" value="${e(r.minutes)}" required></label></div><label>Source links · one HTTPS URL per line<textarea name="sources" rows="2">${e(r.sources.map((s) => s.url).join("\n"))}</textarea></label><div class="form-actions"><button class="button" type="button" data-action="close">Cancel</button><button class="button primary">Save evaluation</button></div></form>`,
   );
 }
 function planDialog(plan = null) {
   modal(
-    `<h2>${plan ? "Edit worship plan" : "A new worship plan"}</h2><form id="plan-form" ${plan ? `data-id="${e(plan.id)}"` : ""}><label>Service name<input name="title" maxlength="200" value="${e(plan?.title || "Sunday worship")}" required></label><label>Date<input name="date" type="date" value="${e(plan?.date || "")}"></label><label>Theme<input name="theme" maxlength="500" value="${e(plan?.theme || "")}" placeholder="The faithfulness of God"></label><label>Sermon passage<input name="passage" maxlength="200" value="${e(plan?.passage || "")}" placeholder="Psalm 46"></label><label>Service status<select name="status" aria-label="Service status">${[
+    `<h2>${plan ? "Edit plan" : "A new plan"}</h2><form id="plan-form" ${plan ? `data-id="${e(plan.id)}"` : ""}><label>Plan name<input name="title" maxlength="200" value="${e(plan?.title || "Sunday worship")}" required></label><label>Date<input name="date" type="date" value="${e(plan?.date || "")}"></label><label>Theme<input name="theme" maxlength="500" value="${e(plan?.theme || "")}" placeholder="The faithfulness of God"></label><label>Sermon passage<input name="passage" maxlength="200" value="${e(plan?.passage || "")}" placeholder="Psalm 46"></label><label>Plan status<select name="status" aria-label="Plan status">${[
       ["draft", "Draft"],
       ["ready", "Ready"],
       ["completed", "Completed"],
@@ -1337,11 +1376,9 @@ function planDialog(plan = null) {
       )}</select></label><div class="form-actions"><button class="button" type="button" data-action="close">Cancel</button><button class="button primary">${plan ? "Save changes" : "Create plan"}</button></div></form>`,
   );
 }
-function itemDialog(item = null) {
-    const song = state.songs.find((s) => s.id === item?.songId);
-  modal(
-    `<h2>${item ? "Edit service item" : "Add a service item"}</h2><form id="item-form" ${item ? `data-id="${e(item.id)}"` : ""}>${song ? `<p>${e(song.title)}</p>` : `<label>Item title<input name="title" maxlength="200" value="${e(item?.title || "")}" placeholder="Scripture reading" required></label>`}<label>Place in the service<input name="role" maxlength="100" value="${e(item?.role || "")}" placeholder="Call to worship, prayer, sermon…"></label><div class="form-columns"><label>Duration (minutes)<input name="minutes" type="number" min="0.5" max="180" step="0.5" value="${e(item?.minutes || 3)}" required></label>${song ? `<label>Key<input name="key" maxlength="30" value="${e(item.key || "")}"></label>` : ""}</div><label>Notes / reading text / transitions<textarea name="notes" rows="4" maxlength="6000">${e(item?.notes || "")}</textarea></label><div class="form-actions"><button class="button" type="button" data-action="close">Cancel</button><button class="button primary">Save item</button></div></form>`,
-  );
+function itemDialog(item = null, heading = false) {
+  const song=state.songs.find(s=>s.id===item?.songId),isHeading=heading||item?.type==="heading",plan=getPlan();
+  modal(`<h2>${item?"Edit plan item":isHeading?"Add heading":"Add plan item"}</h2><form id="item-form" data-type="${isHeading?"heading":item?.type||"other"}" ${item?`data-id="${e(item.id)}"`:""}>${song?`<p>${e(song.title)}</p>`:`<label>${isHeading?"Heading":"Item title"}<input name="title" maxlength="200" value="${e(item?.title||"")}" required></label>`}${isHeading?"":`<div class="form-columns"><label>Duration (minutes)<input name="minutes" type="number" min="0.5" max="180" step="any" value="${e(item?.minutes||3)}" required></label>${song?`<label>Key<input name="key" maxlength="30" value="${e(item.key||"")}"></label>`:""}</div>`}<label>Notes<textarea name="notes" rows="4" maxlength="6000">${e(item?.notes||"")}</textarea></label>${!item?insertionMarkup(planDisplay(plan)):""}<div class="form-actions"><button class="button" type="button" data-action="close">Cancel</button><button class="button primary">Save item</button></div></form>`);
 }
 function download(name, content, type) {
   const url = URL.createObjectURL(new Blob([content], { type }));
@@ -1374,7 +1411,7 @@ document.addEventListener("toggle", event => {
   } else collectionOpen.delete(id);
 }, true);
 document.addEventListener("keydown", (event) => {
-  if (event.key === "Escape") closeMenus();
+  if (event.key === "Escape") { closeMenus(); if(event.target.closest?.("#inline-attribution-form")){event.preventDefault();unsavedForm=false;render();} }
   const tab = event.target.closest?.('[role="tab"][data-action="song-tab"]');
   if (tab && ["ArrowLeft","ArrowRight","Home","End"].includes(event.key)) {
     event.preventDefault();
@@ -1398,7 +1435,11 @@ document.addEventListener("click", async (event) => {
     disclosureState.set(menu.dataset.disclosure, false);
   }
   if (button.dataset.action === "song-tab") { activateSongTab(button.dataset.tab); return; }
+  if(button.dataset.action==="organizations"){await organizationDialog();return;}
+  if(button.dataset.action==="organization-drafts"){organizationDraftsDialog();return;}
+  if(button.dataset.action==="change-password"){modal('<h2>Change password</h2><form id="password-form"><label>New password<input name="password" type="password" minlength="10" autocomplete="new-password" required></label><p id="account-error" role="alert"></p><button class="button primary">Update password</button></form>');return;}
   if (button.dataset.action === "toggle-ai-labels") {
+    if(activeOrganization){personalAI.aiLabels=!personalAI.aiLabels;await savePersonalAIPreferences();render();return;}
     state.profile.aiLabels = !state.profile.aiLabels;
     persist();
     render();
@@ -1445,6 +1486,11 @@ document.addEventListener("click", async (event) => {
   let action = button.dataset.action,
     id = button.dataset.id;
   let song = state.songs.find((s) => s.id === id);
+  if(!editableWorkspace()) {
+    const allowed=new Set(["nav","account","close","song-select","song-tab","library-select","plan-select","index-open","catalog-open","clear-filters","song-page","index-page","first-song-page","last-song-page","collection-page","sync-profile","export","export-plan","export-plan-json","export-library","print-plan","download-song-file","song-files","song-recordings","backup","cloud-load","retry-autosave","signout","reset-index","remove-index-filter","apply-index-view","export-index","library-audit","plan-templates","copy-criteria-prompt","prepare-chatgpt-criteria"]);
+    if(!allowed.has(action))return toast("This organization is view only. Switch to Personal to edit your own work.");
+  }
+
   if (action === "collection-song-action") {
     const record = allCatalogSongs.find(s => s.id === id);
     if (!record || existingMatch(state, record)?.blacklisted) return;
@@ -1467,7 +1513,7 @@ document.addEventListener("click", async (event) => {
     if (!commitWorkspace(validateWorkspace(next))) return;
     if (dialog.open) dialog.close();
     selected = null; query = ""; render();
-    toast(target.blacklisted ? "Song moved to Blacklist. Notes and service history are preserved." : "Song restored to your visible repertoire.");
+    toast(target.blacklisted ? "Song moved to Blacklist. Notes and plan history are preserved." : "Song restored to your visible repertoire.");
     return;
   }
   if (song?.blacklisted && (view !== "blacklist" || ["save-song", "add-to-plan"].includes(action))) return;
@@ -1488,18 +1534,25 @@ document.addEventListener("click", async (event) => {
     button.disabled = true;
     try {
       if (action === "download-song-file") {
-        const blob = file.storage === "account" ? await accounts.downloadSongFile(file.path) : await deviceFile("get", file.path);
+        const blob = file.storage === "organization" ? await organizationsClient.downloadFile(activeOrganization?.id,file.path) : file.storage === "account" ? await accounts.downloadSongFile(file.path) : await deviceFile("get", file.path);
         if (store !== activeStore) return;
         if (!blob) throw new Error("This device file is unavailable. File contents are not included in JSON backups.");
         download(file.name, blob, file.mime || "application/octet-stream");
       } else {
-        if (file.storage === "account") await accounts.deleteSongFile(file.path); else await deviceFile("delete", file.path);
+        if (file.storage === "organization") await organizationsClient.deleteFile(activeOrganization?.id,file.path); else if (file.storage === "account") await accounts.deleteSongFile(file.path); else await deviceFile("delete", file.path);
         if (store !== activeStore) return;
         song.files = song.files.filter(f => f.id !== file.id); persist(); songFiles(song);
       }
     } catch (err) { if (store === activeStore) dialog.querySelector("#file-error").textContent = err.message; }
     finally { if (button.isConnected) button.disabled = false; }
     return;
+  }
+  if (action === "cancel-attribution") { render(); return; }
+  if (action === "inline-attribution") {
+    const holder=button.closest(".attribution-display");
+    if(!holder)return;
+    holder.innerHTML=`<form id="inline-attribution-form" data-id="${e(song.id)}" data-store="${e(activeStore)}"><label class="sr-only" for="inline-artist">Artist / attribution</label><input id="inline-artist" name="author" maxlength="1000" value="${e(song.author)}" autocomplete="off"><button type="submit" class="text-button">Save</button><button type="button" class="text-button" data-action="cancel-attribution">Cancel</button></form>`;
+    holder.querySelector("input").focus();return;
   }
   if (action === "confirm-fact") {
     const field = button.dataset.field;
@@ -1527,6 +1580,7 @@ document.addEventListener("click", async (event) => {
     return;
   }
   if (action === "prepare-chatgpt-criteria") {
+    if(activeOrganization)return toast("The ChatGPT connection reads your Personal workspace. Use Personal for connected library search.");
     const form = dialog.querySelector("#criteria-form");
     try { prepareChatGPTCriteria(form); }
     catch (err) { form.querySelector("#criteria-error").textContent = err.message; }
@@ -1603,7 +1657,7 @@ document.addEventListener("click", async (event) => {
     persist();
     render();
     toast(
-      "Preferred arrangement changed. Review church-use approval for this version.",
+      "Preferred arrangement changed. Check this version against your library's intended use.",
     );
     return;
   }
@@ -1631,7 +1685,7 @@ document.addEventListener("click", async (event) => {
   if (action === "copy-plan") {
     const plan = getPlan();
     return modal(
-      `<h2>Duplicate worship plan</h2><p class="muted">Copy the service order and notes into an independent draft. Your original plan stays intact.</p><form id="copy-plan-form" data-id="${e(plan.id)}"><label>Service name<input name="title" maxlength="200" value="${e(plan.title.slice(0, 190) + " (copy)")}" required></label><label>Date<input name="date" type="date"></label><div class="form-actions"><button class="button" type="button" data-action="close">Cancel</button><button class="button primary">Create copy</button></div></form>`,
+      `<h2>Duplicate worship plan</h2><p class="muted">Copy the service order and notes into an independent draft. Your original plan stays intact.</p><form id="copy-plan-form" data-id="${e(plan.id)}"><label>Plan name<input name="title" maxlength="200" value="${e(plan.title.slice(0, 190) + " (copy)")}" required></label><label>Date<input name="date" type="date"></label><div class="form-actions"><button class="button" type="button" data-action="close">Cancel</button><button class="button primary">Create copy</button></div></form>`,
     );
   }
   if (action === "delete-plan") {
@@ -1812,6 +1866,7 @@ document.addEventListener("click", async (event) => {
     return;
   }
   if (action === "copy-browser") {
+    if(activeOrganization)return toast("Switch to Personal before importing browser-only work.");
     try {
       const saved = localStorage.getItem(STORE);
       if (!saved) return toast("No separate browser workspace is saved.");
@@ -1837,6 +1892,7 @@ document.addEventListener("click", async (event) => {
   }
   if (action === "retry-autosave") {
     if (["review","conflict","checking"].includes(accountSave.phase)) return toast("Review the saved account workspace before uploading changes.");
+    if(activeOrganization){await syncOrganization(true);if(!editableWorkspace()||!autosave.enabled)return;}
     if (!autosave.enabled) { await startAccountCheck(); if (!autosave.enabled) return; }
     autosave.enqueue(state); await autosave.retry(); return;
   }
@@ -1859,6 +1915,7 @@ document.addEventListener("click", async (event) => {
     return;
   }
   if (action === "cloud-save") {
+    if(activeOrganization){if(!editableWorkspace()||["checking","conflict","review"].includes(accountSave.phase))return toast("Review shared changes before saving.");autosave.enqueue(state);await autosave.flush();return;}
     if (["saving", "checking", "conflict"].includes(accountSave.phase))
       return toast("Review the account copy before saving.");
     modal(
@@ -1897,6 +1954,7 @@ document.addEventListener("click", async (event) => {
     return;
   }
   if (action === "cloud-load") {
+    if(activeOrganization)return reviewOrganizationCopy();
     if (accountSave.phase === "saving") return;
     const owner = accounts.user?.id,
       store = activeStore;
@@ -1977,6 +2035,11 @@ document.addEventListener("click", async (event) => {
     toast("Removed from this library. Assessment preserved.");
     return;
   }
+  if (action === "starter-libraries") return starterLibrariesDialog();
+  if (action === "pick-plan-songs") return planPicker();
+  if (action === "import-plan") return planImportDialog();
+  if (action === "new-heading") return itemDialog(null,true);
+  if (action === "export-plan-json") return download("faithful-plan.json",JSON.stringify(exportPlanJSON(getPlan(),state.songs),null,2),"application/json");
   if (action === "new-plan") return planDialog();
   if (action === "edit-plan") return planDialog(getPlan());
   if (action === "new-item") return itemDialog();
@@ -2010,13 +2073,6 @@ document.addEventListener("click", async (event) => {
     return;
   }
   if (action === "add-to-plan") {
-    if (song.approval?.status === "avoid") {
-      toast(
-        "This song is marked “Avoid for our church.” Review that decision before adding it to a plan.",
-      );
-      approvalDialog(song);
-      return;
-    }
     if (!state.plans.length) {
       toast("Create a plan first, then add this song.");
       view = "plans";
@@ -2025,12 +2081,12 @@ document.addEventListener("click", async (event) => {
       return;
     }
     return modal(
-      `<h2>Add ${e(song.title)} to a plan</h2><form id="add-to-plan-form" data-id="${e(id)}"><label>Worship plan<select name="plan">${state.plans.map((p) => `<option value="${e(p.id)}" ${p.id === planId ? "selected" : ""}>${e(p.title)} ${e(p.date)}</option>`).join("")}</select></label><label>Service role<input name="role" maxlength="100" placeholder="Enter the place you choose for this song"></label>${song.arrangements?.length ? `<label>Arrangement<select name="arrangement" aria-label="Plan arrangement"><option value="">Song settings · no arrangement selected</option>${song.arrangements.map((a) => `<option value="${e(a.id)}" ${song.preferredArrangementId === a.id ? "selected" : ""}>${e(a.name)} · ${e(a.key || "key unset")}</option>`).join("")}</select></label>` : ""}<div class="form-columns"><label>Key<input name="key" maxlength="30" value="${e(selectedArrangement(song)?.key ?? song.review.key)}"></label><label>Duration (minutes)<input name="minutes" type="number" min="0.5" max="60" step="0.5" value="${e(selectedArrangement(song)?.minutes ?? song.review.minutes)}" required></label></div><div class="form-actions"><button class="button primary">Add to plan</button></div></form>`,
+      `<h2>Add ${e(song.title)} to a plan</h2><form id="add-to-plan-form" data-id="${e(id)}"><label>Plan<select name="plan">${state.plans.map((p) => `<option value="${e(p.id)}" ${p.id === planId ? "selected" : ""}>${e(p.title)} ${e(p.date)}</option>`).join("")}</select></label>${insertionMarkup(planDisplay(getPlan()||state.plans[0]))}${song.arrangements?.length ? `<label>Arrangement<select name="arrangement" aria-label="Plan arrangement"><option value="">Song settings · no arrangement selected</option>${song.arrangements.map((a) => `<option value="${e(a.id)}" ${song.preferredArrangementId === a.id ? "selected" : ""}>${e(a.name)} · ${e(a.key || "key unset")}</option>`).join("")}</select></label>` : ""}<div class="form-columns"><label>Key<input name="key" maxlength="30" value="${e(selectedArrangement(song)?.key ?? song.review.key)}"></label><label>Duration (minutes)<input name="minutes" type="number" min="0.5" max="60" step="0.5" value="${e(selectedArrangement(song)?.minutes ?? song.review.minutes)}" required></label></div><div class="form-actions"><button class="button primary">Add to plan</button></div></form>`,
     );
   }
   if (action === "backup")
     return modal(
-      `<h2>Keep your repertoire safe.</h2><p class="muted">Your songs, libraries, notes, rating profile and worship plans are saved on this browser. Download a backup to move them to another browser or restore them later.</p><button class="button primary" data-action="export">Download a backup</button><hr class="backup-divider"><h3>Restore a saved backup</h3><p class="muted">Choose a Faithful Repertoire JSON backup. You’ll review it before replacing any current data.</p><form id="restore-form"><label>Backup file<input name="backup" type="file" accept=".json,application/json" required></label><p id="restore-error" role="alert"></p><div class="form-actions"><button class="button" type="button" data-action="close">Cancel</button><button class="button primary">Review backup</button></div></form>`,
+      `<h2>Keep your repertoire safe.</h2>${activeOrganization?"<p>Restoring a backup here replaces the shared organization workspace for all members.</p>":""}<p class="muted">Your songs, libraries, notes, rating profile and worship plans are saved on this browser. Download a backup to move them to another browser or restore them later.</p><button class="button primary" data-action="export">Download a backup</button><hr class="backup-divider"><h3>Restore a saved backup</h3><p class="muted">Choose a Faithful Repertoire JSON backup. You’ll review it before replacing any current data.</p><form id="restore-form"><label>Backup file<input name="backup" type="file" accept=".json,application/json" required></label><p id="restore-error" role="alert"></p><div class="form-actions"><button class="button" type="button" data-action="close">Cancel</button><button class="button primary">Review backup</button></div></form>`,
     );
   if (action === "export")
     return download(
@@ -2044,8 +2100,8 @@ document.addEventListener("click", async (event) => {
       planOutline(getPlan(), state.songs.map(s => s.blacklisted ? { ...s, title: "Blacklisted song" } : s)),
       "text/plain",
     );
-  if (action === "ai-review" && state.profile.aiMode === "manual") {
-    toast("Human reviews only sends no AI requests.");
+  if (action === "ai-review" && effectiveProfile().aiMode === "manual") {
+    toast("Human evaluations only sends no AI requests.");
     return;
   }
   if (action === "ai-review" && !aiConfigured) return chatGPTEvaluation(song);
@@ -2058,6 +2114,7 @@ document.addEventListener("pointermove", event => {
   if (suppressRailHover && !event.target.closest(".sidebar")) { suppressRailHover = false; document.querySelector(".sidebar")?.classList.remove("suppress-hover"); }
 });
 document.addEventListener("input", (event) => {
+  if(event.target.id==="plan-import-json"||event.target.closest(".plan-library-picker,.import-plan-rows"))unsavedForm=true;
   if (event.target.closest("form") && !event.target.closest("#auth-form") && !event.target.readOnly) unsavedForm = true;
   if (event.target.id === "collection-search") {
     const start = event.target.selectionStart, end = event.target.selectionEnd;
@@ -2081,6 +2138,12 @@ document.addEventListener("keydown", event => {
   if (event.key === "Enter" && event.target.dataset.pageKind) { event.preventDefault(); event.target.dispatchEvent(new Event("change", {bubbles:true})); }
 });
 document.addEventListener("change", (event) => {
+  if(event.target.closest(".plan-library-picker,.import-plan-rows"))unsavedForm=true;
+  if(event.target.id==="workspace-select") {
+    const value=event.target.value;
+    if(value==="__manage__"){updateWorkspaceSwitcher();organizationDialog();return;}
+    switchOrganization(value==="personal"?null:organizationList.find(o=>o.id===value)).catch(error=>{updateWorkspaceSwitcher();toast(error.message);});return;
+  }
   if (event.target.closest("form") && !event.target.closest("#auth-form")) unsavedForm = true;
   if (event.target.dataset.pageKind) {
     const value = Math.max(1, Math.min(Number(event.target.max), Math.trunc(Number(event.target.value) || 1)));
@@ -2200,11 +2263,18 @@ document.addEventListener("submit", async (event) => {
     fd = new FormData(form),
     values = Object.fromEntries(fd),
     id = form.dataset.id;
+  if(!editableWorkspace()&&!['auth-form','password-form','index-filter-form','index-browse-form','criteria-form'].includes(form.id))return toast("This organization is view only.");
   const lines = (key) =>
     String(values[key] || "")
       .split("\n")
       .map((s) => s.trim())
       .filter(Boolean);
+  if (form.id === "inline-attribution-form") {
+    if(form.dataset.store!==activeStore)return toast("The active workspace changed.");
+    const next=clone(state),song=next.songs.find(s=>s.id===id);if(!song)return;
+    song.author=values.author.trim();song.facts||={};song.facts.author={confidence:"confirmed",source:"Edited by the workspace user."};
+    if(!commitWorkspace(validateWorkspace(next)))return;render();toast("Attribution saved.");return;
+  }
   if (form.id === "recording-form") {
     try {
       const next = clone(state), song = next.songs.find(s => s.id === id);
@@ -2220,11 +2290,11 @@ document.addEventListener("submit", async (event) => {
     try {
       if (!file?.size || file.size > MAX_SONG_FILE_BYTES) throw new Error("Choose a nonempty file up to 10 MB.");
       if ((song.files || []).length >= 50) throw new Error("A song can have up to 50 files.");
-      const fileId = uid(), name = file.name.slice(0,200), path = owner ? filePath(owner, id, fileId, name) : store + ":" + id + ":" + fileId;
-      if (owner) await accounts.uploadSongFile(path, file); else await deviceFile("put", path, file);
+      const fileId = uid(), name = file.name.slice(0,200), path = owner ? filePath(activeOrganization?.id || owner, id, fileId, name) : store + ":" + id + ":" + fileId;
+      if (activeOrganization) await organizationsClient.uploadFile(activeOrganization.id,path,file); else if (owner) await accounts.uploadSongFile(path, file); else await deviceFile("put", path, file);
       if (store !== activeStore || owner !== accounts.user?.id || !form.isConnected) return;
       const next = clone(state), target = next.songs.find(s => s.id === id);
-      target.files ||= []; target.files.push({ id: fileId, name, size: file.size, mime: file.type, path, storage: owner ? "account" : "device" });
+      target.files ||= []; target.files.push({ id: fileId, name, size: file.size, mime: file.type, path, storage: activeOrganization ? "organization" : owner ? "account" : "device" });
       if (!commitWorkspace(validateWorkspace(next))) return;
       songFiles(state.songs.find(s => s.id === id)); toast("File attached.");
     } catch (err) { if (form.isConnected) form.querySelector("#file-error").textContent = err.message; }
@@ -2434,7 +2504,7 @@ document.addEventListener("submit", async (event) => {
       submit =
         form.querySelector('[type="submit"]') || form.querySelector(".primary");
     const owner = activeStore,
-      mode = state.profile.aiMode;
+      mode = effectiveProfile().aiMode;
     try {
       if (!aiConfigured) { prepareChatGPTCriteria(form); return; }
       if (mode !== "full" || !aiConfigured)
@@ -2473,7 +2543,7 @@ document.addEventListener("submit", async (event) => {
       const checked = validateCriteriaResults(result, evidence);
       if (
         activeStore !== owner ||
-        state.profile.aiMode !== mode ||
+        effectiveProfile().aiMode !== mode ||
         !form.isConnected ||
         !dialog.open
       )
@@ -2498,7 +2568,7 @@ document.addEventListener("submit", async (event) => {
           (item) => !["likely", "possible"].includes(item.fit),
         );
       modal(
-        `<h2>Library criteria search</h2><p>${e(values.criteria)}</p><p class="muted">${matches.length} tentative matches of ${songs.length} songs · ${e(result.model)}. These are AI interpretations of supplied excerpts and records. Results follow library order, with no ranking or service selection.</p><ul class="criteria-results">${renderResults(matches) || "<li>No tentative matches were supported by the supplied records.</li>"}</ul><details><summary>Other results (${other.length})</summary><ul class="criteria-results">${renderResults(other)}</ul></details><p class="muted">Results are temporary. Your assessments, metrics, approval and worship plans are unchanged.</p><button class="button" data-action="close">Close search</button>`,
+        `<h2>Library criteria search</h2><p>${e(values.criteria)}</p><p class="muted">${matches.length} tentative matches of ${songs.length} songs · ${e(result.model)}. These are AI interpretations of supplied excerpts and records. Results follow library order, with no ranking or service selection.</p><ul class="criteria-results">${renderResults(matches) || "<li>No tentative matches were supported by the supplied records.</li>"}</ul><details><summary>Other results (${other.length})</summary><ul class="criteria-results">${renderResults(other)}</ul></details><p class="muted">Results are temporary. Your evaluations, metrics, libraries and plans are unchanged.</p><button class="button" data-action="close">Close search</button>`,
       );
     } catch (err) {
       if (!form.isConnected) return;
@@ -2571,13 +2641,13 @@ document.addEventListener("submit", async (event) => {
       if (
         metadata.lyrics !== (song.metadata?.lyrics || "") ||
         metadata.themes.join(",") !==
-          themesForDisplay(song, state.profile.aiMode).join(",")
+          themesForDisplay(song, effectiveProfile().aiMode).join(",")
       )
         invalidateApproval(song);
       if (
         !song.metadata?.themes &&
         JSON.stringify(metadata.themes) ===
-          JSON.stringify(themesForDisplay(song, state.profile.aiMode))
+          JSON.stringify(themesForDisplay(song, effectiveProfile().aiMode))
       )
         delete metadata.themes;
       song.metadata = metadata;
@@ -2662,9 +2732,11 @@ document.addEventListener("submit", async (event) => {
       } else await accounts.signIn(values.email, values.password);
       switchWorkspace(accounts.user);
       await loadAccountProfile();
+      try{await refreshOrganizations();}catch{}
       if (dialog.open) dialog.close();
       render();
-      toast("Signed in. Your browser-only workspace is preserved separately.");
+      toast(organizationInvitations.length ? `${organizationInvitations.length} organization invitation${organizationInvitations.length===1?"":"s"} available under Workspaces.` : "Signed in. Your browser-only workspace is preserved separately.");
+      if(new URLSearchParams(location.search).has("invitation"))await organizationDialog();
     } catch (error) {
       if (form.isConnected)
         form.querySelector("#account-error").textContent = error.message;
@@ -2858,7 +2930,7 @@ document.addEventListener("submit", async (event) => {
       return;
     }
     toast(
-      "Your assessment has been saved. Church-use approval needs a fresh review.",
+      "Your evaluation has been saved. Your evaluation was updated. Use libraries to record your own decisions.",
     );
   } else if (form.id === "library-form") {
     if (!values.name.trim()) return;
@@ -2876,6 +2948,7 @@ document.addEventListener("submit", async (event) => {
     });
     toast("Library choices saved.");
   } else if (form.id === "profile-form") {
+    if(activeOrganization)personalAI={aiMode:values.aiMode,aiLabels:values.aiLabels!=="off"};
     let criteria, weights = {...state.profile.weights};
     try {
       criteria = validateCriteria([...form.querySelectorAll(".criterion-row")].map(row => ({id:row.dataset.criterion, label:row.querySelector('[name="criterion-label"]').value, rubric:row.querySelector('[name="criterion-rubric"]').value, active:row.querySelector('[name="criterion-active"]').checked})));
@@ -2905,23 +2978,23 @@ document.addEventListener("submit", async (event) => {
     if (!id) state.plans.push(plan);
     planId = plan.id;
     view = "plans";
-    toast("Worship plan saved.");
+    toast("Plan saved.");
   } else if (form.id === "add-to-plan-form") {
     const p = state.plans.find((p) => p.id === values.plan);
     const song = state.songs.find((s) => s.id === id),
       arrangement = song.arrangements?.find((a) => a.id === values.arrangement);
-    p.items.push({
+    insertPlanItems(p,[{
       ...(arrangement
         ? { arrangementId: arrangement.id, arrangementName: arrangement.name }
         : {}),
       id: uid(),
       type: "song",
       songId: id,
-      role: values.role,
+      role: "",
       key: values.key,
       minutes: Number(values.minutes),
       notes: "",
-    });
+    }],values.after||"__end__");
     planId = p.id;
     view = "plans";
     toast("Song added to your plan.");
@@ -2929,10 +3002,10 @@ document.addEventListener("submit", async (event) => {
     const p = getPlan(),
       item = id
         ? p.items.find((i) => i.id === id)
-        : { id: uid(), type: "other" };
-    Object.assign(item, values, { minutes: Number(values.minutes) });
-    if (!id) p.items.push(item);
-    toast("Service item saved.");
+        : { id: uid(), type: form.dataset.type||"other", role:"" };
+    Object.assign(item, { ...(values.title!==undefined?{title:values.title.trim()}:{}), ...(values.key!==undefined?{key:values.key}:{}), notes:values.notes, minutes: item.type==="heading" ? 0 : Number(values.minutes) });
+    if (!id) insertPlanItems(p,[item],values.after||"__end__");
+    toast("Plan item saved.");
   } else if (form.id === "ai-form") {
     const song = state.songs.find((s) => s.id === id),
       submit = form.querySelector('button[type="submit"], button.primary'),
@@ -2949,18 +3022,18 @@ document.addEventListener("submit", async (event) => {
           version: song.version,
           lyrics: values.lyrics,
           arrangement: values.arrangement,
-          profile: state.profile.principles,
-          aiMode: state.profile.aiMode,
+          profile: effectiveProfile().principles,
+          aiMode: effectiveProfile().aiMode,
         }),
       });
       const result = await response.json();
       if (!response.ok) throw new Error(result.error || "Analysis failed.");
       const draft = restrictAssistance(
         validateReview(result.review),
-        state.profile.aiMode,
+        effectiveProfile().aiMode,
       );
       if (!form.isConnected || !dialog.open) return;
-      if (state.profile.aiMode === "limited") {
+      if (effectiveProfile().aiMode === "limited") {
         modal(
           `<h2>Limited assistance observations</h2><p class="muted">These are AI suggestions about the supplied text and arrangement evidence. They do not assign theological ratings or replace your review.</p><p>${e(draft.summary)}</p><h3>Language observations</h3><p>${e(draft.language)}</p><h3>Arrangement observations</h3><p>${e(draft.time)}</p><div class="form-actions"><button class="button" data-action="close">Discard</button><button class="button primary" id="save-assistance">Save assistance notes</button></div>`,
         );
@@ -2976,7 +3049,7 @@ document.addEventListener("submit", async (event) => {
           dialog.close();
           render();
           toast(
-            "Assistance notes saved. Your assessment and approval are unchanged.",
+            "Assistance notes saved. Your evaluation and libraries are unchanged.",
           );
         };
         return;
@@ -2991,7 +3064,7 @@ document.addEventListener("submit", async (event) => {
           )
           .join(
             "",
-          )}</div><h3>Claims</h3>${list(draft.claims)}<h3>Concerns</h3>${list(draft.concerns)}<h3>Scripture connections</h3>${list(draft.scriptures)}<h3>Language</h3><p>${e(draft.language)}</p><h3>Use of time</h3><p>${e(draft.time)}</p><div class="form-actions"><button class="button" data-action="close">Discard</button><button class="button primary" id="apply-draft">Apply draft</button></div>`,
+          )}</div><h3>Claims</h3>${list(draft.claims)}<h3>Concerns</h3>${list(draft.concerns)}<h3>Scripture connections</h3>${list(draft.scriptures)}<h3>Language</h3><p>${e(draft.language)}</p><h3>Arrangement observations</h3><p>${e(draft.time)}</p><div class="form-actions"><button class="button" data-action="close">Discard</button><button class="button primary" id="apply-draft">Apply draft</button></div>`,
       );
       document.querySelector("#apply-draft").onclick = () => {
         const previous = clone(song.review);
@@ -3085,3 +3158,193 @@ if (!staticEdition)
       render();
     })
     .catch(() => {});
+
+// Failed external artwork leaves a quiet text-only record.
+document.addEventListener("error",event=>{if(event.target.matches?.("img.album-art"))event.target.hidden=true;},true);
+let draggedPlanItem=null, pointerPlanDrag=null;
+function finishPlanDrag(id,target,after) {
+  if(!editableWorkspace())return;
+  const plan=getPlan();if(!plan||!id||!target||id===target)return;
+  const next=clone(state),changed=next.plans.find(p=>p.id===plan.id);movePlanItem(changed,id,target,after);
+  if(!commitWorkspace(validateWorkspace(next)))return;render();toast("Plan item moved.");
+}
+function dropTarget(x,y) {
+  const hit=document.elementFromPoint(x,y),list=document.querySelector('.service-items');
+  let row=hit?.closest("[data-plan-item]");
+  if(!row&&list&&hit?.closest('.service-items')===list){const rows=[...list.querySelectorAll('[data-plan-item]')];row=rows.find(el=>{const rect=el.getBoundingClientRect();return y<rect.y+rect.height/2;})||rows.at(-1);}
+
+  document.querySelectorAll(".drop-before,.drop-after").forEach(el=>el.classList.remove("drop-before","drop-after"));
+  if(!row)return null;const rect=row.getBoundingClientRect(),after=y>rect.y+rect.height/2;row.classList.add(after?"drop-after":"drop-before");return {id:row.dataset.planItem,after};
+}
+document.addEventListener("dragstart",event=>{const row=event.target.closest?.("[data-plan-item]");if(!row)return;draggedPlanItem=row.dataset.planItem;event.dataTransfer.setData("text/plain",draggedPlanItem);event.dataTransfer.effectAllowed="move";});
+document.addEventListener("dragover",event=>{if(!draggedPlanItem)return;event.preventDefault();dropTarget(event.clientX,event.clientY);});
+document.addEventListener("drop",event=>{if(!draggedPlanItem)return;event.preventDefault();const target=dropTarget(event.clientX,event.clientY);if(target)finishPlanDrag(draggedPlanItem,target.id,target.after);draggedPlanItem=null;});
+document.addEventListener("dragend",()=>{draggedPlanItem=null;document.querySelectorAll(".drop-before,.drop-after").forEach(el=>el.classList.remove("drop-before","drop-after"));});
+document.addEventListener("pointerdown",event=>{const handle=event.target.closest?.(".plan-drag-handle");if(!handle||!editableWorkspace())return;event.preventDefault();pointerPlanDrag={id:handle.closest("[data-plan-item]").dataset.planItem,pointer:event.pointerId};handle.setPointerCapture(event.pointerId);});
+document.addEventListener("pointermove",event=>{if(!pointerPlanDrag||event.pointerId!==pointerPlanDrag.pointer)return;pointerPlanDrag.target=dropTarget(event.clientX,event.clientY);if(event.clientY<48)window.scrollBy(0,-16);else if(event.clientY>innerHeight-48)window.scrollBy(0,16);});
+document.addEventListener("pointerup",event=>{if(!pointerPlanDrag||event.pointerId!==pointerPlanDrag.pointer)return;const drag=pointerPlanDrag;pointerPlanDrag=null;if(drag.target)finishPlanDrag(drag.id,drag.target.id,drag.target.after);document.querySelectorAll(".drop-before,.drop-after").forEach(el=>el.classList.remove("drop-before","drop-after"));});
+document.addEventListener("pointercancel",()=>{pointerPlanDrag=null;document.querySelectorAll(".drop-before,.drop-after").forEach(el=>el.classList.remove("drop-before","drop-after"));});
+
+function organizationStore(id,user=accounts.user?.id) { return `faithful-repertoire-organization:${user}:${id}`; }
+function editableWorkspace() { return canEditOrganization(activeOrganization); }
+function effectiveProfile() { return activeOrganization ? {...state.profile,...personalAI} : state.profile; }
+function saveOrganizationBase() { if(activeOrganization&&organizationBase)try{localStorage.setItem(activeStore+":sync-base",JSON.stringify({revision:organizationRevision,workspace:organizationBase}));}catch{} }
+function cacheOrganization() { try{localStorage.setItem(activeStore,JSON.stringify(state));return true;}catch{localSaveFailed=true;toast("Browser storage is full. Download a backup before leaving.");return false;} }
+function keepOrganizationDraft() { if(!activeOrganization)return;try{localStorage.setItem(activeStore+":draft:"+Date.now(),JSON.stringify(state));}catch{toast("The browser draft could not be stored. Download a backup before switching.");throw new Error("Browser storage is unavailable.");} }
+async function savePersonalAIPreferences() {
+  if(!accounts.user)return;
+  const key=`faithful-repertoire-user:${accounts.user.id}`;
+  let personal;try{const raw=localStorage.getItem(key);personal=raw?validateWorkspace(JSON.parse(raw)):syncCatalog(freshState());}catch{return toast("Personal preferences could not be loaded. Your shared workspace was not changed.");}
+  Object.assign(personal.profile,personalAI);localStorage.setItem(key,JSON.stringify(personal));
+  try{await accounts.saveProfile(personal.profile);}catch{toast("Display preferences are saved in this browser. Retry profile sync when connected.");}
+}
+async function refreshOrganizations(options={}) {
+  const owner=accounts.user?.id;if(!owner)return;
+  let created=null;
+  if(options.createName) {
+    const fresh=syncCatalog(freshState());fresh.libraries=[{id:uid(),name:"Shared repertoire",songIds:[]}];fresh.plans=[];
+    created=await organizationsClient.create(options.createName,fresh);
+  }
+  const result=await organizationsClient.list();if(owner!==accounts.user?.id)return;
+  organizationList=result.organizations;organizationInvitations=result.invitations;organizationServiceAvailable=true;
+  if(activeOrganization){const current=organizationList.find(org=>org.id===activeOrganization.id);if(current){const changedRole=current.role!==activeOrganization.role;activeOrganization=current;if(changedRole)render();}else await returnToPersonal(true);}
+  updateWorkspaceSwitcher();return created;
+}
+function updateWorkspaceSwitcher() {
+  const banner=app.querySelector('.organization-banner');
+  if(banner&&activeOrganization)banner.innerHTML=`<strong>${e(activeOrganization.name)}</strong> · ${e(organizationRoles[activeOrganization.role])}${editableWorkspace()?" · Shared changes sync automatically":" · Changes are disabled in this workspace"}`;
+  const select=app.querySelector("#workspace-select");if(!select)return;
+  select.innerHTML=`<option value="personal">Personal</option>${organizationList.map(org=>`<option value="${e(org.id)}" ${activeOrganization?.id===org.id?"selected":""}>${e(org.name)}${org.role==="viewer"?" · View only":""}</option>`).join("")}<option value="__manage__">Organizations & invitations${organizationInvitations.length?` (${organizationInvitations.length})`:""}</option>`;
+  select.value=activeOrganization?.id||"personal";
+}
+async function organizationDialog() {
+  if(!accounts.user)return accountDialog();
+  const owner=accounts.user.id;
+  modal('<h2>Organizations</h2><p role="status">Loading your workspaces…</p>');
+  try{await openOrganizations({client:organizationsClient,accounts,modal,current:activeOrganization,stillCurrent:()=>accounts.user?.id===owner,onChanged:refreshOrganizations,onSwitch:switchOrganization});}
+  catch(error){if(owner===accounts.user?.id)modal(`<h2>Organizations</h2><p role="alert">${e(error.message)}</p><button class="button" data-action="organizations">Retry</button>`);}
+}
+async function returnToPersonal(revoked=false) {
+  if(revoked&&activeOrganization&&dialog.open) {
+    const form=dialog.querySelector('#review-form,#item-form,#plan-form,#index-details-form,#inline-attribution-form,#recording-form');
+    if(form)try{const draft=clone(state);draft.pendingForm={name:form.id,fields:Object.fromEntries([...new FormData(form)].filter(([,value])=>typeof value==='string'))};localStorage.setItem(activeStore+':draft:'+Date.now()+':'+uid(),JSON.stringify(draft));}catch{}
+    dialog.close();
+  }
+  if(revoked&&activeOrganization)organizationList=organizationList.filter(org=>org.id!==activeOrganization.id);
+  const owner=accounts.user;if(!owner)return;
+  if(activeOrganization&&organizationBase&&workspaceSignature(state)!==workspaceSignature(organizationBase))keepOrganizationDraft();
+  const previousView=view;
+  organizationLoadVersion++;activeOrganization=null;organizationBase=null;organizationRevision=null;pendingOrganizationRemote=null;
+  try{localStorage.removeItem(`faithful-repertoire-last-organization:${owner.id}`);}catch{}
+  switchWorkspace(owner);view=previousView;render();await loadAccountProfile();
+  if(revoked)toast("Organization access ended. Personal is open; any unsynced browser draft was kept privately.");
+}
+async function switchOrganization(org) {
+  if(activeOrganization?.id===org?.id){dialog.close();return;}
+  if(autosave.enabled&&(autosave.running||autosave.pending))await autosave.flush();
+  if(activeOrganization&&organizationBase&&workspaceSignature(state)!==workspaceSignature(organizationBase)) {
+    if(!confirm("Changes have not synced. Keep a private browser draft and switch workspaces?"))return;
+    keepOrganizationDraft();
+  }
+  if(!org){if(dialog.open)dialog.close();await returnToPersonal();return;}
+  const owner=accounts.user?.id,version=++organizationLoadVersion,previousView=view;
+  const remote=await organizationsClient.snapshot(org.id);if(owner!==accounts.user?.id||version!==organizationLoadVersion)return;
+  let cached=null,base=null;
+  try{const key=organizationStore(org.id,owner),raw=localStorage.getItem(key),savedBase=localStorage.getItem(key+":sync-base");if(raw)cached=validateWorkspace(JSON.parse(raw));if(savedBase)base=JSON.parse(savedBase).workspace;}catch{}
+  autosave.reset(false);activeOrganization={...org,...remote};delete activeOrganization.workspace;
+  activeStore=organizationStore(org.id,owner);organizationBase=syncCatalog(remote.workspace);organizationRevision=remote.revision;pendingOrganizationRemote=null;
+  state=clone(organizationBase);let conflict=false;
+  if(cached&&workspaceSignature(cached)!==workspaceSignature(organizationBase)) {
+    if(editableWorkspace())try{if(!base)throw new Error("The saved browser copy has no verified shared baseline.");state=validateWorkspace(mergeWorkspaces(base,syncCatalog(cached),organizationBase));}catch{state=syncCatalog(cached);conflict=true;}
+    else {const saved=state;state=cached;keepOrganizationDraft();state=saved;}
+  }
+  resetSelection();view=previousView;accountReady=true;
+  accountSave={phase:conflict?"conflict":"local",signature:workspaceSignature(organizationBase),remoteAvailable:true};
+  saveOrganizationBase();cacheOrganization();autosave.reset(editableWorkspace()&&!conflict);
+  if(!conflict&&editableWorkspace()&&workspaceSignature(state)!==workspaceSignature(organizationBase))autosave.enqueue(state);
+  try{localStorage.setItem(`faithful-repertoire-last-organization:${owner}`,org.id);}catch{}
+  if(dialog.open)dialog.close();render();
+}
+async function saveActiveWorkspace(snapshot) {
+  if(!activeOrganization)return accounts.saveWorkspace(snapshot);
+  const org=activeOrganization.id,owner=accounts.user?.id,store=activeStore,base=clone(organizationBase),revision=organizationRevision;
+  let actual=validateWorkspace(snapshot),saved;
+  try{saved=await organizationsClient.save(org,revision,actual);}
+  catch(error){
+    if(error.name!=="WorkspaceConflictError")throw error;
+    const remote=await organizationsClient.snapshot(org);
+    if(owner!==accounts.user?.id||store!==activeStore)throw new Error("The active workspace changed.");
+    actual=validateWorkspace(mergeWorkspaces(base,actual,syncCatalog(remote.workspace)));
+    saved=await organizationsClient.save(org,remote.revision,actual);
+  }
+  if(owner===accounts.user?.id&&store===activeStore){organizationRevision=saved.revision;organizationBase=clone(actual);saveOrganizationBase();}
+  return {workspace:actual};
+}
+async function syncOrganization(force=false) {
+  if(!activeOrganization||organizationSyncing||!accounts.user||(!force&&document.hidden))return;
+  const id=activeOrganization.id,owner=accounts.user.id,store=activeStore,version=organizationLoadVersion;
+  organizationSyncing=true;
+  try {
+    const remote=await organizationsClient.snapshot(id,force?null:organizationRevision);
+    if(owner!==accounts.user?.id||store!==activeStore||version!==organizationLoadVersion)return;
+    const oldRole=activeOrganization.role;activeOrganization={...activeOrganization,...remote};delete activeOrganization.workspace;
+    updateWorkspaceSwitcher();restrictOrganizationControls();
+    if(oldRole!==remote.role)toast(`Organization access changed to ${organizationRoles[remote.role]}.`);
+    if(!editableWorkspace()) {
+      autosave.reset(false);
+      if(organizationBase&&workspaceSignature(state)!==workspaceSignature(organizationBase)){keepOrganizationDraft();state=clone(organizationBase);cacheOrganization();}
+    }
+    if(!remote.workspace){
+      if(editableWorkspace()&&accountSave.phase==="error"){accountSave.phase="local";autosave.reset(true);if(workspaceSignature(state)!==workspaceSignature(organizationBase))autosave.enqueue(state);updateSaveStrip();}
+      if(oldRole!==remote.role)render();return;
+    }
+    if(autosave.running||dialog.open||unsavedForm){pendingOrganizationRemote=remote;return;}
+    const latest=syncCatalog(remote.workspace),base=organizationBase;
+    let merged=latest;
+    if(editableWorkspace()&&base&&workspaceSignature(state)!==workspaceSignature(base))merged=validateWorkspace(mergeWorkspaces(base,state,latest));
+    organizationRevision=remote.revision;organizationBase=latest;state=clone(merged);saveOrganizationBase();cacheOrganization();
+    accountSave={phase:"local",signature:workspaceSignature(latest),remoteAvailable:true};autosave.reset(editableWorkspace());
+    if(editableWorkspace()&&workspaceSignature(state)!==workspaceSignature(latest))autosave.enqueue(state);
+    if(oldRole!==remote.role||workspaceSignature(base)!==workspaceSignature(latest))render();else updateSaveStrip();
+    pendingOrganizationRemote=null;
+  } catch(error) {
+    if(owner!==accounts.user?.id||store!==activeStore)return;
+    if(error.status===403||error.status===401){await returnToPersonal(true);return;}
+    accountSave.phase=error.name==="WorkspaceConflictError"?"conflict":"error";
+    if(error.name==="WorkspaceConflictError")autosave.reset(false);
+    updateSaveStrip();
+  } finally {organizationSyncing=false;}
+}
+async function reviewOrganizationCopy() {
+  const org=activeOrganization,store=activeStore;modal('<h2>Shared workspace</h2><p role="status">Loading the latest organization copy…</p>');
+  try {
+    const remote=await organizationsClient.snapshot(org.id);if(store!==activeStore)return;
+    modal(`<h2>Review shared changes</h2><p>Your browser copy has ${state.plans.length} plans and ${state.libraries.length} libraries. The shared copy has ${remote.workspace.plans.length} plans and ${remote.workspace.libraries.length} libraries.</p><p>When the same field changes in both copies, choose which edits to carry across. Loading keeps a private browser draft of your current copy.</p><button class="button" id="download-org-draft">Download browser draft</button><button class="button primary" id="load-org-shared">Keep browser draft & load shared copy</button>`);
+    dialog.querySelector("#download-org-draft").onclick=()=>download("organization-browser-draft.json",JSON.stringify(state,null,2),"application/json");
+    dialog.querySelector("#load-org-shared").onclick=()=>{if(store!==activeStore)return;keepOrganizationDraft();organizationBase=syncCatalog(remote.workspace);organizationRevision=remote.revision;state=clone(organizationBase);accountSave={phase:"local",signature:workspaceSignature(state),remoteAvailable:true};autosave.reset(editableWorkspace());saveOrganizationBase();cacheOrganization();dialog.close();render();toast("Shared copy loaded. Your earlier browser draft is retained.");};
+  }catch(error){if(store===activeStore)modal(`<h2>Shared workspace</h2><p role="alert">${e(error.message)}</p>`);}
+}
+function organizationDraftsDialog() {
+  const prefix=`faithful-repertoire-organization:${accounts.user?.id}:`,keys=[];
+  for(let i=0;i<localStorage.length;i++){const key=localStorage.key(i);if(key.startsWith(prefix)&&key.includes(":draft:"))keys.push(key);}
+  modal(`<h2>Private browser drafts</h2><p>These copies contain unsynced organization edits from this browser. They are not uploaded to your Personal workspace.</p>${keys.length?keys.map((key,i)=>`<p>Draft ${i+1} <button class="button" data-draft-index="${i}">Download</button></p>`).join(""):"<p>No retained drafts.</p>"}`);
+  for(const button of dialog.querySelectorAll("[data-draft-index]"))button.onclick=()=>download("organization-draft.json",localStorage.getItem(keys[Number(button.dataset.draftIndex)]),"application/json");
+}
+function restrictOrganizationControls() {
+  if(editableWorkspace())return;
+  const readActions=new Set(["nav","account","organizations","organization-drafts","close","song-select","song-tab","library-select","plan-select","index-open","catalog-open","clear-filters","song-page","index-page","first-song-page","last-song-page","collection-page","sync-profile","sort","export","export-plan","export-plan-json","export-library","print-plan","download-song-file","song-files","song-recordings","backup","cloud-load","retry-autosave","toggle-ai-labels","signout","change-password","reset-index","remove-index-filter","apply-index-view","export-index","library-audit","plan-templates","copy-criteria-prompt","prepare-chatgpt-criteria"]);
+  for(const button of app.querySelectorAll("button[data-action]"))if(!readActions.has(button.dataset.action)){button.disabled=true;button.title="View-only organization access";}
+  for(const row of app.querySelectorAll("[data-plan-item]"))row.draggable=false;
+}
+
+function organizationSaveLabel() {
+  if(!editableWorkspace())return "View-only organization workspace";
+  if(accountSave.phase==="saving")return "Saving shared changes…";
+  if(accountSave.phase==="error")return "Shared sync is offline or failed. Your browser copy is retained.";
+  if(accountSave.phase==="conflict")return "Shared edits overlap. Review the shared copy; your browser draft is kept.";
+  return accountSave.signature===workspaceSignature(state)?"Shared workspace is up to date":"Saved in this browser. Shared upload is pending.";
+}
+setInterval(()=>syncOrganization(),3000);
+window.addEventListener("online",()=>syncOrganization(true));
+document.addEventListener("visibilitychange",()=>{if(!document.hidden)syncOrganization(true);});
+dialog.addEventListener("close",()=>{unsavedForm=false;if(activeOrganization&&pendingOrganizationRemote)syncOrganization(true);});
