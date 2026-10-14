@@ -17,7 +17,7 @@ blockers explicitly. Preserve personal assessments, recordings and workspaces.
 - [x] Add restrained color to distinguish plan headers, headings, song rows and
   keys, plus quiet color for index controls and opened collection headers, with
   mobile/keyboard access and plain print output intact.
-- [ ] Complete regression checks and publish/verify the released build.
+- [x] Complete regression checks and publish/verify the released build.
 
 Implemented **Evaluate plan** in Plans and additional scope/criteria choices in
 Library Audit. Reports describe each chosen scope and mixed aggregate coverage,
@@ -39,8 +39,19 @@ are synthetic fixtures: AI observations/source validity still require human
 verification. JSON validation rejects recommendation/score/edit fields but cannot
 prove the meaning or truth of free prose.
 
-Publication checks are pending. Earlier unresolved provider/network/account
-verification tasks remain below; this feature does not depend on a private frontend
+Release `faa8ef4` is live. [App checks](https://github.com/williambooth0803-ui/Worship-Song-Tool/actions/runs/38492084940)
+and [Pages deployment](https://github.com/williambooth0803-ui/Worship-Song-Tool/actions/runs/38492084565)
+succeeded. CI passed all 118 tests, MCP type checking, scale checks, the full hosted
+browser suite and generated-file consistency. Seven live frontend files match
+the tested build, including both new evaluation modules. The new evaluation and
+organization workflows passed on the published site with TLS verification enabled,
+disposable browser profiles and synthetic intercepted provider requests. Only
+the approved public certificate trust database was copied; no saved sessions,
+passwords or personal workspaces were copied. No production records or emails
+were written. Desktop/mobile report and plan-color screenshots were inspected.
+
+Earlier unresolved provider/network/account verification tasks remain below; this
+feature does not depend on a private frontend
 token or changes to the existing Supabase project. The bound environment draft
 remains stale and has not been retried or overwritten.
 
