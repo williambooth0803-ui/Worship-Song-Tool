@@ -181,6 +181,26 @@ ChatGPT request in Full AI mode and previews a report with locally computed char
 evidence, strengths, weaknesses and unknowns. No library, song or plan is modified.
 Download the JSON report to keep it. See SCORING-GUIDE.md for its limits.
 
+**Evaluate plan** on Plans evaluates an existing human-built order in Full AI mode.
+Choose additional plans and/or libraries, activate the criteria you want, add your
+own questions, and describe your purpose. Library audits also offer **Choose more
+libraries / plans and criteria**. Mixed reports compare evidenced coverage in the
+existing plans with the combined library content. Reports describe strengths,
+gaps and uncertainty; they do not select songs, propose replacements/order, score
+worship or modify any saved data. Charts count distinct library songs (deduplicated
+across libraries) and plan song occurrences (including repeats), with combined
+views and explicit unknowns. Keys/BPM alone cannot establish singability or energy.
+
+Review the request before copying: chosen plans include names, themes, Scripture
+context, headings/order, item titles, keys, recorded arrangement measurements and
+human-entered duration estimates. Song words require opt-in; private notes, files,
+song evaluations, unselected scopes, account settings and blacklisted song details
+are excluded. Nothing is sent automatically. Paste the returned JSON to preview
+and download a report with its snapshot. Changed scopes, criteria, evidence,
+workspace/account or AI mode require a fresh request. The importer rejects extra
+fields such as recommendations/scores/edits, but free-form AI prose still needs
+human review; schema validation does not establish the truth of an AI observation.
+
 Custom and active rating criteria are supported by the production connector projection. Its function was updated from `supabase/mcp.sql` while preserving existing database policies and grants. Real-user authorization still requires each account's consent.
 
 The read-only ChatGPT connection is deployed and documented in

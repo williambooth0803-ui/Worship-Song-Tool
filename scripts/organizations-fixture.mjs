@@ -72,12 +72,28 @@ export async function checkOrganizationFlows(browser,base) {
   assert.equal(await viewer.locator('#song-file-form').count(),0,'View-only file dialog offers no upload controls');
   assert.equal(await viewer.locator('[data-action="delete-song-file"]').count(),0);
   await viewer.getByRole('button',{name:'Close dialog',exact:true}).click();
+  // A viewer may opt into read-only evaluations through their own Personal profile.
+  await viewer.getByLabel('Workspace',{exact:true}).selectOption('personal');
+  await viewer.locator('.organization-banner').waitFor({state:'hidden'});
+  await viewer.locator('.nav-item[data-view="profile"]').click();
+  await viewer.getByLabel('AI content preference',{exact:true}).selectOption('full');
+  await viewer.getByRole('button',{name:'Save rating profile',exact:true}).click();
+  await viewer.getByLabel('Workspace',{exact:true}).selectOption(org);
+  await viewer.locator('.organization-banner').filter({hasText:'View only'}).waitFor();
   await owner.getByRole('button',{name:'Close dialog',exact:true}).click();
   for(const page of [owner,editor,viewer])await page.locator('.nav-item[data-view="plans"]').click();
   assert.equal(await viewer.getByRole('button',{name:'+ New plan',exact:true}).isDisabled(),true);
   await owner.getByRole('button',{name:'+ New plan',exact:true}).click();await owner.getByLabel('Plan name',{exact:true}).fill('Shared Sunday');await owner.locator('#plan-form .primary').click();
   await editor.getByRole('heading',{name:'Shared Sunday',exact:true}).waitFor({timeout:10000});await viewer.getByRole('heading',{name:'Shared Sunday',exact:true}).waitFor({timeout:10000});
   assert.equal(await viewer.getByRole('button',{name:'Add songs',exact:true}).isDisabled(),true);
+  assert.equal(await viewer.getByRole('button',{name:'Evaluate plan',exact:true}).isDisabled(),false);
+  const auditRevision=(await db.query('select revision from public.organization_workspaces where organization_id=$1',[org])).rows[0].revision;
+  await viewer.getByRole('button',{name:'Evaluate plan',exact:true}).click();
+  await viewer.locator('#prepare-scope-evaluation').click();
+  const evaluationRequest=await viewer.locator('#scope-request').inputValue();
+  assert.ok(evaluationRequest.includes('Shared Sunday'));assert.ok(!evaluationRequest.includes('PRIVATE viewer note'));assert.ok(!evaluationRequest.includes('PRIVATE owner note'));
+  assert.equal((await db.query('select revision from public.organization_workspaces where organization_id=$1',[org])).rows[0].revision,auditRevision,'Read-only evaluation must not write shared data');
+  await viewer.getByRole('button',{name:'Close dialog',exact:true}).click();
   const direct=await viewer.evaluate(async org=>{const response=await fetch('https://fixture.supabase.co/rest/v1/rpc/org_save',{method:'POST',headers:{'Content-Type':'application/json',Authorization:'Bearer fixture-00000000-0000-0000-0000-000000000093'},body:JSON.stringify({org,expected_revision:1,new_workspace:{version:1,songs:[],libraries:[],plans:[]}})});return response.status;},org);assert.equal(direct,403);
   // Disjoint edits start from the same shared revision and must merge automatically.
   await owner.getByRole('button',{name:'Edit plan details',exact:true}).click();await editor.getByRole('button',{name:'Edit plan details',exact:true}).click();

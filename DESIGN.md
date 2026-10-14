@@ -6,6 +6,13 @@ screenshot/PDF is allowed: preserve its order, never fill missing evidence, and
 require review of uncertainty. Certain validated imports need no extra confirmation. The index is a
 deterministic lookup of recorded song data, using filters selected by the user.
 AI song assessment is optional per account and does not select worship songs.
+Explicit plan/library evaluations may describe existing content against criteria
+chosen by the user, including mixed coverage comparisons. Keep them read-only:
+no candidate song recommendations, replacements, reordering, quality scores or
+automatic edits. Count libraries as distinct songs and plans as ordered occurrences;
+separate unknown evidence from demonstrated gaps. Review copied scope/privacy and
+AI prose; validating a JSON shape does not prove its claims. Reports are downloadable
+snapshots, never workspace edits or approvals.
 An explicitly requested AI search may list tentative matches to a user-defined
 subjective criterion within a selected personal library. It requires Full AI
 content, evidence and uncertainty labels. It does not rank songs or edit plans.

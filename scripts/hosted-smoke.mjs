@@ -1,3 +1,4 @@
+import {checkWorkspaceEvaluationFlows} from "./workspace-evaluation-fixture.mjs";
 import {checkSearchCollectionFlows,checkRememberAndSaveFlows} from "./search-collections-fixture.mjs";
 import { execFile } from "node:child_process";
 import { promisify } from "node:util";
@@ -321,6 +322,7 @@ try {
   assert.deepEqual(errors, []);
   await checkSearchCollectionFlows(browser, `http://127.0.0.1:${server.address().port}/Worship-Song-Tool/`);
   await checkRememberAndSaveFlows(browser, `http://127.0.0.1:${server.address().port}/Worship-Song-Tool/`);
+  await checkWorkspaceEvaluationFlows(browser, `http://127.0.0.1:${server.address().port}/Worship-Song-Tool/`);
   await checkPlanningUpgradeFlows(browser, `http://127.0.0.1:${server.address().port}/Worship-Song-Tool/`);
   await checkOrganizationFlows(browser, `http://127.0.0.1:${server.address().port}/Worship-Song-Tool/`);
   await checkSongTabsFlows(browser, `http://127.0.0.1:${server.address().port}/Worship-Song-Tool/`);

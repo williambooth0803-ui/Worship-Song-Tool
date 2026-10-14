@@ -6,6 +6,44 @@ do not treat a new prompt as cancellation unless the owner says so. Mark an item
 complete only with implementation and meaningful verification. Record external
 blockers explicitly. Preserve personal assessments, recordings and workspaces.
 
+## Plan evaluation, mixed scopes and visual separation
+
+- [x] Add a read-only Plan Evaluation with criteria selected by the user, custom
+  questions, strengths/gaps/unknowns and a downloadable report; preserve human-led
+  worship planning and all personal choices.
+- [x] Include multiple plans, libraries or a mixture in one request/report, with
+  coverage comparisons against existing content, deduplicated library unions and
+  plan occurrences. Do not recommend songs, assemble a plan or edit saved data.
+- [x] Add restrained color to distinguish plan headers, headings, song rows and
+  keys, plus quiet color for index controls and opened collection headers, with
+  mobile/keyboard access and plain print output intact.
+- [ ] Complete regression checks and publish/verify the released build.
+
+Implemented **Evaluate plan** in Plans and additional scope/criteria choices in
+Library Audit. Reports describe each chosen scope and mixed aggregate coverage,
+with charts for each scope, distinct library unions and repeated plan occurrences.
+Selected/custom criteria and a stated purpose replace an assumed ideal or overall
+worship score. Expandable chart/criterion sections and focused report headings
+keep long reports navigable on desktop/mobile. Downloads include the selected
+snapshot; reports never modify saved work.
+
+Verification: 118 unit/database tests, the full hosted regression suite and scale
+checks passed locally. Focused final browser checks additionally passed mixed
+scopes, privacy/blacklist exclusions, selected/custom criteria, union/occurrence
+counts, safe text display, wrong-request/unsupported-field rejection, changed
+evidence/mode/workspace guards, unchanged saved data, download and visible report
+headings on mobile. Real-SQL organization browser fixtures verify a Full-AI
+view-only member can prepare a report without advancing the shared revision or
+exposing private Personal notes. Screenshots were inspected. The report responses
+are synthetic fixtures: AI observations/source validity still require human
+verification. JSON validation rejects recommendation/score/edit fields but cannot
+prove the meaning or truth of free prose.
+
+Publication checks are pending. Earlier unresolved provider/network/account
+verification tasks remain below; this feature does not depend on a private frontend
+token or changes to the existing Supabase project. The bound environment draft
+remains stale and has not been retried or overwritten.
+
 ## Search, collections, save status and remembered sign-in
 
 - [x] Make search responsive without replacing active inputs; preserve typing,
