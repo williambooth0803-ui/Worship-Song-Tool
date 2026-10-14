@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import {reveal} from './disclosure.mjs';
+import {reveal,chooseSong} from './disclosure.mjs';
 export async function checkPlanningUpgradeFlows(browser,base) {
  const page=await browser.newPage({viewport:{width:1440,height:1000}}),errors=[];page.on('pageerror',error=>errors.push(error.message));
  const state=()=>page.evaluate(()=>JSON.parse(localStorage.getItem('hymn-heart-v1')));
@@ -7,6 +7,7 @@ export async function checkPlanningUpgradeFlows(browser,base) {
   await page.goto(base);await page.getByRole('heading',{name:'Discover songs',exact:true}).waitFor();
   const initial=await state(),ids=initial.songs.slice(0,2).map(s=>s.id);
   await page.evaluate(ids=>{const data=JSON.parse(localStorage.getItem('hymn-heart-v1'));data.libraries[0].songIds=ids;localStorage.setItem('hymn-heart-v1',JSON.stringify(data));},ids);await page.reload();
+  await chooseSong(page,(await state()).songs[0]);
   const attribution=page.locator('.song-title [data-action="inline-attribution"]');await attribution.click();
   const input=page.locator('#inline-artist');await input.fill('My attribution <script>unsafe()</script>');await page.locator('#inline-attribution-form button[type="submit"]').click();
   assert.equal((await state()).songs[0].author,'My attribution <script>unsafe()</script>');assert.equal(await page.locator('.song-title script').count(),0);assert.equal(await page.locator('.song-options [data-action="edit-fact"]').count(),0);

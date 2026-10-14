@@ -1,3 +1,4 @@
+import {checkDiscoverResultsFlows} from "./discover-results-fixture.mjs";
 import {checkWorkspaceEvaluationFlows} from "./workspace-evaluation-fixture.mjs";
 import {checkSearchCollectionFlows,checkRememberAndSaveFlows} from "./search-collections-fixture.mjs";
 import { execFile } from "node:child_process";
@@ -5,7 +6,7 @@ import { promisify } from "node:util";
 import { checkConnectionFlows } from "./connection-fixture.mjs";
 import { checkNavigationFlows } from "./navigation-fixture.mjs";
 import { checkPreferencesFlows } from "./preferences-fixture.mjs";
-import { reveal, keepAIIfOffered } from "./disclosure.mjs";
+import { reveal, keepAIIfOffered, chooseSong } from "./disclosure.mjs";
 import http from "node:http";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -95,6 +96,8 @@ try {
   assert.ok(requests.includes("/Worship-Song-Tool/app.js"));
   assert.ok(!requests.some((url) => url.includes("/api/")));
 
+  const originalSong=await page.evaluate(()=>JSON.parse(localStorage.getItem("hymn-heart-v1")).songs[0]);
+  await chooseSong(page,originalSong);
   await reveal(page, "button", { name: "Edit evaluation" });
   await page.getByRole("button", { name: "Edit evaluation" }).click();
   await page
@@ -179,6 +182,7 @@ try {
     .getByRole("button", { name: "Replace with this backup", exact: true })
     .click();
   await page.reload();
+  await chooseSong(page,originalSong);
   assert.match(
     await page.locator(".notes-text").textContent(),
     /Restored from the other browser/,
@@ -269,6 +273,7 @@ try {
     localStorage.setItem("hymn-heart-v1", JSON.stringify(state));
   });
   await page.reload();
+  await chooseSong(page,originalSong);
   await page
     .getByText("AI draft visibility fixture.", { exact: true })
     .waitFor({state:"attached"});
@@ -288,6 +293,7 @@ try {
       .locator("nav")
       .getByRole("button", { name: "Discover songs" })
       .click();
+    await chooseSong(page,originalSong);
     assert.equal(
       await page
         .getByText("AI draft visibility fixture.", { exact: true })
@@ -322,6 +328,7 @@ try {
   assert.deepEqual(errors, []);
   await checkSearchCollectionFlows(browser, `http://127.0.0.1:${server.address().port}/Worship-Song-Tool/`);
   await checkRememberAndSaveFlows(browser, `http://127.0.0.1:${server.address().port}/Worship-Song-Tool/`);
+  await checkDiscoverResultsFlows(browser, `http://127.0.0.1:${server.address().port}/Worship-Song-Tool/`);
   await checkWorkspaceEvaluationFlows(browser, `http://127.0.0.1:${server.address().port}/Worship-Song-Tool/`);
   await checkPlanningUpgradeFlows(browser, `http://127.0.0.1:${server.address().port}/Worship-Song-Tool/`);
   await checkOrganizationFlows(browser, `http://127.0.0.1:${server.address().port}/Worship-Song-Tool/`);

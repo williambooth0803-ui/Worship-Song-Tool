@@ -645,17 +645,13 @@ export function discoverSongs(
       (!approval || (s.approval?.status || "unreviewed") === approval),
   );
   if (sort === "title") matches.sort((a, b) => a.title.localeCompare(b.title));
-  if (sort === "rating")
-    matches.sort(
-      (a, b) =>
-        (overall(reviewForDisplay(b, profile?.aiMode), profile) ?? -1) -
-        (overall(reviewForDisplay(a, profile?.aiMode), profile) ?? -1),
-    );
-  if (sort === "substance")
-    matches.sort(
-      (a, b) =>
-        (reviewForDisplay(b, profile?.aiMode).scores.substance ?? -1) -
-        (reviewForDisplay(a, profile?.aiMode).scores.substance ?? -1),
-    );
+  if (sort === "rating" || sort === "substance") {
+    // Compute each visible value once; comparisons must not rebuild reviews/rubrics.
+    const values = new Map(matches.map(song => {
+      const review = reviewForDisplay(song,profile?.aiMode);
+      return [song, (sort === "rating" ? overall(review,profile) : review.scores.substance) ?? -1];
+    }));
+    matches.sort((a,b)=>values.get(b)-values.get(a));
+  }
   return matches;
 }

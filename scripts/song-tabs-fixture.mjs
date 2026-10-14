@@ -10,6 +10,7 @@ export async function checkSongTabsFlows(browser, base) {
     await page.goto(base);
     await page.getByRole("heading", { name: "Discover songs", exact: true }).waitFor();
     const original = await workspace();
+    const initialSongId=await page.locator(".detail-panel").getAttribute("data-song-id");
     const tab = name => page.getByRole("tab", { name, exact: true });
     assert.equal(await page.getByRole("tab").count(), 3);
     assert.equal(await page.getByRole("tabpanel").count(), 1);
@@ -44,11 +45,11 @@ export async function checkSongTabsFlows(browser, base) {
     assert.equal(await tab("Evaluation").getAttribute("aria-selected"), "true", "Edits preserve the active tab");
 
     // A real long personal note makes enough page height to verify wheel behavior.
-    await page.evaluate(() => {
+    await page.evaluate(id => {
       const saved = JSON.parse(localStorage.getItem("hymn-heart-v1"));
-      saved.songs[0].review.notes = "A personal observation about this exact arrangement. ".repeat(100);
+      saved.songs.find(song=>song.id===id).review.notes = "A personal observation about this exact arrangement. ".repeat(100);
       localStorage.setItem("hymn-heart-v1", JSON.stringify(saved));
-    });
+    },initialSongId);
     await page.reload();
     await page.locator('[data-attribute="notes"] > summary').click();
     assert.equal(await page.locator('.detail-panel').evaluate(el => getComputedStyle(el).overflowY), "visible");

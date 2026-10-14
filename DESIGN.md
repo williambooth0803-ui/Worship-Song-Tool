@@ -106,6 +106,13 @@ blacklists and hidden AI content. Collection depth controls remain editorial,
 not empirical popularity. Popularity uses the current workspace's completed-plan
 counts; chronology uses supplied recording-release dates with unknowns/reissues
 visible. Never infer composition dates or chart positions from list order.
+Discover defaults to the highest visible rating using active criteria; unassessed
+records follow assessed scores, including zero. Human-only mode must not let hidden
+AI scores affect ordering. Typed searches prioritize title relevance and use the
+selected sort within relevance groups. Keep separate explicit sort choices for
+Discover, libraries and Blacklist. Result rows share a narrow single column at all
+screen sizes; keep artwork, attribution, status and rating together, without empty
+footer regions or clipped titles. Song selection and planning remain human choices.
 
 Collection portraits use fixed public artist identities and sourced subject
 images with attribution, lazy loading and honest unavailable-image fallbacks.

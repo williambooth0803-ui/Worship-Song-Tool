@@ -24,4 +24,4 @@ jobs:
         run: node -e 'require("node:fs").appendFileSync(process.env.GITHUB_ENV,"CHROMIUM_PATH="+require("playwright").chromium.executablePath()+"\n")'
       - run: npm run test:hosted
       - name: Check published files are up to date
-        run: git diff --exit-code -- docs
+        run: git diff --exit-code -- docs CODE-STATS.md

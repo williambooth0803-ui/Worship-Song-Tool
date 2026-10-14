@@ -200,14 +200,15 @@ try {
 let personalAI={aiMode:state.profile.aiMode,aiLabels:state.profile.aiLabels};
 let view = "discover",
   query = "",
-  selected = state.songs[0]?.id,
+  selected = null,
   libraryId = state.libraries[0]?.id,
   planId = state.plans[0]?.id,
   aiConfigured = false;
 let timer;
-let themeFilter = "",
-  approvalFilter = "",
-  sortOrder = "default";
+let themeFilter = "", approvalFilter = "";
+const defaultSongSorts = {discover:"rating",library:"default",blacklist:"default"};
+const songSorts = {...defaultSongSorts};
+const currentSongSort = () => songSorts[view] || "rating";
 function toast(message) {
   const t = document.querySelector("#toast");
   t.textContent = message;
@@ -386,12 +387,12 @@ function discoveryControls(pool) {
     )}</select></label><label>Evaluation<select id="review-filter" aria-label="Evaluation"><option value="">All evaluations</option><option value="unreviewed" ${reviewFilter === "unreviewed" ? "selected" : ""}>Not evaluated</option><option value="assessed" ${reviewFilter === "assessed" ? "selected" : ""}>Has an evaluation</option></select></label><label>Theme<select id="theme-filter" aria-label="Theme"><option value="">All themes</option>${themes.map((t) => `<option value="${e(t)}" ${t === themeFilter ? "selected" : ""}>${e(t)}</option>`).join("")}</select></label><label>Sort by<select id="sort-order" aria-label="Sort by">${[
     ["default", "Catalog order"],
     ["title", "Title A–Z"],
-    ["rating", "Overall rating"],
+    ["rating", "Highest rating first"],
     ["substance", "Theological substance"],
   ]
     .map(
       ([value, label]) =>
-        `<option value="${value}" ${value === sortOrder ? "selected" : ""}>${e(label)}</option>`,
+        `<option value="${value}" ${value === currentSongSort() ? "selected" : ""}>${e(label)}</option>`,
     )
     .join(
       "",
@@ -491,7 +492,8 @@ function wizard(step = 1) {
   );
 }
 function resetSelection() {
-  selected = state.songs[0]?.id;
+  selected = null;
+  Object.assign(songSorts,defaultSongSorts);
   libraryId = state.libraries[0]?.id;
   planId = state.plans[0]?.id;
   view = "discover";
@@ -730,19 +732,17 @@ function songWorkspace() {
     state.libraries.find((x) => x.id === libraryId) || state.libraries[0];
   const pool = isLibrary ? browseData().pool.filter(song=>lib?.songIds.includes(song.id))
     : isBlacklist ? state.songs.filter(song=>song.blacklisted).map(song=>({...song,themes:themesForDisplay(song,effectiveProfile().aiMode)})) : browseData().pool;
-  const songs = discoverSongs(
-    searchSongs(pool, query).filter(
-      (s) =>
-        (!typeFilter || (s.category || "other") === typeFilter) &&
-        (!reviewFilter ||
-          (reviewFilter === "unreviewed"
-            ? reviewForDisplay(s, effectiveProfile().aiMode).status === "unreviewed"
-            : reviewForDisplay(s, effectiveProfile().aiMode).status !==
-              "unreviewed")),
-    ),
-    { theme: themeFilter, approval: approvalFilter, sort: sortOrder },
-    state.profile,
-  );
+  // Stable search relevance keeps exact title matches ahead of broader matches.
+  // Within each relevance group, use the sort chosen for this page.
+  const songs = searchSongs(discoverSongs(
+    searchSongs(pool,query).filter(s =>
+      (!typeFilter || (s.category || "other") === typeFilter) &&
+      (!reviewFilter || (reviewFilter === "unreviewed"
+        ? reviewForDisplay(s,effectiveProfile().aiMode).status === "unreviewed"
+        : reviewForDisplay(s,effectiveProfile().aiMode).status !== "unreviewed"))),
+    {theme:themeFilter,approval:approvalFilter,sort:currentSongSort()},
+    effectiveProfile(),
+  ), query);
   const available =
     query.trim() && !isLibrary && !isBlacklist
       ? searchSongs(browseData().outside, query)
@@ -912,7 +912,8 @@ function libraryToolbar(lib) {
 function songCard(s, active) {
   const displayedReview = reviewForDisplay(s, effectiveProfile().aiMode);
   const score = overall(displayedReview, state.profile);
-  return `<button class="song-card ${active ? "selected" : ""}" data-action="song-select" data-id="${e(s.id)}"><div class="song-card-top">${coverMarkup(s,"card-art") || '<span class="song-symbol">♫</span>'}<span class="card-score">${score ?? "—"}${aiLabel(s, displayedReview, "scores")}<small>/10</small></span></div><h3>${e(s.title)}</h3><p>${e(s.author)}</p><div class="tags">${tagList(themesForDisplay(s, effectiveProfile().aiMode).slice(0, 2))}${aiLabel(s, displayedReview, "themes")}</div><div class="card-bottom"><span>${e(statusLabel(displayedReview))}</span><span>›</span></div></button>`;
+  const themes=themesForDisplay(s,effectiveProfile().aiMode).slice(0,2);
+  return `<button class="song-card ${active ? "selected" : ""}" data-action="song-select" data-id="${e(s.id)}"><span class="song-card-art">${coverMarkup(s,"card-art") || '<span class="song-symbol" aria-hidden="true">♫</span>'}</span><div class="song-card-copy"><h3>${e(s.title)}</h3><p>${e(s.author)}</p><div class="song-card-meta"><span class="card-status">${e(statusLabel(displayedReview))}</span>${themes.length?`<span class="tags">${tagList(themes)}${aiLabel(s,displayedReview,"themes")}</span>`:""}</div></div><span class="card-score"><span>${score ?? "—"}<small>/10</small></span>${aiLabel(s,displayedReview,"scores")}</span></button>`;
 }
 function recordingMarkup(song, manage = true) {
   return `<div class="recording-links">${recordingLinks(song).map(link => `<a class="button" data-provider="${link.provider}" data-recording-kind="${link.exact ? "saved" : "search"}" href="${e(link.url)}" target="_blank" rel="noopener noreferrer" aria-label="${e(link.exact ? `Listen on ${link.platform}${link.label ? ": " + link.label : ""}` : `Find recordings on ${link.platform}`)}"><span>${e(link.platform)} ↗</span><small>${link.exact ? "Saved recording" : "Search recordings"}</small></a>`).join("")}</div>${manage ? `<button class="text-button" data-action="song-recordings" data-id="${e(song.id)}">Manage recording links</button>` : ""}`;
@@ -2370,7 +2371,7 @@ document.addEventListener("change", (event) => {
     reviewFilter = event.target.value;
   else if (event.target.id === "approval-filter")
     approvalFilter = event.target.value;
-  else if (event.target.id === "sort-order") sortOrder = event.target.value;
+  else if (event.target.id === "sort-order") songSorts[view] = event.target.value;
   else if (
     event.target.closest("#approval-form") &&
     event.target.name === "status"
@@ -2918,7 +2919,7 @@ document.addEventListener("submit", async (event) => {
           // Write successfully before changing the in-memory state.
           localStorage.setItem(activeStore, JSON.stringify(restored));
           state = restored;
-          selected = state.songs[0]?.id;
+          selected = null;
           libraryId = state.libraries[0].id;
           planId = state.plans[0]?.id;
           query = "";

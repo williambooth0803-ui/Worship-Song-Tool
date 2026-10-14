@@ -49,6 +49,11 @@ evidence rubrics, selectable/custom criteria, equal weighting and library balanc
 - Build a profile from the prominent setup prompt: denomination, a named statement-of-faith starting point, custom convictions and personal AI-content visibility.
 - Start with 69 mixed hymn, modern hymn, worship, CCM and gospel records. Browse 2,044 song/version records across 58 collections, including all 40 requested artists plus Elevation RHYTHM and Red Rocks Worship. Expand a collection to browse paginated song rows and actions: library, plan, blacklist, files, arrangement, human evaluation, AI evaluation and details. Filter collections by artist, era, style or theme. **Import all songs** imports a whole collection without selecting checkboxes; **Import entire catalog** does the same for every visible record. Essentials, Standards and All remain available. These are editorial selections, not complete verified discographies or rankings.
 - Search ranks matching titles ahead of author/theme matches. With no text matches, it keeps the no-matches message and lists the closest title/artist spellings below it. Library searches stay within the chosen library. Opening a catalog record does not add it to a library. Filter by song type, evaluation status and theme.
+- Discover opens with the highest visible ratings first, using your active criteria
+  and AI-content preference, with unassessed records last. Typed searches keep
+  exact/title matches first and apply the chosen order within each relevance group.
+  Libraries and Blacklist have independent sort choices. Compact result rows keep
+  artwork, title/attribution, evaluation status and rating together in one narrow column.
 - **Blacklist** dismisses a song record from discovery, libraries, collections, index and new song choices. Existing service items retain their position and duration but display a generic placeholder. The blacklist tab shows full song details, recordings and evaluations, with restoration available. It does not offer library or plan additions while a song is blacklisted. Notes, arrangements, attachments, library membership and history are preserved; repeated imports do not restore dismissed records. Blacklist flags sync and survive validated backups, and the read-only connection excludes them.
 - Use **Find lyrics** or **Find public reviews** for a title-and-recording-specific web search. These are search links, not a claim that a verified review or licensed lyric page exists for every title.
 - **Listen · recordings** provides Apple Music, Spotify and YouTube searches for every catalog record. **Manage recording links** saves exact song/video URLs with version labels; the first saved version per platform becomes its preferred button. Searches remain available to find alternate recordings. Links are validated and normalized, not verified for song identity, availability or official status. No audio is downloaded or analyzed. Saved links travel with workspace backups and account autosave. The catalog now supplies a first batch of Apple Music recordings matched against exact title/artist metadata from Apple’s US catalog, with album labels and retained source evidence. These defaults never replace a personal recording list or restore removed links. Matching metadata does not verify lyrics, official status or availability in every region. Spotify and YouTube remain searches until source-backed direct mappings are available; Songlink currently rejects anonymous lookup with `PUBLIC_API_ACCESS_DEPRECATED`. See [Recording lookup access](RECORDING-LOOKUP-ACCESS.md) for coverage and reproducible lookup steps.
@@ -276,6 +281,13 @@ User sign-in and a real ChatGPT lookup of the owner’s saved libraries are conf
 ## Development and checks
 
 Requires Node.js 22 or later. The browser stays vanilla JavaScript without a bundler. The MCP backend uses pinned official MCP SDK, JOSE and Zod dependencies.
+
+Run `npm run code:count` for the running [code total](CODE-STATS.md). Site builds
+refresh the file and print the total automatically; CI checks that it is current.
+The main total counts physical source/support/test lines, including comments and
+blank lines, and excludes the generated `docs/` website copy. Generated code is
+listed separately; dependencies, Markdown, JSON/configuration data and images are
+excluded. This repository cannot customize Codex's native top-right counter.
 
 ```sh
 npm ci

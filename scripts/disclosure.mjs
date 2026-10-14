@@ -1,4 +1,9 @@
 // Exercise the real summary controls before a formerly visible action.
+export async function chooseSong(page,song) {
+  await page.locator('.nav-item[data-view="discover"]').click();
+  await page.getByRole("searchbox",{name:"Search songs",exact:true}).fill(song.title);
+  await page.locator(`.song-card[data-id=${JSON.stringify(song.id)}]`).click();
+}
 export async function keepAIIfOffered(page) {
   const button = page.getByRole("button", { name: "Keep AI evaluation", exact: true });
   if (await button.isVisible()) await button.click();

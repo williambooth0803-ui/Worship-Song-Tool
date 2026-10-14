@@ -1,5 +1,5 @@
 import { checkWorkspaceToolsFlows } from "./workspace-tools-fixture.mjs";
-import { reveal, keepAIIfOffered } from "./disclosure.mjs";
+import { reveal, keepAIIfOffered, chooseSong } from "./disclosure.mjs";
 import assert from "node:assert/strict";
 
 // Provider fixture only. This exercises the client flow; it does not establish
@@ -198,6 +198,7 @@ export async function checkAccountFlows(browser, base) {
     profiles.get(users["one@example.test"].id).statement,
     "london1689",
   );
+  const noteSong={id:await page.locator(".detail-panel").getAttribute("data-song-id"),title:await page.locator(".detail-panel h2").textContent()};
   await reveal(page, "button", { name: "Edit evaluation" });
   await page.getByRole("button", { name: "Edit evaluation" }).click();
   await page
@@ -249,6 +250,7 @@ export async function checkAccountFlows(browser, base) {
   await page
     .getByRole("button", { name: "Load this backup", exact: true })
     .click();
+  await chooseSong(page,noteSong);
   await page.getByRole("tab",{name:"Details & files",exact:true}).click();
   if (!(await page.locator('[data-attribute="notes"]').evaluate((n) => n.open)))
     await page.locator('[data-attribute="notes"] > summary').click();
@@ -300,6 +302,7 @@ export async function checkAccountFlows(browser, base) {
   await page.getByRole("button", {name:"Review saved account workspace",exact:true}).click();
   await reveal(page, "button", { name: "Load this backup" });
   await page.getByRole("button", { name: "Load this backup" }).click();
+  await chooseSong(page,noteSong);
   await page.getByRole("tab",{name:"Details & files",exact:true}).click();
   if (!(await page.locator('[data-attribute="notes"]').evaluate((n) => n.open)))
     await page.locator('[data-attribute="notes"] > summary').click();

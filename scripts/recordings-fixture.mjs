@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { reveal } from "./disclosure.mjs";
+import { reveal,chooseSong } from "./disclosure.mjs";
 
 export async function checkRecordingsFlows(browser, base) {
   const page = await browser.newPage({ viewport: { width: 1440, height: 1000 } }), errors = [];
@@ -10,7 +10,8 @@ export async function checkRecordingsFlows(browser, base) {
   const spotify = "https://open.spotify.com/track/0123456789012345678901";
   try {
     await page.goto(base);
-    const id = (await state()).songs[0].id;
+    const song=(await state()).songs[0],id= song.id;
+    await chooseSong(page,song);
     assert.equal(await page.locator('.detail-panel [data-recording-kind="search"]').count(), 3);
     await reveal(page, "button", { name: "Manage recording links", exact: true });
     await page.getByRole("button", { name: "Manage recording links", exact: true }).click();
@@ -38,6 +39,7 @@ export async function checkRecordingsFlows(browser, base) {
     assert.equal(await page.locator('dialog [data-recording-kind="search"]').count(), 3, "Saved versions still allow alternate searches");
     await page.getByRole("button", { name: "Close", exact: true }).click();
     await page.reload();
+    await chooseSong(page,song);
     const saved = page.locator('.detail-panel [data-recording-kind="saved"]');
     assert.equal(await saved.count(), 3);
     assert.equal(await saved.filter({hasText:"YouTube"}).getAttribute("href"), acoustic);
@@ -53,12 +55,7 @@ export async function checkRecordingsFlows(browser, base) {
     assert.equal(await page.locator('.detail-panel [data-provider="spotify"]').getAttribute("data-recording-kind"), "search");
     const catalogSong = (await state()).songs.find(s => s.recordings?.some(r => r.id.startsWith("catalog-apple-")));
     assert.ok(catalogSong, "Starter repertoire includes metadata-matched Apple recordings");
-    await page.evaluate(id => {
-      const data = JSON.parse(localStorage.getItem("hymn-heart-v1"));
-      data.songs.sort((a, b) => Number(b.id === id) - Number(a.id === id));
-      localStorage.setItem("hymn-heart-v1", JSON.stringify(data));
-    }, catalogSong.id);
-    await page.reload();
+    await chooseSong(page,catalogSong);
     assert.equal(await page.locator('.detail-panel [data-provider="appleMusic"]').getAttribute("data-recording-kind"), "saved");
     await reveal(page, "button", { name: "Manage recording links", exact: true });
     await page.getByRole("button", { name: "Manage recording links", exact: true }).click();
@@ -67,6 +64,7 @@ export async function checkRecordingsFlows(browser, base) {
     }
     await page.getByRole("button", { name: "Close", exact: true }).click();
     await page.reload();
+    await chooseSong(page,catalogSong);
     assert.deepEqual((await state()).songs.find(s => s.id === catalogSong.id).recordings, []);
     assert.equal(await page.locator('.detail-panel [data-provider="appleMusic"]').getAttribute("data-recording-kind"), "search", "Removed catalog defaults stay removed on reload");
     assert.deepEqual(errors, []);

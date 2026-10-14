@@ -6,6 +6,52 @@ do not treat a new prompt as cancellation unless the owner says so. Mark an item
 complete only with implementation and meaningful verification. Record external
 blockers explicitly. Preserve personal assessments, recordings and workspaces.
 
+## Compact search results, top-rated discovery and code total
+
+- [x] Tighten awkward result spacing and empty areas; use a narrower, consistent
+  single-column list with compact rows, natural long-title wrapping and clear ratings.
+- [x] Default Discover to the highest visible ratings using the active criteria;
+  keep unknowns last, preserve personal evaluations and AI visibility, and keep
+  typed title matches ahead of broader artist/theme matches. Preserve each page's
+  explicit sort choice separately.
+- [x] Add a reproducible running code count, a refreshed CODE-STATS.md file and
+  progress/final totals; site builds refresh it automatically without double-counting
+  the generated website in the main total.
+- [ ] Publish and verify the changes and preserve earlier requests/data.
+- [ ] Display the count persistently in Codex's native top-right corner. Blocked:
+  this chat's tools expose no native UI customization or counter-setting capability.
+  Repository code cannot change that interface. CODE-STATS.md, `npm run code:count`
+  and progress/final totals provide the available persistent count/reporting path.
+
+Counts include physical lines (comments and blanks) in source/support code and
+checks; generated docs copies are reported separately. Markdown, JSON/configuration
+data, images and dependencies are excluded. The initial count was 32,016 unique
+source/check lines (56,344 including generated website code). An older chat's
+29,000 figure cannot be compared without its counting definition or snapshot.
+Implemented compact artwork/title/rating rows, a 280–380px desktop results column
+and one results column at every screen size. Natural title/attribution wrapping,
+AI provenance, keyboard selection, normal detail/page scrolling and result-boundary
+scroll chaining are preserved. Initial details open the highest visible rating;
+explicit sort choices stay separate for Discover, libraries and Blacklist. Numeric
+values are calculated once per sort to avoid rebuilding reviews during comparisons.
+
+Local verification passed 118 unit/database tests, the catalog checks, scale checks
+and the new discovery/browser cases (visible ratings, active criteria, human
+overrides, zero vs. unknown, hidden AI, blacklist, exact-title relevance, independent
+sorts, narrow wide-screen rows, long-title wrapping and keyboard access). Earlier
+hosted scenarios passed through account/organization recovery, planning, audits,
+files, collections, scrolling and imports. Final recording-choice/removal/reload
+and request regressions were rechecked after updating fixtures to select their
+intended song explicitly instead of assuming the first catalog song opens.
+Desktop, wide-screen, tablet and mobile screenshots were inspected.
+
+`npm run code:count` currently reports **32,173 source/check lines**, excluding
+the generated website copy. Consecutive runs reproduce the same report; builds
+refresh it, and CI checks its consistency. Future-task reporting is recorded in
+AGENTS.md. The native Codex corner remains outside this chat's available controls.
+Full release CI, publication and live checks are pending. Earlier external blockers
+remain tracked below.
+
 ## Plan evaluation, mixed scopes and visual separation
 
 - [x] Add a read-only Plan Evaluation with criteria selected by the user, custom

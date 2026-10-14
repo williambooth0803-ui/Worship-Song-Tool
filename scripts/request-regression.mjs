@@ -1,6 +1,6 @@
 import { chromium } from "playwright";
 import assert from "node:assert/strict";
-import { reveal, keepAIIfOffered } from "./disclosure.mjs";
+import { reveal, keepAIIfOffered, chooseSong } from "./disclosure.mjs";
 import { copyFile, mkdir, mkdtemp, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
@@ -61,6 +61,7 @@ try {
   assert.equal(await page.getByLabel("Song page",{exact:true}).inputValue(),"2");
   await nav("discover");
   const song=(await state()).songs[0];
+  await chooseSong(page,song);
   await reveal(page,"button",{name:"Generate AI evaluation",exact:true});
   await page.getByRole("button",{name:"Generate AI evaluation",exact:true}).click();
   const draft={schema:"faithful-evaluation-v1",songId:song.id,aiMode:"full",review:{scores:{accuracy:8,substance:7,language:9,time:null},summary:"PREVIEW READY: source-backed fixture",claims:[],concerns:[],uses:[],scriptures:[],themes:[],language:"Clear",time:"",concern:"none",sources:[]}};

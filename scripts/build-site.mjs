@@ -9,6 +9,7 @@ import { fileURLToPath } from "node:url";
 import path from "node:path";
 import { validateAccountConfig } from "../public/accounts.js";
 import { siteConfig } from "../public/config.js";
+import { reportCodeStats } from "./code-stats.mjs";
 
 const project = fileURLToPath(new URL("../", import.meta.url));
 const source = path.join(project, "public");
@@ -54,3 +55,4 @@ await writeFile(path.join(destination, ".nojekyll"), "");
 console.log(
   "Static website prepared in docs/. No credentials or personal browser data are included.",
 );
+await reportCodeStats();
