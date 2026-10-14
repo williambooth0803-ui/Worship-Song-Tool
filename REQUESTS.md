@@ -17,7 +17,7 @@ blockers explicitly. Preserve personal assessments, recordings and workspaces.
 - [x] Add a reproducible running code count, a refreshed CODE-STATS.md file and
   progress/final totals; site builds refresh it automatically without double-counting
   the generated website in the main total.
-- [ ] Publish and verify the changes and preserve earlier requests/data.
+- [x] Publish and verify the changes and preserve earlier requests/data.
 - [ ] Display the count persistently in Codex's native top-right corner. Blocked:
   this chat's tools expose no native UI customization or counter-setting capability.
   Repository code cannot change that interface. CODE-STATS.md, `npm run code:count`
@@ -49,8 +49,15 @@ Desktop, wide-screen, tablet and mobile screenshots were inspected.
 the generated website copy. Consecutive runs reproduce the same report; builds
 refresh it, and CI checks its consistency. Future-task reporting is recorded in
 AGENTS.md. The native Codex corner remains outside this chat's available controls.
-Full release CI, publication and live checks are pending. Earlier external blockers
-remain tracked below.
+Release `850581f` is live: [App checks](https://github.com/williambooth0803-ui/Worship-Song-Tool/actions/runs/38495986288)
+and [Pages deployment](https://github.com/williambooth0803-ui/Worship-Song-Tool/actions/runs/38495985633)
+succeeded. CI passed all 118 unit/database tests, MCP type checking, scale checks,
+the full hosted browser suite and generated-site/code-count consistency. Five
+public frontend files match the tested build. The new discovery/default-sort
+workflow also passed on the live site using disposable profiles, verified TLS,
+synthetic local workspaces and intercepted image requests; no production account
+records were written. Earlier provider/account/image-verification blockers and
+the unavailable native Codex corner customization remain explicitly tracked.
 
 ## Plan evaluation, mixed scopes and visual separation
 
