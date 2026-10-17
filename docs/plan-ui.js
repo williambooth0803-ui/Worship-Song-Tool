@@ -1,11 +1,12 @@
 import {songArtwork} from './song-visuals.js';
 import {visibleSongs} from './song-state.js';
-import {selectedArrangement} from './planning.js';
+import {planItemTitle,selectedArrangement} from './planning.js';
 import {planImportPrompt,inspectPlanImport,importedPlan} from './plan-import.js';
 const e=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 export function insertionMarkup(plan,selected='__end__') {
  if(!plan?.items.length)return '';
- return `<label>Add after<select name="after" aria-label="Add after"><option value="__start__">At the beginning</option>${plan.items.map((item,i)=>`<option value="${e(item.id)}" ${selected===item.id?'selected':''}>${i+1}. ${e(item.title||item.displayTitle||'Song')}</option>`).join('')}<option value="__end__" ${selected==='__end__'?'selected':''}>At the end</option></select></label>`;
+ let number=0;
+ return `<label>Add after<select name="after" aria-label="Add after"><option value="__start__">At the beginning</option>${plan.items.map((item,i)=>`<option value="${e(item.id)}" ${selected===item.id?'selected':''}>${item.type==='heading'?'Heading: ':`${++number}. `}${e(item.displayTitle||item.title||'Song')}</option>`).join('')}<option value="__end__" ${selected==='__end__'?'selected':''}>At the end</option></select></label>`;
 }
 export function insertPlanItems(plan,items,after='__end__') {
  const position=after==='__start__'?0:after==='__end__'?plan.items.length:plan.items.findIndex(i=>i.id===after)+1;
@@ -20,7 +21,7 @@ export function movePlanItem(plan,id,target,after=false) {
 }
 export function openPlanSongPicker({workspace,plan,libraryId,modal,onAdd,stillCurrent}) {
  const chosen=new Set();let selectedLibrary=libraryId||workspace.libraries[0]?.id,page=1;
- const displayPlan={...plan,items:plan.items.map(i=>({...i,displayTitle:workspace.songs.find(s=>s.id===i.songId)?.title||i.title}))};
+ const displayPlan={...plan,items:plan.items.map(i=>({...i,title:planItemTitle(i,workspace.songs),displayTitle:planItemTitle(i,workspace.songs)}))};
  modal(`<h2>Add songs to ${e(plan.title)}</h2><div class="plan-library-picker"><div class="picker-controls"><label>Library<select id="picker-library" aria-label="Choose a library">${workspace.libraries.map(l=>`<option value="${e(l.id)}" ${l.id===selectedLibrary?'selected':''}>${e(l.name)}</option>`).join('')}</select></label><label>Find a song<input id="picker-search" type="search" aria-label="Find library songs" placeholder="Title or artist"></label></div><div id="picker-songs" class="picker-songs" tabindex="0" aria-label="Library songs"></div><p id="picker-count" role="status"></p>${insertionMarkup(displayPlan)}<p id="picker-error" role="alert"></p><div class="form-actions"><button class="button" data-action="close">Cancel</button><button type="button" class="button primary" id="picker-add" disabled>Add 0 songs to plan</button></div></div>`);
  const dialog=document.querySelector('#dialog'),list=dialog.querySelector('#picker-songs'),add=dialog.querySelector('#picker-add');
  const available=visibleSongs(workspace.songs),allowed=new Set(workspace.libraries.flatMap(l=>l.songIds));

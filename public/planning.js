@@ -1,3 +1,7 @@
+export function planItemTitle(item, songs) {
+  const song = songs.find(s => s.id === item.songId);
+  return song?.blacklisted ? "Excluded song" : song?.title || item.title || "Song";
+}
 export function copyPlan(
   plan,
   { title, date = "" } = {},
@@ -89,7 +93,7 @@ export function rangeSpan(arrangement) {
 }
 export function planOutline(plan, songs) {
   const minutes = plan.items.reduce((n, i) => n + i.minutes, 0);
-  let elapsed = 0;
+  let elapsed = 0, number = 0;
   return [
     plan.title,
     plan.date,
@@ -103,7 +107,7 @@ export function planOutline(plan, songs) {
       const song = songs.find((s) => s.id === item.songId);
       const timing = elapsedTime(elapsed);
       elapsed += item.minutes;
-      return `${i + 1}. ${timing} · ${song?.title || item.title} — ${item.minutes} min\n   ${item.role || ""}${item.key ? ` · Key: ${item.key}` : ""}${item.arrangementName ? ` · Arrangement: ${item.arrangementName}` : ""}\n   ${item.notes || ""}`;
+      return `${++number}. ${timing} · ${planItemTitle(item, songs)} — ${item.minutes} min\n   ${item.role || ""}${item.key ? ` · Key: ${item.key}` : ""}${item.arrangementName ? ` · Arrangement: ${item.arrangementName}` : ""}\n   ${item.notes || ""}`;
     }),
   ]
     .filter((v) => v !== undefined)

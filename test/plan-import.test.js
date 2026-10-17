@@ -32,3 +32,12 @@ test('shared workspace merges disjoint library/plan edits but stops conflicting 
  const merged=mergeWorkspaces(base,local,remote);assert.deepEqual(new Set(merged.libraries[0].songIds),new Set(['a','b','c']));assert.equal(merged.plans[0].title,'Local name');assert.equal(merged.plans[0].items[0].notes,'Remote note');
  remote.plans[0].title='Other name';assert.throws(()=>mergeWorkspaces(base,local,remote),/Two people/);
 });
+
+test('excluded historical songs stay generic in importable exports and insertion labels without changing saved items',()=>{
+ const songs=structuredClone(seedSongs);songs[0].blacklisted=true;
+ const plan={id:'plan',title:'History',date:'2026-10-17',items:[{id:'old',type:'song',songId:songs[0].id,title:songs[0].title,minutes:4,key:'D',notes:'Private retained note'}]};
+ const before=structuredClone(plan),output=exportPlanJSON(plan,songs);
+ assert.equal(output.items[0].title,'Excluded song');assert.equal(output.items[0].type,'other');
+ assert.ok(!JSON.stringify(output).includes(songs[0].title));assert.ok(!JSON.stringify(output).includes(songs[0].author));
+ assert.deepEqual(plan,before);assert.equal(plan.items[0].notes,'Private retained note');
+});

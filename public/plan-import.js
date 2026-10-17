@@ -1,3 +1,4 @@
+import {planItemTitle} from './planning.js';
 import { normalize } from './core.js';
 import { visibleSongs } from './song-state.js';
 export const PLAN_IMPORT_SCHEMA='faithful-plan-v1';
@@ -51,5 +52,5 @@ export function importedPlan(draft,songs,resolutions={},confirmed=false,newId=()
  return {id:newId(),title:draft.title,date:draft.date,theme:draft.theme,passage:draft.passage,status:'draft',items,importSource:{label:draft.source,importedAt:new Date().toISOString(),uncertaintyReviewed:confirmed,schema:PLAN_IMPORT_SCHEMA}};
 }
 export function exportPlanJSON(plan,songs) {
- return {schema:PLAN_IMPORT_SCHEMA,title:plan.title,date:plan.date,theme:plan.theme,passage:plan.passage,source:'Faithful Repertoire export',uncertainties:[],items:plan.items.map(item=>{const song=songs.find(s=>s.id===item.songId);return {type:item.type,title:song?.title||item.title,artist:song?.author||'',songId:song?.id??null,key:item.key||'',role:item.role||'',minutes:item.minutes,notes:item.notes||'',uncertainty:''};})};
+ return {schema:PLAN_IMPORT_SCHEMA,title:plan.title,date:plan.date,theme:plan.theme,passage:plan.passage,source:'Faithful Repertoire export',uncertainties:[],items:plan.items.map(item=>{const song=songs.find(s=>s.id===item.songId);if(song?.blacklisted)return {type:"other",title:planItemTitle(item,songs),minutes:item.minutes,key:"",role:"",notes:"",uncertainty:""};return {type:item.type,title:planItemTitle(item,songs),artist:song?.author||'',songId:song?.id??null,key:item.key||'',role:item.role||'',minutes:item.minutes,notes:item.notes||'',uncertainty:''};})};
 }

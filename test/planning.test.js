@@ -2,6 +2,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import {
   copyPlan,
+  planOutline,
   songUsage,
   parsePitch,
   rangeSpan,
@@ -124,4 +125,12 @@ test("pitch spans, arrangement filters and backup validation use observed musica
   song.arrangements[0].highNote = "E5";
   song.arrangements[0].instrumentalSeconds = 300;
   assert.throws(() => validateWorkspace(data), /out of range/);
+});
+
+test('headings do not consume outline numbers and excluded titles are generic',()=>{
+ const songs=[{id:'secret',title:'Excluded original title',blacklisted:true}];
+ const plan={title:'Service',items:[{type:'heading',title:'Gather',minutes:0},{type:'song',songId:'secret',minutes:4},{type:'heading',title:'Respond',minutes:0},{type:'other',title:'Prayer',minutes:2}]};
+ const outline=planOutline(plan,songs);
+ assert.match(outline,/1\. 0:00 · Excluded song/);assert.match(outline,/2\. 4:00 · Prayer/);
+ assert.ok(!outline.includes('Excluded original title'));
 });

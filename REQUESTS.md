@@ -23,7 +23,7 @@ account/device or platform capability remains necessary.
 | 2 | Implemented: Songs/Collections under Discover; Song index retained under Evaluate. |
 | 3 | Implemented: Evaluate song workspace; selected song/query retained across criteria visits. |
 | 4 | Implemented: Evaluation criteria in Evaluate/Settings; top-right gear; essential account menu. |
-| 5 | Implemented: No Approval under Libraries; original `blacklisted` flags retained; exclusion/restoration paths preserved. |
+| 5 | Implemented: No Approval under Libraries; original `blacklisted` flags retained; exclusion/restoration paths preserved; historical insertion/export title leaks corrected. |
 | 6 | Implemented: Plan History terminology retained; user-facing criteria/exclusion labels updated. |
 | 7 | Implemented: public `#about`, purpose and connected workflow; no guest opt-in or workspace creation on public visit. |
 | 8 | Implemented: William Booth biography and contact with all supplied facts and intentions. |
@@ -48,8 +48,8 @@ account/device or platform capability remains necessary.
 | 27 | Preserved: Personal/multiple organizations, roles, invitations, transfer/removal and server enforcement. |
 | 28 | Preserved: automatic shared refresh/revisions/merge/private drafts and personal AI preferences. External: actual email delivery and real-account concurrent/offline sessions. |
 | 29 | Preserved: explicit screenshot/PDF sharing and stale-safe transcription import, uncertainty review and supplied order. |
-| 30 | Preserved: untimed headings, continuous timed numbering, drag and keyboard ordering. |
-| 31 | Preserved: in-place multi-library/page selection, explicit insertion and empty-plan simplification. |
+| 30 | Preserved: untimed headings, corrected continuous timed numbering in display/export/insertion, drag and keyboard ordering. |
+| 31 | Preserved: in-place multi-library/page selection, explicit insertion and empty-plan simplification; search alone is not marked dirty. |
 | 32 | Preserved: plan accents/keys, duplication/export/print/history and independent dated template copies. |
 | 33 | Preserved: optional user-owned starter libraries and explicit historic-decision migration. |
 | 34 | Preserved: sign-in gate and explicit separate browser-only access. Public About does not activate it. |
@@ -67,11 +67,13 @@ account/device or platform capability remains necessary.
 | 46 | Implemented: pinned code count/build report retained; final actual total recorded after build. Native Codex UI is outside repository control. |
 | 47 | Preserved: use incremental Git commits/pushes; no claim that a ZIP fixes platform artifact downloads. |
 
-Rebuild verification so far: existing 118 unit/database tests passed after pinned
+Rebuild verification so far: all 121 unit/database tests passed after pinned
 `npm ci`; scale and MCP type checks passed. Added stale-text request/Hymnary
 regressions and a real Chromium fixture for public About, criteria context,
 override invalidation and eight views at 320/390/900/1440px. Targeted rebuild fixture
-passed; full hosted release verification, final counts, push/CI/deployment/live
+passed, including excluded-title isolation in insertion/export, continuous heading
+numbering, picker search versus selection dirty state, and explicit browser-only
+initialization. These were genuine gaps found during the audit and are now fixed; full hosted release verification, final counts, push/CI/deployment/live
 readback are still pending. Browser image/provider fixtures do not prove real image
 or email delivery, physical Safari/biometrics or actual account autosave recovery.
 

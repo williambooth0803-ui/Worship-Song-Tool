@@ -1,3 +1,4 @@
+import {readFile} from 'node:fs/promises';
 import assert from 'node:assert/strict';
 import {navigate,reveal} from './disclosure.mjs';
 
@@ -50,6 +51,37 @@ export async function checkRebuildFlows(browser,base) {
   await page.getByRole('button',{name:'Preview evaluation',exact:true}).click();
   await page.getByRole('button',{name:'Apply evaluation',exact:true}).click();
   assert.equal(await page.locator('dialog').isVisible(),false);
+  const hiddenTitle=await page.evaluate(()=>{
+    const state=JSON.parse(localStorage.getItem('hymn-heart-v1'));
+    const hidden=state.songs[0],visible=state.songs[1]; hidden.blacklisted=true;
+    state.libraries[0].songIds=[visible.id];
+    state.plans=[{id:'history',title:'Historical fixture',date:'2026-10-17',theme:'',passage:'',status:'draft',items:[
+      {id:'heading',type:'heading',title:'Gathering',minutes:0,role:'',notes:''},
+      {id:'excluded',type:'song',songId:hidden.id,title:hidden.title,minutes:4,key:'',role:'',notes:'Preserved privately'},
+      {id:'prayer',type:'other',title:'Prayer',minutes:2,role:'',notes:''}
+    ]}];
+    localStorage.setItem('hymn-heart-v1',JSON.stringify(state));return hidden.title;
+  });
+  await page.reload();await navigate(page,'plans');
+  assert.deepEqual(await page.locator('.service-items .item-number').allTextContents(),['','01','02']);
+  assert.ok(!(await page.locator('.plan-sheet').textContent()).includes(hiddenTitle));
+  await page.getByRole('button',{name:'Add songs',exact:true}).click();
+  assert.ok(!(await page.getByLabel('Add after',{exact:true}).textContent()).includes(hiddenTitle));
+  await page.getByLabel('Find library songs',{exact:true}).fill('no match');
+  assert.equal(await page.locator('#account-save-strip').getAttribute('data-save-state'),'saved','Picker search is not an edit');
+  await page.getByLabel('Find library songs',{exact:true}).fill('');
+  await page.locator('#picker-songs input').first().check();
+  assert.equal(await page.locator('#account-save-strip').getAttribute('data-save-state'),'unsaved');
+  await page.locator('#picker-songs input').first().uncheck();
+  assert.equal(await page.locator('#account-save-strip').getAttribute('data-save-state'),'saved');
+  await page.getByRole('button',{name:'Close dialog',exact:true}).click();
+  await page.locator('.plan-toolbar .more-menu summary').click();
+  const downloading=page.waitForEvent('download');
+  await page.getByRole('button',{name:'Export importable JSON',exact:true}).click();
+  const downloaded=await downloading;
+  const exported=JSON.parse(await readFile(await downloaded.path(),'utf8'));
+  assert.equal(exported.items[1].title,'Excluded song');
+  assert.ok(!JSON.stringify(exported).includes(hiddenTitle));
   for(const width of [320,390,900,1440]) {
     await page.setViewportSize({width,height:900});
     for(const view of ['discover','collections','evaluate','profile','library','blacklist','plans','settings']) {
@@ -64,5 +96,5 @@ export async function checkRebuildFlows(browser,base) {
   }
   assert.deepEqual(errors,[]);
   await context.close();
-  console.log('PASS: public About without guest/storage activation, four primary routes, criteria context, text override invalidation/request binding and eight views at 320/390/900/1440px.');
+  console.log('PASS: public About without guest/storage activation, four primary routes, criteria context, text override invalidation/request binding and excluded insertion/export isolation, continuous heading numbering, picker search/selection dirty state and eight views at 320/390/900/1440px.');
 }
