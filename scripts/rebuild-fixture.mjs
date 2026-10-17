@@ -28,7 +28,15 @@ export async function checkRebuildFlows(browser,base) {
   const selected=await page.locator('.detail-panel').getAttribute('data-song-id');
   await page.locator('.workspace-tabs [data-view="profile"]').click();
   await page.getByRole('heading',{name:'Evaluation criteria',exact:true}).waitFor();
+  const principles=page.locator('#profile-form textarea[name="principles"]');
+  const savedPrinciples=await principles.inputValue();
+  await principles.fill(savedPrinciples+' Unsaved criteria fixture.');
+  page.once('dialog',dialog=>dialog.dismiss());
   await page.locator('.workspace-tabs [data-view="evaluate"]').click();
+  assert.equal(await principles.inputValue(),savedPrinciples+' Unsaved criteria fixture.','Cancel retains the edited criteria');
+  page.once('dialog',dialog=>dialog.accept());
+  await page.locator('.workspace-tabs [data-view="evaluate"]').click();
+  assert.equal(await page.evaluate(()=>JSON.parse(localStorage.getItem('hymn-heart-v1')).profile.principles),savedPrinciples,'Discard does not save form edits');
   assert.equal(await page.getByRole('searchbox',{name:'Search songs',exact:true}).inputValue(),'Amazing Grace');
   assert.equal(await page.locator('.detail-panel').getAttribute('data-song-id'),selected);
   await reveal(page,'button',{name:'Generate AI evaluation',exact:true});
@@ -37,6 +45,7 @@ export async function checkRebuildFlows(browser,base) {
   const old=await request();
   old.review.summary='Chosen text and version assumption.';
   await page.locator('#evaluation-json').fill(JSON.stringify(old));
+  assert.equal(await page.locator('#account-save-strip').getAttribute('data-save-state'),'unsaved');
   await page.getByRole('button',{name:'Preview evaluation',exact:true}).click();
   assert.equal(await page.locator('#apply-evaluation').count(),1);
   await page.locator('#evaluation-text-override').fill('Alternate text explicitly selected by the human');

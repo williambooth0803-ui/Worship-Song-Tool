@@ -733,3 +733,18 @@ button.setting-row:disabled { opacity: .55; cursor: default; }
   .onboarding-prompt .eyebrow { font-size:9px; }
   .collection-browse-controls { gap:10px; }
 }
+@media screen and (max-width:550px) {
+  .plan-list { display:grid; max-height:180px; overflow:auto; gap:6px; }
+  .plan-list button { min-width:0; padding:10px 12px; border-radius:10px; }
+  .plan-list strong { font:600 16px/1.35 var(--sans); }
+  .plan-list span { margin-top:3px; font-size:11px; }
+  .plan-sheet { padding:14px 12px; border-radius:14px; }
+  .plan-sheet-header { padding:12px; gap:10px; }
+  .plan-sheet-header h2 { font-size:25px; }
+  .duration-total { padding:8px 10px; border-radius:10px; }
+  .duration-total strong { font-size:27px; }
+  .collection-dropdown > summary { padding:12px; gap:10px; }
+  .collection-dropdown h2 { font-size:19px; }
+  .collection-portrait { width:48px; height:48px; flex-basis:48px; border-radius:10px; font-size:20px; }
+  .collection-body { padding:0 12px 12px; }
+}

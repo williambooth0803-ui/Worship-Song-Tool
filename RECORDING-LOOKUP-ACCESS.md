@@ -95,3 +95,17 @@ hosts `www.wikidata.org`, `commons.wikimedia.org` and `upload.wikimedia.org` in 
 fresh configuration draft, retaining all existing settings. The previously stale
 draft was not saved/retried. Image-source tests use synthetic metadata and
 intercepted image bytes; they do not establish live provider/image availability.
+
+
+## October 17 rebuild verification
+
+The current source was counted again: 2,044 catalog records; 1,245 exact Apple
+recordings across 780 records, all retaining artwork and recording-release dates.
+These are observed current counts, not a reset to historical coverage. A fresh
+proxy request to Apple's search returned HTTP 200 with metadata. One Songlink
+request returned HTTP 401 `PUBLIC_API_ACCESS_DEPRECATED`; no repeated retry or
+invented Spotify/YouTube mapping was added.
+The enforced environment policy still lacks the four image hosts above. This
+chat has runtime status access but no callable configuration-draft/edit tool;
+no stale draft was saved or settings replaced. Live source/image coverage remains
+unverified. Synthetic browser image fixtures only exercise behavior/fallbacks.

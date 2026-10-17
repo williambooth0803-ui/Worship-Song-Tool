@@ -67,15 +67,22 @@ account/device or platform capability remains necessary.
 | 46 | Implemented: pinned code count/build report retained; final actual total recorded after build. Native Codex UI is outside repository control. |
 | 47 | Preserved: use incremental Git commits/pushes; no claim that a ZIP fixes platform artifact downloads. |
 
-Rebuild verification so far: all 121 unit/database tests passed after pinned
-`npm ci`; scale and MCP type checks passed. Added stale-text request/Hymnary
-regressions and a real Chromium fixture for public About, criteria context,
-override invalidation and eight views at 320/390/900/1440px. Targeted rebuild fixture
-passed, including excluded-title isolation in insertion/export, continuous heading
-numbering, picker search versus selection dirty state, and explicit browser-only
-initialization. These were genuine gaps found during the audit and are now fixed; full hosted release verification, final counts, push/CI/deployment/live
-readback are still pending. Browser image/provider fixtures do not prove real image
-or email delivery, physical Safari/biometrics or actual account autosave recovery.
+Rebuild local verification complete: all **121 unit/database tests**, MCP type
+checking, scale checks and the full hosted browser suite passed. The targeted
+final-build fixture also passed after the last mobile CSS refinement, including
+criteria discard/cancel retention, pasted-response save status, public About,
+override request binding, excluded insertion/export isolation, continuous timed
+numbering and picker search/selection dirty state. Eight views were checked at
+320/390/900/1440px (32 layout states); desktop/tablet/mobile screenshots and
+representative inherited dialogs were visually inspected. The final local count
+is **32,410 source/check lines**, excluding generated docs copies.
+
+Both initial milestones (`7188038`, `8be6b54`) were pushed to the progress branch.
+Publication/CI/deployment/live readback remain pending at this checkpoint.
+Browser image/provider fixtures do not prove real image or email delivery,
+physical Safari/biometrics or actual account autosave recovery. These external
+checks remain outstanding; no real account records or email deliveries were
+modified by the tests.
 
 ### Unapproved proposals (not part of this rebuild)
 
