@@ -1,0 +1,65 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {allCatalogSongs,syncCatalog,CATALOG_REVISION} from '../public/catalog.js';
+import {catalogAnalysisData as data} from '../public/catalog-analysis-data.js';
+import {catalogAnalysisFor,catalogAnalysisMarkup,enrichCatalogEvaluation,validateLyricExcerpt} from '../public/catalog-analysis.js';
+import {defaultProfile} from '../public/core.js';
+import {validateWorkspace} from '../public/backup.js';
+import {reviewForDisplay} from '../public/profile.js';
+
+test('catalog analysis accounts for every record without calling missing or partial evidence completed',()=>{
+ assert.equal(Object.keys(data.records).length,allCatalogSongs.length);
+ const c=data.coverage;assert.equal(c.reviewed+c.textScans+c.unresolved+c.missing+c.partial,c.total);
+ assert.equal(c.total,2044);assert.equal(c.partial,2);assert.ok(c.reviewed>200);assert.ok(c.missing>0);
+ for(const song of allCatalogSongs){const r=data.records[song.id];assert.equal(r.title,song.title);assert.equal(r.author,song.author);
+  if(r.status==='reviewed-draft'){const a=data.analyses[r.analysisKey];assert.equal(a.reasons.length,3);assert.equal(new Set(a.reasons.map(r=>r.criterion)).size,3);assert.ok(a.reasons.every(r=>r.explanation.length>80));assert.ok(a.scriptures.length>=1);assert.ok(a.themes.length);assert.equal(a.scores.time,null);assert.ok(Object.values(a.scores).every(s=>s===null||Number.isFinite(s)&&s>=0&&s<=10));assert.equal(a.source.hash.length,64);assert.equal(new URL(a.source.url).protocol,'https:');assert.ok(a.quote.length<=90);assert.ok(a.quote.split(/\s+/).filter(Boolean).length<=10);}
+ }
+});
+test('new source-supported drafts carry lyric reasons and leave unresolved records genuinely unknown',()=>{
+ const song=allCatalogSongs.find(s=>s.title==='I Sing the Mighty Power of God');assert.equal(song.review.status,'ai');assert.ok(song.review.claims.length>=3);assert.ok(song.review.sources.length);assert.equal(song.review.scores.time,null);
+ const unknown=allCatalogSongs.find(s=>data.records[s.id].status==='missing-text'&&s.review.status==='unreviewed');assert.ok(unknown);assert.ok(Object.values(unknown.review.scores).every(s=>s===null));assert.equal(unknown.review.summary,'');assert.deepEqual(unknown.themes,[]);
+ for(const s of allCatalogSongs.filter(s=>data.records[s.id].status==='partial-text'))assert.equal(s.review.status,'unreviewed');
+});
+test('same-title texts remain separate, and identity edits, AI visibility and dismissal prevent stale catalog analysis',()=>{
+ const lowry=allCatalogSongs.find(s=>s.id==='catalog-nothing-but-the-blood'),redman=allCatalogSongs.find(s=>s.id==='artist-nothing-but-the-blood-matt-redman');
+ assert.notEqual(data.records[lowry.id].analysisKey,data.records[redman.id].analysisKey);
+ assert.match(catalogAnalysisFor(redman).analysis.reasons[0].explanation,/Redman/);
+ for(const mode of ['manual','limited'])assert.equal(catalogAnalysisFor(lowry,mode),null);
+ assert.equal(catalogAnalysisFor({...lowry,aiDismissed:true}),null);
+ assert.equal(catalogAnalysisFor({...lowry,title:'A different song'}),null);
+ assert.equal(catalogAnalysisFor({...lowry,author:'A different author'}),null);
+});
+test('catalog refresh and validated backups preserve human evaluations, convictions, approvals, recording removals and membership',()=>{
+ const song=structuredClone(allCatalogSongs.find(s=>s.id==='modern-forever-we-sing-hallelujah-kari-jobe'));
+ song.review.status='manual';song.review.notes='My saved concern about the grave-battle line.';song.review.scores.accuracy=3;song.review.customScores={'custom-conviction':2};song.recordings=[];song.aiDismissed=true; song.blacklisted=true;
+ song.approval={status:'avoid',notes:'Human decision',updatedAt:null};
+ const workspace={version:1,profile:structuredClone(defaultProfile),songs:[song],libraries:[{id:'mine',name:'My decisions',songIds:[song.id]}],plans:[]};
+ const next=validateWorkspace(syncCatalog(workspace,allCatalogSongs,CATALOG_REVISION));const kept=next.songs.find(s=>s.id===song.id);
+ assert.deepEqual(kept.review,song.review);assert.deepEqual(kept.recordings,[]);assert.deepEqual(kept.approval,song.approval);assert.equal(kept.aiDismissed,true);assert.equal(kept.blacklisted,true);assert.deepEqual(next.libraries,workspace.libraries);
+ assert.equal(catalogAnalysisFor(kept),null);
+});
+test('refresh preserves imported drafts and identity-edited source snapshots',()=>{
+ const song=structuredClone(allCatalogSongs[0]);song.review.model='ChatGPT evaluation · user-imported';song.review.summary='My selected alternate text.';song.catalogRevision=1;
+ const before=structuredClone(song.review),w={version:1,profile:structuredClone(defaultProfile),songs:[song],libraries:[],plans:[]};
+ assert.deepEqual(syncCatalog(w,allCatalogSongs).songs[0].review,before);
+ song.review.model='Prewritten model-knowledge draft';song.title='My alternate text';
+ assert.equal(syncCatalog(w,allCatalogSongs).songs[0].review.summary,'My selected alternate text.');
+ assert.equal(reviewForDisplay(allCatalogSongs[0],'manual').scores.accuracy,null);
+});
+test('lyric quotations are exact short fragments, not invented or whole-song reproductions',()=>{
+ assert.equal(validateLyricExcerpt('The source has one exact phrase.','one exact phrase'),'one exact phrase');
+ assert.equal(validateLyricExcerpt('You’ve never failed me yet',"You've never failed me yet"),"You've never failed me yet");
+ assert.throws(()=>validateLyricExcerpt('The source has no such words.','invented quotation'),/exact/);
+ assert.throws(()=>validateLyricExcerpt('a '.repeat(20),'a '.repeat(11).trim()),/10 words/);
+ assert.throws(()=>validateLyricExcerpt('x'.repeat(100),'x'.repeat(91)),/90 characters/);
+});
+
+
+test('expanded report respects hidden attributes and escapes source text',()=>{
+ const song=allCatalogSongs.find(s=>s.id==='catalog-in-christ-alone'),record=catalogAnalysisFor(song);
+ const escape=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+ const html=catalogAnalysisMarkup(record,escape,new Set(['rating','claims','themes','scriptures','sources']));
+ assert.ok(!html.includes('analysis-reasons'));assert.ok(!html.includes('analysis-scriptures'));assert.ok(!html.includes('analysis-themes'));assert.ok(!html.includes('href='));
+ const changed=structuredClone(record);changed.analysis.summary='<script>unsafe()</script>';
+ assert.ok(!catalogAnalysisMarkup(changed,escape).includes('<script>'));
+});

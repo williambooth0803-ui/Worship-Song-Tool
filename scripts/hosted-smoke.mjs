@@ -1,3 +1,4 @@
+import {checkCatalogAnalysisFlows} from "./catalog-analysis-fixture.mjs";
 import {checkRebuildFlows} from "./rebuild-fixture.mjs";
 import {navigate} from "./disclosure.mjs";
 import {checkDiscoverResultsFlows} from "./discover-results-fixture.mjs";
@@ -333,6 +334,7 @@ try {
     browser,
     `http://127.0.0.1:${server.address().port}/Worship-Song-Tool/`,
   );
+  await checkCatalogAnalysisFlows(browser, `http://127.0.0.1:${server.address().port}/Worship-Song-Tool/`);
   await checkRebuildFlows(browser, `http://127.0.0.1:${server.address().port}/Worship-Song-Tool/`);
   await checkNavigationFlows(
     browser,

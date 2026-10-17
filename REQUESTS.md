@@ -10,13 +10,37 @@ blockers explicitly. Preserve personal assessments, recordings and workspaces.
 
 - [x] Restyle page-section navigation as connected tabs, with a shared baseline,
   selected panel edge, top accent, keyboard focus and a bounded mobile strip.
-  Existing 32-state rebuild/navigation/preservation fixture passed after the change.
-- [ ] Pre-run a deeper, lyric-evidenced analysis for every one of the 2,044 song/version
-  records: explain ratings, identify concerns with short quotations, list themes,
-  and include supported Scripture quotations/connections. Preserve human assessments.
-  Source audit: 279 existing numeric drafts, 1,797 distinct normalized titles;
-  most records lack a checked lyric text. Public texts are being audited by identity.
-  No missing text is being replaced with invented lyrics, ratings or Scripture links.
+  Published incremental UI release `244cc50`; the 32-state rebuild fixture passed.
+- [x] Audit all 2,044 song/version records against available public text sources;
+  keep a per-record coverage manifest rather than silently treating gaps as complete.
+- [x] Write 382 expanded preliminary lyric analyses with separate reasons for
+  doctrinal accuracy, theological substance and language; evidence-backed themes,
+  brief exact excerpts where wording is questioned, and checked KJV comparisons.
+  These cover song/version records, including several recordings of the same text.
+  135 explicitly identify an assumed usual text; the recording remains unverified.
+- [x] Add 209 newly scored text drafts (488 rated catalog records total), with
+  arrangement scores unknown; retain 106 earlier brief drafts still awaiting deeper
+  source support. Do not claim all rated records received a lyric review.
+- [x] Keep human assessments/convictions, imported AI text versions, custom scores,
+  notes, explicit recording removals, human decisions, libraries and plans intact.
+  Refresh default drafts only for unchanged identities. A catalog research update
+  no longer resets a saved human church-use decision. AI-only content respects
+  Full/limited/human-only preferences, dismissal and hidden attributes.
+- [x] Keep the two different Nothing but the Blood texts separate. Flag apparent
+  transcription error and incomplete medley source instead of scoring either as
+  if a reliable complete text had been read.
+- [ ] Complete deeper analysis for **every** song. Precisely **1,662** remain:
+  1,471 without a source match in the audited collections, 189 with title-only
+  identity candidates, and 2 incomplete/suspect sources. Missing evidence remains
+  unknown; these findings do not establish that texts are unavailable everywhere.
+  Finishing requires identifying/retrieving the remaining texts, resolving versions
+  and carrying out the same lyric-based review. Reliable supplied/licensed texts
+  can close source gaps; no private workspace words were sent to lookup services.
+- [ ] Finish browser/CI/deployment/live verification of the catalog update.
+  Current local checks: 128 unit/database tests and scale passed; focused browser
+  coverage passed all four widths, source/Scripture display, human primacy and
+  mode hiding. The full hosted suite passed before the last source expansion; the final-data
+  rerun is in progress. MCP type checking also passed.
 
 ## October 17 rebuild from the working remote save
 

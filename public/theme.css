@@ -755,3 +755,17 @@ button.setting-row:disabled { opacity: .55; cursor: default; }
   .collection-portrait { width:48px; height:48px; flex-basis:48px; border-radius:10px; font-size:20px; }
   .collection-body { padding:0 12px 12px; }
 }
+
+.catalog-analysis { margin-top:20px; border-top:1px solid var(--line); padding-top:14px; }
+.catalog-analysis > summary { display:flex; flex-wrap:wrap; align-items:center; gap:6px 14px; min-height:44px; font-weight:600; cursor:pointer; }
+.catalog-analysis > summary span { color:var(--muted); font-size:12px; font-weight:400; }
+.catalog-analysis > div { padding-block:12px; }
+.catalog-analysis h4 { margin:20px 0 8px; }
+.analysis-reasons { display:grid; gap:14px; }
+.analysis-reasons dt { font-weight:600; }
+.analysis-reasons dd { margin:4px 0 0; line-height:1.65; }
+.analysis-excerpt { border-left:3px solid #8ca995; padding:10px 14px; background:#f0f4ee; }
+.analysis-excerpt strong { display:block; margin-bottom:6px; font-size:12px; }
+.analysis-themes { display:flex; flex-wrap:wrap; gap:6px; }
+.analysis-scriptures blockquote { margin:8px 0; padding-left:12px; border-left:2px solid var(--line); }
+@media screen and (max-width:550px) { .catalog-analysis { margin-top:14px; } }

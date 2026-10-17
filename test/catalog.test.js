@@ -37,7 +37,7 @@ test("catalog expansion is idempotent and keeps saved songs and personal reviews
   assert.deepEqual(syncCatalog(migrated), migrated);
   assert.deepEqual(validateWorkspace(migrated), migrated);
 });
-test("catalog updates preserve manual overrides and invalidate outdated starter approval", () => {
+test("catalog updates preserve human decisions and manual overrides", () => {
   const state = syncCatalog(oldWorkspace());
   state.songs[0].approval.status = "approved";
   state.songs[1].approval.status = "approved";
@@ -48,7 +48,7 @@ test("catalog updates preserve manual overrides and invalidate outdated starter 
   revised[1].review.scores.substance = 7;
   const next = syncCatalog(state, revised, CATALOG_REVISION + 1);
   assert.equal(next.songs[0].review.summary, "Revised evidence");
-  assert.equal(next.songs[0].approval.status, "unreviewed");
+  assert.equal(next.songs[0].approval.status, "approved");
   assert.equal(next.songs[1].approval.status, "approved");
   assert.equal(next.songs[1].review.notes, "Keep this");
   assert.equal(next.songs[1].catalogReview.scores.substance, 7);
@@ -122,7 +122,7 @@ test("catalog records distinguish explicit AI drafts from titles without an asse
       !song.review.musical || song.review.musical.startsWith("Not assessed"),
     );
     assert.ok(song.review.aiFields.includes("scores"));
-    assert.match(song.review.model, /exact text not verified/);
+    assert.match(song.review.model, /exact (?:text|recording) not verified/);
   }
   for (const artist of [
     "Elevation Worship",

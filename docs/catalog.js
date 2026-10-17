@@ -1,3 +1,4 @@
+import {enrichCatalogEvaluation} from "./catalog-analysis.js";
 import { prewrittenReview } from "./prewritten-reviews.js";
 import { modernCatalog } from "./modern-catalog.js";
 import { expandedCatalog, newStarterTitles } from "./expanded-catalog.js";
@@ -504,13 +505,15 @@ const artistAdditions = artistCatalog.filter(s => {
   if (seenAssociations.has(key)) return false;
   seenAssociations.add(key); return true;
 });
-export const allCatalogSongs = [
+const rawCatalogSongs = [
   ...traditionalCatalog,
   ...reviewedAdditions,
   ...modernCatalog,
   ...expandedAdditions,
   ...artistAdditions,
 ];
+export const baseCatalogSongs = rawCatalogSongs;
+export const allCatalogSongs = rawCatalogSongs.map(enrichCatalogEvaluation);
 export const catalogSongs = [
   ...traditionalCatalog,
   ...reviewedAdditions.filter((song) =>
@@ -535,8 +538,8 @@ export const catalogSongs = [
     ),
   ...modernCatalog.filter((s) => s.title.startsWith("Forever (")),
   ...expandedAdditions.filter(s => newStarterTitles.includes(s.title)),
-];
-export const CATALOG_REVISION = 2;
+].map(enrichCatalogEvaluation);
+export const CATALOG_REVISION = 3;
 export const approvalLabels = {
   unreviewed: "Not reviewed",
   approved: "Approved for use",
@@ -569,7 +572,8 @@ export function syncCatalog(
       (song.review.status === "starter" ||
         song.review.status === "unreviewed" ||
         (song.review.status === "ai" &&
-          song.review.model?.startsWith("Prewritten model-knowledge"))) &&
+          /^Prewritten (?:model-knowledge|lyric-evidence)/.test(song.review.model || ""))) &&
+      song.title === entry.title && song.author === entry.author &&
       song.catalogRevision !== revision
     ) {
       const personalNotes = song.review.notes,
@@ -585,7 +589,7 @@ export function syncCatalog(
       if (personalMusical && !personalMusical.startsWith("Not assessed"))
         song.review.musical = personalMusical;
       song.themes = structuredClone(entry.themes);
-      if (song.approval) invalidateApproval(song);
+      // Catalog research never changes a human church-use decision.
     }
     song.catalogReview = structuredClone(entry.review);
     song.catalogThemes = structuredClone(entry.themes);
