@@ -1,3 +1,4 @@
+import {navigate} from "./disclosure.mjs";
 import { reveal, keepAIIfOffered } from "./disclosure.mjs";
 import { catalogSongs } from "../public/catalog.js";
 import { chromium } from "playwright";
@@ -32,8 +33,8 @@ await page.getByLabel("Theme", { exact: true }).fill("Salvation by grace");
 await page.getByLabel("Sermon passage").fill("Ephesians 2:1–10");
 await reveal(page, "button", { name: "Create plan", exact: true });
 await page.getByRole("button", { name: "Create plan", exact: true }).click();
-await reveal(page, "button", { name: "Discover songs" });
-await page.getByRole("button", { name: "Discover songs" }).click();
+
+await navigate(page,"discover");
 await page.getByRole("searchbox").fill("amazing grace");
 await reveal(page, "button", { name: "Edit evaluation" });
 await page.getByRole("button", { name: "Edit evaluation" }).click();
@@ -91,9 +92,9 @@ await reveal(page, "button", { name: "Plans", exact: false });
 await page.getByRole("button", { name: "Plans", exact: false }).click();
 assert.equal(await page.locator(".service-items li").count(), 2);
 assert.equal(await page.locator(".duration-total strong").textContent(), "5.5");
-await reveal(page, "button", { name: "Song libraries", exact: false });
+await reveal(page, "button", { name: "Libraries", exact: false });
 await page
-  .getByRole("button", { name: "Song libraries", exact: false })
+  .getByRole("button", { name: "Libraries", exact: false })
   .click();
 assert.equal(
   await page.locator(".song-card h3").textContent(),
@@ -105,7 +106,7 @@ await page.getByRole("button", { name: "+ New library" }).click();
 await page.getByLabel("Library name").fill("Church approved");
 await reveal(page, "button", { name: "Create library" });
 await page.getByRole("button", { name: "Create library" }).click();
-await page.getByRole("button", { name: "Discover songs" }).first().click();
+await navigate(page,"discover");
 await reveal(page, "button", { name: "+ Add a song", exact: true });
 await page.getByRole("button", { name: "+ Add a song", exact: true }).click();
 await page
@@ -118,15 +119,12 @@ await reveal(page, "button", { name: "Add song", exact: true });
 await page.getByRole("button", { name: "Add song", exact: true }).click();
 assert.match(await page.locator(".detail-panel h2").textContent(), /<script>/);
 assert.equal(await page.locator(".detail-panel script").count(), 0);
-await page
-  .locator("nav")
-  .getByRole("button", { name: "Rating profile", exact: false })
-  .click();
+await navigate(page,"profile");
 await page
   .getByRole("spinbutton", { name: "Doctrinal accuracy weight", exact: true })
   .fill("50");
-await reveal(page, "button", { name: "Save rating profile" });
-await page.getByRole("button", { name: "Save rating profile" }).click();
+await reveal(page, "button", { name: "Save evaluation criteria" });
+await page.getByRole("button", { name: "Save evaluation criteria" }).click();
 const saved = await page.evaluate(() =>
   JSON.parse(localStorage.getItem("hymn-heart-v1")),
 );

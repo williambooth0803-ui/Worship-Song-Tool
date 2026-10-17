@@ -1,3 +1,4 @@
+import {navigate} from "./disclosure.mjs";
 import { reveal } from "./disclosure.mjs";
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
@@ -39,10 +40,7 @@ export async function checkIndexFlows(browser, base) {
     });
   });
   await page.goto(base);
-  await page
-    .locator("nav")
-    .getByRole("button", { name: "Song index", exact: true })
-    .click();
+  await navigate(page,"index");
   assert.equal(await page.locator(".index-table tbody tr").count(), 50);
   await reveal(page, "button", {
     name: "Edit index details for Amazing Grace",
@@ -111,10 +109,7 @@ export async function checkIndexFlows(browser, base) {
     .click();
   await page.locator('#save-song-form input[value="personal"]').check();
   await page.locator("#save-song-form button.primary").click();
-  await page
-    .locator("nav")
-    .getByRole("button", { name: "Song index", exact: true })
-    .click();
+  await navigate(page,"index");
   const before = await page.evaluate(() =>
     localStorage.getItem("hymn-heart-v1"),
   );
@@ -166,10 +161,7 @@ export async function checkIndexFlows(browser, base) {
     fullPage: true,
   });
   await page.reload();
-  await page
-    .locator("nav")
-    .getByRole("button", { name: "Song index", exact: true })
-    .click();
+  await navigate(page,"index");
   await page
     .getByLabel("Additional column", { exact: true })
     .selectOption("tempo");

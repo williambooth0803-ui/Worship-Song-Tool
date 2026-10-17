@@ -1,3 +1,5 @@
+import {checkRebuildFlows} from "./rebuild-fixture.mjs";
+import {navigate} from "./disclosure.mjs";
 import {checkDiscoverResultsFlows} from "./discover-results-fixture.mjs";
 import {checkWorkspaceEvaluationFlows} from "./workspace-evaluation-fixture.mjs";
 import {checkSearchCollectionFlows,checkRememberAndSaveFlows} from "./search-collections-fixture.mjs";
@@ -188,7 +190,7 @@ try {
     /Restored from the other browser/,
   );
   await page.setViewportSize({ width: 390, height: 844 });
-  await page.locator('.nav-item[data-view="settings"]').click();
+  await navigate(page,"settings");
   await page.getByText("Advanced account tools",{exact:true}).click();
   assert.ok(
     await page.getByRole("button", { name: "Backup & restore" }).isVisible(),
@@ -278,21 +280,15 @@ try {
     .getByText("AI draft visibility fixture.", { exact: true })
     .waitFor({state:"attached"});
   for (const mode of ["manual", "limited", "full"]) {
-    await page
-      .locator("nav")
-      .getByRole("button", { name: "Rating profile" })
-      .click();
+    await navigate(page,"profile");
     await page
       .getByLabel("AI content preference", { exact: true })
       .selectOption(mode);
-    await reveal(page, "button", { name: "Save rating profile", exact: true });
+    await reveal(page, "button", { name: "Save evaluation criteria", exact: true });
     await page
-      .getByRole("button", { name: "Save rating profile", exact: true })
+      .getByRole("button", { name: "Save evaluation criteria", exact: true })
       .click();
-    await page
-      .locator("nav")
-      .getByRole("button", { name: "Discover songs" })
-      .click();
+    await navigate(page,"discover");
     await chooseSong(page,originalSong);
     assert.equal(
       await page
@@ -337,6 +333,7 @@ try {
     browser,
     `http://127.0.0.1:${server.address().port}/Worship-Song-Tool/`,
   );
+  await checkRebuildFlows(browser, `http://127.0.0.1:${server.address().port}/Worship-Song-Tool/`);
   await checkNavigationFlows(
     browser,
     `http://127.0.0.1:${server.address().port}/Worship-Song-Tool/`,

@@ -11,7 +11,7 @@ export function songArtwork(song) {
   try { return { url: artworkURL(recording.artwork), label: recording.label || song.title, recordingURL: recording.url }; } catch { return null; }
 }
 export function hymnaryLink(song) {
-  return ["traditional", "modern"].includes(song.category)
+  return song.category === "traditional"
     ? "https://hymnary.org/search?qu=" + encodeURIComponent('textName:"' + song.title.replace(/"/g, "") + '"') : null;
 }
 export const previousDecision = song => song.approval && song.approval.status !== "unreviewed" ? song.approval : song.legacyApproval || song.approval;

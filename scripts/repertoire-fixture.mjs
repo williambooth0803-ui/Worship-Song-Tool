@@ -1,3 +1,4 @@
+import {navigate} from "./disclosure.mjs";
 import { reveal } from "./disclosure.mjs";
 import assert from "node:assert/strict";
 import { songCollections, collectionSongs } from "../public/collections.js";
@@ -20,16 +21,13 @@ export async function checkRepertoireFlows(browser, base) {
     await page.locator(".detail-panel h2").textContent(),
     "Oceans (Where Feet May Fail)",
   );
-  await page
-    .locator("nav")
-    .getByRole("button", { name: "Collections", exact: true })
-    .click();
+  await navigate(page,"collections");
   assert.equal(await page.locator(".collection-row").count(), songCollections.length);
   await page
     .getByLabel("Collection depth", { exact: true })
     .selectOption("all");
   const modern = page.locator(".collection-row").filter({
-    has: page.getByRole("heading", { name: "Modern hymns", exact: true }),
+    has: page.getByRole("heading", { name: "Modern Hymns", exact: true }),
   });
   await modern.locator(":scope > summary").click();
   assert.equal(
@@ -122,10 +120,7 @@ export async function checkRepertoireFlows(browser, base) {
       "Interior “just”2",
     ),
   );
-  await page
-    .locator("nav")
-    .getByRole("button", { name: "Song index", exact: true })
-    .click();
+  await navigate(page,"index");
   assert.equal(
     await page.locator(".index-table tbody tr").count(),
     50,
@@ -163,10 +158,7 @@ export async function checkRepertoireFlows(browser, base) {
     .selectOption("completed");
   await reveal(page, "button", { name: "Create plan", exact: true });
   await page.getByRole("button", { name: "Create plan", exact: true }).click();
-  await page
-    .locator("nav")
-    .getByRole("button", { name: "Song libraries", exact: true })
-    .click();
+  await navigate(page,"library");
   await page
     .getByRole("searchbox", { name: "Search songs", exact: true })
     .fill("In Christ Alone");
@@ -231,10 +223,7 @@ export async function checkRepertoireFlows(browser, base) {
       "Only this copied plan changes.",
     ),
   );
-  await page
-    .locator("nav")
-    .getByRole("button", { name: "Song libraries", exact: true })
-    .click();
+  await navigate(page,"library");
   await page
     .getByRole("searchbox", { name: "Search songs", exact: true })
     .fill("In Christ Alone");
@@ -247,10 +236,7 @@ export async function checkRepertoireFlows(browser, base) {
         .textContent()
     ).includes("1 marked completed"),
   );
-  await page
-    .locator("nav")
-    .getByRole("button", { name: "Collections", exact: true })
-    .click();
+  await navigate(page,"collections");
   await reveal(page, "button", { name: "Import your song list", exact: true });
   await page
     .getByRole("button", { name: "Import your song list", exact: true })
@@ -293,10 +279,7 @@ export async function checkRepertoireFlows(browser, base) {
   );
   assert.equal(stored.plans.length, 2);
   assert.notEqual(stored.plans[0].items[0].id, stored.plans[1].items[0].id);
-  await page
-    .locator("nav")
-    .getByRole("button", { name: "Collections", exact: true })
-    .click();
+  await navigate(page,"collections");
   await page.screenshot({
     path: "/tmp/faithful-repertoire-collections.png",
     fullPage: true,
@@ -307,7 +290,7 @@ export async function checkRepertoireFlows(browser, base) {
       () => document.documentElement.scrollWidth <= innerWidth,
     ),
   );
-  assert.equal(await page.locator("nav .nav-item").count(), 8);
+  assert.equal(await page.locator("nav .nav-item").count(), 4);
   await page.screenshot({
     path: "/tmp/faithful-repertoire-collections-mobile.png",
     fullPage: true,

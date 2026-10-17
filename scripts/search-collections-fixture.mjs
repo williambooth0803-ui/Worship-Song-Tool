@@ -1,3 +1,4 @@
+import {navigate} from "./disclosure.mjs";
 import assert from'node:assert/strict';
 import{allCatalogSongs,syncCatalog}from'../public/catalog.js';import{defaultProfile}from'../public/core.js';import{songCollections}from'../public/collections.js';
 import{validateWorkspace}from'../public/backup.js';import{reveal}from'./disclosure.mjs';
@@ -22,7 +23,7 @@ export async function checkSearchCollectionFlows(browser,base) {
   assert.ok(Math.max(...times)<600,'Catalog search updates must avoid long input-blocking renders');
   await page.evaluate(()=>{const input=document.querySelector('#search');input.value='Living Hope';input.dispatchEvent(new InputEvent('input',{bubbles:true,isComposing:true}));});
   assert.ok(await page.evaluate(()=>window.fixtureInput===document.querySelector('#search')));await page.locator('#search').dispatchEvent('compositionend');await page.locator('.song-list h3').filter({hasText:'Living Hope'}).first().waitFor();
-  await page.locator('.nav-item[data-view="collections"]').click();await page.evaluate(()=>window.collectionInput=document.querySelector('#collection-search'));
+  await navigate(page,"collections");await page.evaluate(()=>window.collectionInput=document.querySelector('#collection-search'));
   await page.locator('#collection-search').pressSequentially('How Great Is Our God',{delay:8});await page.locator('.collection-title-matches li').filter({hasText:'How Great Is Our God'}).first().waitFor();assert.ok(await page.evaluate(()=>window.collectionInput===document.querySelector('#collection-search')));
   await page.locator('#collection-search').fill('Chris Tomlin');await page.locator(`[data-collection="${pack.id}"]`).waitFor();
   await page.locator('#collection-search').fill('');await page.waitForFunction(()=>!document.querySelector('.collection-title-matches'));

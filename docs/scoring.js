@@ -10,6 +10,8 @@ export const scoringRubrics = {
   time: "Assess the chosen arrangement's progression, repeated sections, pauses and instrumental or wordless passages against its stated purpose. Long is not bad and short is not good. Without the actual arrangement or recording, leave this unassessed. Legacy time scores remain stored under this criterion.",
 };
 export const suggestedCriteria = [
+  { label: "Intelligibility", rubric: "Assess whether the selected words communicate understandable thoughts and clear referents to the intended congregation. This overlaps language and craftsmanship: use it instead of that broad criterion, or define a distinct scope to avoid double-counting." },
+  { label: "Shared congregational expression", rubric: "Assess whether the words can truthfully be confessed or prayed together. Singular language can express shared corporate confession. Distinguish textual voice from melody/participation and avoid counting the same concern twice." },
   { label: "Congregational singability", rubric: "Use the exact melody, chosen key and congregation: range, tessitura, leaps, phrase length and rhythmic learnability. Do not infer musical difficulty from lyrics or genre." },
   { label: "Corporate participation", rubric: "Assess whether the documented version enables meaningful congregational participation, including teachability and shared expression. First-person singular can express a shared confession; it is not automatically inferior." },
   { label: "Emotional and pastoral honesty", rubric: "Compare the text with its stated purpose: truthful expression of joy, grief, doubt, repentance or hope without unsupported promises or pressure to display an emotion. Lament is not inferior to celebration." },

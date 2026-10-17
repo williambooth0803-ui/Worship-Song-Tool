@@ -9,6 +9,7 @@ test('album images use provider metadata and respect traditional hymns, personal
  assert.throws(()=>artworkURL('https://attacker.test/image/album.jpg'));assert.throws(()=>artworkURL('javascript:alert(1)'));assert.throws(()=>artworkURL('https://user:secret@is1-ssl.mzstatic.com/image/x'));
 });
 test('Hymnary links are title-bound finding aids for hymns, rather than invented hymn IDs',()=>{
+ assert.equal(hymnaryLink({category:'modern',title:'A contemporary hymn-like song'}),null);
  const url=new URL(hymnaryLink({category:'traditional',title:'Amazing Grace'}));assert.equal(url.hostname,'hymnary.org');assert.match(url.searchParams.get('qu'),/Amazing Grace/);assert.equal(hymnaryLink({category:'worship',title:'A contemporary song'}),null);
 });
 test('previous decisions survive an evaluation change and backups, and starter libraries migrate only by explicit choice',()=>{

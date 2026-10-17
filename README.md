@@ -1,10 +1,29 @@
 # Faithful Repertoire
 
-A worship-planning workspace for choosing songs with sound doctrine, meaningful lyrics, clear English and purposeful use of service time.
+A workspace helping worship leaders think deeply about the words they lead, with practical tools for evaluation, libraries and human-created plans.
 
 The public website is hosted at https://williambooth0803-ui.github.io/Worship-Song-Tool/. GitHub Pages publishes `main` → `/docs`; regenerate and commit those files after frontend changes.
 
 [Project links](PROJECT-LINKS.md) collects the website, repository, Supabase dashboard and deployment shortcuts.
+
+## Navigation and public About
+
+The primary flow is **Discover → Evaluate → Libraries → Plans**. Discover groups
+Songs and Collections; Evaluate keeps the song workspace, advanced Song index and
+Evaluation criteria together. Criteria visits preserve the selected song and
+search. No Approval belongs to Libraries and retains the compatible exclusion
+flags and restoration data. Settings opens from the top-right gear, including on
+mobile. [About](https://williambooth0803-ui.github.io/Worship-Song-Tool/#about) is
+public before sign-in and never opts a visitor into browser-only work.
+
+Song evaluation focuses on the words. Unless explicitly overridden, the ChatGPT
+request identifies the widely recognized worship song with that title and its
+usual text, states assumptions and assesses only supported evidence. The optional
+song/text/version override shares only what the user enters there. Changing it
+clears a pasted response/preview and rotates the request ID, so an older response
+cannot be applied to the new text. Human assessments remain primary.
+Modern Hymns are contemporary worship/CCM songs with hymn-like style; automatic
+Hymnary finding links apply only to Traditional hymns.
 
 ## Current workflow
 
@@ -52,9 +71,9 @@ evidence rubrics, selectable/custom criteria, equal weighting and library balanc
 - Discover opens with the highest visible ratings first, using your active criteria
   and AI-content preference, with unassessed records last. Typed searches keep
   exact/title matches first and apply the chosen order within each relevance group.
-  Libraries and Blacklist have independent sort choices. Compact result rows keep
+  Libraries and No Approval have independent sort choices. Compact result rows keep
   artwork, title/attribution, evaluation status and rating together in one narrow column.
-- **Blacklist** dismisses a song record from discovery, libraries, collections, index and new song choices. Existing service items retain their position and duration but display a generic placeholder. The blacklist tab shows full song details, recordings and evaluations, with restoration available. It does not offer library or plan additions while a song is blacklisted. Notes, arrangements, attachments, library membership and history are preserved; repeated imports do not restore dismissed records. Blacklist flags sync and survive validated backups, and the read-only connection excludes them.
+- **No Approval** dismisses a song record from discovery, libraries, collections, index and new song choices. Existing service items retain their position and duration but display a generic placeholder. The blacklist tab shows full song details, recordings and evaluations, with restoration available. It does not offer library or plan additions while a song is blacklisted. Notes, arrangements, attachments, library membership and history are preserved; repeated imports do not restore dismissed records. Blacklist flags sync and survive validated backups, and the read-only connection excludes them.
 - Use **Find lyrics** or **Find public reviews** for a title-and-recording-specific web search. These are search links, not a claim that a verified review or licensed lyric page exists for every title.
 - **Listen · recordings** provides Apple Music, Spotify and YouTube searches for every catalog record. **Manage recording links** saves exact song/video URLs with version labels; the first saved version per platform becomes its preferred button. Searches remain available to find alternate recordings. Links are validated and normalized, not verified for song identity, availability or official status. No audio is downloaded or analyzed. Saved links travel with workspace backups and account autosave. The catalog now supplies a first batch of Apple Music recordings matched against exact title/artist metadata from Apple’s US catalog, with album labels and retained source evidence. These defaults never replace a personal recording list or restore removed links. Matching metadata does not verify lyrics, official status or availability in every region. Spotify and YouTube remain searches until source-backed direct mappings are available; Songlink currently rejects anonymous lookup with `PUBLIC_API_ACCESS_DEPRECATED`. See [Recording lookup access](RECORDING-LOOKUP-ACCESS.md) for coverage and reproducible lookup steps.
 - Edit assessments, personal notes, Scripture connections, source links, arrangement observations, key and duration.
@@ -73,9 +92,9 @@ evidence rubrics, selectable/custom criteria, equal weighting and library balanc
 
 The read-only ChatGPT connection cannot write an evaluation back to the website. This copy/preview/apply workflow is deliberate; evaluating a song does not recommend songs or build a service plan.
 
-AI Labels default **On** and can be switched off in Settings or Rating profile. Badges mark generated ratings, summaries, themes and interpretive details, including unchanged AI fields carried into an edited assessment. Human notes and arrangement observations are separate. This label preference does not change AI visibility. Human-only/limited modes suppress subjective drafts, including index/export and connector output.
+AI Labels default **On** and can be switched off in Settings or Evaluation criteria. Badges mark generated ratings, summaries, themes and interpretive details, including unchanged AI fields carried into an edited assessment. Human notes and arrangement observations are separate. This label preference does not change AI visibility. Human-only/limited modes suppress subjective drafts, including index/export and connector output.
 
-Album covers come from exact Apple title/artist recording matches: 1,245 recording artwork URLs for 780 records. Traditional hymns remain text-only. Personal recording lists, removals and preferred ordering stay intact. Hymns include a title-bound **Find hymn on Hymnary** search. Artist/attribution text can be edited directly with its pencil, Enter/Save and Escape/Cancel. Unmatched artwork remains blank.
+Album covers come from exact Apple title/artist recording matches: 1,245 recording artwork URLs for 780 records. Traditional hymns remain text-only. Personal recording lists, removals and preferred ordering stay intact. Traditional hymns include a title-bound **Find hymn on Hymnary** search. Artist/attribution text can be edited directly with its pencil, Enter/Save and Escape/Cancel. Unmatched artwork remains blank.
 
 Song pages have **Details & files**, **Outside links** and **Evaluation** tabs. The heading has a primary **Add to library** / **Manage libraries** action; secondary controls live in the **…** menu. Outside links groups recordings, lyric/public-review searches and evaluation sources. Files are listed with **Manage files** for uploads/downloads. Evaluation contains the song assessment and one collapsed **AI evaluation** box. A human evaluation occupies the primary spot; retained AI content is a smaller collapsed option at the bottom. Saving the first human evaluation asks whether to keep or delete the AI version. Deleting it is respected through catalog refreshes. Older drafts with a previous human assessment migrate to this layout. **Customize details** hides or reorders sections inside the evaluation; custom text/number attributes still participate in indexing. Empty musical/language/time fields and vague topical Scripture connections are omitted. Kari Jobe's Forever record retains the owner's personal concern about the grave-battle line.
 

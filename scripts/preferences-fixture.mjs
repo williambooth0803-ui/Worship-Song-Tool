@@ -1,3 +1,4 @@
+import {navigate} from "./disclosure.mjs";
 import assert from "node:assert/strict";
 import { reveal } from "./disclosure.mjs";
 export async function checkPreferencesFlows(browser, base) {
@@ -24,7 +25,7 @@ export async function checkPreferencesFlows(browser, base) {
         .count(),
       0,
     );
-    await page.locator('.nav-item[data-view="settings"]').click();
+    await navigate(page,"settings");
     await page
       .getByRole("switch", { name: "AI labels", exact: true })
       .click();
@@ -32,7 +33,7 @@ export async function checkPreferencesFlows(browser, base) {
     assert.equal(await page.locator(".ai-mark").count(), 0);
     await page.reload();
     assert.equal(await page.locator(".ai-mark").count(), 0);
-    await page.locator('.nav-item[data-view="settings"]').click();
+    await navigate(page,"settings");
     await page
       .getByRole("switch", { name: "AI labels", exact: true })
       .click();

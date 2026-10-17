@@ -11,7 +11,7 @@ export async function keepAIIfOffered(page) {
 export async function reveal(page, role, options) {
   const target = page.getByRole(role, { ...options, includeHidden: true });
   if (!(await target.count()) && ["Backup & restore", "ChatGPT connections", "Import previous browser-only workspace", "Retry profile sync"].includes(options.name)) {
-    await page.locator('.nav-item[data-view="settings"]').click();
+    await navigate(page,"settings");
   }
   const tab = await target.evaluate(el => el.closest('.song-tab-panel')?.dataset.tab);
   if (tab) await page.locator(`[data-action="song-tab"][data-tab="${tab}"]`).click();
@@ -24,4 +24,12 @@ export async function reveal(page, role, options) {
   });
   for (const text of summaries)
     await page.locator("summary").filter({ hasText: text }).first().click();
+}
+
+// Follow the visible hierarchy instead of depending on former sidebar entries.
+export async function navigate(page, view) {
+  const parent = {collections:"discover", index:"evaluate", profile:"evaluate", blacklist:"library"}[view];
+  if (parent) await page.locator(`.nav-item[data-view="${parent}"]`).click();
+  const selector = view === "settings" ? '.settings-gear' : parent ? `.workspace-tabs [data-view="${view}"]` : `.nav-item[data-view="${view}"]`;
+  await page.locator(selector).click();
 }

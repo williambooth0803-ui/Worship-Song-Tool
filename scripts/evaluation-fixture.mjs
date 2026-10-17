@@ -42,6 +42,7 @@ export async function checkEvaluationFlows(browser, base) {
     assert.ok(!prompt.includes("Personal note to preserve"));
     assert.equal(await page.locator('dialog a[href="https://chatgpt.com/"]').count(), 1);
     const value = { schema: "faithful-evaluation-v1", songId: id, aiMode: "full", review: { scores: { accuracy: 9, substance: 8, language: 8, time: null }, summary: "Verified preview fixture <img src=x onerror=alert(1)>", claims: ["A specific confession."], concerns: [], uses: [], scriptures: [], themes: ["Christ"], language: "Clear sentences.", time: "", concern: "none", sources: [{ url: "https://example.com/lyric-source", label: "Supplied test source" }] } };
+    value.requestId = JSON.parse((await page.locator("#evaluation-prompt").inputValue()).match(/\{\n  "schema"[\s\S]*$/)[0]).requestId;
     await page.locator("#evaluation-json").fill(JSON.stringify({ ...value, songId: "different" }));
     await page.getByRole("button", { name: "Preview evaluation", exact: true }).click();
     assert.match(await page.locator("#evaluation-error").textContent(), /different song/);
@@ -69,7 +70,7 @@ export async function checkEvaluationFlows(browser, base) {
     const limitedBefore = await stored();
     await reveal(page,"button",{name:"Generate AI evaluation",exact:true});
     await page.getByRole("button", { name: "Generate AI evaluation", exact: true }).click();
-    const limited = structuredClone(value); limited.aiMode = "limited";
+    const limited = structuredClone(value); limited.aiMode = "limited"; limited.requestId = JSON.parse((await page.locator("#evaluation-prompt").inputValue()).match(/\{\n  "schema"[\s\S]*$/)[0]).requestId;
     limited.review = { ...limited.review, scores: { accuracy: null, substance: null, language: null, time: null }, summary: "Objective observations only.", claims: [], themes: [] };
     await page.locator("#evaluation-json").fill(JSON.stringify(limited));
     await page.getByRole("button", { name: "Preview evaluation", exact: true }).click();

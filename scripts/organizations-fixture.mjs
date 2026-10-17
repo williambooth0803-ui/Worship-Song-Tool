@@ -1,3 +1,4 @@
+import {navigate} from "./disclosure.mjs";
 import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
 import {PGlite} from '@electric-sql/pglite';
@@ -75,9 +76,9 @@ export async function checkOrganizationFlows(browser,base) {
   // A viewer may opt into read-only evaluations through their own Personal profile.
   await viewer.getByLabel('Workspace',{exact:true}).selectOption('personal');
   await viewer.locator('.organization-banner').waitFor({state:'hidden'});
-  await viewer.locator('.nav-item[data-view="profile"]').click();
+  await navigate(viewer,"profile");
   await viewer.getByLabel('AI content preference',{exact:true}).selectOption('full');
-  await viewer.getByRole('button',{name:'Save rating profile',exact:true}).click();
+  await viewer.getByRole('button',{name:'Save evaluation criteria',exact:true}).click();
   await viewer.getByLabel('Workspace',{exact:true}).selectOption(org);
   await viewer.locator('.organization-banner').filter({hasText:'View only'}).waitFor();
   await owner.getByRole('button',{name:'Close dialog',exact:true}).click();
@@ -108,7 +109,7 @@ export async function checkOrganizationFlows(browser,base) {
   await editor.locator(`[data-remove-member="${users[0].id}"]`).click();
   await owner.waitForFunction(()=>document.querySelector('#workspace-select')?.value==='personal',{},{timeout:10000});
   const originalNote=await owner.evaluate(id=>JSON.parse(localStorage.getItem('faithful-repertoire-user:'+id)).songs[0].review.notes,users[0].id);assert.equal(originalNote,'PRIVATE owner note');
-  await owner.locator('.nav-item[data-view="settings"]').click();assert.equal(await owner.getByLabel('Workspace',{exact:true}).inputValue(),'personal');
+  await navigate(owner,"settings");assert.equal(await owner.getByLabel('Workspace',{exact:true}).inputValue(),'personal');
   await editor.getByRole('button',{name:'Close dialog',exact:true}).click();await editor.getByLabel('Workspace',{exact:true}).selectOption('personal');await editor.waitForFunction(()=>document.querySelector('#workspace-select')?.value==='personal');
   await orgs(editor);await editor.locator('#organization-create-form input').fill('Second team');await editor.locator('#organization-create-form button').click();await editor.locator('.organization-banner').filter({hasText:'Second team'}).waitFor();
   await editor.getByLabel('Workspace',{exact:true}).selectOption(org);await editor.locator('.organization-banner').filter({hasText:'Shared worship team'}).waitFor();

@@ -1,3 +1,4 @@
+import {navigate} from "./disclosure.mjs";
 import assert from "node:assert/strict";
 import { reveal } from "./disclosure.mjs";
 
@@ -16,7 +17,7 @@ export async function checkSongTabsFlows(browser, base) {
     assert.equal(await page.getByRole("tabpanel").count(), 1);
     assert.equal(await tab("Details & files").getAttribute("aria-selected"), "true");
     assert.equal(await page.getByRole("button", { name: "Add to library", exact: true }).isVisible(), true);
-    assert.equal(await page.getByRole("button", { name: "Blacklist song", exact: true }).isVisible(), false);
+    assert.equal(await page.getByRole("button", { name: "Move to No Approval", exact: true }).isVisible(), false);
     assert.equal(await page.getByRole("link", { name: "Find lyrics ↗", exact: true }).count(), 0);
     await page.screenshot({ path: "/tmp/faithful-song-details-desktop.png" });
 
@@ -96,9 +97,9 @@ export async function checkSongTabsFlows(browser, base) {
     assert.equal(await page.getByRole("tabpanel").count(), 1);
     assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth));
     await page.screenshot({ path: "/tmp/faithful-song-tabs-mobile.png", fullPage: true });
-    await reveal(page, "button", { name: "Blacklist song", exact: true });
-    await page.getByRole("button", { name: "Blacklist song", exact: true }).click();
-    await page.locator('.nav-item[data-view="blacklist"]').click();
+    await reveal(page, "button", { name: "Move to No Approval", exact: true });
+    await page.getByRole("button", { name: "Move to No Approval", exact: true }).click();
+    await navigate(page,"blacklist");
     assert.ok(await page.getByRole("button", { name: "Restore song", exact: true }).isVisible());
     assert.equal(await page.locator('.detail-panel [data-action="save-song"]').count(), 0);
     assert.equal(await page.locator('.detail-panel [data-action="add-to-plan"]').count(), 0);

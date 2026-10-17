@@ -40,7 +40,7 @@ async function show() {
     throw new Error("The authorization does not match your account.");
   root.innerHTML = `<p><strong>${e(details.client.name || "ChatGPT")}</strong> is requesting read-only access as ${e(client.user.email)}.</p><p>Choose what it may read from your saved account copy. Your account AI content preference applies. Browser-only changes need to be saved first.</p><form id="connect-consent">${Object.entries(
     {
-      profile: "Rating profile",
+      profile: "Evaluation criteria",
       libraries: "Libraries and song assessments",
       plans: "Existing worship plans",
       notes: "Personal and service notes",

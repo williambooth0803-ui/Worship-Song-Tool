@@ -6,6 +6,83 @@ do not treat a new prompt as cancellation unless the owner says so. Mark an item
 complete only with implementation and meaningful verification. Record external
 blockers explicitly. Preserve personal assessments, recordings and workspaces.
 
+## October 17 rebuild from the working remote save
+
+Starting point: clean `39904b9`; GitHub default `main` was inspected and fetched
+before editing. No reset, worktree, old-workspace recovery or Supabase replacement
+was performed. The failed environment for support case #17256660 remains intact.
+Historical release checks below are retained as history, not evidence for this rebuild.
+
+Status key: **implemented** means present in the audited code; verification for
+this rebuild is recorded separately below. **External** means a real provider,
+account/device or platform capability remains necessary.
+
+| Request | Implementation / remaining work |
+| --- | --- |
+| 1 | Implemented: Discover → Evaluate → Libraries → Plans, four primary entries. |
+| 2 | Implemented: Songs/Collections under Discover; Song index retained under Evaluate. |
+| 3 | Implemented: Evaluate song workspace; selected song/query retained across criteria visits. |
+| 4 | Implemented: Evaluation criteria in Evaluate/Settings; top-right gear; essential account menu. |
+| 5 | Implemented: No Approval under Libraries; original `blacklisted` flags retained; exclusion/restoration paths preserved. |
+| 6 | Implemented: Plan History terminology retained; user-facing criteria/exclusion labels updated. |
+| 7 | Implemented: public `#about`, purpose and connected workflow; no guest opt-in or workspace creation on public visit. |
+| 8 | Implemented: William Booth biography and contact with all supplied facts and intentions. |
+| 9 | Implemented: word-focused request, usual recognized text/assumptions, partial evidence and artist uncertainty rules. |
+| 10 | Implemented: explicit text/version override clears response/preview and rotates request ID; account/song/profile/snapshot guards at copy/preview/apply. |
+| 11 | Implemented: Modern Hymns explanation/category compatibility; only Traditional hymns get automatic Hymnary searches. |
+| 12 | Preserved: 0–10 anchors, blank unknowns, criterion rubrics and arrangement coherence. |
+| 13 | Preserved: criterion controls/weights/saved scores; added optional intelligibility/shared-expression rubrics with overlap cautions. Existing profiles are not changed. |
+| 14 | Preserved: three AI modes, copy/preview/apply, human primacy, notes/recordings and focused scrolling preview. |
+| 15 | Preserved: explicit read-only Library Audit, reviewed prompt, charts, limitations and report snapshots. |
+| 16 | Preserved: direction, Trinity, voice, lament/celebration/function, evidence coverage and no universal ideal. |
+| 17 | Preserved: existing-plan and mixed-scope evaluation, selected criteria/purpose, no song selection/edits. |
+| 18 | Preserved: distinct library unions, ordered plan occurrences/non-song items, privacy/staleness/download guards. |
+| 19 | Preserved: mounted collection search input, caret/selection/IME and coalesced result updates. |
+| 20 | Preserved: song-title collection search; per-collection depth/search/sort; actual completed-use/release evidence. |
+| 21 | Implemented: fixed-identity attributed portraits/fallbacks. External: live Wikimedia coverage/delivery not verified. |
+| 22 | Preserved: visible active-criterion ratings, unassessed last, human overrides/zero and independent sorts. |
+| 23 | Preserved: compact result rows, wrapping and direct page jumps. |
+| 24 | Preserved: selected details revealed, result position retained, normal detail/page scrolling. |
+| 25 | Preserved: library primary action, ellipsis, attribution editing, accessible three-tab detail and custom attributes. |
+| 26 | Implemented: exact recording artwork; traditional-only title-bound Hymnary search. External: live artwork CDN access. |
+| 27 | Preserved: Personal/multiple organizations, roles, invitations, transfer/removal and server enforcement. |
+| 28 | Preserved: automatic shared refresh/revisions/merge/private drafts and personal AI preferences. External: actual email delivery and real-account concurrent/offline sessions. |
+| 29 | Preserved: explicit screenshot/PDF sharing and stale-safe transcription import, uncertainty review and supplied order. |
+| 30 | Preserved: untimed headings, continuous timed numbering, drag and keyboard ordering. |
+| 31 | Preserved: in-place multi-library/page selection, explicit insertion and empty-plan simplification. |
+| 32 | Preserved: plan accents/keys, duplication/export/print/history and independent dated template copies. |
+| 33 | Preserved: optional user-owned starter libraries and explicit historic-decision migration. |
+| 34 | Preserved: sign-in gate and explicit separate browser-only access. Public About does not activate it. |
+| 35 | Preserved: native autofill/DOM submission, remembered email/session, no password storage. External: physical browser/device biometric prompts. |
+| 36 | Preserved: bounded startup, expired-session recovery, saved-copy/retry paths and honest sync status. |
+| 37 | Preserved: browser commits, serialized autosave, colored/text statuses and form/picker dirty state. External: real-account offline verification. |
+| 38 | Preserved: native leave warning; criteria navigation now offers discard/cancel without replacing the form on cancel. |
+| 39 | Preserved: compact grouped Settings and collapsed advanced tools. |
+| 40 | Implemented: smaller mobile panels/headings/lists/dialogs and four-item navigation; four-width browser/layout review in progress. |
+| 41 | Unapproved proposals remain separate below; none implemented. |
+| 42 | Verified this task: Apple HTTP 200; Songlink reachable but HTTP 401 `PUBLIC_API_ACCESS_DEPRECATED` (one check only). Existing metadata not replaced. |
+| 43 | Preserved: evidence-backed direct links and honest searches. External: supported Spotify/YouTube mapping source remains unavailable. |
+| 44 | Preserved: personal recordings/order/removals/empty lists/identity overrides and catalog-only lookup inputs. |
+| 45 | External: enforced policy lacks four image hosts; no configuration draft/edit tool is callable in this chat. No stale draft retried or settings removed. |
+| 46 | Implemented: pinned code count/build report retained; final actual total recorded after build. Native Codex UI is outside repository control. |
+| 47 | Preserved: use incremental Git commits/pushes; no claim that a ZIP fixes platform artifact downloads. |
+
+Rebuild verification so far: existing 118 unit/database tests passed after pinned
+`npm ci`; scale and MCP type checks passed. Added stale-text request/Hymnary
+regressions and a real Chromium fixture for public About, criteria context,
+override invalidation and eight views at 320/390/900/1440px. Targeted rebuild fixture
+passed; full hosted release verification, final counts, push/CI/deployment/live
+readback are still pending. Browser image/provider fixtures do not prove real image
+or email delivery, physical Safari/biometrics or actual account autosave recovery.
+
+### Unapproved proposals (not part of this rebuild)
+
+- Persistent unfinished-form/report drafts.
+- Organization history/Undo.
+- Searchable plan archive/calendar.
+- Saved evaluation-report history.
+- Separate mobile song drill-down.
+
 ## Compact search results, top-rated discovery and code total
 
 - [x] Tighten awkward result spacing and empty areas; use a narrower, consistent

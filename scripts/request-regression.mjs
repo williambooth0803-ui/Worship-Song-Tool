@@ -1,3 +1,4 @@
+import {navigate} from "./disclosure.mjs";
 import { chromium } from "playwright";
 import assert from "node:assert/strict";
 import { reveal, keepAIIfOffered, chooseSong } from "./disclosure.mjs";
@@ -29,7 +30,7 @@ page.on("dialog",d=>d.accept());
 await page.route('https://www.wikidata.org/**',route=>route.fulfill({contentType:'application/json',body:'{"entities":{}}'}));
 await page.route('https://*.mzstatic.com/**',route=>route.abort());
 
-const nav = async view => page.locator(`.nav-item[data-view="${view}"]`).click();
+const nav = async view => navigate(page,view);
 const state = () => page.evaluate(()=>JSON.parse(localStorage.getItem("hymn-heart-v1")));
 try {
   await page.goto(process.env.APP_URL || "http://127.0.0.1:3000");
@@ -65,14 +66,15 @@ try {
   await reveal(page,"button",{name:"Generate AI evaluation",exact:true});
   await page.getByRole("button",{name:"Generate AI evaluation",exact:true}).click();
   const draft={schema:"faithful-evaluation-v1",songId:song.id,aiMode:"full",review:{scores:{accuracy:8,substance:7,language:9,time:null},summary:"PREVIEW READY: source-backed fixture",claims:[],concerns:[],uses:[],scriptures:[],themes:[],language:"Clear",time:"",concern:"none",sources:[]}};
+  draft.requestId = JSON.parse((await page.locator("#evaluation-prompt").inputValue()).match(/\{\n  "schema"[\s\S]*$/)[0]).requestId;
   await page.locator("#evaluation-json").fill(JSON.stringify(draft));
   await page.getByRole("button",{name:"Preview evaluation",exact:true}).click();
   assert.equal(await page.locator("#evaluation-preview").evaluate(n=>n===document.activeElement),true);
   const preview=await page.locator("#evaluation-preview h3").boundingBox(), dialogRect=await page.locator("dialog").boundingBox();
   assert.ok(preview.y>=dialogRect.y && preview.y<dialogRect.y+dialogRect.height);
   await page.getByRole("button",{name:"Close dialog",exact:true}).click();
-  await reveal(page,"button",{name:"Blacklist song",exact:true});
-  await page.getByRole("button",{name:"Blacklist song",exact:true}).click();
+  await reveal(page,"button",{name:"Move to No Approval",exact:true});
+  await page.getByRole("button",{name:"Move to No Approval",exact:true}).click();
   await nav("blacklist");
   await page.getByRole("heading",{name:song.title,exact:true,level:2}).waitFor();
   assert.ok(await page.locator(".primary-evaluation").count());
@@ -86,7 +88,7 @@ try {
   await page.getByRole("button",{name:"Add Corporate participation",exact:true}).click();
   const row=page.locator(".criterion-row").last();const customId=await row.getAttribute("data-criterion");
   await page.getByRole("button",{name:"Use equal weights",exact:true}).click();
-  await page.getByRole("button",{name:"Save rating profile",exact:true}).click();
+  await page.getByRole("button",{name:"Save evaluation criteria",exact:true}).click();
   assert.ok((await state()).profile.criteria.some(c=>c.id===customId));
   await nav("discover");
   await reveal(page,"button",{name:"Edit evaluation",exact:true});await page.getByRole("button",{name:"Edit evaluation",exact:true}).click();

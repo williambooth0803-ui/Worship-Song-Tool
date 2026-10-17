@@ -687,3 +687,49 @@ button.setting-row:disabled { opacity: .55; cursor: default; }
   .song-card { gap: 8px; padding: 12px 10px; }
   .song-card h3 { font-size: 17px; }
 }
+
+.workspace-tabs { display:flex; flex-wrap:wrap; gap:8px; margin:0 0 20px; }
+.workspace-tabs .selected { background:var(--forest,#244a38); color:white; }
+.settings-gear { font-size:23px; line-height:1; min-width:44px; padding:10px; }
+.about-page { max-width:760px; margin-inline:auto; line-height:1.7; overflow-wrap:anywhere; }
+.about-page h1 { line-height:1.15; }
+.about-intro { font-size:20px; }
+.about-flow { padding-left:24px; }
+.about-flow li { padding:8px 0; }
+.public-about { margin:0 auto; padding:40px 24px; }
+@media screen and (max-width:550px) {
+  .page { padding:16px 12px; }
+  .page-heading { margin-bottom:16px; gap:10px; }
+  .page-heading h1, .about-page h1 { font-size:28px; }
+  .page-heading p { font-size:14px; }
+  .sidebar { padding:10px 8px; }
+  .sidebar nav { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:4px; }
+  .sidebar .nav-item { min-width:0; padding:9px 3px; min-height:44px; gap:5px; font-size:12px; }
+  .sidebar .nav-icon { display:none; }
+  .sidebar .nav-item b { display:none; }
+  .topbar { padding:10px 12px; gap:8px; }
+  .topbar-actions { gap:6px; flex-wrap:wrap; }
+  .workspace-tabs { gap:6px; margin-bottom:14px; }
+  .workspace-tabs .button { padding:9px 10px; font-size:13px; }
+  .detail-panel { padding:16px 12px; border-radius:14px; }
+  .song-title h2 { font-size:25px; }
+  .song-tabs { margin-top:12px; }
+  .collection-card { border-radius:14px; }
+  .collection-cover { width:48px; height:48px; }
+  .criterion-row, .audit-chart { padding:12px; border-radius:12px; }
+  .score-grid { gap:8px; }
+  dialog { width:calc(100% - 16px); max-width:calc(100% - 16px); padding:14px; border-radius:16px; }
+  dialog h2 { font-size:24px; }
+  .profile-panel { padding:18px 14px; border-radius:16px; }
+  .public-about { padding:24px 16px; }
+  input, select, textarea { max-width:100%; }
+}
+@media screen and (max-width:550px) {
+  .sidebar .nav-item { width:100%; justify-content:center; }
+  .sidebar .nav-label { white-space:nowrap; }
+  .onboarding-prompt { padding:16px; gap:12px; border-radius:14px; }
+  .onboarding-prompt h2 { font-size:23px; margin:6px 0; }
+  .onboarding-prompt p { font-size:13px; margin:6px 0; }
+  .onboarding-prompt .eyebrow { font-size:9px; }
+  .collection-browse-controls { gap:10px; }
+}

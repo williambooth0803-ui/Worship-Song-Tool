@@ -1,3 +1,4 @@
+import {navigate} from "./disclosure.mjs";
 import assert from "node:assert/strict";
 import { syncCatalog } from "../public/catalog.js";
 import { defaultProfile } from "../public/core.js";
@@ -74,7 +75,7 @@ export async function checkAccountStartupFlows(browser, base) {
     await delayed.page.getByRole("button", { name: "Try again", exact: true }).click();
     delayed.release();
     await delayed.page.getByRole("button", { name: "My account", exact: true }).waitFor();
-    await delayed.page.locator('.nav-item[data-view="settings"]').click();
+    await navigate(delayed.page,"settings");
     await delayed.page.waitForFunction(() => document.querySelector("#settings-save-value")?.textContent === "On");
     await delayed.page.screenshot({ path: "/tmp/faithful-settings-desktop.png" });
     await delayed.page.setViewportSize({ width: 390, height: 844 });
@@ -95,7 +96,7 @@ export async function checkAccountStartupFlows(browser, base) {
     await slow.page.getByRole("button", { name: "Open saved browser copy", exact: true }).waitFor({ timeout: 6000 });
     // Leave the request pending: the deadline must open the saved workspace itself.
     await slow.page.getByRole("button", { name: "My account", exact: true }).waitFor({ timeout: 10000 });
-    await slow.page.locator('.nav-item[data-view="settings"]').click();
+    await navigate(slow.page,"settings");
     assert.equal(await slow.page.locator("#settings-save-value").textContent(), "Paused");
     assert.equal(slow.counts().writes, 0);
     assert.equal(await slow.page.evaluate(key => JSON.parse(localStorage.getItem(key)).songs[0].review.notes, store), workspace.songs[0].review.notes);
@@ -121,7 +122,7 @@ export async function checkAccountStartupFlows(browser, base) {
     assert.equal(locked.counts().writes, 0);
     locked.release();
     await holder.evaluate(() => window.releaseStartupLock());
-    await locked.page.locator('.nav-item[data-view="settings"]').click();
+    await navigate(locked.page,"settings");
     await locked.page.locator("#settings-save-now").click();
     await locked.page.waitForFunction(() => document.querySelector("#settings-save-value")?.textContent === "On");
     assert.equal(await locked.page.evaluate(key => JSON.parse(localStorage.getItem(key)).songs[0].review.notes, store), workspace.songs[0].review.notes);

@@ -53,7 +53,7 @@ Song words are optional; an opening-line search must not imply full-text coverag
 Use one collapsible AI evaluation, a primary human evaluation and smaller secondary
 AI content. Keep populated objective facts as plain text, with explicit uncertainty
 and confirmation controls. Collections use expandable groups with lazy, paginated
-song actions and bulk import. Keep dismissed records in the personal Blacklist.
+song actions and bulk import. Keep dismissed records in the No Approval view under Libraries.
 Use collapsible filters, library tools and simple
 menus. Keep completed profile information and account-save explanations in menus.
 Avoid decorative copy on library pages. Song attributes can be hidden/reordered per
@@ -110,7 +110,7 @@ Discover defaults to the highest visible rating using active criteria; unassesse
 records follow assessed scores, including zero. Human-only mode must not let hidden
 AI scores affect ordering. Typed searches prioritize title relevance and use the
 selected sort within relevance groups. Keep separate explicit sort choices for
-Discover, libraries and Blacklist. Result rows share a narrow single column at all
+Discover, libraries and No Approval. Result rows share a narrow single column at all
 screen sizes; keep artwork, attribution, status and rating together, without empty
 footer regions or clipped titles. Song selection and planning remain human choices.
 
@@ -121,3 +121,18 @@ as artist portraits. Save status must identify unacknowledged uploads and
 unapplied form edits with labels/icons as well as color. Remember me controls
 email/session retention without retaining passwords; native credential
 suggestions and biometric prompts remain the browser's responsibility.
+
+
+## Rebuilt navigation and lyrical evaluation
+
+Keep four primary destinations: Discover, Evaluate, Libraries, Plans. Collections
+is a Discover section; the Song index and Evaluation criteria remain within
+Evaluate. No Approval is within Libraries and retains the stored blacklist schema.
+Settings uses the top-right gear. Public #about explains purpose, workflow and the
+developer without guest activation or workspace creation.
+Song AI requests focus on usual words with explicit text/version override and
+chosen-text assumptions. Do not stop supported lyrical findings for uncertain
+artist metadata. Unsupported evidence remains unknown. Override changes clear
+response/preview and rotate a request ID; copy/preview/apply also bind account,
+song, mode, profile and original song snapshot. Only Traditional hymns receive
+automatic title-bound Hymnary searches; Modern Hymns remain contemporary songs.

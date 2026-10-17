@@ -1,3 +1,4 @@
+import {navigate} from "./disclosure.mjs";
 import assert from "node:assert/strict";
 
 export async function checkNavigationFlows(browser, base) {
@@ -11,10 +12,11 @@ export async function checkNavigationFlows(browser, base) {
   await rail.hover();
   await page.waitForFunction(() => document.querySelector(".sidebar").getBoundingClientRect().width > 240);
   assert.equal(await mainLeft(), left, "Expansion must not move page content");
-  await page.locator("nav").getByRole("button", { name: "Song index", exact: true }).click();
+  await navigate(page,"index");
   await page.mouse.move(600, 150);
   await page.waitForFunction(() => document.querySelector(".sidebar").getBoundingClientRect().width < 100);
   assert.ok(await width() < 100, "A pointer click must not keep navigation expanded after leaving");
+  await page.locator(".brand").focus();
   await page.keyboard.press("Tab");
   await page.waitForFunction(() => document.querySelector(".sidebar").getBoundingClientRect().width > 240);
   assert.ok(await page.locator("nav .nav-label").first().isVisible(), "Keyboard focus must reveal navigation labels");
@@ -34,11 +36,11 @@ export async function checkNavigationFlows(browser, base) {
   const touchPage = await touch.newPage();
   await touchPage.goto(base);
   assert.ok(await touchPage.locator("nav .nav-label").first().isVisible());
-  await touchPage.locator("nav").getByRole("button", { name: "Song index", exact: true }).tap();
+  await navigate(touchPage,"index");
   await touchPage.getByRole("heading", { name: "Song index", exact: true }).waitFor();
   assert.ok(await touchPage.evaluate(() => document.documentElement.scrollWidth <= innerWidth));
   await touchPage.setViewportSize({ width: 390, height: 844 });
-  assert.equal(await touchPage.locator("nav .nav-label").count(), 8);
+  assert.equal(await touchPage.locator("nav .nav-label").count(), 4);
   for (const label of await touchPage.locator("nav .nav-label").all()) assert.ok(await label.isVisible());
   await touchPage.screenshot({ path: "/tmp/faithful-navigation-touch.png" });
   await touch.close();

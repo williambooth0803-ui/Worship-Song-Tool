@@ -1,3 +1,4 @@
+import {navigate} from "./disclosure.mjs";
 import {allCatalogSongs} from "../public/catalog.js";
 import {songCollections} from "../public/collections.js";
 import assert from "node:assert/strict";
@@ -5,7 +6,7 @@ import { reveal } from "./disclosure.mjs";
 export async function checkDiscoveryFlows(browser, base) {
   const page=await browser.newPage({viewport:{width:1440,height:1000}}),errors=[];
   page.on("pageerror",err=>errors.push(err.message));
-  const nav=async name=>page.locator("nav").getByRole("button",{name,exact:true}).click();
+  const nav = async name => navigate(page, ({"Collections":"collections","Song index":"index","Rating profile":"profile","Blacklist":"blacklist","Song libraries":"library","Discover songs":"discover","Plans":"plans","Settings":"settings"}[name] || name));
   const state=()=>page.evaluate(()=>JSON.parse(localStorage.getItem("hymn-heart-v1")));
   try{
     await page.goto(base);await nav("Collections");
@@ -44,8 +45,8 @@ export async function checkDiscoveryFlows(browser, base) {
     assert.match(await page.locator(".primary-evaluation > summary").textContent(),/^Your evaluation/);
     assert.equal(await page.locator(".secondary-evaluation").count(),0);
     assert.equal(await page.locator(".objective-facts").getByText("Tempo",{exact:true}).count(),0);
-    await reveal(page,"button",{name:"Blacklist song",exact:true});
-    await page.getByRole("button",{name:"Blacklist song",exact:true}).click();
+    await reveal(page,"button",{name:"Move to No Approval",exact:true});
+    await page.getByRole("button",{name:"Move to No Approval",exact:true}).click();
     assert.ok((await state()).songs.find(s=>s.id===id).blacklisted);
     await page.getByRole("searchbox",{name:"Search songs",exact:true}).fill(title);
     assert.equal(await page.locator('.song-card[data-id="'+id+'"]').count(),0);

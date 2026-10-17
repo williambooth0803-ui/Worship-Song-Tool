@@ -61,3 +61,19 @@ test("limited observations cannot import theological ratings and never replace a
   draft.review.scores.accuracy = 9; assert.throws(() => applyEvaluation(s, draft, "limited"), /Limited assistance/);
   assert.throws(() => applyEvaluation(s, result(s), "manual"), /disabled/);
 });
+
+test("word-focused requests bind explicit text overrides and reject older request responses", () => {
+  const s = song(), profile = {...defaultProfile, aiMode:"full"};
+  const usual = evaluationPrompt(s,profile,"","first");
+  assert.match(usual,/widely recognized worship song/);
+  assert.match(usual,/Artist uncertainty must not stall/);
+  assert.match(usual,/only unsupported scores null/);
+  const specific = evaluationPrompt(s,profile,"Only the supplied alternate stanza","second");
+  assert.match(specific,/Only the supplied alternate stanza/);
+  assert.ok(!specific.includes(s.review.notes || "PRIVATE NOTE"));
+  const draft = {...result(s),requestId:"first"};
+  assert.throws(()=>parseEvaluation(JSON.stringify(draft),s.id,"full","second"),/older text\/version/);
+  draft.requestId="second";
+  assert.equal(parseEvaluation(JSON.stringify(draft),s.id,"full","second").requestId,"second");
+  assert.throws(()=>evaluationPrompt(s,profile,"x".repeat(6001)),/6000/);
+});

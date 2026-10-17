@@ -1,9 +1,10 @@
+import {navigate} from "./disclosure.mjs";
 import assert from "node:assert/strict";
 import { reveal } from "./disclosure.mjs";
 
 // Called inside the signed-in provider fixture, before its profile/account checks.
 export async function checkWorkspaceToolsFlows(page) {
-  const nav = async (name) => page.locator("nav").getByRole("button", { name, exact: true }).click();
+  const nav = async name => navigate(page, ({"Collections":"collections","Song index":"index","Rating profile":"profile","Blacklist":"blacklist","Song libraries":"library","Discover songs":"discover","Plans":"plans","Settings":"settings"}[name] || name));
   const click = async (name) => {
     await reveal(page, "button", { name, exact: true });
     await page.getByRole("button", { name, exact: true }).click();

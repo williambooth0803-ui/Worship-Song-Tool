@@ -69,8 +69,8 @@ export const songCollections = [
   ),
   selected(
     "modern-hymns",
-    "Modern hymns",
-    "Getty/Townend, CityAlight, Sovereign Grace and other contemporary hymn writing. Recording associations help identify versions.",
+    "Modern Hymns",
+    "Contemporary worship/CCM songs with hymn-like style, including Getty/Townend, CityAlight and Sovereign Grace. Recording associations help identify versions.",
     typeIds("modern"),
     12,
     24,
