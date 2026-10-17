@@ -32,6 +32,10 @@ test('same-title texts remain separate, and identity edits, AI visibility and di
  const lowry=allCatalogSongs.find(s=>s.id==='catalog-nothing-but-the-blood'),redman=allCatalogSongs.find(s=>s.id==='artist-nothing-but-the-blood-matt-redman');
  assert.notEqual(data.records[lowry.id].analysisKey,data.records[redman.id].analysisKey);
  assert.match(catalogAnalysisFor(redman).analysis.reasons[0].explanation,/Redman/);
+ const city=allCatalogSongs.find(s=>s.id==='catalog-ancient-of-days'),sadler=allCatalogSongs.find(s=>s.title==='Ancient of Days (Blessing and Honor)');
+ assert.notEqual(data.records[city.id].analysisKey,data.records[sadler.id].analysisKey);
+ assert.match(catalogAnalysisFor(city).analysis.source.url,/cityalight/);
+ assert.match(catalogAnalysisFor(sadler).analysis.source.url,/integrityworship/);
  for(const mode of ['manual','limited'])assert.equal(catalogAnalysisFor(lowry,mode),null);
  assert.equal(catalogAnalysisFor({...lowry,aiDismissed:true}),null);
  assert.equal(catalogAnalysisFor({...lowry,title:'A different song'}),null);

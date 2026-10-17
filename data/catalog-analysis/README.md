@@ -4,19 +4,19 @@ The owner's request is for a deeper first-pass evaluation of **every** catalog
 song. This work has not yet completed that goal. `coverage.json` contains all
 2,044 song/version records and their precise status, source URL and text hash.
 
-- **408 expanded drafts:** three separate criterion reasons, themes, source
+- **456 expanded drafts:** three separate criterion reasons, themes, source
   provenance, short exact excerpts for specific wording concerns, and KJV
   supporting comparisons. Some records share the same underlying text.
 - **2 partial/suspect texts:** the available Unstoppable God transcription has an
   apparent copying error, and the Most Beautiful / So in Love source supplies
   only a short excerpt. Neither receives a new numerical evaluation.
-- **186 unresolved identities:** title candidates exist, but the audit has not
+- **185 unresolved identities:** title candidates exist, but the audit has not
   established that they belong to the record's song/text.
-- **1,448 unmatched texts:** no match was found in the collections audited. This
+- **1,401 unmatched texts:** no match was found in the collections audited. This
   does not prove that a reliable text is unavailable elsewhere.
 
-There are now 494 rated catalog records: 408 with expanded text analysis and 86
-retained earlier brief model-knowledge drafts. The remaining 1,550 stay unscored.
+There are now 511 rated catalog records: 456 with expanded text analysis and 55
+retained earlier brief model-knowledge drafts. The remaining 1,533 stay unscored.
 Numerical scores are provisional AI editorial judgments, not mechanically derived
 from word counts, claims of original source verification, approvals or selections.
 No arrangement measurements or global popularity claims were generated.
@@ -30,7 +30,7 @@ versions. Community transcriptions can contain errors, omissions and inaccurate
 artist attribution. A matching source supports examination of that text, not proof
 of the words in every associated recording. Traditional hymn stanza/translation
 choices still need review. Identified texts and explicitly labeled usual-text assumptions were admitted;
-160 records state that a selected familiar text is assumed and the associated
+188 records state that a selected familiar text is assumed and the associated
 artist/recording remains unverified. Conflicting title candidates without a
 supportable selection remain unresolved in the manifest. A separate radio-analysis repository was inspected but its AI judgments
 were not imported as lyric evidence.
@@ -40,7 +40,9 @@ Before the Throne of God Above, Yet Not I but Through Christ in Me, All I Have I
 Christ, 10,000 Reasons, His Mercy Is More, Ancient of Days, The Power of the Cross,
 Speak, O Lord and Glorious Christ, followed by further texts from Sovereign Grace,
 Elevation/Essential Worship, Bethel Music, Worship Together and The Worship
-Initiative. All 69 starter-workspace songs now have expanded drafts. The Known by
+Initiative. Further CityAlight and modern hymn pages, plus an actual Hymnary
+representative text, have since been read. CityAlight and Sadler/Harvill Ancient
+of Days now have distinct source-bound analyses. All 69 starter-workspace songs now have expanded drafts. The Known by
 You draft explicitly identifies a Gateway text while flagging the catalog’s
 Elevation RHYTHM association; this mismatch is not treated as verified metadata. Their reports explicitly state the text selected;
 associated cover recordings are not claimed to have been listened to or verified.
@@ -89,5 +91,5 @@ The owner confirmed that public title-plus-lyrics searches are the available
 source approach. A shared SongSelect login was mentioned but was not used; no
 account credentials are needed for these public pages. The all-song request
 remains open and public-source research continues. The next step is to retrieve and identify the
-1,636 remaining texts and apply the same review, rather than fill those records
+1,588 remaining texts and apply the same review, rather than fill those records
 with title-based conjecture or repeat generic paragraphs as completed evaluations.

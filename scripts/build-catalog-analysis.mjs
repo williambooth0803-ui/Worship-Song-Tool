@@ -33,7 +33,7 @@ for(const song of allCatalogSongs){
  let analysisKey=null;
  if(source){
   const sourceURL=new URL(source.url);
-  if(sourceURL.protocol!=='https:'||sourceURL.username||sourceURL.password||!['github.com','integrityworship.com','cityalight.com','sovereigngracemusic.com','www.worshiptogether.com','www.mattpapa.com','www.stuarttownend.co.uk','www.jordankauflin.com','essentialworship.com','www.datocms-assets.com','bethelmusic.com','app.theworshipinitiative.com'].includes(sourceURL.hostname))throw new Error('Unsafe evidence source URL');
+  if(sourceURL.protocol!=='https:'||sourceURL.username||sourceURL.password||!['github.com','integrityworship.com','cityalight.com','sovereigngracemusic.com','www.worshiptogether.com','www.mattpapa.com','www.stuarttownend.co.uk','www.jordankauflin.com','essentialworship.com','www.datocms-assets.com','bethelmusic.com','app.theworshipinitiative.com','hymnary.org'].includes(sourceURL.hostname))throw new Error('Unsafe evidence source URL');
   analysisKey=hash(source.key+'|'+(notes?.title||'scan')).slice(0,20);
   if(!analyses[analysisKey]){
    const words=source.text.split(/\s+/),unique=new Set(source.lines.map(norm)),found=topics.filter(([,re])=>re.test(source.text)).map(([name])=>name);

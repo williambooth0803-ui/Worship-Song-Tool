@@ -1,11 +1,11 @@
 {
   "coverage": {
-    "assumed": 160,
+    "assumed": 188,
     "total": 2044,
-    "reviewed": 408,
+    "reviewed": 456,
     "textScans": 0,
-    "unresolved": 186,
-    "missing": 1448,
+    "unresolved": 185,
+    "missing": 1401,
     "partial": 2,
     "checkedAt": "2026-10-17"
   },
@@ -394,11 +394,11 @@
       "id": "catalog-may-the-mind-of-christ-my-savior",
       "title": "May the Mind of Christ My Savior",
       "author": "Kate B. Wilkinson",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "4160ebacfc5f44fe0bc0",
+      "sourceHash": "6ef384b4111319bf7a047eff441f26d22eec8c0719c4153ae53a62196741eb5b",
+      "sourceURL": "https://hymnary.org/text/may_the_mind_of_christ_my_savior",
+      "reason": null
     },
     {
       "id": "catalog-i-love-to-tell-the-story",
@@ -554,11 +554,11 @@
       "id": "catalog-man-of-sorrows-what-a-name",
       "title": "Man of Sorrows! What a Name",
       "author": "Philip P. Bliss",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "522947748ea183184e15",
+      "sourceHash": "b6778bcab504082a7229858824643b81627c8ac9547041fa10fdbcc431e0323a",
+      "sourceURL": "https://github.com/ChurchApps/WorshipCommonsContent/blob/d3362e1d7c7f4d3f98b9310bb07aa480453508c7/songs/en/hallelujah-what-a-savior-1hnEmwE1b17/sources/lyrics.chordpro",
+      "reason": null
     },
     {
       "id": "catalog-o-sacred-head-now-wounded",
@@ -584,11 +584,11 @@
       "id": "catalog-up-from-the-grave-he-arose",
       "title": "Up from the Grave He Arose",
       "author": "Robert Lowry",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "8fb55e182fa8a1f37a7b",
+      "sourceHash": "c63fccb86eacfe96ffd9b7255e9f8a1a429204367a2ae35a7ebb14099dd291e6",
+      "sourceURL": "https://github.com/ChurchApps/WorshipCommonsContent/blob/d3362e1d7c7f4d3f98b9310bb07aa480453508c7/songs/en/christ-arose-SfCJUXo-bOS/sources/lyrics.chordpro",
+      "reason": null
     },
     {
       "id": "catalog-i-know-that-my-redeemer-lives",
@@ -604,11 +604,11 @@
       "id": "catalog-dying-with-jesus-moment-by-moment",
       "title": "Dying with Jesus (Moment by Moment)",
       "author": "Daniel W. Whittle · May W. Moody",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "aeb752a6825882a16ef3",
+      "sourceHash": "51cfdab420f1fd5658237ec525440739e247c67cc39ed0d725cd466ae6f02006",
+      "sourceURL": "https://github.com/ChurchApps/WorshipCommonsContent/blob/d3362e1d7c7f4d3f98b9310bb07aa480453508c7/songs/en/moment-by-moment-Gx7dtPKLv_W/sources/lyrics.chordpro",
+      "reason": null
     },
     {
       "id": "catalog-in-christ-alone",
@@ -688,11 +688,11 @@
       "id": "catalog-come-behold-the-wondrous-mystery",
       "title": "Come Behold the Wondrous Mystery",
       "author": "Matt Boswell · Matt Papa · Michael Bleecker",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "9efdc0168e81d52196c6",
+      "sourceHash": "fc7721add45361079d4bf60462f1e825b346fbc0223e95765848243cfb4c68ba",
+      "sourceURL": "https://www.mattpapa.com/songs/come-behold-the-wondrous-mystery",
+      "reason": null
     },
     {
       "id": "catalog-he-will-hold-me-fast",
@@ -730,61 +730,61 @@
       "id": "catalog-o-church-arise",
       "title": "O Church Arise",
       "author": "Keith Getty · Stuart Townend",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "9807b650542716cf5ddc",
+      "sourceHash": "c7462924c247e304354ef2b0a81b43743e971de19272cef97146f0b4e7cd6418",
+      "sourceURL": "https://www.stuarttownend.co.uk/song/o-church-arise/",
+      "reason": null
     },
     {
       "id": "catalog-by-faith",
       "title": "By Faith",
       "author": "Keith Getty · Kristyn Getty · Stuart Townend",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "acf782928390a16eb46a",
+      "sourceHash": "2cb788c9731edec9cc76f69b2fe934aac7e411d4f24b65c236b538a9fbbe0e56",
+      "sourceURL": "https://www.stuarttownend.co.uk/song/by-faith/",
+      "reason": null
     },
     {
       "id": "catalog-there-is-a-higher-throne",
       "title": "There Is a Higher Throne",
       "author": "Keith Getty · Kristyn Getty",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "77af4b499b30d067d0f1",
+      "sourceHash": "23065e98a6c012afb164a695d344544685f8e42fffea2b27f6cf0e3677ea4b9c",
+      "sourceURL": "https://integrityworship.com/songs/there-is-a-higher-throne-keith-getty-kristyn-getty/",
+      "reason": null
     },
     {
       "id": "catalog-across-the-lands",
       "title": "Across the Lands",
       "author": "Keith Getty · Stuart Townend",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "df2a4caeb98a7f6ffcdd",
+      "sourceHash": "ca6a3f9ff797f931b6c71861ff2d5f7437c8240a3a374e838107cc46a2cd27b9",
+      "sourceURL": "https://www.stuarttownend.co.uk/song/across-the-lands/",
+      "reason": null
     },
     {
       "id": "catalog-my-worth-is-not-in-what-i-own",
       "title": "My Worth Is Not in What I Own",
       "author": "Associated recording: Keith & Kristyn Getty",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "dfc33de137ec01a0fb76",
+      "sourceHash": "451ba0551d565edb782d4a2252dacabf15fe2c20777610f2b812275857165cc9",
+      "sourceURL": "https://integrityworship.com/songs/my-worth-is-not-in-what-i-own-at-the-cross-keith-and-kristyn-getty/",
+      "reason": null
     },
     {
       "id": "catalog-the-lord-is-my-salvation",
       "title": "The Lord Is My Salvation",
       "author": "Associated recording: Keith & Kristyn Getty",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "2e9fa5d20fc8c0ac4d49",
+      "sourceHash": "f92d2269fd97c4af26e4443792a0a5f63e88bee018af016e6313607ad2de5a30",
+      "sourceURL": "https://integrityworship.com/songs/the-lord-is-my-salvation-keith-and-kristyn-getty/",
+      "reason": null
     },
     {
       "id": "catalog-behold-our-god",
@@ -801,41 +801,43 @@
       "id": "catalog-o-great-god",
       "title": "O Great God",
       "author": "Bob Kauflin",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "1e6c7499f6f6e0fe294b",
+      "identityAssumption": "The cited Sovereign Grace publisher text is selected. Exact words in associated recordings and optional live additions remain unverified.",
+      "sourceHash": "a6b20e7172754978fa100153f70eb30af57618b94703fda1e17b7ce52093bba4",
+      "sourceURL": "https://sovereigngracemusic.com/music/songs/o-great-god/",
+      "reason": null
     },
     {
       "id": "catalog-jesus-thank-you",
       "title": "Jesus, Thank You",
       "author": "Pat Sczebel",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "0ca720e541a304e1acef",
+      "identityAssumption": "The cited Sovereign Grace publisher text is selected. Exact words in associated recordings and optional live additions remain unverified.",
+      "sourceHash": "2029c32b697d0b1c70895e5dd4c0f99916cbdc8098b3bbf50496028c623d92a9",
+      "sourceURL": "https://sovereigngracemusic.com/music/songs/jesus-thank-you/",
+      "reason": null
     },
     {
       "id": "catalog-lord-from-sorrows-deep-i-call",
       "title": "Lord, from Sorrows Deep I Call",
       "author": "Matt Boswell · Matt Papa",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "ca1066652ea6c2ec0884",
+      "sourceHash": "3d44e0828470b64f5fae495db5be3a523f0319b73f4bd3422862c34845c8ab65",
+      "sourceURL": "https://www.mattpapa.com/songs/lord-from-sorrows-deep-i-call",
+      "reason": null
     },
     {
       "id": "catalog-christ-the-sure-and-steady-anchor",
       "title": "Christ the Sure and Steady Anchor",
       "author": "Matt Boswell · Matt Papa",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "c6427a6aa383cbff7b2b",
+      "sourceHash": "2f72dd521c72482365364c6ed2eb712d85ab5892f0dd64f6d2e40d62ae2bbeee",
+      "sourceURL": "https://www.mattpapa.com/songs/christ-the-sure-and-steady-anchor",
+      "reason": null
     },
     {
       "id": "catalog-i-will-wait-for-you-psalm-130",
@@ -881,142 +883,155 @@
       "id": "catalog-only-a-holy-god",
       "title": "Only a Holy God",
       "author": "Associated recording: CityAlight",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "50bfc67c1a70a05e33e9",
+      "identityAssumption": "The cited CityAlight text is selected; associated recording words remain unverified.",
+      "sourceHash": "e4d8820ff4a6f18569a8d5065d9ddc897d49e7cf6fabe245c4ffa4fe77d69f76",
+      "sourceURL": "https://cityalight.com/song/only-a-holy-god/",
+      "reason": null
     },
     {
       "id": "catalog-ancient-of-days",
       "title": "Ancient of Days",
       "author": "Associated recording: CityAlight · verify this version",
       "status": "reviewed-draft",
-      "analysisKey": "e3cf1557ae5a8cdc9a53",
-      "identityAssumption": "The cited writer/publisher text is selected as the usual song by this title. It does not verify the exact words in every associated recording.",
-      "sourceHash": "46238057091ac87b0f3dd044b0f8a442ed4f54dd230ff1bab2727b69f5a1cdc2",
-      "sourceURL": "https://integrityworship.com/songs/ancient-of-days-revere-1/",
+      "analysisKey": "cc29aeb3c8619efa4dbc",
+      "identityAssumption": "The cited CityAlight text is selected for this version. Exact words in associated recordings and optional live additions remain unverified.",
+      "sourceHash": "fc31ce399ea7ba68bcef523ec4198e2ee50c9affe1d32e7057ee7da23060b185",
+      "sourceURL": "https://cityalight.com/song/ancient-of-days/",
       "reason": null
     },
     {
       "id": "catalog-good-and-gracious-king",
       "title": "Good and Gracious King",
       "author": "Associated recording: CityAlight",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "cc05841ffdbd0d6df2b3",
+      "identityAssumption": "The cited CityAlight text is selected for this version. Exact words in associated recordings and optional live additions remain unverified.",
+      "sourceHash": "2280c8b3f7183fd5ae005b254ce55f30e222dc30915f56eaa8f34034edf91a04",
+      "sourceURL": "https://cityalight.com/song/good-and-gracious-king/",
+      "reason": null
     },
     {
       "id": "catalog-jesus-strong-and-kind",
       "title": "Jesus, Strong and Kind",
       "author": "Associated recording: CityAlight",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "b96746d6797ae307de8e",
+      "identityAssumption": "The cited CityAlight text is selected for this version. Exact words in associated recordings and optional live additions remain unverified.",
+      "sourceHash": "427bfd65d3346b68878e8eba4b21fd44714d80e12757d601e38eecaa1523ed35",
+      "sourceURL": "https://cityalight.com/song/jesus-strong-and-kind/",
+      "reason": null
     },
     {
       "id": "catalog-saved-my-soul",
       "title": "Saved My Soul",
       "author": "Associated recording: CityAlight",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "33904587152273082a9e",
+      "identityAssumption": "The cited CityAlight text is selected for this version. Exact words in associated recordings and optional live additions remain unverified.",
+      "sourceHash": "1958135550e2154532e3748cabe9dfdfd65671c852ee6cf31c1e9a267bb9e6dc",
+      "sourceURL": "https://cityalight.com/song/saved-my-soul/",
+      "reason": null
     },
     {
       "id": "catalog-christ-is-mine-forevermore",
       "title": "Christ Is Mine Forevermore",
       "author": "Associated recording: CityAlight",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "20776dcdbf6e8e1d09ee",
+      "identityAssumption": "The cited CityAlight text is selected for this version. Exact words in associated recordings and optional live additions remain unverified.",
+      "sourceHash": "399be6327aa73bdc96fdd576dd2f6c73f70e16a9ed4ca07b25814a80067bae29",
+      "sourceURL": "https://cityalight.com/song/christ-is-mine-forevermore/",
+      "reason": null
     },
     {
       "id": "catalog-on-that-day",
       "title": "On That Day",
       "author": "Associated recording: CityAlight",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "76145c4c5d497ed43b61",
+      "identityAssumption": "The cited CityAlight text is selected for this version. Exact words in associated recordings and optional live additions remain unverified.",
+      "sourceHash": "582eed0b23d5a85e900e6a144d97aab6a477d4f25ee4a98b6fa1d09a96a8a5dc",
+      "sourceURL": "https://cityalight.com/song/on-that-day/",
+      "reason": null
     },
     {
       "id": "catalog-there-is-one-gospel",
       "title": "There Is One Gospel",
       "author": "Associated recording: CityAlight",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "47aa6f4a2bad8c35bcdc",
+      "identityAssumption": "The cited CityAlight text is selected for this version. Exact words in associated recordings and optional live additions remain unverified.",
+      "sourceHash": "32a6b55d36afb472b3df4e9ec4027e4bef41321a331c6e765fc967acff7ad8f7",
+      "sourceURL": "https://cityalight.com/song/there-is-one-gospel/",
+      "reason": null
     },
     {
       "id": "catalog-grace",
       "title": "Grace",
       "author": "Associated recording: CityAlight · verify this version",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "6f48fa79defe6b64267a",
+      "identityAssumption": "The cited CityAlight text is selected for this version. Exact words in associated recordings and optional live additions remain unverified.",
+      "sourceHash": "461b4149e0bd7e6a685f8dcc86e61c7b6dd497f7e5b4151823c2b225a733bdda",
+      "sourceURL": "https://cityalight.com/song/grace/",
+      "reason": null
     },
     {
       "id": "catalog-turn-your-eyes",
       "title": "Turn Your Eyes",
       "author": "Associated recording: Sovereign Grace Music",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "b177cefb4c34f237c17e",
+      "identityAssumption": "The cited Sovereign Grace publisher text is selected. Exact words in associated recordings and optional live additions remain unverified.",
+      "sourceHash": "195812b960fc90d03ce330fc6d8f168a5e5324b3576b8644cd527f68a29a3abd",
+      "sourceURL": "https://sovereigngracemusic.com/music/songs/turn-your-eyes/",
+      "reason": null
     },
     {
       "id": "catalog-show-us-christ",
       "title": "Show Us Christ",
       "author": "Associated recording: Sovereign Grace Music",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "7fa2a703d98cdff76abf",
+      "identityAssumption": "The cited Sovereign Grace publisher text is selected. Exact words in associated recordings and optional live additions remain unverified.",
+      "sourceHash": "913c717de30d76faf385448a16f9ddc58b28f5907a9262319ff352ff66db58c5",
+      "sourceURL": "https://sovereigngracemusic.com/music/songs/show-us-christ/",
+      "reason": null
     },
     {
       "id": "catalog-let-your-kingdom-come",
       "title": "Let Your Kingdom Come",
       "author": "Bob Kauflin",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "6fece3b070b0bd485f82",
+      "identityAssumption": "The cited Sovereign Grace publisher text is selected. Exact words in associated recordings and optional live additions remain unverified.",
+      "sourceHash": "2ccaae9bcc3e78b33a974d597d247aeb7c91e8c43f3e3ee7835341c4af993c1d",
+      "sourceURL": "https://sovereigngracemusic.com/music/songs/let-your-kingdom-come/",
+      "reason": null
     },
     {
       "id": "catalog-the-glories-of-calvary",
       "title": "The Glories of Calvary",
       "author": "Steve & Vikki Cook",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "2816693956f088af884b",
+      "identityAssumption": "The cited Sovereign Grace publisher text is selected. Exact words in associated recordings and optional live additions remain unverified.",
+      "sourceHash": "d7d4e34e29081ef862c341241a4d94be0746a2842800ccf49f2dcaae1eec17f2",
+      "sourceURL": "https://sovereigngracemusic.com/music/songs/the-glories-of-calvary/",
+      "reason": null
     },
     {
       "id": "catalog-come-praise-and-glorify",
       "title": "Come Praise and Glorify",
       "author": "Associated recording: Sovereign Grace Music",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "24398d305a51dc7963aa",
+      "identityAssumption": "The cited Sovereign Grace publisher text is selected. Exact words in associated recordings and optional live additions remain unverified.",
+      "sourceHash": "0a9c2c58ce3619e0ade65cfad0a25d790be6f57020e03bccb05b892ad1afdd0b",
+      "sourceURL": "https://sovereigngracemusic.com/music/songs/come-praise-and-glorify/",
+      "reason": null
     },
     {
       "id": "catalog-10-000-reasons-bless-the-lord",
@@ -1600,11 +1615,11 @@
       "id": "catalog-ancient-of-days-blessing-and-honor",
       "title": "Ancient of Days (Blessing and Honor)",
       "author": "Gary Sadler · Jamie Harvill · associated recording: Ron Kenoly",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "b965d7c07872b1da539a",
+      "sourceHash": "46238057091ac87b0f3dd044b0f8a442ed4f54dd230ff1bab2727b69f5a1cdc2",
+      "sourceURL": "https://integrityworship.com/songs/ancient-of-days-revere-1/",
+      "reason": null
     },
     {
       "id": "catalog-days-of-elijah",
@@ -5649,91 +5664,100 @@
       "id": "expanded-god-is-for-us-cityalight",
       "title": "God Is for Us",
       "author": "Associated recording: CityAlight",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "d22fa89608d608ce793d",
+      "identityAssumption": "The cited CityAlight text is selected for this version. Exact words in associated recordings and optional live additions remain unverified.",
+      "sourceHash": "c4de51bb587092a5bf37ec7decbe0c0c3b037b9e0af1cad05507f2657e8d7d44",
+      "sourceURL": "https://cityalight.com/song/god-is-for-us/",
+      "reason": null
     },
     {
       "id": "expanded-it-was-finished-upon-that-cross-cityalight",
       "title": "It Was Finished Upon That Cross",
       "author": "Associated recording: CityAlight",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "166fc41a0b3bba207875",
+      "identityAssumption": "The cited CityAlight text is selected for this version. Exact words in associated recordings and optional live additions remain unverified.",
+      "sourceHash": "1043c56ead453b2d6a30e3a1f4fb757073d98c717e444b6567382d7097e3eca7",
+      "sourceURL": "https://cityalight.com/song/it-was-finished-upon-that-cross/",
+      "reason": null
     },
     {
       "id": "expanded-your-will-be-done-cityalight",
       "title": "Your Will Be Done",
       "author": "Associated recording: CityAlight",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "8f327e96f1d5d106fdee",
+      "identityAssumption": "The cited CityAlight text is selected for this version. Exact words in associated recordings and optional live additions remain unverified.",
+      "sourceHash": "9a031a0dbea04dfe19abdb402afed2266a5851bb535651fdb1f2093aee8803a6",
+      "sourceURL": "https://cityalight.com/song/your-will-be-done/",
+      "reason": null
     },
     {
       "id": "expanded-i-will-trust-my-saviour-jesus-cityalight",
       "title": "I Will Trust My Saviour Jesus",
       "author": "Associated recording: CityAlight",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "af64e49d53d2f9f619bc",
+      "identityAssumption": "The cited CityAlight text is selected for this version. Exact words in associated recordings and optional live additions remain unverified.",
+      "sourceHash": "36c5e577fb4faa8710554844571307888ba8716dce4a5b7905d9348c0846693a",
+      "sourceURL": "https://cityalight.com/song/i-will-trust-my-saviour-jesus/",
+      "reason": null
     },
     {
       "id": "expanded-known-and-loved-cityalight",
       "title": "Known and Loved",
       "author": "Associated recording: CityAlight",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "832735bc286b1f4188c3",
+      "identityAssumption": "The cited CityAlight text is selected for this version. Exact words in associated recordings and optional live additions remain unverified.",
+      "sourceHash": "6da50e79eb74687e92df0c676e902e86ea49343b6a70e51d30225ed2c63b1b13",
+      "sourceURL": "https://cityalight.com/song/known-and-loved/",
+      "reason": null
     },
     {
       "id": "expanded-all-my-ways-are-known-to-you-cityalight",
       "title": "All My Ways Are Known to You",
       "author": "Associated recording: CityAlight",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "b7ddfcffa178df1b027c",
+      "identityAssumption": "The cited CityAlight text is selected for this version. Exact words in associated recordings and optional live additions remain unverified.",
+      "sourceHash": "e726c07fe3937c391cce40e235be763abe4f02a7a3297b0c90c9713b0c519522",
+      "sourceURL": "https://cityalight.com/song/all-my-ways-are-known-to-you/",
+      "reason": null
     },
     {
       "id": "expanded-the-night-song-cityalight",
       "title": "The Night Song",
       "author": "Associated recording: CityAlight",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "cbe2ae85919d71633d1f",
+      "identityAssumption": "The cited CityAlight text is selected for this version. Exact words in associated recordings and optional live additions remain unverified.",
+      "sourceHash": "3ec0653718cd3df548d4778b194ff592dd51c4812bf483f3605c7f52d624b540",
+      "sourceURL": "https://cityalight.com/song/the-night-song/",
+      "reason": null
     },
     {
       "id": "expanded-the-love-of-the-father-cityalight",
       "title": "The Love of the Father",
       "author": "Associated recording: CityAlight",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "0c0045c9618c57e88acc",
+      "identityAssumption": "The cited CityAlight text is selected for this version. Exact words in associated recordings and optional live additions remain unverified.",
+      "sourceHash": "e3a4dc29f5453046e1613725add024d267133a8f1e9bf2635fcaebc08b5f268e",
+      "sourceURL": "https://cityalight.com/song/love-of-the-father/",
+      "reason": null
     },
     {
       "id": "expanded-jesus-is-alive-cityalight",
       "title": "Jesus Is Alive",
       "author": "Associated recording: CityAlight",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "64d86afcfdde2420beff",
+      "identityAssumption": "The cited CityAlight text is selected for this version. Exact words in associated recordings and optional live additions remain unverified.",
+      "sourceHash": "7e92439822c26e135a190a300ea782830cfbf6da7fbeef8fd5b55c915c68abdc",
+      "sourceURL": "https://cityalight.com/song/jesus-is-alive/",
+      "reason": null
     },
     {
       "id": "expanded-come-to-jesus-cityalight",
@@ -5759,11 +5783,12 @@
       "id": "expanded-my-god-is-all-i-need-cityalight",
       "title": "My God Is All I Need",
       "author": "Associated recording: CityAlight",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "60eee91817aa89204062",
+      "identityAssumption": "The cited CityAlight text is selected for this version. Exact words in associated recordings and optional live additions remain unverified. The publisher page includes the My God Is So Big section; check whether your recording includes that medley.",
+      "sourceHash": "22ad927c9920d7974653a840704e26a41c2d2fcc4e218222508dc83bffcf846c",
+      "sourceURL": "https://cityalight.com/song/my-god-is-all-i-need/",
+      "reason": null
     },
     {
       "id": "expanded-o-lord-my-rock-and-my-redeemer-sovereign-grace-music",
@@ -10192,31 +10217,31 @@
       "id": "artist-o-church-arise-stuart-townend",
       "title": "O Church, Arise",
       "author": "Associated recording: Stuart Townend",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "9807b650542716cf5ddc",
+      "sourceHash": "c7462924c247e304354ef2b0a81b43743e971de19272cef97146f0b4e7cd6418",
+      "sourceURL": "https://www.stuarttownend.co.uk/song/o-church-arise/",
+      "reason": null
     },
     {
       "id": "artist-by-faith-stuart-townend",
       "title": "By Faith",
       "author": "Associated recording: Stuart Townend",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "acf782928390a16eb46a",
+      "sourceHash": "2cb788c9731edec9cc76f69b2fe934aac7e411d4f24b65c236b538a9fbbe0e56",
+      "sourceURL": "https://www.stuarttownend.co.uk/song/by-faith/",
+      "reason": null
     },
     {
       "id": "artist-across-the-lands-stuart-townend",
       "title": "Across the Lands",
       "author": "Associated recording: Stuart Townend",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "df2a4caeb98a7f6ffcdd",
+      "sourceHash": "ca6a3f9ff797f931b6c71861ff2d5f7437c8240a3a374e838107cc46a2cd27b9",
+      "sourceURL": "https://www.stuarttownend.co.uk/song/across-the-lands/",
+      "reason": null
     },
     {
       "id": "artist-creation-sings-the-father-s-song-stuart-townend",
@@ -10312,11 +10337,11 @@
       "id": "artist-the-lord-is-my-salvation-stuart-townend",
       "title": "The Lord Is My Salvation",
       "author": "Associated recording: Stuart Townend",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "2e9fa5d20fc8c0ac4d49",
+      "sourceHash": "f92d2269fd97c4af26e4443792a0a5f63e88bee018af016e6313607ad2de5a30",
+      "sourceURL": "https://integrityworship.com/songs/the-lord-is-my-salvation-keith-and-kristyn-getty/",
+      "reason": null
     },
     {
       "id": "artist-how-shall-i-sing-that-majesty-stuart-townend",
@@ -13010,11 +13035,12 @@
       "id": "artist-let-your-kingdom-come-sandra-mccracken",
       "title": "Let Your Kingdom Come",
       "author": "Associated recording: Sandra McCracken",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "6fece3b070b0bd485f82",
+      "identityAssumption": "The cited Sovereign Grace publisher text is selected. Exact words in associated recordings and optional live additions remain unverified.",
+      "sourceHash": "2ccaae9bcc3e78b33a974d597d247aeb7c91e8c43f3e3ee7835341c4af993c1d",
+      "sourceURL": "https://sovereigngracemusic.com/music/songs/let-your-kingdom-come/",
+      "reason": null
     },
     {
       "id": "artist-my-help-my-god-sandra-mccracken",
@@ -15319,11 +15345,12 @@
       "id": "artist-this-is-the-day-cityalight",
       "title": "This Is the Day",
       "author": "Associated recording: CityAlight",
-      "status": "identity-unresolved",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "Title candidates lack sufficient identity evidence."
+      "status": "reviewed-draft",
+      "analysisKey": "b21526a06dff69cc7edd",
+      "identityAssumption": "The cited CityAlight text is selected for this version. Exact words in associated recordings and optional live additions remain unverified.",
+      "sourceHash": "bf372480287b0c0576655e899a8d52c64d7b7b2e20098ae2f6e20277eb2f27f8",
+      "sourceURL": "https://cityalight.com/song/this-is-the-day/",
+      "reason": null
     },
     {
       "id": "artist-blessed-assurance-cityalight",
@@ -16014,11 +16041,11 @@
       "id": "artist-come-behold-the-wondrous-mystery-shane-shane-the-worship-initiative",
       "title": "Come Behold the Wondrous Mystery",
       "author": "Associated recording: Shane & Shane · The Worship Initiative",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "9efdc0168e81d52196c6",
+      "sourceHash": "fc7721add45361079d4bf60462f1e825b346fbc0223e95765848243cfb4c68ba",
+      "sourceURL": "https://www.mattpapa.com/songs/come-behold-the-wondrous-mystery",
+      "reason": null
     },
     {
       "id": "artist-in-christ-alone-shane-shane-the-worship-initiative",
@@ -16150,21 +16177,22 @@
       "id": "artist-only-a-holy-god-shane-shane-the-worship-initiative",
       "title": "Only a Holy God",
       "author": "Associated recording: Shane & Shane · The Worship Initiative",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "50bfc67c1a70a05e33e9",
+      "identityAssumption": "The cited CityAlight text is selected; associated recording words remain unverified.",
+      "sourceHash": "e4d8820ff4a6f18569a8d5065d9ddc897d49e7cf6fabe245c4ffa4fe77d69f76",
+      "sourceURL": "https://cityalight.com/song/only-a-holy-god/",
+      "reason": null
     },
     {
       "id": "artist-ancient-of-days-shane-shane-the-worship-initiative",
       "title": "Ancient of Days",
       "author": "Associated recording: Shane & Shane · The Worship Initiative",
       "status": "reviewed-draft",
-      "analysisKey": "e3cf1557ae5a8cdc9a53",
-      "identityAssumption": "The cited writer/publisher text is selected as the usual song by this title. It does not verify the exact words in every associated recording.",
-      "sourceHash": "46238057091ac87b0f3dd044b0f8a442ed4f54dd230ff1bab2727b69f5a1cdc2",
-      "sourceURL": "https://integrityworship.com/songs/ancient-of-days-revere-1/",
+      "analysisKey": "7c7e55a979eda0e00794",
+      "identityAssumption": "The cited CityAlight text is selected for this version. Exact words in associated recordings and optional live additions remain unverified.",
+      "sourceHash": "fc31ce399ea7ba68bcef523ec4198e2ee50c9affe1d32e7057ee7da23060b185",
+      "sourceURL": "https://cityalight.com/song/ancient-of-days/",
       "reason": null
     },
     {
@@ -19852,11 +19880,11 @@
       "id": "artist-come-behold-the-wondrous-mystery-matt-boswell-matt-papa",
       "title": "Come Behold the Wondrous Mystery",
       "author": "Associated recording: Matt Boswell & Matt Papa",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "9efdc0168e81d52196c6",
+      "sourceHash": "fc7721add45361079d4bf60462f1e825b346fbc0223e95765848243cfb4c68ba",
+      "sourceURL": "https://www.mattpapa.com/songs/come-behold-the-wondrous-mystery",
+      "reason": null
     },
     {
       "id": "artist-god-the-uncreated-one-matt-boswell-matt-papa",

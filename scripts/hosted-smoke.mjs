@@ -369,6 +369,14 @@ try {
   console.log(
     "PASS: hosted subdirectory assets, static edition without API calls, backup download, invalid import rejection, cancel preservation, confirmed restore, reload and mobile controls.",
   );
+} catch (error) {
+  // Keep the actual browser failure readable through the Checks API even when
+  // the runner's separate log-storage host cannot be reached.
+  if (process.env.GITHUB_ACTIONS) {
+    const message = String(error.stack || error).replaceAll('%', '%25').replaceAll('\r', '%0D').replaceAll('\n', '%0A');
+    console.error(`::error title=Hosted browser regression::${message}`);
+  }
+  throw error;
 } finally {
   await browser.close();
   await new Promise((resolve) => server.close(resolve));
