@@ -78,7 +78,21 @@ representative inherited dialogs were visually inspected. The final local count
 is **32,410 source/check lines**, excluding generated docs copies.
 
 Both initial milestones (`7188038`, `8be6b54`) were pushed to the progress branch.
-Publication/CI/deployment/live readback remain pending at this checkpoint.
+Release `85265bd` was pushed to `main` after fetching and confirming no newer
+remote changes. [Pages deployment](https://github.com/williambooth0803-ui/Worship-Song-Tool/actions/runs/39040435613)
+succeeded. Eleven deployed frontend files exactly match the checked build.
+The new rebuild fixture passed live in Chromium with TLS verification enabled:
+public About without guest/storage activation; navigation/criteria context;
+criteria discard/cancel; override/request guards; exclusion-safe plan insertion
+and export; continuous numbering; picker search/selection status; and all four
+viewport sizes. The retained request regression also passed live. These used
+disposable browser-only storage and intercepted image-provider requests, with no
+real account writes or email messages.
+[Release CI](https://github.com/williambooth0803-ui/Worship-Song-Tool/actions/runs/39040435961)
+succeeded: all 121 unit/database tests, MCP type checking, scale checks, the
+full hosted browser suite and generated-file/code-count consistency passed.
+This publication record is a documentation-only follow-up; frontend release
+`85265bd` is deployed and verified.
 Browser image/provider fixtures do not prove real image or email delivery,
 physical Safari/biometrics or actual account autosave recovery. These external
 checks remain outstanding; no real account records or email deliveries were
