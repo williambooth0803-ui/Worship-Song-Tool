@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {allCatalogSongs,syncCatalog,CATALOG_REVISION} from '../public/catalog.js';
+import {allCatalogSongs,catalogSongs,syncCatalog,CATALOG_REVISION} from '../public/catalog.js';
 import {catalogAnalysisData as data} from '../public/catalog-analysis-data.js';
 import {catalogAnalysisFor,catalogAnalysisMarkup,enrichCatalogEvaluation,validateLyricExcerpt} from '../public/catalog-analysis.js';
 import {defaultProfile} from '../public/core.js';
@@ -19,6 +19,14 @@ test('new source-supported drafts carry lyric reasons and leave unresolved recor
  const song=allCatalogSongs.find(s=>s.title==='I Sing the Mighty Power of God');assert.equal(song.review.status,'ai');assert.ok(song.review.claims.length>=3);assert.ok(song.review.sources.length);assert.equal(song.review.scores.time,null);
  const unknown=allCatalogSongs.find(s=>data.records[s.id].status==='missing-text'&&s.review.status==='unreviewed');assert.ok(unknown);assert.ok(Object.values(unknown.review.scores).every(s=>s===null));assert.equal(unknown.review.summary,'');assert.deepEqual(unknown.themes,[]);
  for(const s of allCatalogSongs.filter(s=>data.records[s.id].status==='partial-text'))assert.equal(s.review.status,'unreviewed');
+});
+test('every starter record has expanded reasons and ambiguous modern wording retains its source context',()=>{
+ assert.ok(catalogSongs.every(song=>data.records[song.id].status==='reviewed-draft'));
+ const jireh=catalogAnalysisFor(allCatalogSongs.find(s=>s.title==='Jireh'));
+ assert.equal(jireh.analysis.quote,'So I am enough');assert.match(jireh.analysis.concerns.join(' '),/self-sufficiency/);
+ const known=catalogAnalysisFor(allCatalogSongs.find(s=>s.id==='expanded-known-by-you-elevation-rhythm'));
+ assert.match(known.identityAssumption,/Gateway.*Elevation RHYTHM/);assert.match(known.identityAssumption,/does not verify/);
+ assert.match(known.analysis.source.url,/known-by-you-gateway-worship/);
 });
 test('same-title texts remain separate, and identity edits, AI visibility and dismissal prevent stale catalog analysis',()=>{
  const lowry=allCatalogSongs.find(s=>s.id==='catalog-nothing-but-the-blood'),redman=allCatalogSongs.find(s=>s.id==='artist-nothing-but-the-blood-matt-redman');

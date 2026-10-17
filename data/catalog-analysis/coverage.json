@@ -1,11 +1,11 @@
 {
   "coverage": {
-    "assumed": 135,
+    "assumed": 160,
     "total": 2044,
-    "reviewed": 382,
+    "reviewed": 408,
     "textScans": 0,
-    "unresolved": 189,
-    "missing": 1471,
+    "unresolved": 186,
+    "missing": 1448,
     "partial": 2,
     "checkedAt": "2026-10-17"
   },
@@ -164,11 +164,11 @@
       "id": "doxology",
       "title": "Praise God, from Whom All Blessings Flow",
       "author": "Thomas Ken · traditional tune: OLD HUNDREDTH",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "ad7806a7097114ed2063",
+      "sourceHash": "30c9222775d022fa30c3589922e29440b179aa2d96c1a5a873299ec2a534a154",
+      "sourceURL": "https://github.com/ChurchApps/WorshipCommonsContent/blob/d3362e1d7c7f4d3f98b9310bb07aa480453508c7/songs/en/doxology-2F9k4IkmoHX/sources/lyrics.chordpro",
+      "reason": null
     },
     {
       "id": "rock-of-ages",
@@ -698,11 +698,12 @@
       "id": "catalog-he-will-hold-me-fast",
       "title": "He Will Hold Me Fast",
       "author": "Ada R. Habershon · modern setting: Matt Merker",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "1491be96f9b9c6fbc44c",
+      "identityAssumption": "The cited writer/publisher text is selected as the usual song by this title. It does not verify the exact words in every associated recording.",
+      "sourceHash": "937eae971ac1f0e9cca6d0d6b43233d288a7628c14962240668169b13fadb4c9",
+      "sourceURL": "https://sovereigngracemusic.com/music/songs/he-will-hold-me-fast/",
+      "reason": null
     },
     {
       "id": "catalog-all-i-have-is-christ",
@@ -718,11 +719,12 @@
       "id": "catalog-christ-our-hope-in-life-and-death",
       "title": "Christ Our Hope in Life and Death",
       "author": "Associated recording: Keith & Kristyn Getty",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "0059aca471113e684122",
+      "identityAssumption": "The cited writer/publisher text is selected as the usual song by this title. It does not verify the exact words in every associated recording.",
+      "sourceHash": "3e5aa0ecfa3547ea7b482b4faf51d6b356920a57ec706c7469c3c70972f62145",
+      "sourceURL": "https://www.jordankauflin.com/christ-our-hope-in-life-and-death",
+      "reason": null
     },
     {
       "id": "catalog-o-church-arise",
@@ -788,11 +790,12 @@
       "id": "catalog-behold-our-god",
       "title": "Behold Our God",
       "author": "Associated recording: Sovereign Grace Music",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "a10551c8c5cb3329fe40",
+      "identityAssumption": "The cited writer/publisher text is selected as the usual song by this title. It does not verify the exact words in every associated recording.",
+      "sourceHash": "3f23422ea20cc6b8ea2f1a986754ea865668603b3e05f99be7f2cb6a8dc76539",
+      "sourceURL": "https://sovereigngracemusic.com/music/songs/behold-our-god-who-has-held-the-oceans/",
+      "reason": null
     },
     {
       "id": "catalog-o-great-god",
@@ -2267,31 +2270,34 @@
       "id": "modern-worthy-elevation-worship",
       "title": "Worthy",
       "author": "Associated recording: Elevation Worship",
-      "status": "identity-unresolved",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "Title candidates lack sufficient identity evidence."
+      "status": "reviewed-draft",
+      "analysisKey": "b77da32296e16309bda8",
+      "identityAssumption": "The cited publisher text is selected for this song. Exact recording words and optional live additions remain unverified.",
+      "sourceHash": "59965dfaca005c1ff11aa79f7ce22612d4a89804606b955325eef8890075502e",
+      "sourceURL": "https://www.datocms-assets.com/60663/1643919610-hhbe_lyrics_worthy.pdf",
+      "reason": null
     },
     {
       "id": "modern-lion-elevation-worship",
       "title": "LION",
       "author": "Associated recording: Elevation Worship",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "e9b6a6f2ae4116ed7d7a",
+      "identityAssumption": "The cited publisher text is selected for this song. Exact recording words and optional live additions remain unverified.",
+      "sourceHash": "2d69559e979b872d129652fe840e7fd1d43bd4d1320e773f6d9a1405f6c7dbdb",
+      "sourceURL": "https://essentialworship.com/songs/elevation-worship/lion/",
+      "reason": null
     },
     {
       "id": "modern-jireh-elevation-worship-maverick-city-music",
       "title": "Jireh",
       "author": "Associated recording: Elevation Worship · Maverick City Music",
-      "status": "identity-unresolved",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "Title candidates lack sufficient identity evidence."
+      "status": "reviewed-draft",
+      "analysisKey": "c32d33f70a1eb6982876",
+      "identityAssumption": "The cited publisher text is selected for this song. Exact recording words and optional live additions remain unverified.",
+      "sourceHash": "e8d63dc0e8199872c4624e6945e58a61278a148290a8ebc18c3145b9155dbad2",
+      "sourceURL": "https://essentialworship.com/songs/elevation-worship/jireh/",
+      "reason": null
     },
     {
       "id": "modern-more-than-able-elevation-worship",
@@ -2307,31 +2313,34 @@
       "id": "modern-million-little-miracles-elevation-worship-maverick-city-music",
       "title": "Million Little Miracles",
       "author": "Associated recording: Elevation Worship · Maverick City Music",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "7ffabcd002b580fc3726",
+      "identityAssumption": "The cited publisher text is selected for this song. Exact recording words and optional live additions remain unverified.",
+      "sourceHash": "0651b1959c18d2a908ed87dfb001a340fa7f5b34a3938a684cba39260e1ccf75",
+      "sourceURL": "https://essentialworship.com/songs/elevation-worship/million-little-miracles/",
+      "reason": null
     },
     {
       "id": "modern-no-longer-slaves-bethel-music-jonathan-david-and-melissa-helser",
       "title": "No Longer Slaves",
       "author": "Associated recording: Bethel Music · Jonathan David and Melissa Helser",
-      "status": "identity-unresolved",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "Title candidates lack sufficient identity evidence."
+      "status": "reviewed-draft",
+      "analysisKey": "94d058b99be1dda33ba2",
+      "identityAssumption": "The cited publisher text is selected for this song. Exact recording words and optional live additions remain unverified.",
+      "sourceHash": "d3e56d746870a995265fc192472147f67cca87235e78b9725ab65ef2d9f9d622",
+      "sourceURL": "https://bethelmusic.com/resources/peace/no-longer-slaves",
+      "reason": null
     },
     {
       "id": "modern-it-is-well-through-it-all-bethel-music-kristene-dimarco",
       "title": "It Is Well (Through It All)",
       "author": "Associated recording: Bethel Music · Kristene DiMarco",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "b0bfbc81cd0188c243df",
+      "identityAssumption": "The cited publisher text is selected for this song. Exact recording words and optional live additions remain unverified.",
+      "sourceHash": "59dbf45edfee9849bd082916ee6e5a255d18104eaaa4dfa21dbd86f28703da61",
+      "sourceURL": "https://bethelmusic.com/resources/peace-vol-ii/it-is-well",
+      "reason": null
     },
     {
       "id": "modern-the-lion-and-the-lamb-leeland-bethel-music",
@@ -2437,51 +2446,56 @@
       "id": "modern-psalm-46-lord-of-hosts-shane-shane-the-worship-initiative",
       "title": "Psalm 46 (Lord of Hosts)",
       "author": "Associated recording: Shane & Shane · The Worship Initiative",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "ef1eb9b387bb3fd01ec3",
+      "identityAssumption": "The cited publisher text is selected for this song. Exact recording words and optional live additions remain unverified.",
+      "sourceHash": "0419bf580d98edae7dff78352404eb33139fc5627226ebb07b13e5a6af10f453",
+      "sourceURL": "https://app.theworshipinitiative.com/songs/psalm-46-lord-of-hosts/instrument/chart",
+      "reason": null
     },
     {
       "id": "modern-psalm-23-surely-goodness-surely-mercy-shane-shane-the-worship-initiative",
       "title": "Psalm 23 (Surely Goodness, Surely Mercy)",
       "author": "Associated recording: Shane & Shane · The Worship Initiative",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "832f4214247bd353f3d7",
+      "identityAssumption": "The cited publisher text is selected for this song. Exact recording words and optional live additions remain unverified.",
+      "sourceHash": "0290f1d3838383b072f7eb72e39e1cf22c88fff7c1054aecf87352a27681c182",
+      "sourceURL": "https://app.theworshipinitiative.com/songs/psalm-23-surely-goodness-surely-mercy/instrument/chart",
+      "reason": null
     },
     {
       "id": "modern-psalm-34-taste-and-see-shane-shane-the-worship-initiative",
       "title": "Psalm 34 (Taste and See)",
       "author": "Associated recording: Shane & Shane · The Worship Initiative",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "f7d8bad8759c65717e43",
+      "identityAssumption": "The cited publisher text is selected for this song. Exact recording words and optional live additions remain unverified.",
+      "sourceHash": "befb02ce4aeeff784d69031057ae789ff41a699dfe5460280fca471fed3b6bb2",
+      "sourceURL": "https://www.worshiptogether.com/songs/psalm-34-taste-and-see-shane-shane/",
+      "reason": null
     },
     {
       "id": "modern-psalm-90-satisfy-us-with-your-love-shane-shane-the-worship-initiative",
       "title": "Psalm 90 (Satisfy Us with Your Love)",
       "author": "Associated recording: Shane & Shane · The Worship Initiative",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "cd3b224e45a4f99ac031",
+      "identityAssumption": "The cited publisher text is selected for this song. Exact recording words and optional live additions remain unverified.",
+      "sourceHash": "7306df4757df295c4561ddcf317070d37c4895d2c3627538eebfdc11e4b0fc2a",
+      "sourceURL": "https://www.worshiptogether.com/songs/psalm-90-satisfy-us-with-your-love-shane-shane/",
+      "reason": null
     },
     {
       "id": "modern-psalm-145-the-lord-is-gracious-and-compassionate-shane-shane-the-worship-initiative",
       "title": "Psalm 145 (The Lord Is Gracious and Compassionate)",
       "author": "Associated recording: Shane & Shane · The Worship Initiative",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "194e13fe9c01109b8600",
+      "identityAssumption": "The cited Shane & Shane Psalm 145 Lite text is selected. Check the expanded catalog subtitle and the exact recording; the source chorus says gracious and slow to anger.",
+      "sourceHash": "5195c01b52a2d68c669d0e87c831f4ed7a8316189addd46f6116579ff9ffb65f",
+      "sourceURL": "https://app.theworshipinitiative.com/songs/psalm-145-lite/instrument/chart",
+      "reason": null
     },
     {
       "id": "modern-glorious-christ-sovereign-grace-music",
@@ -2498,21 +2512,23 @@
       "id": "modern-he-is-our-god-sovereign-grace-music",
       "title": "He Is Our God",
       "author": "Associated recording: Sovereign Grace Music",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "4baabbd291838b2afeb3",
+      "identityAssumption": "The cited writer/publisher text is selected as the usual song by this title. It does not verify the exact words in every associated recording.",
+      "sourceHash": "ef6498fdd138f4ce0bee54e3b03bfff28ceba8a535a2488baaff11f3372401a0",
+      "sourceURL": "https://sovereigngracemusic.com/music/songs/he-is-our-god/",
+      "reason": null
     },
     {
       "id": "modern-christ-exalted-is-our-song-sovereign-grace-music",
       "title": "Christ Exalted Is Our Song",
       "author": "Associated recording: Sovereign Grace Music",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "274e68f63b364e90f26a",
+      "identityAssumption": "The cited writer/publisher text is selected as the usual song by this title. It does not verify the exact words in every associated recording.",
+      "sourceHash": "88ddef67da3ffcf713dc5a61aca2bb9af9f6be6336ac0fab319ecdac3e9df450",
+      "sourceURL": "https://sovereigngracemusic.com/music/songs/christ-exalted-is-our-song/",
+      "reason": null
     },
     {
       "id": "modern-all-glory-be-to-christ-kings-kaleidoscope",
@@ -2688,41 +2704,45 @@
       "id": "expanded-goodbye-yesterday-elevation-rhythm",
       "title": "Goodbye Yesterday",
       "author": "Associated recording: Elevation RHYTHM",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "aea5082f017027f0b1ae",
+      "identityAssumption": "The cited publisher text is selected for this song. Exact recording words and optional live additions remain unverified.",
+      "sourceHash": "882b09d22b3597cf57d4559cd616dd1629f43198744809f65026be2aacd4abcb",
+      "sourceURL": "https://www.datocms-assets.com/60663/1714511512-elevationrhythm_goodbye-yesterday_lyrics.pdf",
+      "reason": null
     },
     {
       "id": "expanded-washed-elevation-rhythm",
       "title": "Washed",
       "author": "Associated recording: Elevation RHYTHM",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "aba48a0fe3d9686b73d9",
+      "identityAssumption": "The cited publisher text is selected for this song. Exact recording words and optional live additions remain unverified.",
+      "sourceHash": "e55f2fa20812503f9e5ece1ef6eab7c1221a743c8910d3aaded5c1e37797e1af",
+      "sourceURL": "https://www.datocms-assets.com/60663/1758224360-elevationrhythm_washed_lyrics.pdf",
+      "reason": null
     },
     {
       "id": "expanded-at-the-altar-elevation-rhythm",
       "title": "At the Altar",
       "author": "Associated recording: Elevation RHYTHM",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "a3ec338962c73d464d9b",
+      "identityAssumption": "The cited publisher text is selected for this song. Exact recording words and optional live additions remain unverified.",
+      "sourceHash": "f0a4c21f733040132aec018afc29d949d472c4a4a96b377bad648e1e60e2dea4",
+      "sourceURL": "https://essentialworship.com/songs/elevation-rhythm/at-the-altar/",
+      "reason": null
     },
     {
       "id": "expanded-known-by-you-elevation-rhythm",
       "title": "Known by You",
       "author": "Associated recording: Elevation RHYTHM",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "3a1d52600235d0cecc22",
+      "identityAssumption": "The public lyric source identifies Gateway Worship, while this catalog record lists Elevation RHYTHM. This draft assumes the Gateway text; the artist association needs correction or a different text must be supplied. It does not verify an Elevation RHYTHM recording.",
+      "sourceHash": "4af7a9d05c0ae2bf53500e2bbefd4f55c1abdf1d5dc8e8778bfb9d4c220d50d2",
+      "sourceURL": "https://www.worshiptogether.com/songs/known-by-you-gateway-worship/",
+      "reason": null
     },
     {
       "id": "expanded-praises-elevation-rhythm",
@@ -2888,11 +2908,12 @@
       "id": "expanded-good-plans-red-rocks-worship",
       "title": "Good Plans",
       "author": "Associated recording: Red Rocks Worship",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "b50fee4cf926a76d770a",
+      "identityAssumption": "The cited publisher text is selected for this song. Exact recording words and optional live additions remain unverified.",
+      "sourceHash": "b24dbad4a720eb08a0941e12ec0ea807c7d0f9f660a03d78506c158394c47fc5",
+      "sourceURL": "https://essentialworship.com/songs/red-rocks-worship/good-plans/",
+      "reason": null
     },
     {
       "id": "expanded-breakthrough-red-rocks-worship",
@@ -6478,11 +6499,12 @@
       "id": "expanded-you-ve-already-won-shane-shane-the-worship-initiative",
       "title": "You've Already Won",
       "author": "Associated recording: Shane & Shane · The Worship Initiative",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "46addefc9a7e97b1f45e",
+      "identityAssumption": "The cited publisher text is selected for this song. Exact recording words and optional live additions remain unverified.",
+      "sourceHash": "d439e99e1aa031b1ec1c6ec6dffbcb9e2a32ad844c08b68dc87f9e44fcf2a564",
+      "sourceURL": "https://www.worshiptogether.com/songs/youve-already-won-shane-shane/?nav=1",
+      "reason": null
     },
     {
       "id": "expanded-all-sufficient-merit-shane-shane-the-worship-initiative",
@@ -16012,11 +16034,12 @@
       "id": "artist-he-will-hold-me-fast-shane-shane-the-worship-initiative",
       "title": "He Will Hold Me Fast",
       "author": "Associated recording: Shane & Shane · The Worship Initiative",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "1491be96f9b9c6fbc44c",
+      "identityAssumption": "The cited writer/publisher text is selected as the usual song by this title. It does not verify the exact words in every associated recording.",
+      "sourceHash": "937eae971ac1f0e9cca6d0d6b43233d288a7628c14962240668169b13fadb4c9",
+      "sourceURL": "https://sovereigngracemusic.com/music/songs/he-will-hold-me-fast/",
+      "reason": null
     },
     {
       "id": "artist-his-mercy-is-more-shane-shane-the-worship-initiative",
@@ -16106,11 +16129,12 @@
       "id": "artist-christ-our-hope-in-life-and-death-shane-shane-the-worship-initiative",
       "title": "Christ Our Hope in Life and Death",
       "author": "Associated recording: Shane & Shane · The Worship Initiative",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "0059aca471113e684122",
+      "identityAssumption": "The cited writer/publisher text is selected as the usual song by this title. It does not verify the exact words in every associated recording.",
+      "sourceHash": "3e5aa0ecfa3547ea7b482b4faf51d6b356920a57ec706c7469c3c70972f62145",
+      "sourceURL": "https://www.jordankauflin.com/christ-our-hope-in-life-and-death",
+      "reason": null
     },
     {
       "id": "artist-jesus-strong-and-kind-shane-shane-the-worship-initiative",
@@ -16509,11 +16533,12 @@
       "id": "artist-lion-brandon-lake",
       "title": "LION",
       "author": "Associated recording: Brandon Lake",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "e9b6a6f2ae4116ed7d7a",
+      "identityAssumption": "The cited publisher text is selected for this song. Exact recording words and optional live additions remain unverified.",
+      "sourceHash": "2d69559e979b872d129652fe840e7fd1d43bd4d1320e773f6d9a1405f6c7dbdb",
+      "sourceURL": "https://essentialworship.com/songs/elevation-worship/lion/",
+      "reason": null
     },
     {
       "id": "artist-honey-in-the-rock-brandon-lake",
