@@ -688,7 +688,7 @@ function workspaceTabs() {
   const tabs = ["discover","collections"].includes(view) ? [["discover","Songs"],["collections","Collections"]]
     : ["evaluate","index","profile"].includes(view) ? [["evaluate","Song workspace"],["index","Song index"],["profile","Evaluation criteria"]]
     : ["library","blacklist"].includes(view) ? [["library","Libraries"],["blacklist","No Approval"]] : [];
-  return tabs.length ? `<nav class="workspace-tabs" aria-label="Workspace sections">${tabs.map(([id,label])=>`<button class="button ${view===id?'selected':''}" data-action="nav" data-view="${id}" ${view===id?'aria-current="page"':''}>${label}</button>`).join("")}</nav>` : "";
+  return tabs.length ? `<nav class="workspace-tabs" aria-label="Workspace sections">${tabs.map(([id,label])=>`<button class="workspace-tab ${view===id?'selected':''}" data-action="nav" data-view="${id}" ${view===id?'aria-current="page"':''}>${label}</button>`).join("")}</nav>` : "";
 }
 function render() {
   cancelSearchUpdate();browseCache=null;

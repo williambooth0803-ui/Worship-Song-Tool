@@ -688,8 +688,14 @@ button.setting-row:disabled { opacity: .55; cursor: default; }
   .song-card h3 { font-size: 17px; }
 }
 
-.workspace-tabs { display:flex; flex-wrap:wrap; gap:8px; margin:0 0 20px; }
-.workspace-tabs .selected { background:var(--forest,#244a38); color:white; }
+/* Page sections use an attached tab edge, distinct from action buttons. */
+.workspace-tabs { display:flex; flex-wrap:nowrap; align-items:stretch; gap:4px; margin:0 0 20px; padding:0 2px; border-bottom:1px solid #b9ccbf; overflow-x:auto; scrollbar-width:thin; }
+.workspace-tab { appearance:none; flex:0 0 auto; position:relative; min-height:44px; padding:12px 18px; border:1px solid transparent; border-bottom:0; border-radius:9px 9px 0 0; background:transparent; color:var(--muted); font:500 14px/1.4 var(--sans); white-space:nowrap; cursor:pointer; box-shadow:none; }
+.workspace-tab:hover { background:#eaf0e8; color:var(--ink); }
+.workspace-tab.selected { border-color:#b9ccbf; border-top:3px solid var(--green); padding-top:10px; background:white; color:var(--green); font-weight:700; }
+.workspace-tab.selected::after { content:""; position:absolute; inset:auto 0 -1px; height:2px; background:white; }
+.workspace-tab:focus-visible { outline:2px solid var(--green); outline-offset:-5px; }
+@media (prefers-reduced-motion:no-preference) { .workspace-tab { transition:background 120ms ease; } }
 .settings-gear { font-size:23px; line-height:1; min-width:44px; padding:10px; }
 .about-page { max-width:760px; margin-inline:auto; line-height:1.7; overflow-wrap:anywhere; }
 .about-page h1 { line-height:1.15; }
@@ -710,7 +716,8 @@ button.setting-row:disabled { opacity: .55; cursor: default; }
   .topbar { padding:10px 12px; gap:8px; }
   .topbar-actions { gap:6px; flex-wrap:wrap; }
   .workspace-tabs { gap:6px; margin-bottom:14px; }
-  .workspace-tabs .button { padding:9px 10px; font-size:13px; }
+  .workspace-tabs .workspace-tab { padding:10px 12px; font-size:13px; }
+  .workspace-tabs .workspace-tab.selected { padding-top:8px; }
   .detail-panel { padding:16px 12px; border-radius:14px; }
   .song-title h2 { font-size:25px; }
   .song-tabs { margin-top:12px; }

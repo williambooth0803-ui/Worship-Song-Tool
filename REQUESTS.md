@@ -6,6 +6,18 @@ do not treat a new prompt as cancellation unless the owner says so. Mark an item
 complete only with implementation and meaningful verification. Record external
 blockers explicitly. Preserve personal assessments, recordings and workspaces.
 
+## Distinct page tabs and deeper catalog evaluations
+
+- [x] Restyle page-section navigation as connected tabs, with a shared baseline,
+  selected panel edge, top accent, keyboard focus and a bounded mobile strip.
+  Existing 32-state rebuild/navigation/preservation fixture passed after the change.
+- [ ] Pre-run a deeper, lyric-evidenced analysis for every one of the 2,044 song/version
+  records: explain ratings, identify concerns with short quotations, list themes,
+  and include supported Scripture quotations/connections. Preserve human assessments.
+  Source audit: 279 existing numeric drafts, 1,797 distinct normalized titles;
+  most records lack a checked lyric text. Public texts are being audited by identity.
+  No missing text is being replaced with invented lyrics, ratings or Scripture links.
+
 ## October 17 rebuild from the working remote save
 
 Starting point: clean `39904b9`; GitHub default `main` was inspected and fetched
