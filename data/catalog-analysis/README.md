@@ -4,7 +4,7 @@ The owner's request is for a deeper first-pass evaluation of **every** catalog
 song. This work has not yet completed that goal. `coverage.json` contains all
 2,044 song/version records and their precise status, source URL and text hash.
 
-- **479 expanded drafts:** three separate criterion reasons, themes, source
+- **486 expanded drafts:** three separate criterion reasons, themes, source
   provenance, short exact excerpts for specific wording concerns, and KJV
   supporting comparisons. Some records share the same underlying text.
 - **0 partial/suspect texts remain in this batch:** a complete music-resource
@@ -14,11 +14,11 @@ song. This work has not yet completed that goal. `coverage.json` contains all
   rather than penalizing an apparent copying error or inventing missing verses.
 - **184 unresolved identities:** title candidates exist, but the audit has not
   established that they belong to the record's song/text.
-- **1,381 unmatched texts:** no match was found in the collections audited. This
+- **1,374 unmatched texts:** no match was found in the collections audited. This
   does not prove that a reliable text is unavailable elsewhere.
 
-There are now 515 rated catalog records: 479 with expanded text analysis and 36
-retained earlier brief model-knowledge drafts. The remaining 1,529 stay unscored.
+There are now 517 rated catalog records: 486 with expanded text analysis and 31
+retained earlier brief model-knowledge drafts. The remaining 1,527 stay unscored.
 Numerical scores are provisional AI editorial judgments, not mechanically derived
 from word counts, church approvals or a verified consensus. Reading a cited text
 supports that text's analysis; it does not verify every associated recording.
@@ -33,7 +33,7 @@ versions. Community transcriptions can contain errors, omissions and inaccurate
 artist attribution. A matching source supports examination of that text, not proof
 of the words in every associated recording. Traditional hymn stanza/translation
 choices still need review. Identified texts and explicitly labeled usual-text assumptions were admitted;
-211 records state that a selected familiar text is assumed and the associated
+219 records state that a selected familiar text is assumed and the associated
 artist/recording remains unverified. Conflicting title candidates without a
 supportable selection remain unresolved in the manifest. A separate radio-analysis repository was inspected but its AI judgments
 were not imported as lyric evidence.
@@ -45,7 +45,11 @@ Speak, O Lord and Glorious Christ, followed by further texts from Sovereign Grac
 Elevation/Essential Worship, Bethel Music, Worship Together and The Worship
 Initiative. Further CityAlight and modern hymn pages, plus an actual Hymnary
 representative text, have since been read. Public music-resource pages and a
-clearly labeled community lyric transcription support the October 18 additions. CityAlight and Sadler/Harvill Ancient
+clearly labeled community lyric transcription support the October 18 additions.
+A public search-index copy of the Digital Songs & Hymns This Far By Faith edition
+was used for Goodson’s song when direct retrieval failed; its report states this
+access limit and selected verse variant. Other visibly garbled transcriptions were
+not used to judge the songwriter. CityAlight and Sadler/Harvill Ancient
 of Days now have distinct source-bound analyses. All 69 starter-workspace songs now have expanded drafts. The Known by
 You draft explicitly identifies a Gateway text while flagging the catalog’s
 Elevation RHYTHM association; this mismatch is not treated as verified metadata. Their reports explicitly state the text selected;
@@ -93,7 +97,9 @@ therefore does not erase completed research or require republishing full lyrics.
 A complete replacement for a previously suspect or partial source must explicitly
 set `complete: true` on the inspected source (and may set `partialText: false`
 on the matching record). Superseded authored notes must be replaced; duplicate
-note keys are rejected rather than silently choosing an older rationale.
+note keys are rejected rather than silently choosing an older rationale. Completed
+reports must have explicit, finite scores for all three text criteria; a missing
+score cannot silently pass as a completed rating.
 An optional third command argument writes reviewable generated files into a
 separate output directory before updating the public catalog.
 
@@ -108,5 +114,5 @@ The owner confirmed that public title-plus-lyrics searches are the available
 source approach. A shared SongSelect login was mentioned but was not used; no
 account credentials are needed for these public pages. The all-song request
 remains open and public-source research continues. The next step is to retrieve and identify the
-1,565 remaining texts and apply the same review, rather than fill those records
+1,558 remaining texts and apply the same review, rather than fill those records
 with title-based conjecture or repeat generic paragraphs as completed evaluations.

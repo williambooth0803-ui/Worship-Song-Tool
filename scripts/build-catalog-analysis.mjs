@@ -57,7 +57,7 @@ for(const song of allCatalogSongs){
  let analysisKey=null;
  if(source){
   const sourceURL=new URL(source.url);
-  if(sourceURL.protocol!=='https:'||sourceURL.username||sourceURL.password||!['github.com','integrityworship.com','cityalight.com','sovereigngracemusic.com','www.worshiptogether.com','www.mattpapa.com','www.stuarttownend.co.uk','www.jordankauflin.com','essentialworship.com','www.datocms-assets.com','bethelmusic.com','app.theworshipinitiative.com','hymnary.org','gettymusic.store','www.cifraclub.com.br','www.multitracks.com','digitalsongsandhymns.com','klrc.com'].includes(sourceURL.hostname))throw new Error('Unsafe evidence source URL');
+  if(sourceURL.protocol!=='https:'||sourceURL.username||sourceURL.password||!['github.com','integrityworship.com','cityalight.com','sovereigngracemusic.com','www.worshiptogether.com','www.mattpapa.com','www.stuarttownend.co.uk','www.jordankauflin.com','essentialworship.com','www.datocms-assets.com','bethelmusic.com','app.theworshipinitiative.com','hymnary.org','gettymusic.store','www.cifraclub.com.br','www.multitracks.com','digitalsongsandhymns.com','klrc.com','www.singhymnal.com'].includes(sourceURL.hostname))throw new Error('Unsafe evidence source URL');
   // A revised rationale must not collide with an older retained cover report.
   analysisKey=hash(source.key+'|'+JSON.stringify(notes||'scan')+'|'+JSON.stringify(song.review.scores)).slice(0,20);
   if(!analyses[analysisKey]){
@@ -86,6 +86,11 @@ for(const song of allCatalogSongs){
  manifest.push({...records[song.id],sourceHash:source?hash(source.text):null,sourceURL:source?.url||null,reason:source?null:r.status==='title-only'?'Title candidates lack sufficient identity evidence.':'No source text matched in the audited collections.'});
 }
 const count=status=>Object.values(records).filter(r=>r.status===status).length;
+for(const record of Object.values(records)){
+ if(record.status==='reviewed-draft'&&!['accuracy','substance','language'].every(key=>{
+  const score=analyses[record.analysisKey]?.scores?.[key];return Number.isFinite(score)&&score>=0&&score<=10;
+ }))throw new Error('Completed text review needs three explicit criterion scores: '+record.id);
+}
 const assumed=Object.values(records).filter(r=>r.identityAssumption).length;
 const coverage={assumed,total:allCatalogSongs.length,reviewed:count('reviewed-draft'),textScans:count('text-scan'),unresolved:count('identity-unresolved'),missing:count('missing-text'),partial:count('partial-text'),checkedAt};
 const data={coverage,scriptureSource:{url:'https://github.com/thiagobodruk/bible/blob/master/json/en_kjv.json',translation:'KJV',hash:bibleHash},records,analyses};

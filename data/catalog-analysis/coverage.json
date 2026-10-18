@@ -1,11 +1,11 @@
 {
   "coverage": {
-    "assumed": 211,
+    "assumed": 219,
     "total": 2044,
-    "reviewed": 479,
+    "reviewed": 486,
     "textScans": 0,
     "unresolved": 184,
-    "missing": 1381,
+    "missing": 1374,
     "partial": 0,
     "checkedAt": "2026-10-18"
   },
@@ -2107,11 +2107,12 @@
       "id": "catalog-at-the-cross-alas-and-did-my-savior-bleed",
       "title": "At the Cross (Alas! and Did My Savior Bleed)",
       "author": "Isaac Watts · Ralph E. Hudson refrain",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "9dfde0b2513216bd30a8",
+      "identityAssumption": "The cited four Watts stanzas plus Hudson refrain are selected; this is distinct from the Tomlin song sharing the cross title.",
+      "sourceHash": "712f8b5f34e1ea29a0853a38d200502404c4da714b74af8e9458633a7d3edf71",
+      "sourceURL": "https://hymnary.org/hymn/WAR2003/258",
+      "reason": null
     },
     {
       "id": "catalog-since-jesus-came-into-my-heart",
@@ -2161,11 +2162,12 @@
       "id": "catalog-precious-lord-take-my-hand",
       "title": "Precious Lord, Take My Hand",
       "author": "Thomas A. Dorsey",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "26e649087fff910ea5d1",
+      "identityAssumption": "The cited text is selected. Exact recording words and optional additions remain unverified.",
+      "sourceHash": "5b3cb4d64c1994ec757a9922e66d2a56e296dc054caaa8675746383d6edbc770",
+      "sourceURL": "https://www.singhymnal.com/hymn/precious-lord-take-my-hand/hymnal-score/",
+      "reason": null
     },
     {
       "id": "catalog-his-eye-is-on-the-sparrow",
@@ -2193,21 +2195,23 @@
       "id": "catalog-my-tribute-to-god-be-the-glory",
       "title": "My Tribute (To God Be the Glory)",
       "author": "Andraé Crouch",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "4c6233774825a604f73e",
+      "identityAssumption": "The cited text is selected. Exact recording words and optional additions remain unverified.",
+      "sourceHash": "b960321860ce684675bc90cc82bf484716c18ba0e71198e234df02c88bf91669",
+      "sourceURL": "https://integrityworship.com/songs/my-tribute-andrae-crouch/",
+      "reason": null
     },
     {
       "id": "catalog-total-praise",
       "title": "Total Praise",
       "author": "Richard Smallwood",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "9655477358a2dcc67359",
+      "identityAssumption": "The cited text is selected. Exact recording words and optional additions remain unverified.",
+      "sourceHash": "c5973dd40aa05768238003c9d43adf24fceed2ea7223b49e0478a3bd595e05c4",
+      "sourceURL": "https://www.singhymnal.com/hymn/total-praise/hymnal-score/",
+      "reason": null
     },
     {
       "id": "catalog-every-praise",
@@ -2223,21 +2227,23 @@
       "id": "catalog-we-ve-come-this-far-by-faith",
       "title": "We’ve Come This Far by Faith",
       "author": "Albert A. Goodson",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "c529f2b5794753ec2ad7",
+      "identityAssumption": "The chorus and two verses of the This Far By Faith edition were read from the publicly indexed Digital Songs & Hymns page; its direct page fetch was unavailable. Other performed verse variants and the exact recording remain unverified.",
+      "sourceHash": "63c4abc205e85c4a0091c137b108cd781f59c57c82b03895424c4c7c4e13d7b3",
+      "sourceURL": "https://digitalsongsandhymns.com/songs/weve-come-this-far-by-faith",
+      "reason": null
     },
     {
       "id": "catalog-down-at-the-cross-glory-to-his-name",
       "title": "Down at the Cross (Glory to His Name)",
       "author": "Elisha A. Hoffman · John H. Stockton",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "e6ed256172b1399b8a24",
+      "identityAssumption": "The cited four-stanza hymn text replaces a source containing only the first stanza and refrain. Exact arrangement/stanza selection remains unverified.",
+      "sourceHash": "64b91debf8b428991977f811745f71bbd3131b4b1b06d5c6e1bd9e33a6baa341",
+      "sourceURL": "https://hymnary.org/text/down_at_the_cross_where_my_savior_di_dow",
+      "reason": null
     },
     {
       "id": "catalog-jesus-loves-me",
@@ -9276,11 +9282,12 @@
       "id": "expanded-alas-and-did-my-savior-bleed-isaac-watts",
       "title": "Alas! and Did My Savior Bleed",
       "author": "Isaac Watts",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "f8bf645b93133a38e2bd",
+      "identityAssumption": "The cited five-verse representative text is selected without Hudson’s refrain; check wording and stanza choices.",
+      "sourceHash": "d9e55e3ea44021c72f9da32cb8d35ab797972a1169adb9ab0c20a1feb82142b7",
+      "sourceURL": "https://hymnary.org/text/alas_and_did_my_savior_bleed",
+      "reason": null
     },
     {
       "id": "expanded-am-i-a-soldier-of-the-cross-isaac-watts",
@@ -9847,9 +9854,10 @@
       "title": "Down at the Cross",
       "author": "Elisha A. Hoffman",
       "status": "reviewed-draft",
-      "analysisKey": "07f178fc175d97f9b8c9",
-      "sourceHash": "7bba835ce76235c1d5e28a074909186534814b772a842d7e0c6db0a94cb5333d",
-      "sourceURL": "https://github.com/ChurchApps/WorshipCommonsContent/blob/d3362e1d7c7f4d3f98b9310bb07aa480453508c7/songs/en/down-at-the-cross-AzlASNTSOkS/sources/lyrics.chordpro",
+      "analysisKey": "28016409c4c84fba71fa",
+      "identityAssumption": "The cited four-stanza hymn text replaces a source containing only the first stanza and refrain. Exact arrangement/stanza selection remains unverified.",
+      "sourceHash": "64b91debf8b428991977f811745f71bbd3131b4b1b06d5c6e1bd9e33a6baa341",
+      "sourceURL": "https://hymnary.org/text/down_at_the_cross_where_my_savior_di_dow",
       "reason": null
     },
     {
@@ -19178,9 +19186,9 @@
       "title": "Ancient of Days",
       "author": "Associated recording: Michael W. Smith",
       "status": "reviewed-draft",
-      "analysisKey": "e3cf1557ae5a8cdc9a53",
-      "identityAssumption": "The cited writer/publisher text is selected as the usual song by this title. It does not verify the exact words in every associated recording.",
-      "sourceHash": "46238057091ac87b0f3dd044b0f8a442ed4f54dd230ff1bab2727b69f5a1cdc2",
+      "analysisKey": "9da33c250c2f45285556",
+      "identityAssumption": "The Sadler/Harvill acclamation is assumed. The Michael W. Smith association is unverified; this report assesses the selected words, not a confirmed recording by that artist.",
+      "sourceHash": "2c5a50da4200f38dcab740eda441fbc2e75a20637d540110d9dce052d3d6931a",
       "sourceURL": "https://integrityworship.com/songs/ancient-of-days-revere-1/",
       "reason": null
     },

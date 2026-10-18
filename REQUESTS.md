@@ -13,13 +13,13 @@ blockers explicitly. Preserve personal assessments, recordings and workspaces.
   Published incremental UI release `244cc50`; the 32-state rebuild fixture passed.
 - [x] Audit all 2,044 song/version records against available public text sources;
   keep a per-record coverage manifest rather than silently treating gaps as complete.
-- [x] Write 479 expanded preliminary lyric analyses with separate reasons for
+- [x] Write 486 expanded preliminary lyric analyses with separate reasons for
   doctrinal accuracy, theological substance and language; evidence-backed themes,
   brief exact excerpts where wording is questioned, and checked KJV comparisons.
   These cover song/version records, including several recordings of the same text.
-  211 explicitly identify an assumed usual text; the recording remains unverified.
-- [x] Add 236 newly scored text drafts (515 rated catalog records total), with
-  arrangement scores unknown; retain 36 earlier brief drafts still awaiting deeper
+  219 explicitly identify an assumed usual text; the recording remains unverified.
+- [x] Add 238 newly scored text drafts (517 rated catalog records total), with
+  arrangement scores unknown; retain 31 earlier brief drafts still awaiting deeper
   source support. Do not claim all rated records received a lyric review.
 - [x] Keep human assessments/convictions, imported AI text versions, custom scores,
   notes, explicit recording removals, human decisions, libraries and plans intact.
@@ -29,8 +29,8 @@ blockers explicitly. Preserve personal assessments, recordings and workspaces.
 - [x] Keep the two different Nothing but the Blood texts separate. Flag apparent
   transcription error and incomplete medley source instead of scoring either as
   if a reliable complete text had been read.
-- [ ] Complete deeper analysis for **every** song. Precisely **1,565** remain:
-  1,381 without a source match in the audited collections, 184 with title-only
+- [ ] Complete deeper analysis for **every** song. Precisely **1,558** remain:
+  1,374 without a source match in the audited collections, 184 with title-only
   identity candidates. The two earlier incomplete/suspect sources are now resolved. Missing evidence remains
   unknown; these findings do not establish that texts are unavailable everywhere.
   Finishing requires identifying/retrieving the remaining texts, resolving versions
@@ -76,7 +76,18 @@ blockers explicitly. Preserve personal assessments, recordings and workspaces.
 - [x] Verify 479-entry follow-up locally: all 132 unit/database tests and focused
   browser checks passed, including resolved-source display and preservation of
   existing human judgments, libraries and plans.
-- [ ] Verify CI/Pages/live for the 479-entry follow-up.
+- [x] Release `c584afe` passed App checks `39170233001` and Pages `39170232102`.
+- [x] Add the gospel/hymn follow-up: Precious Lord, My Tribute, Total Praise,
+  Goodson’s selected hymn text, separate Watts/Hudson texts, and a fuller Hoffman
+  transcription. The Goodson report identifies its public search-index access and
+  verse variant rather than silently using a garbled alternative.
+- [x] Correct one expanded report that lacked numerical draft scores; its selected
+  Sadler/Harvill text now has explicit text scores and the artist association
+  remains unverified. Require all completed reports to have three finite criterion
+  scores and verify the same invariant across every generated report.
+- [x] Verify the 486-entry follow-up locally: 132 unit/database tests and focused
+  desktop/mobile browser checks passed. Source/check count: 35,223.
+- [ ] Verify CI/Pages/live for the 486-entry follow-up.
 - [ ] Continue the whole-catalog public-source review; no lyric-account access
   is required for the current public-source queue.
 
