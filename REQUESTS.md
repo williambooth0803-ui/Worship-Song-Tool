@@ -13,13 +13,13 @@ blockers explicitly. Preserve personal assessments, recordings and workspaces.
   Published incremental UI release `244cc50`; the 32-state rebuild fixture passed.
 - [x] Audit all 2,044 song/version records against available public text sources;
   keep a per-record coverage manifest rather than silently treating gaps as complete.
-- [x] Write 456 expanded preliminary lyric analyses with separate reasons for
+- [x] Write 470 expanded preliminary lyric analyses with separate reasons for
   doctrinal accuracy, theological substance and language; evidence-backed themes,
   brief exact excerpts where wording is questioned, and checked KJV comparisons.
   These cover song/version records, including several recordings of the same text.
-  188 explicitly identify an assumed usual text; the recording remains unverified.
-- [x] Add 232 newly scored text drafts (511 rated catalog records total), with
-  arrangement scores unknown; retain 55 earlier brief drafts still awaiting deeper
+  202 explicitly identify an assumed usual text; the recording remains unverified.
+- [x] Add 234 newly scored text drafts (513 rated catalog records total), with
+  arrangement scores unknown; retain 43 earlier brief drafts still awaiting deeper
   source support. Do not claim all rated records received a lyric review.
 - [x] Keep human assessments/convictions, imported AI text versions, custom scores,
   notes, explicit recording removals, human decisions, libraries and plans intact.
@@ -29,8 +29,8 @@ blockers explicitly. Preserve personal assessments, recordings and workspaces.
 - [x] Keep the two different Nothing but the Blood texts separate. Flag apparent
   transcription error and incomplete medley source instead of scoring either as
   if a reliable complete text had been read.
-- [ ] Complete deeper analysis for **every** song. Precisely **1,588** remain:
-  1,401 without a source match in the audited collections, 185 with title-only
+- [ ] Complete deeper analysis for **every** song. Precisely **1,574** remain:
+  1,387 without a source match in the audited collections, 185 with title-only
   identity candidates, and 2 incomplete/suspect sources. Missing evidence remains
   unknown; these findings do not establish that texts are unavailable everywhere.
   Finishing requires identifying/retrieving the remaining texts, resolving versions
@@ -50,14 +50,20 @@ blockers explicitly. Preserve personal assessments, recordings and workspaces.
 - [x] Publish starter-source follow-up `cf9d70d`; Pages `39046208312` succeeded.
   Its App checks run `39046208375` passed unit, MCP and scale but failed the hosted
   browser step. Signed log-storage hosts are unavailable under this environment's
-  network policy; a single retry is running. The current-data local full suite passed.
+  network policy; the retry succeeded. The current-data local full suite passed.
   Hosted-smoke failures now also emit a Checks API annotation for diagnosis.
 - [x] Add CityAlight, Sovereign Grace and modern-hymn source groups, with distinct
   CityAlight/Sadler Ancient of Days analyses and explicit source/stanza selections.
   Increment catalog revision so untouched defaults refresh after later batches.
 - [x] Current-data local verification: 129 unit/database tests and the complete
   hosted browser suite passed; source/check count is 35,098.
-- [ ] Verify CI/Pages/live for the 456-entry source batch.
+- [x] Release `c09bbf1` passed App checks `39046941994` and Pages `39046941733`.
+- [x] Resume October 18 public research: add 14 records from 12 identified texts,
+  with specific wording concerns for Yet, Death Was Arrested and In Jesus’ Name.
+  Preserve all prior source dates/hashes across research batches; an empty-batch
+  comparison retained every committed report exactly. Two retention tests cover
+  cache loss and rejection of mismatched identities/provenance. All 131 tests pass.
+- [ ] Publish and verify the October 18 source batch, including live checks.
 - [ ] Continue the whole-catalog public-source review; no lyric-account access
   is required for the current public-source queue.
 

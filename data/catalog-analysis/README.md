@@ -4,7 +4,7 @@ The owner's request is for a deeper first-pass evaluation of **every** catalog
 song. This work has not yet completed that goal. `coverage.json` contains all
 2,044 song/version records and their precise status, source URL and text hash.
 
-- **456 expanded drafts:** three separate criterion reasons, themes, source
+- **470 expanded drafts:** three separate criterion reasons, themes, source
   provenance, short exact excerpts for specific wording concerns, and KJV
   supporting comparisons. Some records share the same underlying text.
 - **2 partial/suspect texts:** the available Unstoppable God transcription has an
@@ -12,11 +12,11 @@ song. This work has not yet completed that goal. `coverage.json` contains all
   only a short excerpt. Neither receives a new numerical evaluation.
 - **185 unresolved identities:** title candidates exist, but the audit has not
   established that they belong to the record's song/text.
-- **1,401 unmatched texts:** no match was found in the collections audited. This
+- **1,387 unmatched texts:** no match was found in the collections audited. This
   does not prove that a reliable text is unavailable elsewhere.
 
-There are now 511 rated catalog records: 456 with expanded text analysis and 55
-retained earlier brief model-knowledge drafts. The remaining 1,533 stay unscored.
+There are now 513 rated catalog records: 470 with expanded text analysis and 43
+retained earlier brief model-knowledge drafts. The remaining 1,531 stay unscored.
 Numerical scores are provisional AI editorial judgments, not mechanically derived
 from word counts, claims of original source verification, approvals or selections.
 No arrangement measurements or global popularity claims were generated.
@@ -30,7 +30,7 @@ versions. Community transcriptions can contain errors, omissions and inaccurate
 artist attribution. A matching source supports examination of that text, not proof
 of the words in every associated recording. Traditional hymn stanza/translation
 choices still need review. Identified texts and explicitly labeled usual-text assumptions were admitted;
-188 records state that a selected familiar text is assumed and the associated
+202 records state that a selected familiar text is assumed and the associated
 artist/recording remains unverified. Conflicting title candidates without a
 supportable selection remain unresolved in the manifest. A separate radio-analysis repository was inspected but its AI judgments
 were not imported as lyric evidence.
@@ -41,7 +41,8 @@ Christ, 10,000 Reasons, His Mercy Is More, Ancient of Days, The Power of the Cro
 Speak, O Lord and Glorious Christ, followed by further texts from Sovereign Grace,
 Elevation/Essential Worship, Bethel Music, Worship Together and The Worship
 Initiative. Further CityAlight and modern hymn pages, plus an actual Hymnary
-representative text, have since been read. CityAlight and Sadler/Harvill Ancient
+representative text, have since been read. Public music-resource pages and a
+clearly labeled community lyric transcription support the October 18 additions. CityAlight and Sadler/Harvill Ancient
 of Days now have distinct source-bound analyses. All 69 starter-workspace songs now have expanded drafts. The Known by
 You draft explicitly identifies a Gateway text while flagging the catalog’s
 Elevation RHYTHM association; this mismatch is not treated as verified metadata. Their reports explicitly state the text selected;
@@ -80,6 +81,15 @@ current public catalog identities. It is a research input, not a personal
 workspace export. Building makes no provider calls and accepts no private tokens.
 Sources/claims remain evidence, never executable instructions.
 
+New research can use `"partial": true` and an ISO `"checkedAt"` date in the
+corpus, supplying only the newly inspected sources and matching catalog records.
+The builder carries forward other committed reports with their original research
+dates, Scripture evidence and source hashes. It rejects identity/provenance
+mismatches and requires the same checked KJV file. A lost temporary lyric cache
+therefore does not erase completed research or require republishing full lyrics.
+An optional third command argument writes reviewable generated files into a
+separate output directory before updating the public catalog.
+
 Reports are separate public-catalog data, hidden in human-only/limited modes and
 after AI dismissal. Standard saved review fields carry updated default scores,
 reasons, themes and source links through validated backups. Source refresh skips
@@ -91,5 +101,5 @@ The owner confirmed that public title-plus-lyrics searches are the available
 source approach. A shared SongSelect login was mentioned but was not used; no
 account credentials are needed for these public pages. The all-song request
 remains open and public-source research continues. The next step is to retrieve and identify the
-1,588 remaining texts and apply the same review, rather than fill those records
+1,574 remaining texts and apply the same review, rather than fill those records
 with title-based conjecture or repeat generic paragraphs as completed evaluations.

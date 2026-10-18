@@ -1,13 +1,13 @@
 {
   "coverage": {
-    "assumed": 188,
+    "assumed": 202,
     "total": 2044,
-    "reviewed": 456,
+    "reviewed": 470,
     "textScans": 0,
     "unresolved": 185,
-    "missing": 1401,
+    "missing": 1387,
     "partial": 2,
-    "checkedAt": "2026-10-17"
+    "checkedAt": "2026-10-18"
   },
   "records": [
     {
@@ -843,41 +843,45 @@
       "id": "catalog-i-will-wait-for-you-psalm-130",
       "title": "I Will Wait for You (Psalm 130)",
       "author": "Associated recording: Keith & Kristyn Getty",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "a80cbe93a3c14112b594",
+      "identityAssumption": "The cited writer/publisher text is selected as the usual song by this title. Exact recording words and optional live additions remain unverified.",
+      "sourceHash": "ecae9f2945c156e5362f3dbe12a86def7af390da8fc6abc33089897bcba3f0a2",
+      "sourceURL": "https://www.jordankauflin.com/i-will-wait-for-you",
+      "reason": null
     },
     {
       "id": "catalog-almost-home",
       "title": "Almost Home",
       "author": "Matt Boswell · Matt Papa",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "2fa7497cd7dd1c891095",
+      "identityAssumption": "The cited writer/publisher text is selected as the usual song by this title. Exact recording words and optional live additions remain unverified.",
+      "sourceHash": "d58e681923b11629eb5d166c86aa12cdb18d570af2594481459d7c3bfa5683db",
+      "sourceURL": "https://www.mattpapa.com/songs/almost-home",
+      "reason": null
     },
     {
       "id": "catalog-sing-we-the-song-of-emmanuel",
       "title": "Sing We the Song of Emmanuel",
       "author": "Associated recording: Matt Boswell · Matt Papa",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "92b001deddb0d24161dc",
+      "identityAssumption": "The cited writer/publisher text is selected as the usual song by this title. Exact recording words and optional live additions remain unverified.",
+      "sourceHash": "a5fdbe46f632de02d55773bbed9eaaf3ee3749884fad584679544161038e7177",
+      "sourceURL": "https://www.mattpapa.com/songs/sing-we-the-song-of-emmanuel",
+      "reason": null
     },
     {
       "id": "catalog-god-the-uncreated-one-king-forevermore",
       "title": "God the Uncreated One (King Forevermore)",
       "author": "Pete James · Aaron Keyes",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "1f348f8f8c40a6835fa4",
+      "identityAssumption": "The cited writer/publisher text is selected as the usual song by this title. Exact recording words and optional live additions remain unverified.",
+      "sourceHash": "ecbc240e556902ce1ae4491e4c0b9b1fc9c9c6ca66ea845f93c30c742e3c6f0b",
+      "sourceURL": "https://integrityworship.com/songs/god-the-uncreated-one-king-forevermore-aaron-keyes/",
+      "reason": null
     },
     {
       "id": "catalog-only-a-holy-god",
@@ -1150,41 +1154,45 @@
       "id": "catalog-at-the-cross-love-ran-red",
       "title": "At the Cross (Love Ran Red)",
       "author": "Associated recording: Chris Tomlin",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "69974014fc54cf245701",
+      "identityAssumption": "The cited writer/publisher text is selected as the usual song by this title. Exact recording words and optional live additions remain unverified.",
+      "sourceHash": "b8ff31305fe56671e0ce0eb01023e9ea7118310c9a5f9b19ee0c16e0ed151120",
+      "sourceURL": "https://www.worshiptogether.com/songs/at-the-cross-love-ran-red-chris-tomlin/?nav=1",
+      "reason": null
     },
     {
       "id": "catalog-i-will-rise",
       "title": "I Will Rise",
       "author": "Associated recording: Chris Tomlin",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "45e5d7350a172ebfa89d",
+      "identityAssumption": "The cited writer/publisher text is selected as the usual song by this title. Exact recording words and optional live additions remain unverified.",
+      "sourceHash": "a92c7036cdacc00fa4f23dc62fe38f9383b47447053775ea7a9858f79b452063",
+      "sourceURL": "https://www.worshiptogether.com/songs/i-will-rise-chris-tomlin/",
+      "reason": null
     },
     {
       "id": "catalog-whom-shall-i-fear-god-of-angel-armies",
       "title": "Whom Shall I Fear (God of Angel Armies)",
       "author": "Associated recording: Chris Tomlin",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "87bd159b5df819f63985",
+      "identityAssumption": "The cited writer/publisher text is selected as the usual song by this title. Exact recording words and optional live additions remain unverified.",
+      "sourceHash": "a016d08d29f5b38ef2ef9e026c0587ca2db4ff9f02b68cb48746aea1f3e577b2",
+      "sourceURL": "https://www.worshiptogether.com/songs/whom-shall-i-fear-chris-tomlin/?nav=1",
+      "reason": null
     },
     {
       "id": "catalog-is-he-worthy",
       "title": "Is He Worthy?",
       "author": "Andrew Peterson · Ben Shive",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "8bc7d8efb14b16cbe199",
+      "identityAssumption": "The cited writer/publisher text is selected as the usual song by this title. Exact recording words and optional live additions remain unverified.",
+      "sourceHash": "3d1475a8bab2f6761ee71e8528d09aada9b54151eb5f84d72ea9a0c0c2c6d842",
+      "sourceURL": "https://gettymusic.store/products/is-he-worthy",
+      "reason": null
     },
     {
       "id": "catalog-living-hope",
@@ -1451,31 +1459,34 @@
       "id": "catalog-yet",
       "title": "Yet",
       "author": "Associated recording: the King will come · verify this version",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "472503af709d4f3f59e7",
+      "identityAssumption": "The cited text is selected for this song. Exact recording words and optional live additions remain unverified.",
+      "sourceHash": "ea76498577ed20e6b57a15aed5cb873f60b91069b2d1dcff0dd3bbf09eaa6b28",
+      "sourceURL": "https://www.cifraclub.com.br/the-king-will-come/yet/letra/",
+      "reason": null
     },
     {
       "id": "catalog-jesus-paid-it-all-o-praise-the-one",
       "title": "Jesus Paid It All (O Praise the One)",
       "author": "Traditional hymn with modern added bridge · verify credits",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "fe75270297f754f685e7",
+      "identityAssumption": "The cited text is selected for this song. Exact recording words and optional live additions remain unverified.",
+      "sourceHash": "047b7ff1a7f532eeb05a4d5b94137a8b15955961025d2d9f44868742f43ebe84",
+      "sourceURL": "https://www.worshiptogether.com/songs/jesus-paid-it-all-passion/",
+      "reason": null
     },
     {
       "id": "catalog-death-was-arrested",
       "title": "Death Was Arrested",
       "author": "Associated recording: North Point Worship",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "c3e7b6f5f34bec9b7e91",
+      "identityAssumption": "The cited text is selected for this song. Exact recording words and optional live additions remain unverified.",
+      "sourceHash": "3740ba7d3cc47cd0574eec6ab0f046518e9ea56737bbadc2adfb8792f83c461d",
+      "sourceURL": "https://www.multitracks.com/songs/North-Point-Worship/Nothing-Ordinary/Death-Was-Arrested/",
+      "reason": null
     },
     {
       "id": "catalog-glorious-day",
@@ -1492,11 +1503,12 @@
       "id": "catalog-in-jesus-name",
       "title": "In Jesus’ Name",
       "author": "Associated recording: Darlene Zschech · verify this version",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "29f86f54d0ef330686ec",
+      "identityAssumption": "The cited text is selected for this song. Exact recording words and optional live additions remain unverified.",
+      "sourceHash": "fe1db25d94f729c380d48af2eed43846d5066a8e19829909c6975c93b0991ee9",
+      "sourceURL": "https://integrityworship.com/songs/in-jesus-name-darlene-zschech/",
+      "reason": null
     },
     {
       "id": "catalog-shout-to-the-lord",
@@ -10327,11 +10339,12 @@
       "id": "artist-i-will-wait-for-you-psalm-130-stuart-townend",
       "title": "I Will Wait for You (Psalm 130)",
       "author": "Associated recording: Stuart Townend",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "3cea93d6352c2d3f50c0",
+      "identityAssumption": "The cited writer/publisher text is selected as the usual song by this title. Exact recording words and optional live additions remain unverified.",
+      "sourceHash": "ecae9f2945c156e5362f3dbe12a86def7af390da8fc6abc33089897bcba3f0a2",
+      "sourceURL": "https://www.jordankauflin.com/i-will-wait-for-you",
+      "reason": null
     },
     {
       "id": "artist-the-lord-is-my-salvation-stuart-townend",
@@ -16020,11 +16033,12 @@
       "id": "artist-is-he-worthy-shane-shane-the-worship-initiative",
       "title": "Is He Worthy?",
       "author": "Associated recording: Shane & Shane · The Worship Initiative",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "03a9b6a5c43c4aa8f984",
+      "identityAssumption": "The cited writer/publisher text is selected as the usual song by this title. Exact recording words and optional live additions remain unverified.",
+      "sourceHash": "3d1475a8bab2f6761ee71e8528d09aada9b54151eb5f84d72ea9a0c0c2c6d842",
+      "sourceURL": "https://gettymusic.store/products/is-he-worthy",
+      "reason": null
     },
     {
       "id": "artist-be-thou-my-vision-shane-shane-the-worship-initiative",

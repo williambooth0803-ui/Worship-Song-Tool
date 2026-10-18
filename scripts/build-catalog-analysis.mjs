@@ -1,14 +1,27 @@
 import {validateLyricExcerpt} from "../public/catalog-analysis.js";
-import {readFile,writeFile} from 'node:fs/promises';
+import {readFile,writeFile,mkdir} from 'node:fs/promises';
+import {join} from 'node:path';
 import {createHash} from 'node:crypto';
 import {baseCatalogSongs as allCatalogSongs} from '../public/catalog.js';
+import {catalogAnalysisData as previousData} from '../public/catalog-analysis-data.js';
+import {retainCatalogEvidence} from './catalog-analysis-retention.mjs';
 
-const [corpusFile,bibleFile]=process.argv.slice(2);
+const [corpusFile,bibleFile,outputDirectory]=process.argv.slice(2);
 if(!corpusFile||!bibleFile)throw new Error('Provide the public-text corpus JSON and public-domain KJV JSON. No personal workspace is accepted.');
 const corpus=JSON.parse(await readFile(corpusFile,'utf8')),bible=JSON.parse(await readFile(bibleFile,'utf8'));
 const norm=s=>s.normalize('NFKD').toLowerCase().replace(/[^a-z0-9]/g,'');
 const hash=s=>createHash('sha256').update(s).digest('hex');
-const checkedAt='2026-10-17';
+const checkedAt=corpus.checkedAt || new Date().toISOString().slice(0,10);
+if(!/^\d{4}-\d{2}-\d{2}$/.test(checkedAt))throw new Error('Supply an ISO research date.');
+const bibleHash=hash(await readFile(bibleFile,'utf8'));
+const previousManifest=JSON.parse(await readFile(new URL('../data/catalog-analysis/coverage.json',import.meta.url),'utf8'));
+if(corpus.partial && bibleHash!==previousData.scriptureSource.hash)throw new Error('Incremental research must retain the same checked Scripture transcription.');
+const inputRecords=new Map();
+for(const record of corpus.records){
+ const identity=allCatalogSongs.find(song=>song.id===record.id);
+ if(!identity||identity.title!==record.title||identity.author!==record.author||inputRecords.has(record.id))throw new Error('Corpus/catalog identity mismatch '+record.id);
+ inputRecords.set(record.id,record);
+}
 const reviewed=new Map((await readFile(new URL('../data/catalog-reviewed-notes.tsv',import.meta.url),'utf8')).split('\n').filter(l=>l&&!l.startsWith('#')).map(l=>{const [title,accuracy,substance,language,themes,references,quote,concern,newScores]=l.split('|');return [norm(title),{title,accuracy,substance,language,themes:themes.split(';'),references:references.split(';'),quote,concern,newScores:newScores?newScores.split(',').map(Number):null}];}));
 const bookNames=['Genesis','Exodus','Leviticus','Numbers','Deuteronomy','Joshua','Judges','Ruth','1 Samuel','2 Samuel','1 Kings','2 Kings','1 Chronicles','2 Chronicles','Ezra','Nehemiah','Esther','Job','Psalm','Proverbs','Ecclesiastes','Song of Solomon','Isaiah','Jeremiah','Lamentations','Ezekiel','Daniel','Hosea','Joel','Amos','Obadiah','Jonah','Micah','Nahum','Habakkuk','Zephaniah','Haggai','Zechariah','Malachi','Matthew','Mark','Luke','John','Acts','Romans','1 Corinthians','2 Corinthians','Galatians','Ephesians','Philippians','Colossians','1 Thessalonians','2 Thessalonians','1 Timothy','2 Timothy','Titus','Philemon','Hebrews','James','1 Peter','2 Peter','1 John','2 John','3 John','Jude','Revelation'];
 const canonicalExcerpts={
@@ -26,21 +39,30 @@ const topics=[['Cross',/\bcross\b|\bcrucifi/i],['Resurrection',/\brisen\b|\bresu
 const sourceMap=new Map(corpus.sources.map(s=>[s.key,s]));
 const records={},analyses={},manifest=[];
 for(const song of allCatalogSongs){
- const r=corpus.records.find(r=>r.id===song.id);
+ const r=inputRecords.get(song.id);
+ if(!r && corpus.partial){
+  const retained=retainCatalogEvidence(song,previousData,previousManifest.records.find(record=>record.id===song.id));
+  records[song.id]=retained.record;
+  if(retained.analysis)analyses[retained.record.analysisKey]=retained.analysis;
+  manifest.push(retained.coverage);
+  continue;
+ }
  if(!r||r.title!==song.title||r.author!==song.author)throw new Error('Corpus/catalog identity mismatch '+song.id);
+ if(corpus.partial && (!r.sourceKeys?.length||!sourceMap.has(r.sourceKeys[0])))throw new Error('Incremental replacement needs an inspected source '+song.id);
  const source=sourceMap.get(r.sourceKeys[0]),notes=reviewed.get(norm(song.id))||reviewed.get(norm(song.title));
  let status=source?['Unstoppable God','Most Beautiful / So in Love'].includes(song.title)?'partial-text':notes?'reviewed-draft':'text-scan':r.status==='title-only'?'identity-unresolved':'missing-text';
  let analysisKey=null;
  if(source){
   const sourceURL=new URL(source.url);
-  if(sourceURL.protocol!=='https:'||sourceURL.username||sourceURL.password||!['github.com','integrityworship.com','cityalight.com','sovereigngracemusic.com','www.worshiptogether.com','www.mattpapa.com','www.stuarttownend.co.uk','www.jordankauflin.com','essentialworship.com','www.datocms-assets.com','bethelmusic.com','app.theworshipinitiative.com','hymnary.org'].includes(sourceURL.hostname))throw new Error('Unsafe evidence source URL');
-  analysisKey=hash(source.key+'|'+(notes?.title||'scan')).slice(0,20);
+  if(sourceURL.protocol!=='https:'||sourceURL.username||sourceURL.password||!['github.com','integrityworship.com','cityalight.com','sovereigngracemusic.com','www.worshiptogether.com','www.mattpapa.com','www.stuarttownend.co.uk','www.jordankauflin.com','essentialworship.com','www.datocms-assets.com','bethelmusic.com','app.theworshipinitiative.com','hymnary.org','gettymusic.store','www.cifraclub.com.br','www.multitracks.com'].includes(sourceURL.hostname))throw new Error('Unsafe evidence source URL');
+  // A revised rationale must not collide with an older retained cover report.
+  analysisKey=hash(source.key+'|'+JSON.stringify(notes||'scan')+'|'+JSON.stringify(song.review.scores)).slice(0,20);
   if(!analyses[analysisKey]){
    const words=source.text.split(/\s+/),unique=new Set(source.lines.map(norm)),found=topics.filter(([,re])=>re.test(source.text)).map(([name])=>name);
    const quote=notes?.quote||'';
    try { validateLyricExcerpt(source.text,quote); } catch(error) { throw new Error(song.title+': '+error.message); }
    analyses[analysisKey]={
-    version:`Text considered: ${source.title}. ${source.kind==='artist-publisher-page'?'Artist/publisher text':source.kind==='published-hymnal'?'Published hymn transcription':'Community transcription'}; the exact stanza selection and recording remain for human verification. This report concerns the catalog text, independently of personal or imported assessments.`,
+    version:`Text considered: ${source.title}. ${source.kind==='artist-publisher-page'?'Artist/publisher text':source.kind==='published-hymnal'?'Published hymn transcription':source.kind==='music-resource-page'?'Public music-resource lyric text':'Community transcription'}; the exact stanza selection and recording remain for human verification. This report concerns the catalog text, independently of personal or imported assessments.`,
     summary:status==='partial-text'?'Only an incomplete or suspect transcription is available. These notes identify the evidence limits; no numerical score is assigned.':notes?'A preliminary AI reading of doctrinal accuracy, theological substance, and language, with separate catalog text scores. The reasons explain these provisional scores, not your personal or imported judgments. No church-use decision is made.':'A deterministic first pass over an identified transcription. It records textual evidence, not a theological score or a completed AI evaluation.',
     reasons:notes?[
       {criterion:'Doctrinal accuracy',explanation:notes.accuracy},{criterion:'Theological substance',explanation:notes.substance},{criterion:'Language & craftsmanship',explanation:notes.language}
@@ -63,8 +85,9 @@ for(const song of allCatalogSongs){
 const count=status=>Object.values(records).filter(r=>r.status===status).length;
 const assumed=Object.values(records).filter(r=>r.identityAssumption).length;
 const coverage={assumed,total:allCatalogSongs.length,reviewed:count('reviewed-draft'),textScans:count('text-scan'),unresolved:count('identity-unresolved'),missing:count('missing-text'),partial:count('partial-text'),checkedAt};
-const data={coverage,scriptureSource:{url:'https://github.com/thiagobodruk/bible/blob/master/json/en_kjv.json',translation:'KJV',hash:hash(await readFile(bibleFile,'utf8'))},records,analyses};
-await writeFile(new URL('../public/catalog-analysis-data.js',import.meta.url),[
+const data={coverage,scriptureSource:{url:'https://github.com/thiagobodruk/bible/blob/master/json/en_kjv.json',translation:'KJV',hash:bibleHash},records,analyses};
+if(outputDirectory)await mkdir(outputDirectory,{recursive:true});
+await writeFile(outputDirectory?join(outputDirectory,'catalog-analysis-data.js'):new URL('../public/catalog-analysis-data.js',import.meta.url),[
  '// Generated public-text evidence. Full lyrics and personal workspace data are excluded.',
  'export const catalogAnalysisData = {',
  'coverage:'+JSON.stringify(data.coverage)+',',
@@ -72,5 +95,5 @@ await writeFile(new URL('../public/catalog-analysis-data.js',import.meta.url),[
  'records:{',...Object.entries(records).map(([id,r])=>JSON.stringify(id)+':'+JSON.stringify(r)+','),'},analyses:{',
  ...Object.entries(analyses).map(([id,a])=>JSON.stringify(id)+':'+JSON.stringify(a)+','),'}};',''
 ].join('\n'));
-await writeFile(new URL('../data/catalog-analysis/coverage.json',import.meta.url),JSON.stringify({coverage,records:manifest},null,2)+'\n');
+await writeFile(outputDirectory?join(outputDirectory,'coverage.json'):new URL('../data/catalog-analysis/coverage.json',import.meta.url),JSON.stringify({coverage,records:manifest},null,2)+'\n');
 console.log(coverage);
