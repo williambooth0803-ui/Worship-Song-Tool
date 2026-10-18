@@ -1,11 +1,11 @@
 {
   "coverage": {
-    "assumed": 229,
+    "assumed": 234,
     "total": 2044,
-    "reviewed": 496,
+    "reviewed": 501,
     "textScans": 0,
-    "unresolved": 182,
-    "missing": 1366,
+    "unresolved": 181,
+    "missing": 1362,
     "partial": 0,
     "checkedAt": "2026-10-18"
   },
@@ -4078,21 +4078,23 @@
       "id": "expanded-another-in-the-fire-hillsong-united",
       "title": "Another in the Fire",
       "author": "Associated recording: Hillsong UNITED",
-      "status": "identity-unresolved",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "Title candidates lack sufficient identity evidence."
+      "status": "reviewed-draft",
+      "analysisKey": "477d131d07ea11be10ef",
+      "identityAssumption": "The cited official published text is selected. Associated cover recordings, additions and arrangement choices remain unverified.",
+      "sourceHash": "b748fb1abda33cde862938d7f688305c2d8f5166b348ac94197751e52ef42e87",
+      "sourceURL": "https://hillsong.com/music/united/people-live/another-in-the-fire-live/lyrics",
+      "reason": null
     },
     {
       "id": "expanded-good-grace-hillsong-united",
       "title": "Good Grace",
       "author": "Associated recording: Hillsong UNITED",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "afd461968d4c5d917d2a",
+      "identityAssumption": "The cited official published text is selected. Associated cover recordings, additions and arrangement choices remain unverified.",
+      "sourceHash": "3bdde7ec406af56c7c0da09ebc150a73ef1a7f5cef229248b58ba2809875279f",
+      "sourceURL": "https://hillsong.com/music/united/people-live/good-grace-live/lyrics",
+      "reason": null
     },
     {
       "id": "expanded-highlands-song-of-ascent-hillsong-united",
@@ -5829,11 +5831,12 @@
       "id": "expanded-o-lord-my-rock-and-my-redeemer-sovereign-grace-music",
       "title": "O Lord, My Rock and My Redeemer",
       "author": "Associated recording: Sovereign Grace Music",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "b9ea6e41808e597eed5e",
+      "identityAssumption": "The cited official published text is selected. Associated cover recordings, additions and arrangement choices remain unverified.",
+      "sourceHash": "c7cd91c2609977c4702b97aaaf3d7f4d0148c67030e7ea76b8c8243ce0a3dffe",
+      "sourceURL": "https://sovereigngracemusic.com/music/songs/o-lord-rock-redeemer/",
+      "reason": null
     },
     {
       "id": "expanded-now-why-this-fear-sovereign-grace-music",
@@ -6299,11 +6302,12 @@
       "id": "expanded-all-my-boast-is-in-jesus-matt-boswell-matt-papa",
       "title": "All My Boast Is in Jesus",
       "author": "Associated recording: Matt Boswell & Matt Papa",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "e605be0e46369553ff44",
+      "identityAssumption": "The cited official published text is selected. Associated cover recordings, additions and arrangement choices remain unverified.",
+      "sourceHash": "6ea90cca41b272d1d586a98dded8b7ea3acdc3b9d4571c86cb410c4fdf88b8c1",
+      "sourceURL": "https://www.mattpapa.com/songs/lord-from-sorrows-deep-i-call-8xkf2",
+      "reason": null
     },
     {
       "id": "expanded-let-the-nations-be-glad-matt-boswell-matt-papa",
@@ -16186,11 +16190,12 @@
       "id": "artist-o-lord-my-rock-and-my-redeemer-shane-shane-the-worship-initiative",
       "title": "O Lord, My Rock and My Redeemer",
       "author": "Associated recording: Shane & Shane · The Worship Initiative",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "2c7dc1fb3842db0cb085",
+      "identityAssumption": "The cited official published text is selected. Associated cover recordings, additions and arrangement choices remain unverified.",
+      "sourceHash": "c7cd91c2609977c4702b97aaaf3d7f4d0148c67030e7ea76b8c8243ce0a3dffe",
+      "sourceURL": "https://sovereigngracemusic.com/music/songs/o-lord-rock-redeemer/",
+      "reason": null
     },
     {
       "id": "artist-christ-our-hope-in-life-and-death-shane-shane-the-worship-initiative",

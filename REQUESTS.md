@@ -13,13 +13,13 @@ blockers explicitly. Preserve personal assessments, recordings and workspaces.
   Published incremental UI release `244cc50`; the 32-state rebuild fixture passed.
 - [x] Audit all 2,044 song/version records against available public text sources;
   keep a per-record coverage manifest rather than silently treating gaps as complete.
-- [x] Write 496 expanded preliminary lyric analyses with separate reasons for
+- [x] Write 501 expanded preliminary lyric analyses with separate reasons for
   doctrinal accuracy, theological substance and language; evidence-backed themes,
   brief exact excerpts where wording is questioned, and checked KJV comparisons.
   These cover song/version records, including several recordings of the same text.
-  229 explicitly identify an assumed usual text; the recording remains unverified.
-- [x] Add 238 newly scored text drafts (517 rated catalog records total), with
-  arrangement scores unknown; retain 21 earlier brief drafts still awaiting deeper
+  234 explicitly identify an assumed usual text; the recording remains unverified.
+- [x] Add 241 newly scored text drafts (520 rated catalog records total), with
+  arrangement scores unknown; retain 19 earlier brief drafts still awaiting deeper
   source support. Do not claim all rated records received a lyric review.
 - [x] Keep human assessments/convictions, imported AI text versions, custom scores,
   notes, explicit recording removals, human decisions, libraries and plans intact.
@@ -29,8 +29,8 @@ blockers explicitly. Preserve personal assessments, recordings and workspaces.
 - [x] Keep the two different Nothing but the Blood texts separate. Flag apparent
   transcription error and incomplete medley source instead of scoring either as
   if a reliable complete text had been read.
-- [ ] Complete deeper analysis for **every** song. Precisely **1,548** remain:
-  1,366 without a source match in the audited collections, 182 with title-only
+- [ ] Complete deeper analysis for **every** song. Precisely **1,543** remain:
+  1,362 without a source match in the audited collections, 181 with title-only
   identity candidates. The two earlier incomplete/suspect sources are now resolved. Missing evidence remains
   unknown; these findings do not establish that texts are unavailable everywhere.
   Finishing requires identifying/retrieving the remaining texts, resolving versions
@@ -94,7 +94,15 @@ blockers explicitly. Preserve personal assessments, recordings and workspaces.
 - [x] Verify the 496-entry follow-up locally: all 133 unit/database tests and
   focused browser checks passed at four screen sizes, including whole-verse
   Scripture display and preservation of human judgments, libraries and plans.
-- [ ] Verify the 496-entry follow-up on CI, Pages and the live site.
+- [x] Pages release `45dd287` succeeded (`39171578197`). Live catalog assets
+  matched the release, and live mobile/report/personal-preservation checks passed;
+  App checks pending.
+- [x] Read four more official texts and add five song/version reports, bringing
+  coverage to 501. Explain figurative love language in Good Grace and distinguish
+  presence through suffering from promised escape in Another in the Fire.
+- [x] Verify the 501-entry follow-up locally: all 133 unit/database tests and
+  focused browser checks passed at four sizes. Source/check count: 35,246.
+- [ ] Verify CI, Pages and live checks for the 501-entry follow-up.
 - [ ] Continue the whole-catalog public-source review; no lyric-account access
   is required for the current public-source queue.
 
