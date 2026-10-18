@@ -96,13 +96,20 @@ blockers explicitly. Preserve personal assessments, recordings and workspaces.
   Scripture display and preservation of human judgments, libraries and plans.
 - [x] Pages release `45dd287` succeeded (`39171578197`). Live catalog assets
   matched the release, and live mobile/report/personal-preservation checks passed;
-  App checks pending.
+  App checks `39171578552` succeeded.
 - [x] Read four more official texts and add five song/version reports, bringing
   coverage to 501. Explain figurative love language in Good Grace and distinguish
   presence through suffering from promised escape in Another in the Fire.
 - [x] Verify the 501-entry follow-up locally: all 133 unit/database tests and
   focused browser checks passed at four sizes. Source/check count: 35,246.
-- [ ] Verify CI, Pages and live checks for the 501-entry follow-up.
+- [x] Publish `7cd634b`: Pages `39171741379` succeeded. Live catalog assets
+  exactly matched the release, and live report/mobile/personal-preservation checks
+  passed.
+- [x] App checks `39171742194` passed on retry, and the complete local hosted
+  suite passed. The first hosted attempt failed the existing concurrent-tab
+  account assertion (two refresh calls instead of one); this was not reproduced
+  locally or on retry. No account code was changed and the intermittent failure
+  is not claimed fixed. All 133 tests, MCP, scale and hosted checks now pass.
 - [ ] Continue the whole-catalog public-source review; no lyric-account access
   is required for the current public-source queue.
 
