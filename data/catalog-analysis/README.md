@@ -4,7 +4,7 @@ The owner's request is for a deeper first-pass evaluation of **every** catalog
 song. This work has not yet completed that goal. `coverage.json` contains all
 2,044 song/version records and their precise status, source URL and text hash.
 
-- **486 expanded drafts:** three separate criterion reasons, themes, source
+- **496 expanded drafts:** three separate criterion reasons, themes, source
   provenance, short exact excerpts for specific wording concerns, and KJV
   supporting comparisons. Some records share the same underlying text.
 - **0 partial/suspect texts remain in this batch:** a complete music-resource
@@ -12,12 +12,12 @@ song. This work has not yet completed that goal. `coverage.json` contains all
   Elevation's official lyric-video description. A complete medley source supplies
   both Most Beautiful and So in Love. The reports assess the replacement words,
   rather than penalizing an apparent copying error or inventing missing verses.
-- **184 unresolved identities:** title candidates exist, but the audit has not
+- **182 unresolved identities:** title candidates exist, but the audit has not
   established that they belong to the record's song/text.
-- **1,374 unmatched texts:** no match was found in the collections audited. This
+- **1,366 unmatched texts:** no match was found in the collections audited. This
   does not prove that a reliable text is unavailable elsewhere.
 
-There are now 517 rated catalog records: 486 with expanded text analysis and 31
+There are now 517 rated catalog records: 496 with expanded text analysis and 21
 retained earlier brief model-knowledge drafts. The remaining 1,527 stay unscored.
 Numerical scores are provisional AI editorial judgments, not mechanically derived
 from word counts, church approvals or a verified consensus. Reading a cited text
@@ -33,7 +33,7 @@ versions. Community transcriptions can contain errors, omissions and inaccurate
 artist attribution. A matching source supports examination of that text, not proof
 of the words in every associated recording. Traditional hymn stanza/translation
 choices still need review. Identified texts and explicitly labeled usual-text assumptions were admitted;
-219 records state that a selected familiar text is assumed and the associated
+229 records state that a selected familiar text is assumed and the associated
 artist/recording remains unverified. Conflicting title candidates without a
 supportable selection remain unresolved in the manifest. A separate radio-analysis repository was inspected but its AI judgments
 were not imported as lyric evidence.
@@ -63,9 +63,9 @@ sources. Text paragraphs describe the words; no artist reputation is used as a
 rating criterion. Potential problems are interpretations requiring review rather
 than declarations that every congregation must make the same decision.
 
-Scripture excerpts were checked against the public-domain KJV transcription at
+Scripture quotations were checked against the public-domain KJV transcription at
 `https://github.com/thiagobodruk/bible/blob/master/json/en_kjv.json`; the exact
-file hash is retained in the generated data. Quotes are brief excerpts. They are
+file hash is retained in the generated data. Quotes now include whole verses to preserve the claim and its qualifications. They are
 labeled **supporting comparisons**, not automatically attributed to the lyric
 writer as intended allusions. Existing explicit-quotation/allusion fields keep
 their separate meaning.
@@ -94,6 +94,9 @@ The builder carries forward other committed reports with their original research
 dates, Scripture evidence and source hashes. It rejects identity/provenance
 mismatches and requires the same checked KJV file. A lost temporary lyric cache
 therefore does not erase completed research or require republishing full lyrics.
+The explicit `"expandScriptureQuotes": true` option expands retained KJV quotations
+to whole verses from that same hash-checked public-domain Bible. It preserves
+references, comparison labels, lyric findings, scores and source dates.
 A complete replacement for a previously suspect or partial source must explicitly
 set `complete: true` on the inspected source (and may set `partialText: false`
 on the matching record). Superseded authored notes must be replaced; duplicate
@@ -114,5 +117,5 @@ The owner confirmed that public title-plus-lyrics searches are the available
 source approach. A shared SongSelect login was mentioned but was not used; no
 account credentials are needed for these public pages. The all-song request
 remains open and public-source research continues. The next step is to retrieve and identify the
-1,558 remaining texts and apply the same review, rather than fill those records
+1,548 remaining texts and apply the same review, rather than fill those records
 with title-based conjecture or repeat generic paragraphs as completed evaluations.

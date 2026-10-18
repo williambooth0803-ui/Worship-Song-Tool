@@ -1,11 +1,11 @@
 {
   "coverage": {
-    "assumed": 219,
+    "assumed": 229,
     "total": 2044,
-    "reviewed": 486,
+    "reviewed": 496,
     "textScans": 0,
-    "unresolved": 184,
-    "missing": 1374,
+    "unresolved": 182,
+    "missing": 1366,
     "partial": 0,
     "checkedAt": "2026-10-18"
   },
@@ -2386,11 +2386,12 @@
       "id": "modern-the-lion-and-the-lamb-leeland-bethel-music",
       "title": "The Lion and the Lamb",
       "author": "Associated recording: Leeland · Bethel Music",
-      "status": "identity-unresolved",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "Title candidates lack sufficient identity evidence."
+      "status": "reviewed-draft",
+      "analysisKey": "a3a664092bf2da5d853d",
+      "identityAssumption": "The cited artist/publisher text is selected. Exact words in other associated recordings and optional additions remain unverified.",
+      "sourceHash": "4a59a1eb85145e50fc2d393c325280c3a0c3979581d64ae3f9bc17af6e93ef6e",
+      "sourceURL": "https://bethelmusic.com/resources/have-it-all-live/lion-and-the-lamb",
+      "reason": null
     },
     {
       "id": "modern-god-i-look-to-you-bethel-music-jenn-johnson",
@@ -2406,21 +2407,23 @@
       "id": "modern-you-make-me-brave-bethel-music-amanda-cook",
       "title": "You Make Me Brave",
       "author": "Associated recording: Bethel Music · Amanda Cook",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "ca209acac222648703d5",
+      "identityAssumption": "The cited artist/publisher text is selected. Exact words in other associated recordings and optional additions remain unverified.",
+      "sourceHash": "3ceb1ad528ed8ccf4ef56b2cf97448ffd55af9a9192f7435a834a39a2ac94b1b",
+      "sourceURL": "https://bethelmusic.com/resources/you-make-me-brave-live-single/you-make-me-brave",
+      "reason": null
     },
     {
       "id": "modern-this-i-believe-the-creed-hillsong-worship",
       "title": "This I Believe (The Creed)",
       "author": "Associated recording: Hillsong Worship",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "49792b8ee9259a47adb8",
+      "identityAssumption": "The cited artist/publisher text is selected. Exact words in other associated recordings and optional additions remain unverified.",
+      "sourceHash": "01b0add3c25111eacadb2140a985a90f4b81255a1f8441fd5a20d30e9c3df754",
+      "sourceURL": "https://hillsong.com/music/worship/no-other-name-deluxe-edition-live/this-i-believe-the-creed/lyrics",
+      "reason": null
     },
     {
       "id": "modern-hosanna-hillsong-united",
@@ -2436,21 +2439,23 @@
       "id": "modern-from-the-inside-out-hillsong-united",
       "title": "From the Inside Out",
       "author": "Associated recording: Hillsong UNITED",
-      "status": "identity-unresolved",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "Title candidates lack sufficient identity evidence."
+      "status": "reviewed-draft",
+      "analysisKey": "10131894ac49c010864c",
+      "identityAssumption": "The cited artist/publisher text is selected. Exact words in other associated recordings and optional additions remain unverified.",
+      "sourceHash": "daf97f95224b29d63433abea7a94506f312e5735d1342642a1abc3d35c507aed",
+      "sourceURL": "https://hillsong.com/music/united/united-we-stand-live/from-the-inside-out-live/lyrics",
+      "reason": null
     },
     {
       "id": "modern-broken-vessels-amazing-grace-hillsong-worship",
       "title": "Broken Vessels (Amazing Grace)",
       "author": "Associated recording: Hillsong Worship",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "176d95b2eeaa6650d49b",
+      "identityAssumption": "The cited published text is selected. Exact words in other associated recordings and optional additions remain unverified.",
+      "sourceHash": "49f59330b2da2323e13075fca0d0834367455875133e2cf7db2de70e36d713b8",
+      "sourceURL": "https://hillsong.com/music/worship/no-other-name-deluxe-edition-live/broken-vessels-amazing-grace/lyrics",
+      "reason": null
     },
     {
       "id": "modern-so-will-i-100-billion-x-hillsong-united",
@@ -2466,21 +2471,23 @@
       "id": "modern-touch-of-heaven-hillsong-worship",
       "title": "Touch of Heaven",
       "author": "Associated recording: Hillsong Worship",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "4850204bf2dc712e209b",
+      "identityAssumption": "The cited official live-acoustic text is selected; compare it with the intended arrangement or any added live passages.",
+      "sourceHash": "07e1bf43ed0a9cb6ecd01feccb72019efb77914097d4ce43bfd779899f7b06c1",
+      "sourceURL": "https://hillsong.com/music/worship/there-is-more/touch-of-heaven-live-acoustic-bonus/lyrics",
+      "reason": null
     },
     {
       "id": "modern-man-of-sorrows-hillsong-worship",
       "title": "Man of Sorrows",
       "author": "Associated recording: Hillsong Worship",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "3fb18a3399cf7ee8d748",
+      "identityAssumption": "The cited published text is selected. Exact words in other associated recordings and optional additions remain unverified.",
+      "sourceHash": "63152a2715f20759b6215e833e65fb72c79358ff54c5c186ef2f89846080ae03",
+      "sourceURL": "https://hillsong.com/music/worship/glorious-ruins-deluxe-edition-live/man-of-sorrows-live/lyrics",
+      "reason": null
     },
     {
       "id": "modern-psalm-46-lord-of-hosts-shane-shane-the-worship-initiative",
@@ -2574,11 +2581,12 @@
       "id": "modern-all-glory-be-to-christ-kings-kaleidoscope",
       "title": "All Glory Be to Christ",
       "author": "Associated recording: Kings Kaleidoscope",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "220643285d2511e320d6",
+      "identityAssumption": "The cited published text is selected. Exact words in other associated recordings and optional additions remain unverified.",
+      "sourceHash": "76eac2628227311bb6206a770b229c29ddc8f74a575476fc56c13a47f50d976e",
+      "sourceURL": "https://www.singhymnal.com/hymn/all-glory-be-to-christ/hymnal-score/",
+      "reason": null
     },
     {
       "id": "modern-holy-forever-chris-tomlin",
@@ -12006,11 +12014,12 @@
       "id": "artist-man-of-sorrows-brooke-ligertwood",
       "title": "Man of Sorrows",
       "author": "Associated recording: Brooke Ligertwood",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "9e57b40d4e9f0f49a03e",
+      "identityAssumption": "The cited published text is selected. Exact words in other associated recordings and optional additions remain unverified.",
+      "sourceHash": "63152a2715f20759b6215e833e65fb72c79358ff54c5c186ef2f89846080ae03",
+      "sourceURL": "https://hillsong.com/music/worship/glorious-ruins-deluxe-edition-live/man-of-sorrows-live/lyrics",
+      "reason": null
     },
     {
       "id": "artist-what-a-beautiful-name-brooke-ligertwood",
@@ -17575,11 +17584,12 @@
       "id": "artist-touch-of-heaven-bethel-music",
       "title": "Touch of Heaven",
       "author": "Associated recording: Bethel Music",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "75e3c247b595592bb160",
+      "identityAssumption": "The cited official live-acoustic text is selected; compare it with the intended arrangement or any added live passages.",
+      "sourceHash": "07e1bf43ed0a9cb6ecd01feccb72019efb77914097d4ce43bfd779899f7b06c1",
+      "sourceURL": "https://hillsong.com/music/worship/there-is-more/touch-of-heaven-live-acoustic-bonus/lyrics",
+      "reason": null
     },
     {
       "id": "artist-all-hail-king-jesus-bethel-music",

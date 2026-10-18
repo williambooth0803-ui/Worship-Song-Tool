@@ -52,6 +52,14 @@ test('complete replacement sources resolve the suspect victory line and the prev
   assert.ok(!record.analysis.concerns.join(' ').includes('Jesus is overcome'));
  }
 });
+test('KJV comparison quotations retain the actual doctrinal claim and its qualifications',()=>{
+ const scriptures=Object.values(data.analyses).flatMap(analysis=>analysis.scriptures);
+ const trinity=scriptures.find(s=>s.reference==='Matthew 28:19');
+ assert.match(trinity.quote,/Father, and of the Son, and of the Holy Ghost/);
+ const providence=scriptures.find(s=>s.reference==='Romans 8:28');
+ assert.match(providence.quote,/to them that love God/);assert.match(providence.quote,/called according to his purpose/);
+ assert.equal(trinity.relationship,'Supporting comparison');assert.equal(providence.translation,'KJV');
+});
 test('catalog refresh and validated backups preserve human evaluations, convictions, approvals, recording removals and membership',()=>{
  const song=structuredClone(allCatalogSongs.find(s=>s.id==='modern-forever-we-sing-hallelujah-kari-jobe'));
  song.review.status='manual';song.review.notes='My saved concern about the grave-battle line.';song.review.scores.accuracy=3;song.review.customScores={'custom-conviction':2};song.recordings=[];song.aiDismissed=true; song.blacklisted=true;

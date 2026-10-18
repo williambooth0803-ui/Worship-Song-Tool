@@ -26,14 +26,11 @@ const noteRows=(await readFile(new URL('../data/catalog-reviewed-notes.tsv',impo
 const reviewed=new Map(noteRows);
 if(reviewed.size!==noteRows.length)throw new Error('Duplicate authored note keys: replace superseded notes rather than shadowing them.');
 const bookNames=['Genesis','Exodus','Leviticus','Numbers','Deuteronomy','Joshua','Judges','Ruth','1 Samuel','2 Samuel','1 Kings','2 Kings','1 Chronicles','2 Chronicles','Ezra','Nehemiah','Esther','Job','Psalm','Proverbs','Ecclesiastes','Song of Solomon','Isaiah','Jeremiah','Lamentations','Ezekiel','Daniel','Hosea','Joel','Amos','Obadiah','Jonah','Micah','Nahum','Habakkuk','Zephaniah','Haggai','Zechariah','Malachi','Matthew','Mark','Luke','John','Acts','Romans','1 Corinthians','2 Corinthians','Galatians','Ephesians','Philippians','Colossians','1 Thessalonians','2 Thessalonians','1 Timothy','2 Timothy','Titus','Philemon','Hebrews','James','1 Peter','2 Peter','1 John','2 John','3 John','Jude','Revelation'];
-const canonicalExcerpts={
- 'Romans 12:1':'present your bodies a living sacrifice','Romans 8:28':'all things work together for good','Romans 8:1':'no condemnation to them which are in Christ Jesus','Romans 5:8':'while we were yet sinners, Christ died for us','Galatians 2:20':'yet not I, but Christ liveth in me','Philippians 3:8':'the excellency of the knowledge of Christ Jesus my Lord','Philippians 3:9':'the righteousness which is of God by faith','Hebrews 7:25':'he ever liveth to make intercession for them','Ephesians 2:8':'by grace are ye saved through faith','1 Peter 2:24':'bare our sins in his own body on the tree','2 Corinthians 12:9':'My grace is sufficient for thee','Psalm 103:1':'Bless the LORD, O my soul','1 Corinthians 15:55':'O death, where is thy sting?','Colossians 3:3':'your life is hid with Christ in God','Isaiah 6:3':'Holy, holy, holy, is the LORD of hosts','Revelation 4:8':'Holy, holy, holy, Lord God Almighty',
-};
 function scripture(reference,theme){
  const match=/^(.+) (\d+):(\d+)$/.exec(reference);if(!match)throw new Error('Invalid reference '+reference);
  const index=bookNames.indexOf(match[1]),verse=bible[index]?.chapters[Number(match[2])-1]?.[Number(match[3])-1];
  if(!verse)throw new Error('Verse unavailable '+reference);
- const quote=canonicalExcerpts[reference]||verse.split(/\s+/).slice(0,10).join(' ');
+ const quote=verse;
  if(!norm(verse).includes(norm(quote)))throw new Error('Inexact Scripture excerpt '+reference);
  return {reference,quote,relationship:'Supporting comparison',explanation:`Compare the passage in context with the lyric's treatment of ${theme.toLowerCase()}. This is a comparison for review, not a claim that the writer intended a verbal quotation.`,translation:'KJV'};
 }
@@ -45,7 +42,10 @@ for(const song of allCatalogSongs){
  if(!r && corpus.partial){
   const retained=retainCatalogEvidence(song,previousData,previousManifest.records.find(record=>record.id===song.id));
   records[song.id]=retained.record;
-  if(retained.analysis)analyses[retained.record.analysisKey]=retained.analysis;
+  if(retained.analysis){
+   if(corpus.expandScriptureQuotes)retained.analysis.scriptures=retained.analysis.scriptures.map(s=>({...s,quote:scripture(s.reference,'').quote}));
+   analyses[retained.record.analysisKey]=retained.analysis;
+  }
   manifest.push(retained.coverage);
   continue;
  }
@@ -57,7 +57,7 @@ for(const song of allCatalogSongs){
  let analysisKey=null;
  if(source){
   const sourceURL=new URL(source.url);
-  if(sourceURL.protocol!=='https:'||sourceURL.username||sourceURL.password||!['github.com','integrityworship.com','cityalight.com','sovereigngracemusic.com','www.worshiptogether.com','www.mattpapa.com','www.stuarttownend.co.uk','www.jordankauflin.com','essentialworship.com','www.datocms-assets.com','bethelmusic.com','app.theworshipinitiative.com','hymnary.org','gettymusic.store','www.cifraclub.com.br','www.multitracks.com','digitalsongsandhymns.com','klrc.com','www.singhymnal.com'].includes(sourceURL.hostname))throw new Error('Unsafe evidence source URL');
+  if(sourceURL.protocol!=='https:'||sourceURL.username||sourceURL.password||!['github.com','integrityworship.com','cityalight.com','sovereigngracemusic.com','www.worshiptogether.com','www.mattpapa.com','www.stuarttownend.co.uk','www.jordankauflin.com','essentialworship.com','www.datocms-assets.com','bethelmusic.com','app.theworshipinitiative.com','hymnary.org','gettymusic.store','www.cifraclub.com.br','www.multitracks.com','digitalsongsandhymns.com','klrc.com','www.singhymnal.com','hillsong.com'].includes(sourceURL.hostname))throw new Error('Unsafe evidence source URL');
   // A revised rationale must not collide with an older retained cover report.
   analysisKey=hash(source.key+'|'+JSON.stringify(notes||'scan')+'|'+JSON.stringify(song.review.scores)).slice(0,20);
   if(!analyses[analysisKey]){
