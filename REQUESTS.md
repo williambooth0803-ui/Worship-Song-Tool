@@ -13,13 +13,13 @@ blockers explicitly. Preserve personal assessments, recordings and workspaces.
   Published incremental UI release `244cc50`; the 32-state rebuild fixture passed.
 - [x] Audit all 2,044 song/version records against available public text sources;
   keep a per-record coverage manifest rather than silently treating gaps as complete.
-- [x] Write 470 expanded preliminary lyric analyses with separate reasons for
+- [x] Write 479 expanded preliminary lyric analyses with separate reasons for
   doctrinal accuracy, theological substance and language; evidence-backed themes,
   brief exact excerpts where wording is questioned, and checked KJV comparisons.
   These cover song/version records, including several recordings of the same text.
-  202 explicitly identify an assumed usual text; the recording remains unverified.
-- [x] Add 234 newly scored text drafts (513 rated catalog records total), with
-  arrangement scores unknown; retain 43 earlier brief drafts still awaiting deeper
+  211 explicitly identify an assumed usual text; the recording remains unverified.
+- [x] Add 236 newly scored text drafts (515 rated catalog records total), with
+  arrangement scores unknown; retain 36 earlier brief drafts still awaiting deeper
   source support. Do not claim all rated records received a lyric review.
 - [x] Keep human assessments/convictions, imported AI text versions, custom scores,
   notes, explicit recording removals, human decisions, libraries and plans intact.
@@ -29,9 +29,9 @@ blockers explicitly. Preserve personal assessments, recordings and workspaces.
 - [x] Keep the two different Nothing but the Blood texts separate. Flag apparent
   transcription error and incomplete medley source instead of scoring either as
   if a reliable complete text had been read.
-- [ ] Complete deeper analysis for **every** song. Precisely **1,574** remain:
-  1,387 without a source match in the audited collections, 185 with title-only
-  identity candidates, and 2 incomplete/suspect sources. Missing evidence remains
+- [ ] Complete deeper analysis for **every** song. Precisely **1,565** remain:
+  1,381 without a source match in the audited collections, 184 with title-only
+  identity candidates. The two earlier incomplete/suspect sources are now resolved. Missing evidence remains
   unknown; these findings do not establish that texts are unavailable everywhere.
   Finishing requires identifying/retrieving the remaining texts, resolving versions
   and carrying out the same lyric-based review. Reliable supplied/licensed texts
@@ -63,7 +63,20 @@ blockers explicitly. Preserve personal assessments, recordings and workspaces.
   Preserve all prior source dates/hashes across research batches; an empty-batch
   comparison retained every committed report exactly. Two retention tests cover
   cache loss and rejection of mismatched identities/provenance. All 131 tests pass.
-- [ ] Publish and verify the October 18 source batch, including live checks.
+- [x] Publish October 18 checkpoint `9615381` (470 expanded entries): App checks
+  `39169548366` and Pages `39169548094` succeeded. The three changed live catalog
+  files exactly matched the checked release. Live analysis/source/mobile/human
+  judgment checks passed in a disposable browser context.
+- [x] Resolve both previously held source texts with fuller music-resource lyrics.
+  The correct Unstoppable God victory wording is also present in Elevation's
+  official lyric-video description. Add the complete medley and specific reasons,
+  themes, Scripture comparisons and appropriately contextualized wording concerns.
+  Keep the Gaither Something Beautiful text separate from an unverified Chapman
+  association; keep the Craig/Koch In Christ Alone distinct from Getty/Townend.
+- [x] Verify 479-entry follow-up locally: all 132 unit/database tests and focused
+  browser checks passed, including resolved-source display and preservation of
+  existing human judgments, libraries and plans.
+- [ ] Verify CI/Pages/live for the 479-entry follow-up.
 - [ ] Continue the whole-catalog public-source review; no lyric-account access
   is required for the current public-source queue.
 

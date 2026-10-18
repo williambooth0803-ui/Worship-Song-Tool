@@ -1,12 +1,12 @@
 {
   "coverage": {
-    "assumed": 202,
+    "assumed": 211,
     "total": 2044,
-    "reviewed": 470,
+    "reviewed": 479,
     "textScans": 0,
-    "unresolved": 185,
-    "missing": 1387,
-    "partial": 2,
+    "unresolved": 184,
+    "missing": 1381,
+    "partial": 0,
     "checkedAt": "2026-10-18"
   },
   "records": [
@@ -1617,11 +1617,12 @@
       "id": "catalog-in-christ-alone-i-place-my-trust",
       "title": "In Christ Alone (I Place My Trust)",
       "author": "Associated recording: Michael English · verify distinct song",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "509d70ee3eec0b260da4",
+      "identityAssumption": "The cited text is selected for this song. Exact recording words and optional live additions remain unverified.",
+      "sourceHash": "66772b88a4858a727a16ab997354ed4897a8bad56543959bbf4b8206e87b10e9",
+      "sourceURL": "https://digitalsongsandhymns.com/songs/9497",
+      "reason": null
     },
     {
       "id": "catalog-ancient-of-days-blessing-and-honor",
@@ -1728,11 +1729,12 @@
       "id": "catalog-your-grace-is-enough",
       "title": "Your Grace Is Enough",
       "author": "Matt Maher",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "dd9b400ba937a4be91fc",
+      "identityAssumption": "The cited text is selected for this song. Exact recording words and optional live additions remain unverified.",
+      "sourceHash": "f4745a00c2719dccf8778dbe5d6390c59b20922b5ef8bfe470d737387a8c598a",
+      "sourceURL": "https://www.worshiptogether.com/songs/your-grace-is-enough-chris-tomlin/",
+      "reason": null
     },
     {
       "id": "catalog-everlasting-god",
@@ -1771,11 +1773,12 @@
       "id": "catalog-wonderful-merciful-savior",
       "title": "Wonderful, Merciful Savior",
       "author": "Dawn Rodgers · Eric Wyse",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "ed065e43ee141f67bd73",
+      "identityAssumption": "The cited text is selected for this song. Exact recording words and optional live additions remain unverified.",
+      "sourceHash": "7feb249211738520d9c9d87ff92a9e64732ee6a0ab6cf232889933f26341e93c",
+      "sourceURL": "https://klrc.com/music/songs/07a52bba67abb00c1e265c15c9479792",
+      "reason": null
     },
     {
       "id": "catalog-there-is-a-redeemer",
@@ -1792,11 +1795,12 @@
       "id": "catalog-the-lamb-of-god",
       "title": "The Lamb of God",
       "author": "Twila Paris",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "4e76d1fd0e9d6f566c7e",
+      "identityAssumption": "The cited text is selected for this song. Exact recording words and optional live additions remain unverified.",
+      "sourceHash": "b378a5cc812af3b302e4a364630fa14b8f972a194b680caa3265bc7792de9b2b",
+      "sourceURL": "https://integrityworship.com/songs/lamb-of-god-twila-paris/",
+      "reason": null
     },
     {
       "id": "catalog-he-is-exalted",
@@ -1823,11 +1827,12 @@
       "id": "catalog-redeemed",
       "title": "Redeemed",
       "author": "Associated recording: Big Daddy Weave",
-      "status": "identity-unresolved",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "Title candidates lack sufficient identity evidence."
+      "status": "reviewed-draft",
+      "analysisKey": "ddcd3d7ff752052c1ef6",
+      "identityAssumption": "The cited text is selected for this song. Exact recording words and optional live additions remain unverified.",
+      "sourceHash": "a34f6c5a82ee2021738bbac4482b42c87f615929340d2a07491ea45aa672facf",
+      "sourceURL": "https://klrc.com/music/songs/6168d2cb1f34f620bf0eb02021b36c41",
+      "reason": null
     },
     {
       "id": "catalog-how-he-loves",
@@ -1896,21 +1901,23 @@
       "id": "catalog-something-beautiful",
       "title": "Something Beautiful",
       "author": "Bill Gaither · Gloria Gaither",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "841a508ce1508228414d",
+      "identityAssumption": "The cited text is selected for this song. Exact recording words and optional live additions remain unverified.",
+      "sourceHash": "5f228d7df7b69d4dc7c398df946e9ae5ff01a82e3d4cd81724d7021e9e4a1d84",
+      "sourceURL": "https://integrityworship.com/songs/something-beautiful-bill-gaither-trio/",
+      "reason": null
     },
     {
       "id": "catalog-the-family-of-god",
       "title": "The Family of God",
       "author": "Bill Gaither · Gloria Gaither",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "1f0297b12fa762c0fa7c",
+      "identityAssumption": "The cited text is selected for this song. Exact recording words and optional live additions remain unverified.",
+      "sourceHash": "e1ebe528796a70d154ede7cc19cf90cee998acce54bf56d13fb9b3f657ebbb97",
+      "sourceURL": "https://integrityworship.com/songs/the-family-of-god-bill-gaither/",
+      "reason": null
     },
     {
       "id": "catalog-the-old-rugged-cross",
@@ -3176,10 +3183,11 @@
       "id": "expanded-unstoppable-god-elevation-worship",
       "title": "Unstoppable God",
       "author": "Associated recording: Elevation Worship",
-      "status": "partial-text",
-      "analysisKey": "2211dce613d6d6c57dc8",
-      "sourceHash": "fabd0c0e8af5726a4c1b0026d976e3fc78c0a6de5f69c2ba2bd31f767cc83f94",
-      "sourceURL": "https://github.com/mattgraham/worship/blob/f0405fa7c65d26cbb2c513bb94a25dd1e2ec2953/Unstoppable%20God.onsong",
+      "status": "reviewed-draft",
+      "analysisKey": "fd916e0936b68338fce1",
+      "identityAssumption": "The cited text is selected for this song. Exact recording words and optional live additions remain unverified. This fuller source replaces the earlier incomplete or suspect transcription.",
+      "sourceHash": "849793eb1ef3e71eb5924cb9685b4c7094fd26bb9197886ae2ca2fe2a0b18699",
+      "sourceURL": "https://www.multitracks.com/songs/Elevation-Worship/Wake-Up-The-Wonder/Unstoppable-God/",
       "reason": null
     },
     {
@@ -5096,10 +5104,11 @@
       "id": "expanded-most-beautiful-so-in-love-maverick-city-music",
       "title": "Most Beautiful / So in Love",
       "author": "Associated recording: Maverick City Music",
-      "status": "partial-text",
-      "analysisKey": "df71bdab71b7cab6258c",
-      "sourceHash": "4a1e0bc90836bb8ef7a10f7239a4666b7cc39fe0372bcf2f01b02df78f063572",
-      "sourceURL": "https://github.com/mattgraham/worship/blob/f0405fa7c65d26cbb2c513bb94a25dd1e2ec2953/Most%20Beautiful%20%3A%20So%20in%20Love.onsong",
+      "status": "reviewed-draft",
+      "analysisKey": "e5a84415b78df565b602",
+      "identityAssumption": "The cited text is selected for this song. Exact recording words and optional live additions remain unverified. This fuller source replaces the earlier incomplete or suspect transcription.",
+      "sourceHash": "fd1e0fd2666b3f21c4bf7baaa310936c63e072451e5a58ca903f80e3a2ec7a5c",
+      "sourceURL": "https://www.multitracks.com/songs/Maverick-City-Music/Maverick-City%2C-Vol.-2/Most-Beautiful-So-In-Love/",
       "reason": null
     },
     {

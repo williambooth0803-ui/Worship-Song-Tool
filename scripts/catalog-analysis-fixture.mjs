@@ -41,7 +41,20 @@ export async function checkCatalogAnalysisFlows(browser,base){
   await page.locator('.secondary-evaluation > summary').click();
   assert.equal(await page.locator('.secondary-evaluation .catalog-analysis').count(),1);
   const kept=(await stored()).songs.find(s=>s.id===song.id);assert.equal(kept.review.scores.accuracy,2);assert.deepEqual(kept.recordings,[]);
+  const beforeCatalog=await stored();
+  for(const id of ['expanded-unstoppable-god-elevation-worship','expanded-most-beautiful-so-in-love-maverick-city-music']){
+   const catalog=allCatalogSongs.find(s=>s.id===id);
+   await navigate(page,'discover');await page.getByRole('searchbox',{name:'Search songs',exact:true}).fill(catalog.title);
+   await page.locator(`.catalog-matches [data-action="catalog-open"][data-id="${id}"]`).click();
+   await page.getByRole('tab',{name:'Evaluation',exact:true}).click();await page.locator('.primary-evaluation > summary').click();
+   const expanded=page.locator('.primary-evaluation .catalog-analysis');
+   assert.match(await expanded.textContent(),/Expanded AI draft/);assert.equal(await expanded.locator('.analysis-reasons dt').count(),3);
+   assert.ok(await expanded.locator('a[href*="multitracks.com"]').isVisible());
+   await page.setViewportSize({width:390,height:900});assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));
+  }
+  const afterCatalog=await stored();assert.deepEqual(afterCatalog.libraries,beforeCatalog.libraries);assert.deepEqual(afterCatalog.plans,beforeCatalog.plans);
+  assert.deepEqual(afterCatalog.songs.find(s=>s.id===song.id).review,kept.review);
   assert.deepEqual(errors,[]);
-  console.log('PASS: sourced catalog lyric reasons, Scripture excerpts, source links, distinct page tabs, four layouts, read-only browsing, human-only hiding and primary human conviction preservation.');
+  console.log('PASS: sourced catalog lyric reasons, resolved partial texts, Scripture excerpts, source links, distinct page tabs, four layouts, human-only hiding and preserved human judgments/libraries/plans.');
  }finally{await page.close();}
 }

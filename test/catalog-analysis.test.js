@@ -10,7 +10,7 @@ import {reviewForDisplay} from '../public/profile.js';
 test('catalog analysis accounts for every record without calling missing or partial evidence completed',()=>{
  assert.equal(Object.keys(data.records).length,allCatalogSongs.length);
  const c=data.coverage;assert.equal(c.reviewed+c.textScans+c.unresolved+c.missing+c.partial,c.total);
- assert.equal(c.total,2044);assert.equal(c.partial,2);assert.ok(c.reviewed>200);assert.ok(c.missing>0);
+ assert.equal(c.total,2044);assert.equal(c.partial,Object.values(data.records).filter(r=>r.status==='partial-text').length);assert.ok(c.reviewed>200);assert.ok(c.missing>0);
  for(const song of allCatalogSongs){const r=data.records[song.id];assert.equal(r.title,song.title);assert.equal(r.author,song.author);
   if(r.status==='reviewed-draft'){const a=data.analyses[r.analysisKey];assert.equal(a.reasons.length,3);assert.equal(new Set(a.reasons.map(r=>r.criterion)).size,3);assert.ok(a.reasons.every(r=>r.explanation.length>80));assert.ok(a.scriptures.length>=1);assert.ok(a.themes.length);assert.equal(a.scores.time,null);assert.ok(Object.values(a.scores).every(s=>s===null||Number.isFinite(s)&&s>=0&&s<=10));assert.equal(a.source.hash.length,64);assert.equal(new URL(a.source.url).protocol,'https:');assert.ok(a.quote.length<=90);assert.ok(a.quote.split(/\s+/).filter(Boolean).length<=10);}
  }
@@ -36,10 +36,21 @@ test('same-title texts remain separate, and identity edits, AI visibility and di
  assert.notEqual(data.records[city.id].analysisKey,data.records[sadler.id].analysisKey);
  assert.match(catalogAnalysisFor(city).analysis.source.url,/cityalight/);
  assert.match(catalogAnalysisFor(sadler).analysis.source.url,/integrityworship/);
+ const craig=allCatalogSongs.find(s=>s.id==='catalog-in-christ-alone-i-place-my-trust'),getty=allCatalogSongs.find(s=>s.id==='catalog-in-christ-alone');
+ assert.notEqual(data.records[craig.id].analysisKey,data.records[getty.id].analysisKey);
+ assert.match(catalogAnalysisFor(craig).analysis.reasons[0].explanation,/Craig\/Koch/);
  for(const mode of ['manual','limited'])assert.equal(catalogAnalysisFor(lowry,mode),null);
  assert.equal(catalogAnalysisFor({...lowry,aiDismissed:true}),null);
  assert.equal(catalogAnalysisFor({...lowry,title:'A different song'}),null);
  assert.equal(catalogAnalysisFor({...lowry,author:'A different author'}),null);
+});
+test('complete replacement sources resolve the suspect victory line and the previously incomplete medley',()=>{
+ for(const id of ['expanded-unstoppable-god-elevation-worship','expanded-most-beautiful-so-in-love-maverick-city-music']){
+  const record=catalogAnalysisFor(allCatalogSongs.find(s=>s.id===id));
+  assert.equal(record.status,'reviewed-draft');assert.match(record.analysis.source.url,/multitracks/);
+  assert.ok(Number.isFinite(record.analysis.scores.accuracy));assert.equal(record.analysis.reasons.length,3);
+  assert.ok(!record.analysis.concerns.join(' ').includes('Jesus is overcome'));
+ }
 });
 test('catalog refresh and validated backups preserve human evaluations, convictions, approvals, recording removals and membership',()=>{
  const song=structuredClone(allCatalogSongs.find(s=>s.id==='modern-forever-we-sing-hallelujah-kari-jobe'));
