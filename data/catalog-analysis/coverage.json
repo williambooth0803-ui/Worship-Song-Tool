@@ -1,11 +1,11 @@
 {
   "coverage": {
-    "assumed": 286,
+    "assumed": 486,
     "total": 1000,
-    "reviewed": 518,
+    "reviewed": 718,
     "textScans": 0,
-    "unresolved": 50,
-    "missing": 432,
+    "unresolved": 28,
+    "missing": 254,
     "partial": 0,
     "checkedAt": "2026-10-19"
   },
@@ -2727,11 +2727,12 @@
       "id": "expanded-ain-t-nobody-cody-carnes",
       "title": "Ain't Nobody",
       "author": "Associated recording: Cody Carnes",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "4a63db657be7abba3a78",
+      "identityAssumption": "Published text: Ain't Nobody. Added live sections and other recordings are separate versions.",
+      "sourceHash": "97bb0e5ace4064b92d13a02131a2109f3512f5159a1753e2e95b4e49539224eb",
+      "sourceURL": "https://www.multitracks.com/songs/Cody-Carnes/God-Is-Good/Ain%27t-Nobody/",
+      "reason": null
     },
     {
       "id": "expanded-good-can-t-be-anything-else-cody-carnes",
@@ -2803,21 +2804,23 @@
       "id": "expanded-praises-elevation-rhythm",
       "title": "PRAISES",
       "author": "Associated recording: Elevation RHYTHM",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "d38e39b9cb89250c0f08",
+      "identityAssumption": "Published text: PRAISES. Added live sections and other recordings are separate versions.",
+      "sourceHash": "cb4626a563434746ed5077309ff6c6d5178a63ea53b41da10a9906a6b3780718",
+      "sourceURL": "https://www.multitracks.com/songs/ELEVATION-RHYTHM/This-Is-The-Gospel/PRAISES/",
+      "reason": null
     },
     {
       "id": "expanded-this-is-the-gospel-elevation-rhythm",
       "title": "This Is the Gospel",
       "author": "Associated recording: Elevation RHYTHM",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "58cabc25eb7a713d84b5",
+      "identityAssumption": "Published text: This Is The Gospel. Added live sections and other recordings are separate versions.",
+      "sourceHash": "a728816e3beffc3a85cb1b23c4428b8f948ac447ee8fd83ceeefd6448380bd8b",
+      "sourceURL": "https://www.multitracks.com/songs/ELEVATION-RHYTHM/This-Is-The-Gospel/This-Is-The-Gospel/",
+      "reason": null
     },
     {
       "id": "expanded-still-holy-elevation-rhythm",
@@ -2833,21 +2836,23 @@
       "id": "expanded-walk-on-water-elevation-rhythm",
       "title": "Walk on Water",
       "author": "Associated recording: Elevation RHYTHM",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "337f5eea681905487944",
+      "identityAssumption": "Published text: WALK ON WATER. Added live sections and other recordings are separate versions.",
+      "sourceHash": "ab9b27e70cc37567925cdf1dbf3e336c6915bad00c96528c4fc7015580b15662",
+      "sourceURL": "https://www.multitracks.com/songs/ELEVATION-RHYTHM/WALK-ON-WATER/WALK-ON-WATER/",
+      "reason": null
     },
     {
       "id": "expanded-you-will-be-saved-elevation-rhythm",
       "title": "You Will Be Saved",
       "author": "Associated recording: Elevation RHYTHM",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "1734e9e9c19400e38987",
+      "identityAssumption": "Published text: You Will Be Saved. Added live sections and other recordings are separate versions.",
+      "sourceHash": "37e2c58ae23e9f852ea82fca1e66593987240a956d6585940ac97f439434227b",
+      "sourceURL": "https://www.multitracks.com/songs/ELEVATION-RHYTHM/This-Is-The-Gospel/You-Will-Be-Saved/",
+      "reason": null
     },
     {
       "id": "expanded-good-plans-red-rocks-worship",
@@ -2886,11 +2891,12 @@
       "id": "expanded-no-other-love-red-rocks-worship",
       "title": "No Other Love",
       "author": "Associated recording: Red Rocks Worship",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "7cb12ce9163bdb03ea04",
+      "identityAssumption": "Published text: No Other Love. Added live sections and other recordings are separate versions.",
+      "sourceHash": "24f65b82a41ef0d0df9237060799aed8c6ebf18c77c27237f085e1cea2d6ef6c",
+      "sourceURL": "https://www.multitracks.com/songs/Red-Rocks-Worship/spark./No-Other-Love/",
+      "reason": null
     },
     {
       "id": "expanded-now-here-red-rocks-worship",
@@ -2917,11 +2923,12 @@
       "id": "expanded-overflow-red-rocks-worship",
       "title": "Overflow",
       "author": "Associated recording: Red Rocks Worship",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "3169d3d18cd1d1658705",
+      "identityAssumption": "Published text: Overflow. Added live sections and other recordings are separate versions.",
+      "sourceHash": "b0be7f7e898e74fd241597eabe263707d0fc57ca9e62bdb89bcd8a247d256395",
+      "sourceURL": "https://www.multitracks.com/songs/Red-Rocks-Worship/Here/Overflow/",
+      "reason": null
     },
     {
       "id": "expanded-nobody-like-you-red-rocks-worship",
@@ -2937,21 +2944,23 @@
       "id": "expanded-be-still-red-rocks-worship",
       "title": "Be Still",
       "author": "Associated recording: Red Rocks Worship",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "5b80238f12e9861e766f",
+      "identityAssumption": "Published text: Be Still. Added live sections and other recordings are separate versions.",
+      "sourceHash": "2240ac449eb18cae18c5e3b8632d36b48d6e8d07b0b47c7ab6a4cfdf349550de",
+      "sourceURL": "https://www.multitracks.com/songs/Red-Rocks-Worship/spark./Be-Still/",
+      "reason": null
     },
     {
       "id": "expanded-the-battle-is-yours-red-rocks-worship",
       "title": "The Battle Is Yours",
       "author": "Associated recording: Red Rocks Worship",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "04a3c15d31ec9404e59d",
+      "identityAssumption": "Published text: The Battle Is Yours. Added live sections and other recordings are separate versions.",
+      "sourceHash": "3b22a3a1380e2e7d7695a04aeb978d22ecd9abb2dc01ad7225c9928c8a71109c",
+      "sourceURL": "https://www.multitracks.com/songs/Red-Rocks-Worship/Things-Of-Heaven-%28Where-We%27re-Going%29/The-Battle-Is-Yours/",
+      "reason": null
     },
     {
       "id": "expanded-here-again-elevation-worship",
@@ -2968,21 +2977,23 @@
       "id": "expanded-never-lost-elevation-worship",
       "title": "Never Lost",
       "author": "Associated recording: Elevation Worship",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "29bc6bda253fa900c9ed",
+      "identityAssumption": "Published text: Never Lost. Added live sections and other recordings are separate versions.",
+      "sourceHash": "4f57966be0643ac6ab3bd5f7775bbfa0ff7add173d3eff4b11a568e70618905d",
+      "sourceURL": "https://www.multitracks.com/songs/Elevation-Worship/Never-Lost/Never-Lost/",
+      "reason": null
     },
     {
       "id": "expanded-my-testimony-elevation-worship",
       "title": "My Testimony",
       "author": "Associated recording: Elevation Worship",
-      "status": "identity-unresolved",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "Title candidates lack sufficient identity evidence."
+      "status": "reviewed-draft",
+      "analysisKey": "6207cc4f19142c276e68",
+      "identityAssumption": "Published text: My Testimony. Added live sections and other recordings are separate versions.",
+      "sourceHash": "b9229a8d971d277bb44728dec7752c0d1488bcbd199ec0ceeab4bf85faf43d3d",
+      "sourceURL": "https://www.multitracks.com/songs/Elevation-Worship/Graves-Into-Gardens/My-Testimony/",
+      "reason": null
     },
     {
       "id": "expanded-give-me-faith-elevation-worship",
@@ -2998,31 +3009,34 @@
       "id": "expanded-it-is-so-elevation-worship",
       "title": "It Is So",
       "author": "Associated recording: Elevation Worship",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "f658e4780bbfafa4d153",
+      "identityAssumption": "Published text: It Is So. Added live sections and other recordings are separate versions.",
+      "sourceHash": "2107c03e68477177fa7851cb50b769fcb71884fb7166cc1c3a4a437180ff6bf5",
+      "sourceURL": "https://www.multitracks.com/songs/Elevation-Worship/At-Midnight/It-Is-So/",
+      "reason": null
     },
     {
       "id": "expanded-there-is-a-cloud-elevation-worship",
       "title": "There Is a Cloud",
       "author": "Associated recording: Elevation Worship",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "4842459e038324b1167f",
+      "identityAssumption": "Published text: There Is A Cloud. Added live sections and other recordings are separate versions.",
+      "sourceHash": "fe2b65236e174af1bd406460ccf67f3afe2083501054489e41388fb8f9eb2d19",
+      "sourceURL": "https://www.multitracks.com/songs/Elevation-Worship/There-Is-A-Cloud/There-Is-A-Cloud/",
+      "reason": null
     },
     {
       "id": "expanded-fullness-elevation-worship",
       "title": "Fullness",
       "author": "Associated recording: Elevation Worship",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "3804c8ce114439394265",
+      "identityAssumption": "Published text: Fullness. Added live sections and other recordings are separate versions.",
+      "sourceHash": "e8993d78a940c2f37326e9dd3fdcace12c77ef2c8339b952be7f248af93e502b",
+      "sourceURL": "https://www.multitracks.com/songs/Elevation-Worship/There-Is-A-Cloud/Fullness/",
+      "reason": null
     },
     {
       "id": "expanded-unstoppable-god-elevation-worship",
@@ -3039,11 +3053,12 @@
       "id": "expanded-old-church-basement-elevation-worship",
       "title": "Old Church Basement",
       "author": "Associated recording: Elevation Worship",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "07c63fc547c901ed3774",
+      "identityAssumption": "Published text: Old Church Basement. Added live sections and other recordings are separate versions.",
+      "sourceHash": "31638e30fb9350bada2380842cdf46872255f56899df3dace22e48c3cd194649",
+      "sourceURL": "https://www.multitracks.com/songs/Elevation-Worship/Old-Church-Basement/Old-Church-Basement/",
+      "reason": null
     },
     {
       "id": "expanded-wait-on-you-elevation-worship",
@@ -3069,11 +3084,12 @@
       "id": "expanded-what-i-see-elevation-worship",
       "title": "What I See",
       "author": "Associated recording: Elevation Worship",
-      "status": "identity-unresolved",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "Title candidates lack sufficient identity evidence."
+      "status": "reviewed-draft",
+      "analysisKey": "4a37f7abe0af9f9e2dc2",
+      "identityAssumption": "Published text: What I See. Added live sections and other recordings are separate versions.",
+      "sourceHash": "fec7336688361b26f12deab5773cd4c14dfc699b320e48789207e79138fb34bb",
+      "sourceURL": "https://www.multitracks.com/songs/Elevation-Worship/Lion/What-I-See/",
+      "reason": null
     },
     {
       "id": "expanded-this-is-the-kingdom-elevation-worship",
@@ -3099,11 +3115,12 @@
       "id": "expanded-another-one-elevation-worship",
       "title": "Another One",
       "author": "Associated recording: Elevation Worship",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "b758ed4af6f0c6b0963e",
+      "identityAssumption": "Published text: Another One. Added live sections and other recordings are separate versions.",
+      "sourceHash": "f6c72468a8bb5df84787a88a024d0f83635d1e418be53ae93414f7e1c20445fb",
+      "sourceURL": "https://www.multitracks.com/songs/Elevation-Worship/When-Wind-Meets-Fire/Another-One/",
+      "reason": null
     },
     {
       "id": "expanded-sure-been-good-elevation-worship",
@@ -3119,11 +3136,12 @@
       "id": "expanded-all-of-a-sudden-elevation-worship",
       "title": "All of a Sudden",
       "author": "Associated recording: Elevation Worship",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "fc4c2b6dfe306a63c9f3",
+      "identityAssumption": "Published text: All of a Sudden. Added live sections and other recordings are separate versions.",
+      "sourceHash": "5f408071e8612a9149a6b4b9ac9904081e8b8175a8998bdf6ca099a9f8ced46e",
+      "sourceURL": "https://www.multitracks.com/songs/Elevation-Worship/When-Wind-Meets-Fire/All-of-a-Sudden/",
+      "reason": null
     },
     {
       "id": "expanded-always-on-time-elevation-worship",
@@ -3220,11 +3238,12 @@
       "id": "expanded-hallelujah-here-below-elevation-worship",
       "title": "Hallelujah Here Below",
       "author": "Associated recording: Elevation Worship",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "cf067eda098b9887011f",
+      "identityAssumption": "Published text: Hallelujah Here Below. Added live sections and other recordings are separate versions.",
+      "sourceHash": "22be44376e6ea1978f0c0bf34d247f956ab5f9e3f36b9bf799b48c1a7422c16d",
+      "sourceURL": "https://www.multitracks.com/songs/Elevation-Worship/Hallelujah-Here-Below/Hallelujah-Here-Below/",
+      "reason": null
     },
     {
       "id": "expanded-then-he-rose-elevation-worship",
@@ -3260,11 +3279,12 @@
       "id": "expanded-let-us-adore-elevation-worship",
       "title": "Let Us Adore",
       "author": "Associated recording: Elevation Worship",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "881a8de583054f457633",
+      "identityAssumption": "Published text: Let Us Adore. Added live sections and other recordings are separate versions.",
+      "sourceHash": "095b86ec2e5c806128aeaa09f2dc31a6fdfb64a068d90908b54f00da4492bb2c",
+      "sourceURL": "https://www.multitracks.com/songs/Elevation-Worship/Wake-Up-The-Wonder/Let-Us-Adore/",
+      "reason": null
     },
     {
       "id": "expanded-mighty-god-another-hallelujah-elevation-worship",
@@ -3290,31 +3310,34 @@
       "id": "expanded-mercy-elevation-worship",
       "title": "Mercy",
       "author": "Associated recording: Elevation Worship",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "d3e597f16d78817fbed8",
+      "identityAssumption": "Published text: Mercy. Added live sections and other recordings are separate versions.",
+      "sourceHash": "c808789c626bf3419b2575228cf57e2a0dc41d3cfd2488b31dbb3c6a19785ff4",
+      "sourceURL": "https://www.multitracks.com/songs/Elevation-Worship/Old-Church-Basement/Mercy/",
+      "reason": null
     },
     {
       "id": "expanded-god-of-revival-bethel-music",
       "title": "God of Revival",
       "author": "Associated recording: Bethel Music",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "56bb86c28a0b579d9068",
+      "identityAssumption": "Published text: God Of Revival. Added live sections and other recordings are separate versions.",
+      "sourceHash": "f3edf7612a780dd3289cea37d56ba7ce87af176fc109f880ab435450f85e3841",
+      "sourceURL": "https://www.multitracks.com/songs/Bethel-Music/Revival%27s-In-The-Air/God-Of-Revival/",
+      "reason": null
     },
     {
       "id": "expanded-homecoming-bethel-music",
       "title": "Homecoming",
       "author": "Associated recording: Bethel Music",
-      "status": "identity-unresolved",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "Title candidates lack sufficient identity evidence."
+      "status": "reviewed-draft",
+      "analysisKey": "bd7d35b4432f3526fd64",
+      "identityAssumption": "Published text: Homecoming. Added live sections and other recordings are separate versions.",
+      "sourceHash": "daf27e446674c97549cea35b01d12542358260e4a55a1f546173bff776f303ed",
+      "sourceURL": "https://www.multitracks.com/songs/Bethel-Music/Homecoming/Homecoming/",
+      "reason": null
     },
     {
       "id": "expanded-egypt-bethel-music",
@@ -3341,21 +3364,23 @@
       "id": "expanded-reason-to-praise-bethel-music",
       "title": "Reason to Praise",
       "author": "Associated recording: Bethel Music",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "af1ebb4f69abb3db5112",
+      "identityAssumption": "Published text: Reason To Praise. Added live sections and other recordings are separate versions.",
+      "sourceHash": "92e06c519e104a5a46ff07ee6782bafdc51f90b8f4791c460c14ed03884a9bad",
+      "sourceURL": "https://www.multitracks.com/songs/Bethel-Music/Homecoming/Reason-To-Praise/",
+      "reason": null
     },
     {
       "id": "expanded-i-believe-bethel-music",
       "title": "I Believe",
       "author": "Associated recording: Bethel Music",
-      "status": "identity-unresolved",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "Title candidates lack sufficient identity evidence."
+      "status": "reviewed-draft",
+      "analysisKey": "2cafea67a2bf1d3fcd29",
+      "identityAssumption": "Published text: I Believe. Added live sections and other recordings are separate versions.",
+      "sourceHash": "4b800a99f0922523fcdb26e7062cb5807be1341d70feb714451497a10d5ea6f1",
+      "sourceURL": "https://www.multitracks.com/songs/Bethel-Music/Homecoming/I-Believe/",
+      "reason": null
     },
     {
       "id": "expanded-son-of-suffering-bethel-music",
@@ -3393,51 +3418,56 @@
       "id": "expanded-dancing-on-the-waves-bethel-music",
       "title": "Dancing on the Waves",
       "author": "Associated recording: Bethel Music",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "75d1df2890fa8c160737",
+      "identityAssumption": "Published text: Dancing on the Waves. Added live sections and other recordings are separate versions.",
+      "sourceHash": "9869995e8f5297d2327b29abcbc9bfe822cece29dbad0ad6d03f5b155ebb66cb",
+      "sourceURL": "https://www.multitracks.com/songs/Bethel-Music/Peace/Dancing-on-the-Waves/",
+      "reason": null
     },
     {
       "id": "expanded-anything-is-possible-bethel-music",
       "title": "Anything Is Possible",
       "author": "Associated recording: Bethel Music",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "479adf50eba259132326",
+      "identityAssumption": "Published text: Anything Is Possible. Added live sections and other recordings are separate versions.",
+      "sourceHash": "7f5575bb2c818e366b309df1938fb9168e3bc5d9caba571232245dde0df9510b",
+      "sourceURL": "https://www.multitracks.com/songs/Bethel-Music/Revival%27s-In-The-Air/Anything-Is-Possible/",
+      "reason": null
     },
     {
       "id": "expanded-champion-bethel-music",
       "title": "Champion",
       "author": "Associated recording: Bethel Music",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "7ffb99b918c7972b8e08",
+      "identityAssumption": "Published text: Champion. Added live sections and other recordings are separate versions.",
+      "sourceHash": "5ffc832bf7ce5eb97e6f24df22465269a8528f9938516ca4b15b94e4420d2287",
+      "sourceURL": "https://www.multitracks.com/songs/Bethel-Music/Revival%27s-In-The-Air/Champion/",
+      "reason": null
     },
     {
       "id": "expanded-promises-never-fail-bethel-music",
       "title": "Promises Never Fail",
       "author": "Associated recording: Bethel Music",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "99da76e588019952e96e",
+      "identityAssumption": "Published text: Promises Never Fail. Added live sections and other recordings are separate versions.",
+      "sourceHash": "e002277a24fba674d931e50ad9c862bcc10fbb5dc44be647302f8be78f704fb8",
+      "sourceURL": "https://www.multitracks.com/songs/Bethel-Music/Victory/Promises-Never-Fail/",
+      "reason": null
     },
     {
       "id": "expanded-endless-alleluia-bethel-music",
       "title": "Endless Alleluia",
       "author": "Associated recording: Bethel Music",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "dc6466375ab78d7fa98f",
+      "identityAssumption": "Published text: Endless Alleluia. Added live sections and other recordings are separate versions.",
+      "sourceHash": "635c39326186a2d4477d1825c716042e4651e7331409541de8013a1ba3d32654",
+      "sourceURL": "https://www.multitracks.com/songs/Bethel-Music/Victory/Endless-Alleluia/",
+      "reason": null
     },
     {
       "id": "expanded-ever-be-bethel-music",
@@ -3464,21 +3494,23 @@
       "id": "expanded-pieces-bethel-music",
       "title": "Pieces",
       "author": "Associated recording: Bethel Music",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "55a067709ff774fbd0d4",
+      "identityAssumption": "Published text: Pieces. Added live sections and other recordings are separate versions.",
+      "sourceHash": "afded1c457d0e7432d27ee9d969570f1d056151c19a235d1c2c37178ee034502",
+      "sourceURL": "https://www.multitracks.com/songs/Bethel-Music/Have-It-All/Pieces/",
+      "reason": null
     },
     {
       "id": "expanded-closer-bethel-music",
       "title": "Closer",
       "author": "Associated recording: Bethel Music",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "816c81bb16d5e071e161",
+      "identityAssumption": "Published text: Closer. Added live sections and other recordings are separate versions.",
+      "sourceHash": "804eedf5f4c78e391b5c6b61b9bff29967f51fcad55ee69661ae570d402d8d44",
+      "sourceURL": "https://www.multitracks.com/songs/Bethel-Music/For-The-Sake-Of-The-World/Closer/",
+      "reason": null
     },
     {
       "id": "expanded-one-thing-remains-bethel-music",
@@ -3506,31 +3538,34 @@
       "id": "expanded-i-love-your-presence-bethel-music",
       "title": "I Love Your Presence",
       "author": "Associated recording: Bethel Music",
-      "status": "identity-unresolved",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "Title candidates lack sufficient identity evidence."
+      "status": "reviewed-draft",
+      "analysisKey": "303cd6415205e591384f",
+      "identityAssumption": "Published text: I Love Your Presence. Added live sections and other recordings are separate versions.",
+      "sourceHash": "399dc8ccad4b2faf3c19e32ea180cef57b89348c5414fcd3ce72c4fe2fbd5466",
+      "sourceURL": "https://www.multitracks.com/songs/Bethel-Music/Here-Is-Love/I-Love-Your-Presence/",
+      "reason": null
     },
     {
       "id": "expanded-you-are-good-bethel-music",
       "title": "You Are Good",
       "author": "Associated recording: Bethel Music",
-      "status": "identity-unresolved",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "Title candidates lack sufficient identity evidence."
+      "status": "reviewed-draft",
+      "analysisKey": "62f90e65e615bdbfae43",
+      "identityAssumption": "Published text: You Are Good. Added live sections and other recordings are separate versions.",
+      "sourceHash": "831420e35bfc4ba9d0594002b90a09d06303c0f71110e53acc4ba1f21d084720",
+      "sourceURL": "https://www.multitracks.com/songs/Bethel-Music/Be-Lifted-High/You-Are-Good/",
+      "reason": null
     },
     {
       "id": "expanded-come-to-me-bethel-music",
       "title": "Come to Me",
       "author": "Associated recording: Bethel Music",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "0c5d29ce7e99ee580903",
+      "identityAssumption": "Published text: Come To Me. Added live sections and other recordings are separate versions.",
+      "sourceHash": "6aeb047ef475ee56b8c24a10bdb8f200b6e8b058d0e159d26086bc1006795dfa",
+      "sourceURL": "https://www.multitracks.com/songs/Bethel-Music/You-Make-Me-Brave/Come-To-Me/",
+      "reason": null
     },
     {
       "id": "expanded-the-blood-bethel-music",
@@ -3547,31 +3582,34 @@
       "id": "expanded-victory-is-yours-bethel-music",
       "title": "Victory Is Yours",
       "author": "Associated recording: Bethel Music",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "ade2f2e7bbff2556f93d",
+      "identityAssumption": "Published text: Victory Is Yours. Added live sections and other recordings are separate versions.",
+      "sourceHash": "812bbd81aa94ca015c3b8976db06624b9dd7f825a05953a38135ae35e55de8b8",
+      "sourceURL": "https://www.multitracks.com/songs/Bethel-Music/Victory/Victory-Is-Yours/",
+      "reason": null
     },
     {
       "id": "expanded-stand-in-your-love-bethel-music",
       "title": "Stand in Your Love",
       "author": "Associated recording: Bethel Music",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "ed0890fc143ad2b12e3c",
+      "identityAssumption": "Published text: Stand in Your Love. Added live sections and other recordings are separate versions.",
+      "sourceHash": "de45ada3bdc3e842658794b3ec96c1ba044e9233b9d5ead904976206f0308cab",
+      "sourceURL": "https://www.multitracks.com/songs/Bethel-Music/Victory/Stand-in-Your-Love/",
+      "reason": null
     },
     {
       "id": "expanded-i-give-you-my-heart-hillsong-worship",
       "title": "I Give You My Heart",
       "author": "Associated recording: Hillsong Worship",
-      "status": "identity-unresolved",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "Title candidates lack sufficient identity evidence."
+      "status": "reviewed-draft",
+      "analysisKey": "a60c2327e89433324069",
+      "identityAssumption": "Published text: I Give You My Heart. Added live sections and other recordings are separate versions.",
+      "sourceHash": "9720545b01a7eedd549dfedb632e9b35ac64371bdb6d2306be56b89bd66e9fd7",
+      "sourceURL": "https://www.multitracks.com/songs/Hillsong-Worship/The-Very-Best-of-Hillsong-Live/I-Give-You-My-Heart/",
+      "reason": null
     },
     {
       "id": "expanded-still-hillsong-worship",
@@ -3597,11 +3635,12 @@
       "id": "expanded-awake-my-soul-hillsong-worship",
       "title": "Awake My Soul",
       "author": "Associated recording: Hillsong Worship",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "2e7458ea1db97cfcd56c",
+      "identityAssumption": "Published text: Awake My Soul (Live). Added live sections and other recordings are separate versions.",
+      "sourceHash": "2f2c6ae0dc804678f0a29d346ec1ae5c262ffe10d38d7bb1d99872d4b5fd0046",
+      "sourceURL": "https://www.multitracks.com/songs/Hillsong-Worship/Awake/Awake-My-Soul-%28Live%29/",
+      "reason": null
     },
     {
       "id": "expanded-new-wine-hillsong-worship",
@@ -3617,91 +3656,100 @@
       "id": "expanded-fresh-wind-hillsong-worship",
       "title": "Fresh Wind",
       "author": "Associated recording: Hillsong Worship",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "696eba64d60ac0ec6116",
+      "identityAssumption": "Published text: Fresh Wind. Added live sections and other recordings are separate versions.",
+      "sourceHash": "73d5fdb3c9ea140f96817a79624574b4d826e2b985732b68286f88e595eac73c",
+      "sourceURL": "https://www.multitracks.com/songs/Hillsong-Worship/Fresh-Wind/Fresh-Wind/",
+      "reason": null
     },
     {
       "id": "expanded-that-s-the-power-hillsong-worship",
       "title": "That's the Power",
       "author": "Associated recording: Hillsong Worship",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "f1a87e934ed427f5837f",
+      "identityAssumption": "Published text: That's The Power. Added live sections and other recordings are separate versions.",
+      "sourceHash": "1ad2ab74f24dd9773d7415489aa1f538e9058e51af646fc2019c360b9f1f1c46",
+      "sourceURL": "https://www.multitracks.com/songs/Hillsong-Worship/These-Same-Skies/That%27s-The-Power/",
+      "reason": null
     },
     {
       "id": "expanded-never-walk-alone-hillsong-worship",
       "title": "Never Walk Alone",
       "author": "Associated recording: Hillsong Worship",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "74c9f7e519301745f2e8",
+      "identityAssumption": "Published text: Never Walk Alone. Added live sections and other recordings are separate versions.",
+      "sourceHash": "9e0ca03e04dbfa0bf770cf7f6c687808b0e3e575708d0b3a3a6f2a3a2362ec03",
+      "sourceURL": "https://www.multitracks.com/songs/Hillsong-Worship/These-Same-Skies/Never-Walk-Alone/",
+      "reason": null
     },
     {
       "id": "expanded-hope-of-the-ages-hillsong-worship",
       "title": "Hope of the Ages",
       "author": "Associated recording: Hillsong Worship",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "30185376c2149ae965f3",
+      "identityAssumption": "Published text: Hope of the Ages. Added live sections and other recordings are separate versions.",
+      "sourceHash": "58e5b0bcfdafa2e22186a4488891fdba8b24cf151d61059e91db57394f2ba4a2",
+      "sourceURL": "https://www.multitracks.com/songs/Hillsong-Worship/Hope-of-the-Ages/Hope-of-the-Ages/",
+      "reason": null
     },
     {
       "id": "expanded-remembrance-hillsong-worship",
       "title": "Remembrance",
       "author": "Associated recording: Hillsong Worship",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "0906801b173312e9da3f",
+      "identityAssumption": "Published text: Remembrance. Added live sections and other recordings are separate versions.",
+      "sourceHash": "22c1c9176f0e998506e1562629ffd9016bb772836559966b3da65132d396b3c7",
+      "sourceURL": "https://www.multitracks.com/songs/Hillsong-Worship/There-Is-More/Remembrance/",
+      "reason": null
     },
     {
       "id": "expanded-behold-then-sings-my-soul-hillsong-worship",
       "title": "Behold (Then Sings My Soul)",
       "author": "Associated recording: Hillsong Worship",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "b46c54270e7995c192aa",
+      "identityAssumption": "Published text: Behold (Then Sings My Soul). Added live sections and other recordings are separate versions.",
+      "sourceHash": "9c78a298cfa570aa66cf108f1dfad9afc93ef5d470f087166060430d21844117",
+      "sourceURL": "https://www.multitracks.com/songs/Hillsong-Worship/Let-There-Be-Light/Behold-%28Then-Sings-My-Soul%29/",
+      "reason": null
     },
     {
       "id": "expanded-love-on-the-line-hillsong-worship",
       "title": "Love on the Line",
       "author": "Associated recording: Hillsong Worship",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "5bc42bf510084d97001b",
+      "identityAssumption": "Published text: Love On the Line. Added live sections and other recordings are separate versions.",
+      "sourceHash": "3c8bc410bd0b65e536063b68588ced53bbb7eaae203bf7bf88e57b5e648215cd",
+      "sourceURL": "https://www.multitracks.com/songs/Hillsong-Worship/OPEN-HEAVEN-/-River-Wild/Love-On-the-Line/",
+      "reason": null
     },
     {
       "id": "expanded-grace-to-grace-hillsong-worship",
       "title": "Grace to Grace",
       "author": "Associated recording: Hillsong Worship",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "b79351206301c72aed5a",
+      "identityAssumption": "Published text: Grace to Grace. Added live sections and other recordings are separate versions.",
+      "sourceHash": "08a537a7ce5cd147cb3305f604fd96e7df91aaf04576f30d7c2917a093ecea24",
+      "sourceURL": "https://www.multitracks.com/songs/Hillsong-Worship/Let-There-Be-Light/Grace-to-Grace/",
+      "reason": null
     },
     {
       "id": "expanded-calvary-hillsong-worship",
       "title": "Calvary",
       "author": "Associated recording: Hillsong Worship",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "41ed3a8a6288b10e0deb",
+      "identityAssumption": "Published text: Calvary. Added live sections and other recordings are separate versions.",
+      "sourceHash": "941cf8b6a513dd9b83a425f4d938146c593e6610d0d3784a9b5746e17d75c45f",
+      "sourceURL": "https://www.multitracks.com/songs/Hillsong/No-Other-Name/Calvary/",
+      "reason": null
     },
     {
       "id": "expanded-at-the-cross-hillsong-worship",
@@ -3717,21 +3765,23 @@
       "id": "expanded-christ-is-enough-hillsong-worship",
       "title": "Christ Is Enough",
       "author": "Associated recording: Hillsong Worship",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "643f53b605cf92f81760",
+      "identityAssumption": "Published text: Christ is Enough. Added live sections and other recordings are separate versions.",
+      "sourceHash": "bff6e7b98515df615c6fc91436a8c378a1ae20604898c438d15d57a2a987deeb",
+      "sourceURL": "https://www.multitracks.com/songs/Hillsong/Glorious-Ruins/Christ-is-Enough/",
+      "reason": null
     },
     {
       "id": "expanded-god-is-able-hillsong-worship",
       "title": "God Is Able",
       "author": "Associated recording: Hillsong Worship",
-      "status": "identity-unresolved",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "Title candidates lack sufficient identity evidence."
+      "status": "reviewed-draft",
+      "analysisKey": "a8f7efaaa166025b2f82",
+      "identityAssumption": "Published text: God Is Able. Added live sections and other recordings are separate versions.",
+      "sourceHash": "ed8b54ddf5abf51e7257c0ce52e1c7a484364b5f6c11fe99230dd28ae775a79b",
+      "sourceURL": "https://www.multitracks.com/songs/Hillsong-Worship/God-Is-Able/God-Is-Able/",
+      "reason": null
     },
     {
       "id": "expanded-with-all-i-am-hillsong-worship",
@@ -3747,41 +3797,45 @@
       "id": "expanded-jesus-i-need-you-hillsong-worship",
       "title": "Jesus I Need You",
       "author": "Associated recording: Hillsong Worship",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "e485e2222d9693166da7",
+      "identityAssumption": "Published text: Jesus I Need You. Added live sections and other recordings are separate versions.",
+      "sourceHash": "da74711e7ea8fb73dd2f2979a90ca5e69b2ac9b7bfc21340da1db41b1e57e06b",
+      "sourceURL": "https://www.multitracks.com/songs/Hillsong-Worship/OPEN-HEAVEN-/-River-Wild/Jesus-I-Need-You/",
+      "reason": null
     },
     {
       "id": "expanded-beautiful-exchange-hillsong-worship",
       "title": "Beautiful Exchange",
       "author": "Associated recording: Hillsong Worship",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "0535bbcd849deda85258",
+      "identityAssumption": "Published text: Beautiful Exchange. Added live sections and other recordings are separate versions.",
+      "sourceHash": "2bd69b5f5f1f7e72a5d3f49592a54e22b5728dcc125bd65b3ddc0e6e4c713946",
+      "sourceURL": "https://www.multitracks.com/songs/Hillsong-Worship/A-Beautiful-Exchange/Beautiful-Exchange/",
+      "reason": null
     },
     {
       "id": "expanded-open-heaven-river-wild-hillsong-worship",
       "title": "Open Heaven (River Wild)",
       "author": "Associated recording: Hillsong Worship",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "5660e47620dbe9ce676f",
+      "identityAssumption": "Published text: Open Heaven (River Wild). Added live sections and other recordings are separate versions.",
+      "sourceHash": "94851003295ad50689d216ffde991f7ab138309906ef77a32ba99f63452b5be7",
+      "sourceURL": "https://www.multitracks.com/songs/Hillsong-Worship/OPEN-HEAVEN-/-River-Wild/Open-Heaven-%28River-Wild%29/",
+      "reason": null
     },
     {
       "id": "expanded-let-there-be-light-hillsong-worship",
       "title": "Let There Be Light",
       "author": "Associated recording: Hillsong Worship",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "971954ff53a35915b420",
+      "identityAssumption": "Published text: Let There Be Light. Added live sections and other recordings are separate versions.",
+      "sourceHash": "cfbfe5f98002d196e7a99d509075569f5f87a5cacf3f02a55ab4e998898cd637",
+      "sourceURL": "https://www.multitracks.com/songs/Hillsong-Worship/Let-There-Be-Light/Let-There-Be-Light/",
+      "reason": null
     },
     {
       "id": "expanded-prince-of-peace-hillsong-worship",
@@ -3797,11 +3851,12 @@
       "id": "expanded-i-surrender-hillsong-worship",
       "title": "I Surrender",
       "author": "Associated recording: Hillsong Worship",
-      "status": "identity-unresolved",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "Title candidates lack sufficient identity evidence."
+      "status": "reviewed-draft",
+      "analysisKey": "23da9f2adefb438dcf4c",
+      "identityAssumption": "Published text: I Surrender. Added live sections and other recordings are separate versions.",
+      "sourceHash": "b1d3ae7f763f732c64d18651d724b05cdeaba0c04497beac486e8c3cc6d9db15",
+      "sourceURL": "https://www.multitracks.com/songs/Hillsong/Cornerstone-%28Live%29/I-Surrender/",
+      "reason": null
     },
     {
       "id": "expanded-the-stand-hillsong-united",
@@ -3872,11 +3927,12 @@
       "id": "expanded-clean-hillsong-united",
       "title": "Clean",
       "author": "Associated recording: Hillsong UNITED",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "351c2d1ef8d93809de46",
+      "identityAssumption": "Published text: Clean. Added live sections and other recordings are separate versions.",
+      "sourceHash": "f6c7a8c538488e32676c57acd3ac918e6ee5871a441c165b1a0368aeae7b5ca4",
+      "sourceURL": "https://www.multitracks.com/songs/Hillsong-United/People/Clean/",
+      "reason": null
     },
     {
       "id": "expanded-know-you-will-hillsong-united",
@@ -3893,21 +3949,23 @@
       "id": "expanded-on-repeat-hillsong-united",
       "title": "On Repeat",
       "author": "Associated recording: Hillsong UNITED",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "ed12ce1dfec53d97ca40",
+      "identityAssumption": "Published text: On Repeat. Added live sections and other recordings are separate versions.",
+      "sourceHash": "185e691658058c57b483430386f3c5ca1d81a781993f8482c9fa4bd5ea6962a3",
+      "sourceURL": "https://www.multitracks.com/songs/Hillsong-United/Are-We-There-Yet/On-Repeat/",
+      "reason": null
     },
     {
       "id": "expanded-sure-thing-hillsong-united",
       "title": "Sure Thing",
       "author": "Associated recording: Hillsong UNITED",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "fedfc6043f69d75bcc6e",
+      "identityAssumption": "Published text: Sure Thing. Added live sections and other recordings are separate versions.",
+      "sourceHash": "143edd6e8ba886f597cd0ea12c094234bc655682760e7d7fcec86252a0133ae6",
+      "sourceURL": "https://www.multitracks.com/songs/Hillsong-United/Are-We-There-Yet/Sure-Thing/",
+      "reason": null
     },
     {
       "id": "expanded-echoes-till-we-see-the-other-side-hillsong-united",
@@ -3979,11 +4037,12 @@
       "id": "expanded-with-everything-hillsong-united",
       "title": "With Everything",
       "author": "Associated recording: Hillsong UNITED",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "e774ec49bb3058ff14e8",
+      "identityAssumption": "The full official Joel Houston text replaces a short tour reprise. This analysis covers the published usual text rather than every UNITED arrangement.",
+      "sourceHash": "fc890dddf904e281528da32c46789f36d468a44a27fc6c5c521d9988d4258695",
+      "sourceURL": "https://hillsong.com/music/worship/this-is-our-god-live/with-everything-live/lyrics",
+      "reason": null
     },
     {
       "id": "expanded-lead-me-to-the-cross-hillsong-united",
@@ -3999,21 +4058,23 @@
       "id": "expanded-all-i-need-is-you-hillsong-united",
       "title": "All I Need Is You",
       "author": "Associated recording: Hillsong UNITED",
-      "status": "identity-unresolved",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "Title candidates lack sufficient identity evidence."
+      "status": "reviewed-draft",
+      "analysisKey": "ff8490f9b598a75ccaad",
+      "identityAssumption": "Published text: All I Need Is You. Added live sections and other recordings are separate versions.",
+      "sourceHash": "535fdf7cdd7428dc7706148e578f33dc0ce30e352fadde0fb2e4db51fa00be7f",
+      "sourceURL": "https://www.multitracks.com/songs/Hillsong-United/The-I-Heart-Revolution/All-I-Need-Is-You/",
+      "reason": null
     },
     {
       "id": "expanded-take-it-all-hillsong-united",
       "title": "Take It All",
       "author": "Associated recording: Hillsong UNITED",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "51f2cd5f72f40103367c",
+      "identityAssumption": "Published text: Take It All. Added live sections and other recordings are separate versions.",
+      "sourceHash": "db32d2247ea2d6a3c4093d31d8818752851fcc565f06783fece86b16c41754e8",
+      "sourceURL": "https://www.multitracks.com/songs/Hillsong-United/The-I-Heart-Revolution/Take-It-All/",
+      "reason": null
     },
     {
       "id": "expanded-salvation-is-here-hillsong-united",
@@ -4082,21 +4143,23 @@
       "id": "expanded-even-so-come-passion",
       "title": "Even So Come",
       "author": "Associated recording: Passion",
-      "status": "identity-unresolved",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "Title candidates lack sufficient identity evidence."
+      "status": "reviewed-draft",
+      "analysisKey": "189b562300f0902aa4e2",
+      "identityAssumption": "Published text: Even So Come. Added live sections and other recordings are separate versions.",
+      "sourceHash": "e43dfeb02436e82ddab1f56a819d9e790291a8a1f0f1cb8b5b33d1da69f0c433",
+      "sourceURL": "https://www.multitracks.com/songs/Passion/Passion%7C-Even-So-Come/Even-So-Come/",
+      "reason": null
     },
     {
       "id": "expanded-whole-heart-passion",
       "title": "Whole Heart",
       "author": "Associated recording: Passion",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "e5186b9c8760ead1b8c6",
+      "identityAssumption": "Published text: Whole Heart. Added live sections and other recordings are separate versions.",
+      "sourceHash": "58b1abb49f4cfb5a48eb7b1e36829e4a0c4a1ca0de481785e0a705079ecc5fcf",
+      "sourceURL": "https://www.multitracks.com/songs/Passion/Whole-Heart/Whole-Heart/",
+      "reason": null
     },
     {
       "id": "expanded-follow-you-anywhere-passion",
@@ -4124,11 +4187,12 @@
       "id": "expanded-beautiful-jesus-passion",
       "title": "Beautiful Jesus",
       "author": "Associated recording: Passion",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "01eba92e7a27a4c04c8a",
+      "identityAssumption": "Published text: Beautiful Jesus (Live). Added live sections and other recordings are separate versions.",
+      "sourceHash": "d3c086aba0be715102d28d23d9af5dacedaba4e4bb5310143bdddd182665b941",
+      "sourceURL": "https://www.multitracks.com/songs/Passion/Burn-Bright/Beautiful-Jesus-%28Live%29/",
+      "reason": null
     },
     {
       "id": "expanded-simple-passion",
@@ -4144,21 +4208,23 @@
       "id": "expanded-worthy-of-your-name-passion",
       "title": "Worthy of Your Name",
       "author": "Associated recording: Passion",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "fd4fe32ebcef38fb3e6d",
+      "identityAssumption": "Published text: Worthy of Your Name. Added live sections and other recordings are separate versions.",
+      "sourceHash": "2fc7d110693b1bed764d0a9103520b2b913c0f8a89fcf6ca60fd612fd737fbec",
+      "sourceURL": "https://www.multitracks.com/songs/Passion/Worthy-of-Your-Name/Worthy-of-Your-Name/",
+      "reason": null
     },
     {
       "id": "expanded-remember-passion",
       "title": "Remember",
       "author": "Associated recording: Passion",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "2beb5e897bd88af99577",
+      "identityAssumption": "The publisher text says more of Your Presence; an apparent more than copying error in a secondary resource is not treated as the songwriter’s claim. This assessment uses the published usual text, not every live arrangement.",
+      "sourceHash": "325ebf996a04413d216ddb1ca452243ef9834927966ba22841dfe4b8ea7813b2",
+      "sourceURL": "https://www.worshiptogether.com/songs/remember-passion/",
+      "reason": null
     },
     {
       "id": "expanded-all-praise-passion",
@@ -4174,11 +4240,12 @@
       "id": "expanded-it-is-finished-passion",
       "title": "It Is Finished",
       "author": "Associated recording: Passion",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "309d0f7c50c242b582b5",
+      "identityAssumption": "Published text: It is Finished. Added live sections and other recordings are separate versions.",
+      "sourceHash": "b3fe0ed9de985931ca91991a0b2c76244d879d90c5099503e703fc1d8b434c6f",
+      "sourceURL": "https://www.multitracks.com/songs/Passion/Follow-You-Anywhere/It-is-Finished/",
+      "reason": null
     },
     {
       "id": "expanded-king-of-glory-passion",
@@ -4225,11 +4292,12 @@
       "id": "expanded-he-who-is-to-come-passion",
       "title": "He Who Is to Come",
       "author": "Associated recording: Passion",
-      "status": "identity-unresolved",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "Title candidates lack sufficient identity evidence."
+      "status": "reviewed-draft",
+      "analysisKey": "aa90902fdc3eca70a16b",
+      "identityAssumption": "Published text: He Who Is To Come. Added live sections and other recordings are separate versions.",
+      "sourceHash": "ebd0870663810c54281c22367980fa5bee775f227172574aa670376a9442f4fc",
+      "sourceURL": "https://www.multitracks.com/songs/Passion/He-Who-Is-To-Come/He-Who-Is-To-Come/",
+      "reason": null
     },
     {
       "id": "expanded-call-on-heaven-passion",
@@ -4266,11 +4334,12 @@
       "id": "expanded-sunday-is-coming-phil-wickham",
       "title": "Sunday Is Coming",
       "author": "Associated recording: Phil Wickham",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "7766da4ad2880bbe4f7a",
+      "identityAssumption": "Published text: Sunday Is Coming. Added live sections and other recordings are separate versions.",
+      "sourceHash": "85e02603afe768ff155504a7f72a7dddc98f6f7c79c0572d7a3cafbf92368c10",
+      "sourceURL": "https://www.multitracks.com/songs/Phil-Wickham/Sunday-Is-Coming/Sunday-Is-Coming/",
+      "reason": null
     },
     {
       "id": "expanded-doxology-amen-phil-wickham",
@@ -4308,31 +4377,34 @@
       "id": "expanded-till-i-found-you-phil-wickham",
       "title": "Till I Found You",
       "author": "Associated recording: Phil Wickham",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "77e79b4ec1b097dc3249",
+      "identityAssumption": "Published text: Till I Found You. Added live sections and other recordings are separate versions.",
+      "sourceHash": "07b303591896661226ab444dba2c7eaa0c703a66813e089ba5ced95a0c01e52d",
+      "sourceURL": "https://www.multitracks.com/songs/Phil-Wickham/Living-Hope/Till-I-Found-You/",
+      "reason": null
     },
     {
       "id": "expanded-song-in-my-soul-phil-wickham",
       "title": "Song in My Soul",
       "author": "Associated recording: Phil Wickham",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "8e32a43e0761d3b26939",
+      "identityAssumption": "Published text: Song In My Soul. Added live sections and other recordings are separate versions.",
+      "sourceHash": "cb6c87b18b59b6252696832be644e7737c3f4cb12da25a9561ce7d271bdb6806",
+      "sourceURL": "https://www.multitracks.com/songs/Phil-Wickham/Living-Hope/Song-In-My-Soul/",
+      "reason": null
     },
     {
       "id": "expanded-it-s-always-been-you-phil-wickham",
       "title": "It's Always Been You",
       "author": "Associated recording: Phil Wickham",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "04812c1e0982035287da",
+      "identityAssumption": "Published text: It's Always Been You. Added live sections and other recordings are separate versions.",
+      "sourceHash": "7b26a157c1504b635c5d250f27e1e92f3f6dc9a8a46f95dc1cc6269bd273428b",
+      "sourceURL": "https://www.multitracks.com/songs/Phil-Wickham/Hymn-of-Heaven/It%27s-Always-Been-You/",
+      "reason": null
     },
     {
       "id": "expanded-1000-names-phil-wickham",
@@ -4379,31 +4451,34 @@
       "id": "expanded-praise-the-lord-phil-wickham",
       "title": "Praise the Lord",
       "author": "Associated recording: Phil Wickham",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "ca12fc4b9d7d555ac9cb",
+      "identityAssumption": "Published text: Praise the Lord. Added live sections and other recordings are separate versions.",
+      "sourceHash": "86685f46254d056edf1c101b1c655ccc7c9ab425cb9ebf865262d72aaef74b68",
+      "sourceURL": "https://www.multitracks.com/songs/Phil-Wickham/I-Believe/Praise-the-Lord/",
+      "reason": null
     },
     {
       "id": "expanded-people-of-heaven-phil-wickham",
       "title": "People of Heaven",
       "author": "Associated recording: Phil Wickham",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "67aee42a022f4468d369",
+      "identityAssumption": "Published text: People of Heaven. Added live sections and other recordings are separate versions.",
+      "sourceHash": "c1b97f21521265b7fe349044eed280ee0be6c3c3e49efb06de0bac6222235abe",
+      "sourceURL": "https://www.multitracks.com/songs/Phil-Wickham/People-of-Heaven/People-of-Heaven/",
+      "reason": null
     },
     {
       "id": "expanded-look-to-jesus-phil-wickham",
       "title": "Look to Jesus",
       "author": "Associated recording: Phil Wickham",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "420f78c8d8d79e6aa5a7",
+      "identityAssumption": "Published text: Look To Jesus. Added live sections and other recordings are separate versions.",
+      "sourceHash": "b188dd71701500fac523e0dd4293ea19de862bbc3345d8601f9b29d5c72cd142",
+      "sourceURL": "https://www.multitracks.com/songs/Phil-Wickham/Hymn-of-Heaven/Look-To-Jesus/",
+      "reason": null
     },
     {
       "id": "expanded-true-love-phil-wickham",
@@ -4473,21 +4548,23 @@
       "id": "expanded-coat-of-many-colors-brandon-lake",
       "title": "Coat of Many Colors",
       "author": "Associated recording: Brandon Lake",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "c51b9762a434a306520c",
+      "identityAssumption": "Published text: Coat of Many Colors. Added live sections and other recordings are separate versions.",
+      "sourceHash": "898ae0aef62ef6f3a33431aeed0ea56f7aef88dbf1d10f298cbb08de028626b3",
+      "sourceURL": "https://www.multitracks.com/songs/Brandon-Lake/Coat-of-Many-Colors/Coat-of-Many-Colors/",
+      "reason": null
     },
     {
       "id": "expanded-miracle-child-brandon-lake",
       "title": "Miracle Child",
       "author": "Associated recording: Brandon Lake",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "0f98c848b0f0d60d6fb9",
+      "identityAssumption": "Published text: Miracle Child. Added live sections and other recordings are separate versions.",
+      "sourceHash": "7d1e01d77187fa6e47e14114420ed8502d2843b7448143304b11e1440e92b8e8",
+      "sourceURL": "https://www.multitracks.com/songs/Brandon-Lake/Coat-of-Many-Colors/Miracle-Child/",
+      "reason": null
     },
     {
       "id": "expanded-tear-off-the-roof-brandon-lake",
@@ -4514,21 +4591,23 @@
       "id": "expanded-adoption-song-brandon-lake",
       "title": "Adoption Song",
       "author": "Associated recording: Brandon Lake",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "34455afa95a68c6f3bbd",
+      "identityAssumption": "Published text: Adoption Song. Added live sections and other recordings are separate versions.",
+      "sourceHash": "c78fbee0ac4e816471d6f7bf155bca54b841083364539f925d30392e9a379729",
+      "sourceURL": "https://www.multitracks.com/songs/Brandon-Lake/Coat-of-Many-Colors/Adoption-Song/",
+      "reason": null
     },
     {
       "id": "expanded-fear-is-not-my-future-brandon-lake",
       "title": "Fear Is Not My Future",
       "author": "Associated recording: Brandon Lake",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "32df16285c18d931b4ba",
+      "identityAssumption": "Published text: Fear Is Not My Future. Added live sections and other recordings are separate versions.",
+      "sourceHash": "919e038308a41547052d11cea96c715a9cbb328751dcbd82aacf993fb91a70c0",
+      "sourceURL": "https://www.multitracks.com/songs/Brandon-Lake/Song-Sessions/Fear-Is-Not-My-Future/",
+      "reason": null
     },
     {
       "id": "expanded-greater-still-brandon-lake",
@@ -4544,11 +4623,12 @@
       "id": "expanded-just-like-heaven-brandon-lake",
       "title": "Just Like Heaven",
       "author": "Associated recording: Brandon Lake",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "b91644ed3955739b7b48",
+      "identityAssumption": "Published text: Just Like Heaven. Added live sections and other recordings are separate versions.",
+      "sourceHash": "aa9016469a8a94b6c37bfb392d7c32608090761bd4e7bb58d2aba70d2e2e7e57",
+      "sourceURL": "https://www.multitracks.com/songs/Brandon-Lake/House-of-Miracles-%28Live%29/Just-Like-Heaven/",
+      "reason": null
     },
     {
       "id": "expanded-house-of-miracles-brandon-lake",
@@ -4565,11 +4645,12 @@
       "id": "expanded-lost-in-your-love-brandon-lake",
       "title": "Lost in Your Love",
       "author": "Associated recording: Brandon Lake",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "6fd7c13d8211990e21c8",
+      "identityAssumption": "Published text: Lost In Your Love. Added live sections and other recordings are separate versions.",
+      "sourceHash": "34f610dcb2556641f0c21368d63acdf9f515c559e5d15e2e55b51c4ba18af5b3",
+      "sourceURL": "https://www.multitracks.com/songs/Brandon-Lake/House-of-Miracles/Lost-In-Your-Love/",
+      "reason": null
     },
     {
       "id": "expanded-help-brandon-lake",
@@ -4585,21 +4666,23 @@
       "id": "expanded-so-close-brandon-lake",
       "title": "So Close",
       "author": "Associated recording: Brandon Lake",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "e717073b7633ddab178e",
+      "identityAssumption": "Published text: So Close. Added live sections and other recordings are separate versions.",
+      "sourceHash": "5cb352cea9c3004f49f3f5b2145bdd911a4d372d114decf7132e47366c06ddb2",
+      "sourceURL": "https://www.multitracks.com/songs/Brandon-Lake/HELP%21/So-Close/",
+      "reason": null
     },
     {
       "id": "expanded-don-t-you-give-up-on-me-brandon-lake",
       "title": "Don't You Give Up on Me",
       "author": "Associated recording: Brandon Lake",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "afa7db2226161747d202",
+      "identityAssumption": "Published text: Don't You Give Up On Me. Added live sections and other recordings are separate versions.",
+      "sourceHash": "cf99ac0c69150efe3345a4aa1d7a0f6c56479d3fd6ba1380a64a96fa262dee25",
+      "sourceURL": "https://www.multitracks.com/songs/Brandon-Lake/HELP%21/Don%27t-You-Give-Up-On-Me/",
+      "reason": null
     },
     {
       "id": "expanded-sevens-brandon-lake",
@@ -4702,11 +4785,12 @@
       "id": "expanded-seed-of-faith-charity-gayle",
       "title": "Seed of Faith",
       "author": "Associated recording: Charity Gayle",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "d6450535f8c88f307523",
+      "identityAssumption": "Published text: Seed of Faith. Added live sections and other recordings are separate versions.",
+      "sourceHash": "469877208c571bfdba2c855b08ea42682afa0c269ac7d08b6344f3fdf1da53e6",
+      "sourceURL": "https://www.multitracks.com/songs/Charity-Gayle/Rejoice/Seed-of-Faith/",
+      "reason": null
     },
     {
       "id": "expanded-echo-in-jesus-name-charity-gayle",
@@ -4827,11 +4911,12 @@
       "id": "expanded-man-of-your-word-maverick-city-music",
       "title": "Man of Your Word",
       "author": "Associated recording: Maverick City Music",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "0132c573a6ef1d537313",
+      "identityAssumption": "Published text: Man of Your Word. Added live sections and other recordings are separate versions.",
+      "sourceHash": "aaaa18b09c1838a39756c83be5c771428bd6a289e92a602852651281728b4e65",
+      "sourceURL": "https://www.multitracks.com/songs/Maverick-City-Music/Maverick-City-Vol.-3%2C-Part-1/Man-of-Your-Word/",
+      "reason": null
     },
     {
       "id": "expanded-communion-maverick-city-music",
@@ -4941,11 +5026,12 @@
       "id": "expanded-isaiah-song-maverick-city-music",
       "title": "Isaiah Song",
       "author": "Associated recording: Maverick City Music",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "8d873401ab66e9730d8b",
+      "identityAssumption": "Published text: Isaiah Song. Added live sections and other recordings are separate versions.",
+      "sourceHash": "61a42d3f917e7caa410e71d0eca0e970f4a08d4475be06ab3d906328903370aa",
+      "sourceURL": "https://www.multitracks.com/songs/Maverick-City-Music/Maverick-City%2C-Vol.-3-Pt.-2/Isaiah-Song/",
+      "reason": null
     },
     {
       "id": "expanded-holy-spirit-jesus-culture",
@@ -5043,21 +5129,23 @@
       "id": "expanded-make-us-one-jesus-culture",
       "title": "Make Us One",
       "author": "Associated recording: Jesus Culture",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "def49b2a2f33604dd948",
+      "identityAssumption": "Published text: Make Us One. Added live sections and other recordings are separate versions.",
+      "sourceHash": "a352da0382ba48029dcb8d35504da6c0a9aac345de80c07fb7e6ce7da5acbd14",
+      "sourceURL": "https://www.multitracks.com/songs/Jesus-Culture/Love-Has-A-Name/Make-Us-One/",
+      "reason": null
     },
     {
       "id": "expanded-move-jesus-culture",
       "title": "Move",
       "author": "Associated recording: Jesus Culture",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "ef0dcdf59d6a877fdc6c",
+      "identityAssumption": "Published text: Move. Added live sections and other recordings are separate versions.",
+      "sourceHash": "02ae2299803b4299bb9254ca9ec735a9738f5c079cec21a1568c6267d03385c9",
+      "sourceURL": "https://www.multitracks.com/songs/Jesus-Culture/Living-With-A-Fire/Move/",
+      "reason": null
     },
     {
       "id": "expanded-defender-jesus-culture",
@@ -5074,11 +5162,12 @@
       "id": "expanded-living-with-a-fire-jesus-culture",
       "title": "Living with a Fire",
       "author": "Associated recording: Jesus Culture",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "29efadd74292c62c3cfd",
+      "identityAssumption": "Published text: Living With A Fire. Added live sections and other recordings are separate versions.",
+      "sourceHash": "7f070c296be9cbec5e58461d5aca5dc2e8a594cfaff9cc3ae00716745908ddfa",
+      "sourceURL": "https://www.multitracks.com/songs/Jesus-Culture/Living-With-A-Fire/Living-With-A-Fire/",
+      "reason": null
     },
     {
       "id": "expanded-let-it-echo-jesus-culture",
@@ -5094,31 +5183,34 @@
       "id": "expanded-come-away-jesus-culture",
       "title": "Come Away",
       "author": "Associated recording: Jesus Culture",
-      "status": "identity-unresolved",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "Title candidates lack sufficient identity evidence."
+      "status": "reviewed-draft",
+      "analysisKey": "21e1dec8fb4193eb3e96",
+      "identityAssumption": "Published text: Come Away. Added live sections and other recordings are separate versions.",
+      "sourceHash": "d5781aed20fb9c396ec53da19d2213c8022e9e05a92ad6fbf577cf48acfecca0",
+      "sourceURL": "https://www.multitracks.com/songs/Jesus-Culture/Come-Away-%28Live%29/Come-Away/",
+      "reason": null
     },
     {
       "id": "expanded-god-with-us-jesus-culture",
       "title": "God with Us",
       "author": "Associated recording: Jesus Culture",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "38a0cad3ab4b43d94fc4",
+      "identityAssumption": "Published text: God With Us. Added live sections and other recordings are separate versions.",
+      "sourceHash": "2f9cee2d1d7d9901b0fbe5722275292f3240bc1e0e5f6d8ce1b17fdc800af8f8",
+      "sourceURL": "https://www.multitracks.com/songs/Jesus-Culture/Let-It-Echo/God-With-Us/",
+      "reason": null
     },
     {
       "id": "expanded-light-of-the-world-jesus-culture",
       "title": "Light of the World",
       "author": "Associated recording: Jesus Culture",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "d74943a2cc86e3bb29fa",
+      "identityAssumption": "Published text: Light Of The World. Added live sections and other recordings are separate versions.",
+      "sourceHash": "0da4fd357b9251cf7c955f5ccf30c38e4d2544a242c1ad97e20e2d458adee9b1",
+      "sourceURL": "https://www.multitracks.com/songs/Jesus-Culture/Unstoppable-Love/Light-Of-The-World/",
+      "reason": null
     },
     {
       "id": "expanded-miracles-jesus-culture",
@@ -5167,11 +5259,12 @@
       "id": "expanded-you-are-for-me-kari-jobe",
       "title": "You Are for Me",
       "author": "Associated recording: Kari Jobe",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "cb047d2a864af007065b",
+      "identityAssumption": "Published text: You Are For Me. Added live sections and other recordings are separate versions.",
+      "sourceHash": "4fce758710b2ade869a1f7442d7e91c8dc1b586a1f083dd4590be02b02c59659",
+      "sourceURL": "https://www.multitracks.com/songs/Kari-Jobe/Kari-Jobe/You-Are-For-Me/",
+      "reason": null
     },
     {
       "id": "expanded-let-the-heavens-open-kari-jobe",
@@ -5199,21 +5292,23 @@
       "id": "expanded-the-garden-kari-jobe",
       "title": "The Garden",
       "author": "Associated recording: Kari Jobe",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "5f531e0b6239c1d20d92",
+      "identityAssumption": "Published text: The Garden. Added live sections and other recordings are separate versions.",
+      "sourceHash": "198536be1833330128d6d12e3fa5b443ca8637ebd670116267225a7d2aa25f74",
+      "sourceURL": "https://www.multitracks.com/songs/Kari-Jobe/The-Garden/The-Garden/",
+      "reason": null
     },
     {
       "id": "expanded-steady-my-heart-kari-jobe",
       "title": "Steady My Heart",
       "author": "Associated recording: Kari Jobe",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "99a6b4c24efeeab2918b",
+      "identityAssumption": "Published text: Steady My Heart. Added live sections and other recordings are separate versions.",
+      "sourceHash": "2a0abb5b4ee7a2984953c9eb18b5a56a5bb171394e3acea53712435352767e34",
+      "sourceURL": "https://www.multitracks.com/songs/Kari-Jobe/Where-I-Find-You/Steady-My-Heart/",
+      "reason": null
     },
     {
       "id": "expanded-healer-kari-jobe",
@@ -5241,31 +5336,34 @@
       "id": "expanded-speak-to-me-kari-jobe",
       "title": "Speak to Me",
       "author": "Associated recording: Kari Jobe",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "1ee3a38c38b3cfdf9f16",
+      "identityAssumption": "Published text: Speak to Me. Added live sections and other recordings are separate versions.",
+      "sourceHash": "e9ada126a02580e2772bec52b04e3c7b9e6b2c5bcca1c99876188f0646d3bd78",
+      "sourceURL": "https://www.multitracks.com/songs/Kari-Jobe/The-Garden/Speak-to-Me/",
+      "reason": null
     },
     {
       "id": "expanded-rest-kari-jobe",
       "title": "Rest",
       "author": "Associated recording: Kari Jobe",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "e6b57fa60388796028d6",
+      "identityAssumption": "Published text: Rest. Added live sections and other recordings are separate versions.",
+      "sourceHash": "291d7b19035c9d5af5fb1be514bb75dc21002f8606d846f47ace2e3c8a1ebb26",
+      "sourceURL": "https://www.multitracks.com/songs/Kari-Jobe/The-Blessing-%28Live%29/Rest/",
+      "reason": null
     },
     {
       "id": "expanded-love-so-holy-kari-jobe",
       "title": "Love So Holy",
       "author": "Associated recording: Kari Jobe",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "badf5504366cab9da343",
+      "identityAssumption": "Published text: Love So Holy. Added live sections and other recordings are separate versions.",
+      "sourceHash": "f887de6d56026ed0f382e90b582db9cc177db0476b745780563942fa3657bc2b",
+      "sourceURL": "https://www.multitracks.com/songs/Kari-Jobe/The-Blessing-%28Live%29/Love-So-Holy/",
+      "reason": null
     },
     {
       "id": "expanded-i-will-follow-chris-tomlin",
@@ -5291,11 +5389,12 @@
       "id": "expanded-made-to-worship-chris-tomlin",
       "title": "Made to Worship",
       "author": "Associated recording: Chris Tomlin",
-      "status": "identity-unresolved",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "Title candidates lack sufficient identity evidence."
+      "status": "reviewed-draft",
+      "analysisKey": "00eede58eb8944d959b1",
+      "identityAssumption": "Published text: Made to Worship. Added live sections and other recordings are separate versions.",
+      "sourceHash": "0579b97db10170d558a5f3e21424b92dacfecd03b591a28ca146edee6f7e2ea3",
+      "sourceURL": "https://www.multitracks.com/songs/Chris-Tomlin/See-the-Morning/Made-to-Worship/",
+      "reason": null
     },
     {
       "id": "expanded-jesus-chris-tomlin",
@@ -5312,11 +5411,12 @@
       "id": "expanded-nobody-loves-me-like-you-chris-tomlin",
       "title": "Nobody Loves Me Like You",
       "author": "Associated recording: Chris Tomlin",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "98903545a5d743b9e4da",
+      "identityAssumption": "Published text: Nobody Loves Me Like You. Added live sections and other recordings are separate versions.",
+      "sourceHash": "efdf79bfb4734b05c1e0e2ad82fe6a860b96ce78271ec1a0bfcf869d78046b53",
+      "sourceURL": "https://www.multitracks.com/songs/Chris-Tomlin/Holy-Roar/Nobody-Loves-Me-Like-You/",
+      "reason": null
     },
     {
       "id": "expanded-always-chris-tomlin",
@@ -5333,11 +5433,12 @@
       "id": "expanded-thank-you-lord-chris-tomlin",
       "title": "Thank You Lord",
       "author": "Associated recording: Chris Tomlin",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "92d3f89091577ea8689b",
+      "identityAssumption": "Published text: Thank You Lord. Added live sections and other recordings are separate versions.",
+      "sourceHash": "e4e30cbc8e4f165e8e19d460805955fec23005adda9536742719a9fcfd055dbb",
+      "sourceURL": "https://www.multitracks.com/songs/Chris-Tomlin/Chris-Tomlin-And-Friends/Thank-You-Lord/",
+      "reason": null
     },
     {
       "id": "expanded-god-s-great-dance-floor-chris-tomlin",
@@ -5383,21 +5484,23 @@
       "id": "expanded-sing-sing-sing-chris-tomlin",
       "title": "Sing, Sing, Sing",
       "author": "Associated recording: Chris Tomlin",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "22ae0bf543888df7e6cd",
+      "identityAssumption": "Published text: Sing Sing Sing. Added live sections and other recordings are separate versions.",
+      "sourceHash": "58841955514f5d82aabf4a78bdbd4f7df39828fd11d31321e69998b52b998b72",
+      "sourceURL": "https://www.multitracks.com/songs/Chris-Tomlin/Hello-Love/Sing-Sing-Sing/",
+      "reason": null
     },
     {
       "id": "expanded-waterfall-chris-tomlin",
       "title": "Waterfall",
       "author": "Associated recording: Chris Tomlin",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "f447ff709df1ef2d7bf7",
+      "identityAssumption": "Published text: Waterfall. Added live sections and other recordings are separate versions.",
+      "sourceHash": "6cab62dbdd42b9731860845623787e8d8d9f968f95337fe53e0d06d5ddd3701e",
+      "sourceURL": "https://www.multitracks.com/songs/Chris-Tomlin/Love-Ran-Red/Waterfall/",
+      "reason": null
     },
     {
       "id": "expanded-nobody-like-our-god-chris-tomlin",
@@ -5413,21 +5516,23 @@
       "id": "expanded-jesus-son-of-god-chris-tomlin",
       "title": "Jesus Son of God",
       "author": "Associated recording: Chris Tomlin",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "079d93c5e4648e4fb966",
+      "identityAssumption": "Published text: Jesus Son of God. Added live sections and other recordings are separate versions.",
+      "sourceHash": "92fdc816c94ef1d2034242d5255019398ffddb3f5ea1e988a9c46da97442ddaf",
+      "sourceURL": "https://www.multitracks.com/songs/Chris-Tomlin/Burning-Lights/Jesus%2C-Son-of-God/",
+      "reason": null
     },
     {
       "id": "expanded-resurrection-power-chris-tomlin",
       "title": "Resurrection Power",
       "author": "Associated recording: Chris Tomlin",
-      "status": "identity-unresolved",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "Title candidates lack sufficient identity evidence."
+      "status": "reviewed-draft",
+      "analysisKey": "31e879858837ca759c21",
+      "identityAssumption": "Published text: Resurrection Power. Added live sections and other recordings are separate versions.",
+      "sourceHash": "d9ab4f75c9d649299be522ea812fb641b2e8efe9722e0f9b7b225511ef0198d7",
+      "sourceURL": "https://www.multitracks.com/songs/Chris-Tomlin/Holy-Roar/Resurrection-Power/",
+      "reason": null
     },
     {
       "id": "expanded-white-flag-chris-tomlin",
@@ -5443,11 +5548,12 @@
       "id": "expanded-lay-me-down-chris-tomlin",
       "title": "Lay Me Down",
       "author": "Associated recording: Chris Tomlin",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "49db9643469d4c1e78ff",
+      "identityAssumption": "Published text: Lay Me Down. Added live sections and other recordings are separate versions.",
+      "sourceHash": "0418f06d76e8e216804b3c062badb6a77e06cf5e09b26cab9e09ad159a27c3fd",
+      "sourceURL": "https://www.multitracks.com/songs/Chris-Tomlin/Burning-Lights/Lay-Me-Down/",
+      "reason": null
     },
     {
       "id": "expanded-praise-is-the-highway-chris-tomlin",
@@ -5852,41 +5958,45 @@
       "id": "expanded-holy-spirit-living-breath-of-god-keith-kristyn-getty",
       "title": "Holy Spirit, Living Breath of God",
       "author": "Associated recording: Keith & Kristyn Getty",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "e785309ec94d632034d5",
+      "identityAssumption": "Published text: Holy Spirit, Living Breath Of God. Added live sections and other recordings are separate versions.",
+      "sourceHash": "1d8d9b6c000a3cd793c15b0f1a8a1932075c4dd825ef51bd7bb0379c7213c0b3",
+      "sourceURL": "https://www.multitracks.com/songs/Keith-and-Kristyn-Getty/Resurrection-Sing%21-The-Life-of-Christ-Quintology/Holy-Spirit%2C-Living-Breath-Of-God/",
+      "reason": null
     },
     {
       "id": "expanded-facing-a-task-unfinished-keith-kristyn-getty",
       "title": "Facing a Task Unfinished",
       "author": "Associated recording: Keith & Kristyn Getty",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "41de0dee6d3bb90f129b",
+      "identityAssumption": "Published text: Facing a Task Unfinished. Added live sections and other recordings are separate versions.",
+      "sourceHash": "f26211339488f888c10fd685f61c7f3985a439ce69617b2ec0b416ab92343b16",
+      "sourceURL": "https://www.multitracks.com/songs/Keith-and-Kristyn-Getty/Facing-a-Task-Unfinished/Facing-a-Task-Unfinished/",
+      "reason": null
     },
     {
       "id": "expanded-lift-high-the-name-of-jesus-keith-kristyn-getty",
       "title": "Lift High the Name of Jesus",
       "author": "Associated recording: Keith & Kristyn Getty",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "09975583a4374df2eedc",
+      "identityAssumption": "Published text: Lift High the Name of Jesus. Added live sections and other recordings are separate versions.",
+      "sourceHash": "f55a3380b3becaa67a646735e5761c713d40bef42183d1e238222be44511140e",
+      "sourceURL": "https://www.multitracks.com/songs/Keith-and-Kristyn-Getty/Facing-a-Task-Unfinished/Lift-High-the-Name-of-Jesus/",
+      "reason": null
     },
     {
       "id": "expanded-for-the-cause-keith-kristyn-getty",
       "title": "For the Cause",
       "author": "Associated recording: Keith & Kristyn Getty",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "273d894e952ab0469aff",
+      "identityAssumption": "Published text: For The Cause. Added live sections and other recordings are separate versions.",
+      "sourceHash": "20c7c913cfdcef3c59fddccb26da0af68e114bd15eaf3d7a1fdb372b7bfbff0c",
+      "sourceURL": "https://www.multitracks.com/songs/Keith-and-Kristyn-Getty/Facing-a-Task-Unfinished/For-The-Cause/",
+      "reason": null
     },
     {
       "id": "expanded-creation-sings-the-father-s-song-keith-kristyn-getty",
@@ -6002,11 +6112,12 @@
       "id": "expanded-psalm-24-the-king-of-glory-keith-kristyn-getty",
       "title": "Psalm 24 (The King of Glory)",
       "author": "Associated recording: Keith & Kristyn Getty",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "5825b0281526772b931a",
+      "identityAssumption": "Published text: Psalm 24 (The King of Glory). Added live sections and other recordings are separate versions.",
+      "sourceHash": "ebecfe5b87393ee2b4b45db6f15b064fe29fe485f03de981d975272e91e13541",
+      "sourceURL": "https://www.multitracks.com/songs/Keith-and-Kristyn-Getty/Facing-a-Task-Unfinished/Psalm-24-%28The-King-of-Glory%29/",
+      "reason": null
     },
     {
       "id": "expanded-lovingkindness-keith-kristyn-getty",
@@ -6062,11 +6173,12 @@
       "id": "expanded-may-the-peoples-praise-you-keith-kristyn-getty",
       "title": "May the Peoples Praise You",
       "author": "Associated recording: Keith & Kristyn Getty",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "46692093028d68dfd3a2",
+      "identityAssumption": "Published text: May the Peoples Praise You. Added live sections and other recordings are separate versions.",
+      "sourceHash": "f93766f9cecf2f5cb1388c8d9a83633ba88f4933209c2e21b20ba9c3d11605da",
+      "sourceURL": "https://www.multitracks.com/songs/Keith-and-Kristyn-Getty/Facing-a-Task-Unfinished/May-the-Peoples-Praise-You/",
+      "reason": null
     },
     {
       "id": "expanded-how-rich-a-treasure-we-possess-matt-boswell-matt-papa",
@@ -6223,11 +6335,12 @@
       "id": "expanded-psalm-91-on-eagles-wings-shane-shane-the-worship-initiative",
       "title": "Psalm 91 (On Eagles' Wings)",
       "author": "Associated recording: Shane & Shane · The Worship Initiative",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "961406ecadd8ab0c6b71",
+      "identityAssumption": "Published text: Psalm 91 (On Eagles' Wings). Added live sections and other recordings are separate versions.",
+      "sourceHash": "d2f3137760d6c24d855ac404cb484bd215bbf9eac5c82defadb4bd8cb10a35cb",
+      "sourceURL": "https://www.multitracks.com/songs/Shane-and-Shane/Psalms-Vol.-2/Psalm-91-%28On-Eagles%27-Wings%29/",
+      "reason": null
     },
     {
       "id": "expanded-psalm-98-sing-unto-the-lord-shane-shane-the-worship-initiative",
@@ -6283,11 +6396,12 @@
       "id": "expanded-psalm-27-one-thing-shane-shane-the-worship-initiative",
       "title": "Psalm 27 (One Thing)",
       "author": "Associated recording: Shane & Shane · The Worship Initiative",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "3c14f967a7de0cc2b144",
+      "identityAssumption": "Published text: Psalm 27 (One Thing). Added live sections and other recordings are separate versions.",
+      "sourceHash": "1642040e93a1b1482a28513c345b98c502d0488e56caed06e59db6702582c01f",
+      "sourceURL": "https://www.multitracks.com/songs/Shane-and-Shane/Psalms-Vol.-2/Psalm-27-%28One-Thing%29/",
+      "reason": null
     },
     {
       "id": "expanded-psalm-130-i-will-wait-for-you-shane-shane-the-worship-initiative",
@@ -6303,11 +6417,12 @@
       "id": "expanded-psalm-42-loudest-praise-shane-shane-the-worship-initiative",
       "title": "Psalm 42 (Loudest Praise)",
       "author": "Associated recording: Shane & Shane · The Worship Initiative",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "b7716bf84606b989fe33",
+      "identityAssumption": "Published text: Psalm 42 (Loudest Praise). Added live sections and other recordings are separate versions.",
+      "sourceHash": "81f914d35460b0aacd5cc59b037e33c411db628bf4ea1fc577fb1f39b2ea8aaf",
+      "sourceURL": "https://www.multitracks.com/songs/Shane-and-Shane/Psalms%2C-Hymns%2C-and-Spiritual-Songs%2C-Vol.-1/Psalm-42-%28Loudest-Praise%29/",
+      "reason": null
     },
     {
       "id": "expanded-psalm-45-fairest-of-all-shane-shane-the-worship-initiative",
@@ -6485,141 +6600,155 @@
       "id": "expanded-never-once-matt-redman",
       "title": "Never Once",
       "author": "Associated recording: Matt Redman",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "707ebcf8ffe4c00b8a24",
+      "identityAssumption": "Published text: Never Once. Added live sections and other recordings are separate versions.",
+      "sourceHash": "6df01a7787b2aeb3f1f238fded75f646b3bd412b88e58e052b5c81c6c0152957",
+      "sourceURL": "https://www.multitracks.com/songs/Matt-Redman/10%2C000-Reasons/Never-Once/",
+      "reason": null
     },
     {
       "id": "expanded-endless-hallelujah-matt-redman",
       "title": "Endless Hallelujah",
       "author": "Associated recording: Matt Redman",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "ca1cfedac2279e17b17f",
+      "identityAssumption": "Published text: Endless Hallelujah. Added live sections and other recordings are separate versions.",
+      "sourceHash": "5039fe04737e952a3139ab99a4fd80a9facece8e211412f1070e9d470a6d6c6c",
+      "sourceURL": "https://www.multitracks.com/songs/Matt-Redman/10%2C000-Reasons/Endless-Hallelujah/",
+      "reason": null
     },
     {
       "id": "expanded-mercy-matt-redman",
       "title": "Mercy",
       "author": "Associated recording: Matt Redman",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "4655851515e476673f1b",
+      "identityAssumption": "Published text: Mercy. Added live sections and other recordings are separate versions.",
+      "sourceHash": "a97335eee5fcf5855a5d08fe5f33a9a6202a89681fe8c186a83763aa47047cb1",
+      "sourceURL": "https://www.multitracks.com/songs/Matt-Redman/Your-Grace-Finds-Me/Mercy/",
+      "reason": null
     },
     {
       "id": "expanded-your-grace-finds-me-matt-redman",
       "title": "Your Grace Finds Me",
       "author": "Associated recording: Matt Redman",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "00de7bf3b03416aea1f3",
+      "identityAssumption": "Published text: Your Grace Finds Me (Live). Added live sections and other recordings are separate versions.",
+      "sourceHash": "63b62e6bab2a29251d852472646a8c355f4796eeaa858f142e1b7036eacbf9e6",
+      "sourceURL": "https://www.multitracks.com/songs/Matt-Redman/Your-Grace-Finds-Me/Your-Grace-Finds-Me/",
+      "reason": null
     },
     {
       "id": "expanded-unbroken-praise-matt-redman",
       "title": "Unbroken Praise",
       "author": "Associated recording: Matt Redman",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "286efc668b205a53759a",
+      "identityAssumption": "Published text: Unbroken Praise. Added live sections and other recordings are separate versions.",
+      "sourceHash": "8369a891dd85b0cf5df240df49e259af8d660598b609527edb2ba9d2febba8d9",
+      "sourceURL": "https://www.multitracks.com/songs/Matt-Redman/Unbroken-Praise/Unbroken-Praise/",
+      "reason": null
     },
     {
       "id": "expanded-lamb-of-god-matt-redman",
       "title": "Lamb of God",
       "author": "Associated recording: Matt Redman",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "07baffbc7a1fa624154a",
+      "identityAssumption": "Published text: Lamb of God. Added live sections and other recordings are separate versions.",
+      "sourceHash": "e1d4dce38d940f31f8248dcb2429e06932f6274e74710a6316877dfa323bdb2f",
+      "sourceURL": "https://www.multitracks.com/songs/Matt-Redman/Lamb-of-God/Lamb-of-God/",
+      "reason": null
     },
     {
       "id": "expanded-gracefully-broken-matt-redman",
       "title": "Gracefully Broken",
       "author": "Associated recording: Matt Redman",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "93b991fa99d54585b780",
+      "identityAssumption": "Published text: Gracefully Broken. Added live sections and other recordings are separate versions.",
+      "sourceHash": "1b06f312696aa6c015c97c19317e01c6b438e2dd0602b0e8732152a3f018df89",
+      "sourceURL": "https://www.multitracks.com/songs/Matt-Redman/Glory-Song/Gracefully-Broken/",
+      "reason": null
     },
     {
       "id": "expanded-one-day-when-we-all-get-to-heaven-matt-redman",
       "title": "One Day (When We All Get to Heaven)",
       "author": "Associated recording: Matt Redman",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "c92c68d147d549e691be",
+      "identityAssumption": "Published text: One Day (When We All Get To Heaven). Added live sections and other recordings are separate versions.",
+      "sourceHash": "18e77cac35f2e7be6095d53f0b35342242d343a9f5c55f47267034120ec637c0",
+      "sourceURL": "https://www.multitracks.com/songs/Matt-Redman/Glory-Song/One-Day-%28When-We-All-Get-To-Heaven%29/",
+      "reason": null
     },
     {
       "id": "expanded-upon-him-matt-redman",
       "title": "Upon Him",
       "author": "Associated recording: Matt Redman",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "e8c75db447bf34fc357b",
+      "identityAssumption": "Published text: Upon Him. Added live sections and other recordings are separate versions.",
+      "sourceHash": "4c1ccd18b24a46eb4d802d6a0018517cb2e1537392b457239dfc5a5ba4a33a9d",
+      "sourceURL": "https://www.multitracks.com/songs/Matt-Redman/Let-There-Be-Wonder/Upon-Him/",
+      "reason": null
     },
     {
       "id": "expanded-the-same-jesus-matt-redman",
       "title": "The Same Jesus",
       "author": "Associated recording: Matt Redman",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "4e1cbdd3036baa683442",
+      "identityAssumption": "Published text: The Same Jesus (Live). Added live sections and other recordings are separate versions.",
+      "sourceHash": "5f17e1bd621ea5225c12f95c945536d7d9d69d41d10e99e79bb8fb44b5d75e9c",
+      "sourceURL": "https://www.multitracks.com/songs/Matt-Redman/Let-There-Be-Wonder/The-Same-Jesus-%28Live%29/",
+      "reason": null
     },
     {
       "id": "expanded-sing-and-shout-matt-redman",
       "title": "Sing and Shout",
       "author": "Associated recording: Matt Redman",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "84c4161ed21c04313e7c",
+      "identityAssumption": "Published text: Sing and Shout. Added live sections and other recordings are separate versions.",
+      "sourceHash": "da802befa58f4ddf6a057e05537a7c93a32c389c171ee1b176128dcec19226fe",
+      "sourceURL": "https://www.multitracks.com/songs/Matt-Redman/Your-Grace-Finds-Me/Sing-and-Shout/",
+      "reason": null
     },
     {
       "id": "expanded-because-he-lives-amen-matt-maher",
       "title": "Because He Lives (Amen)",
       "author": "Associated recording: Matt Maher",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "986a7e8783e581c000b9",
+      "identityAssumption": "Published text: Because He Lives (Amen). Added live sections and other recordings are separate versions.",
+      "sourceHash": "88d1749769aee79941d82a1246890d00bd669a2a2cc9f52bdf66075a7c70e5b1",
+      "sourceURL": "https://www.multitracks.com/songs/Matt-Maher/Saints-and-Sinners/Because-He-Lives-%28Amen%29/",
+      "reason": null
     },
     {
       "id": "expanded-all-the-people-said-amen-matt-maher",
       "title": "All the People Said Amen",
       "author": "Associated recording: Matt Maher",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "43ac0245304b260e367c",
+      "identityAssumption": "Published text: All The People Said Amen. Added live sections and other recordings are separate versions.",
+      "sourceHash": "7e30f263b135246ba72cac1b7608411f4675b4b7e0bd25b8a69f0233af7fc688",
+      "sourceURL": "https://www.multitracks.com/songs/Matt-Maher/All-The-People-Said-Amen/All-The-People-Said-Amen/",
+      "reason": null
     },
     {
       "id": "expanded-christ-is-risen-matt-maher",
       "title": "Christ Is Risen",
       "author": "Associated recording: Matt Maher",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "c5fde28f31a00e283be2",
+      "identityAssumption": "Published text: Christ Is Risen. Added live sections and other recordings are separate versions.",
+      "sourceHash": "80d350c5e7a1b531d4dc5c42a072f72d4a94420fe7d49eb7395178401868bbd2",
+      "sourceURL": "https://www.multitracks.com/songs/Matt-Maher/Alive-Again/Christ-Is-Risen/",
+      "reason": null
     },
     {
       "id": "expanded-alive-breathing-matt-maher",
@@ -6635,31 +6764,34 @@
       "id": "expanded-the-lord-s-prayer-it-s-yours-matt-maher",
       "title": "The Lord's Prayer (It's Yours)",
       "author": "Associated recording: Matt Maher",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "6fdedab5cdd8cb396a7a",
+      "identityAssumption": "Published text: The Lord's Prayer (It's Yours). Added live sections and other recordings are separate versions.",
+      "sourceHash": "4021f3b7b42676a4e2b74d5113a265c17703706839f8a6139ef0fd7cad6a3158",
+      "sourceURL": "https://www.multitracks.com/songs/Matt-Maher/The-Lord%27s-Prayer-%28It%27s-Yours%29/The-Lord%27s-Prayer-%28It%27s-Yours%29/",
+      "reason": null
     },
     {
       "id": "expanded-hold-us-together-matt-maher",
       "title": "Hold Us Together",
       "author": "Associated recording: Matt Maher",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "375bdce46b95131cddd6",
+      "identityAssumption": "Published text: Hold Us Together. Added live sections and other recordings are separate versions.",
+      "sourceHash": "1f243b434796b00da449ff228652a393724a121012a59dc23110cc5cefbf16e6",
+      "sourceURL": "https://www.multitracks.com/songs/Matt-Maher/All-The-People-Said-Amen/Hold-Us-Together/",
+      "reason": null
     },
     {
       "id": "expanded-what-a-friend-matt-maher",
       "title": "What a Friend",
       "author": "Associated recording: Matt Maher",
-      "status": "identity-unresolved",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "Title candidates lack sufficient identity evidence."
+      "status": "reviewed-draft",
+      "analysisKey": "091019b30805758052bc",
+      "identityAssumption": "Published text: What a Friend. Added live sections and other recordings are separate versions.",
+      "sourceHash": "93545b7a9dfdb11630a8864a52eee4e8b10831fee25cf4683151df31eb7c57f9",
+      "sourceURL": "https://www.multitracks.com/songs/Matt-Maher/Echoes/What-a-Friend/",
+      "reason": null
     },
     {
       "id": "expanded-turn-around-matt-maher",
@@ -6685,11 +6817,12 @@
       "id": "expanded-your-love-defends-me-matt-maher",
       "title": "Your Love Defends Me",
       "author": "Associated recording: Matt Maher",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "bbe01a84e78969850d75",
+      "identityAssumption": "Published text: Your Love Defends Me. Added live sections and other recordings are separate versions.",
+      "sourceHash": "5bf73e0a81227512694d2577c9dc242e4bf5230571086194202c13b5140779f1",
+      "sourceURL": "https://www.multitracks.com/songs/Matt-Maher/Echoes/Your-Love-Defends-Me/",
+      "reason": null
     },
     {
       "id": "expanded-the-in-between-matt-maher",
@@ -6759,11 +6892,12 @@
       "id": "expanded-until-the-whole-world-hears-casting-crowns",
       "title": "Until the Whole World Hears",
       "author": "Associated recording: Casting Crowns",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "5a25f8ffa12f0f4f3bf9",
+      "identityAssumption": "Published text: Until The Whole World Hears. Added live sections and other recordings are separate versions.",
+      "sourceHash": "c207287957d7dbc297cefdd2fb0b9782bc6899d06640504ef8580e4ade7d0278",
+      "sourceURL": "https://www.multitracks.com/songs/Casting-Crowns/Lifesongs-A-Celebration-of-the-First-20-Years/Until-The-Whole-World-Hears/",
+      "reason": null
     },
     {
       "id": "expanded-only-jesus-casting-crowns",
@@ -7285,11 +7419,12 @@
       "id": "expanded-don-t-lose-heart-steven-curtis-chapman",
       "title": "Don't Lose Heart",
       "author": "Associated recording: Steven Curtis Chapman",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "01872828d2503d0462e0",
+      "identityAssumption": "Published text: Don't Lose Heart. Added live sections and other recordings are separate versions.",
+      "sourceHash": "0b612afc0f22f46e6454489183b943c26857587803d0937ed190d82ecbf06235",
+      "sourceURL": "https://www.multitracks.com/songs/Steven-Curtis-Chapman/Still/Don%27t-Lose-Heart/",
+      "reason": null
     },
     {
       "id": "expanded-holy-water-we-the-kingdom",
@@ -7361,11 +7496,12 @@
       "id": "expanded-church-music-we-the-kingdom",
       "title": "Church Music",
       "author": "Associated recording: We The Kingdom",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "2fbb50cf29dc298daffd",
+      "identityAssumption": "Published text: Church Music. Added live sections and other recordings are separate versions.",
+      "sourceHash": "879a28e382fecc0862ec5acf3d18541be751f0e8501e0b807fa7cc40d1dc481f",
+      "sourceURL": "https://www.multitracks.com/songs/We-the-Kingdom/Church-Music/Church-Music/",
+      "reason": null
     },
     {
       "id": "expanded-no-doubt-about-it-we-the-kingdom",
@@ -7469,11 +7605,12 @@
       "id": "expanded-jesus-music-cain",
       "title": "Jesus Music",
       "author": "Associated recording: CAIN",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "66c4dcbaf6e7a827e682",
+      "identityAssumption": "Published text: Jesus Music. Added live sections and other recordings are separate versions.",
+      "sourceHash": "cbeb7bb18c6fbabc803bceb242ba70a233bcf421a9d1c1e52686649445a47830",
+      "sourceURL": "https://www.multitracks.com/songs/CAIN/Jesus-Music/Jesus-Music/",
+      "reason": null
     },
     {
       "id": "expanded-any-more-cain",
@@ -7632,111 +7769,122 @@
       "id": "expanded-come-as-you-are-crowder",
       "title": "Come as You Are",
       "author": "Associated recording: Crowder",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "aaee6f8e53091b07becf",
+      "identityAssumption": "Published text: Come As You Are. Added live sections and other recordings are separate versions.",
+      "sourceHash": "f93d0ed213273f585af5744edf9dc134852f7d607c32eeb8697a44d24a1ee9c0",
+      "sourceURL": "https://www.multitracks.com/songs/Crowder/Neon-Steeple/Come-As-You-Are/",
+      "reason": null
     },
     {
       "id": "expanded-all-my-hope-crowder",
       "title": "All My Hope",
       "author": "Associated recording: Crowder",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "61a82903fc067886b889",
+      "identityAssumption": "Published text: All My Hope. Added live sections and other recordings are separate versions.",
+      "sourceHash": "8c5668b7b823fa3da065305c96d176bc405e962385f18ae5d84849956e76aa31",
+      "sourceURL": "https://www.multitracks.com/songs/Crowder/American-Prodigal/All-My-Hope/",
+      "reason": null
     },
     {
       "id": "expanded-good-god-almighty-crowder",
       "title": "Good God Almighty",
       "author": "Associated recording: Crowder",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "2b5a6efcb729aabef1f4",
+      "identityAssumption": "Published text: Good God Almighty. Added live sections and other recordings are separate versions.",
+      "sourceHash": "00ee8eb6058434890f9a8e409d558c89a8f354bbb80fd027400014ef452e36cc",
+      "sourceURL": "https://www.multitracks.com/songs/Crowder/Milk-and-Honey/Good-God-Almighty/",
+      "reason": null
     },
     {
       "id": "expanded-god-really-loves-us-crowder",
       "title": "God Really Loves Us",
       "author": "Associated recording: Crowder",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "3816763be038c8d30508",
+      "identityAssumption": "Published text: God Really Loves Us. Added live sections and other recordings are separate versions.",
+      "sourceHash": "a645f9935ea545dbb51a2fc3b8a0e1b7ef9403917c49961bb542b6fd3c24a9f6",
+      "sourceURL": "https://www.multitracks.com/songs/Crowder/Milk-And-Honey/God-Really-Loves-Us/",
+      "reason": null
     },
     {
       "id": "expanded-forgiven-crowder",
       "title": "Forgiven",
       "author": "Associated recording: Crowder",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "ee09bcd0c2a60bb40e8e",
+      "identityAssumption": "Published text: Forgiven. Added live sections and other recordings are separate versions.",
+      "sourceHash": "cdc408c442563f2f13a2911563b34fb1ec39787c37097cceef78776e28c87fb6",
+      "sourceURL": "https://www.multitracks.com/songs/Crowder/American-Prodigal/Forgiven/",
+      "reason": null
     },
     {
       "id": "expanded-red-letters-crowder",
       "title": "Red Letters",
       "author": "Associated recording: Crowder",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "59a1c755b16d2dbe5618",
+      "identityAssumption": "Published text: Red Letters. Added live sections and other recordings are separate versions.",
+      "sourceHash": "0fc186cf618d815da8123c9386f2a562e7fc023832033a5a84038cc58000d72a",
+      "sourceURL": "https://www.multitracks.com/songs/Crowder/I-Know-a-Ghost/Red-Letters/",
+      "reason": null
     },
     {
       "id": "expanded-in-the-house-crowder",
       "title": "In the House",
       "author": "Associated recording: Crowder",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "888a9b9d1d52017d5d18",
+      "identityAssumption": "Published text: In The House. Added live sections and other recordings are separate versions.",
+      "sourceHash": "8269be805f203567232655dbd62cc204597b3a8be664019a02154948e4e4fac1",
+      "sourceURL": "https://www.multitracks.com/songs/Crowder/Milk-And-Honey/In-The-House/",
+      "reason": null
     },
     {
       "id": "expanded-lift-your-head-weary-sinner-chains-crowder",
       "title": "Lift Your Head Weary Sinner (Chains)",
       "author": "Associated recording: Crowder",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "d5c6d9fbbb209a3d3ea5",
+      "identityAssumption": "Published text: Lift Your Head Weary Sinner (Chains). Added live sections and other recordings are separate versions.",
+      "sourceHash": "bf2ca612e48d83ae2fb19e0aa48c1eedfd12ac3a30d1345586c02850370dca7f",
+      "sourceURL": "https://www.multitracks.com/songs/Crowder/Neon-Steeple/Lift-Your-Head-Weary-Sinner-%28Chains%29/",
+      "reason": null
     },
     {
       "id": "expanded-run-devil-run-crowder",
       "title": "Run Devil Run",
       "author": "Associated recording: Crowder",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "ded959ec1bc93a7ad503",
+      "identityAssumption": "Published text: Run Devil Run. Added live sections and other recordings are separate versions.",
+      "sourceHash": "1edcb2d5a29e211a5fdb7dd1c71ab4691ad421b6cea3d74ded91e7b1daa53284",
+      "sourceURL": "https://www.multitracks.com/songs/Crowder/Run-Devil-Run/Run-Devil-Run/",
+      "reason": null
     },
     {
       "id": "expanded-let-it-rain-is-there-anybody-crowder",
       "title": "Let It Rain (Is There Anybody)",
       "author": "Associated recording: Crowder",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "2971b81a1bd2e0ae4e5b",
+      "identityAssumption": "Published text: Let It Rain (Is There Anybody). Added live sections and other recordings are separate versions.",
+      "sourceHash": "eb565362679e9b35a7a027c6b16fb8e108faf1d5ed2221581030dc1041e7becc",
+      "sourceURL": "https://www.multitracks.com/songs/Crowder/I-Know-a-Ghost/Let-It-Rain-%28Is-There-Anybody%29/",
+      "reason": null
     },
     {
       "id": "expanded-i-am-crowder",
       "title": "I Am",
       "author": "Associated recording: Crowder",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "ecc15a30f3d46529b829",
+      "identityAssumption": "Published text: I AM. Added live sections and other recordings are separate versions.",
+      "sourceHash": "a67b2aa65fa04a65720439488f41719169c5aff2bf068d7911f907cdc1b06d89",
+      "sourceURL": "https://www.multitracks.com/songs/Crowder/I-AM/I-AM/",
+      "reason": null
     },
     {
       "id": "expanded-oh-happiness-crowder",
@@ -7783,81 +7931,89 @@
       "id": "expanded-fear-is-a-liar-zach-williams",
       "title": "Fear Is a Liar",
       "author": "Associated recording: Zach Williams",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "a0a8598e3bd3a72918a9",
+      "identityAssumption": "Published text: Fear Is A Liar. Added live sections and other recordings are separate versions.",
+      "sourceHash": "6db6da8b6faadcaf6c05491ac326b9ebd7c0f631f4d13f244e93e07ca8ffd8e5",
+      "sourceURL": "https://www.multitracks.com/songs/Zach-Williams/Chain-Breaker/Fear-Is-A-Liar/",
+      "reason": null
     },
     {
       "id": "expanded-old-church-choir-zach-williams",
       "title": "Old Church Choir",
       "author": "Associated recording: Zach Williams",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "824ea3ba26e7699360fc",
+      "identityAssumption": "Integrity's published text is selected. Other resource copies omit negations and change the bridge's referent; these copying differences are not assigned to the songwriter.",
+      "sourceHash": "f452fd72a827ca5d91ae4aa6b4cd05aa6ebdf5ad75b7ac1abfcc44f25150a6ad",
+      "sourceURL": "https://integrityworship.com/songs/old-church-choir-zach-williams/",
+      "reason": null
     },
     {
       "id": "expanded-there-was-jesus-zach-williams",
       "title": "There Was Jesus",
       "author": "Associated recording: Zach Williams",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "90d9d8da116bc1ad9c8f",
+      "identityAssumption": "Published text: There Was Jesus. Added live sections and other recordings are separate versions.",
+      "sourceHash": "48e20e405fbf4d27f899dc14f579edc05cbb95fcb6c31c14a5f44a367d17628c",
+      "sourceURL": "https://www.multitracks.com/songs/Zach-Williams/Rescue-Story/There-was-Jesus/",
+      "reason": null
     },
     {
       "id": "expanded-less-like-me-zach-williams",
       "title": "Less Like Me",
       "author": "Associated recording: Zach Williams",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "cd9a3bba64fef2d866af",
+      "identityAssumption": "Published text: Less Like Me. Added live sections and other recordings are separate versions.",
+      "sourceHash": "cfa207b2d2100cd4f7f56b90422d244a5dac4d2729b39f54a19725a3c3e31e7c",
+      "sourceURL": "https://www.multitracks.com/songs/Zach-Williams/Rescue-Story/Less-Like-Me/",
+      "reason": null
     },
     {
       "id": "expanded-rescue-story-zach-williams",
       "title": "Rescue Story",
       "author": "Associated recording: Zach Williams",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "8f51999a7c7d668384ac",
+      "identityAssumption": "Published text: Rescue Story. Added live sections and other recordings are separate versions.",
+      "sourceHash": "2255f71a8024a0209f9abf057877d00d74ac6a3c142a682e2ec672cd5af6ccee",
+      "sourceURL": "https://www.multitracks.com/songs/Zach-Williams/Rescue-Story/Rescue-Story/",
+      "reason": null
     },
     {
       "id": "expanded-heart-of-god-zach-williams",
       "title": "Heart of God",
       "author": "Associated recording: Zach Williams",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "257893995c758cfc9477",
+      "identityAssumption": "Published text: Heart of God. Added live sections and other recordings are separate versions.",
+      "sourceHash": "0d3a473ef458278392dd11c3d81ae61589233fea0a8f87e89baeaf4d3402b547",
+      "sourceURL": "https://www.multitracks.com/songs/Zach-Williams/A-Hundred-Highways/Heart-of-God/",
+      "reason": null
     },
     {
       "id": "expanded-lookin-for-you-zach-williams",
       "title": "Lookin' for You",
       "author": "Associated recording: Zach Williams",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "4fca384a0aa588a53c2f",
+      "identityAssumption": "Published text: Lookin' For You. Added live sections and other recordings are separate versions.",
+      "sourceHash": "2046bce86a571fad1527d633d2cedb32c2cd1f933ab775304f9e1d12f3c1722a",
+      "sourceURL": "https://www.multitracks.com/songs/Zach-Williams/A-Hundred-Highways/Lookin%27-For-You/",
+      "reason": null
     },
     {
       "id": "expanded-under-my-feet-zach-williams",
       "title": "Under My Feet",
       "author": "Associated recording: Zach Williams",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "188ca817088d33120df9",
+      "identityAssumption": "Published text: Under My Feet. Added live sections and other recordings are separate versions.",
+      "sourceHash": "7d14157e7e6895900a954797680cb01f75e6070a6a537a5830ec3fd193f548f2",
+      "sourceURL": "https://www.multitracks.com/songs/Zach-Williams/Rescue-Story/Under-My-Feet/",
+      "reason": null
     },
     {
       "id": "expanded-slave-to-nothing-zach-williams",
@@ -7873,141 +8029,155 @@
       "id": "expanded-you-say-lauren-daigle",
       "title": "You Say",
       "author": "Associated recording: Lauren Daigle",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "74be98bd9fdbd1fe3b2b",
+      "identityAssumption": "Published text: You Say. Added live sections and other recordings are separate versions.",
+      "sourceHash": "0e5cf57b9a9437778584a7f85ebc9e7de79b57b17f49544b41f2e687108b14ee",
+      "sourceURL": "https://www.multitracks.com/songs/Lauren-Daigle/Look-Up-Child/You-Say/",
+      "reason": null
     },
     {
       "id": "expanded-how-can-it-be-lauren-daigle",
       "title": "How Can It Be",
       "author": "Associated recording: Lauren Daigle",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "cf4e54e3eaacaf6ace98",
+      "identityAssumption": "Published text: How Can It Be. Added live sections and other recordings are separate versions.",
+      "sourceHash": "b5c5125e17cb8497bef680d568d76855df9f609eff234b2e7076d2ee9c86fff0",
+      "sourceURL": "https://www.multitracks.com/songs/Lauren-Daigle/How-Can-It-Be-%28Deluxe-Edition%29/How-Can-It-Be/",
+      "reason": null
     },
     {
       "id": "expanded-trust-in-you-lauren-daigle",
       "title": "Trust in You",
       "author": "Associated recording: Lauren Daigle",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "c18695a95bb9a880926b",
+      "identityAssumption": "Published text: Trust In You. Added live sections and other recordings are separate versions.",
+      "sourceHash": "ecd1d5ab1a7f22aa06e46f11a79408156fcf1c4a091d257e29e485cd57b2072b",
+      "sourceURL": "https://www.multitracks.com/songs/Lauren-Daigle/How-Can-It-Be-%28Deluxe-Edition%29/Trust-In-You/",
+      "reason": null
     },
     {
       "id": "expanded-rescue-lauren-daigle",
       "title": "Rescue",
       "author": "Associated recording: Lauren Daigle",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "9377906e59967c964d8a",
+      "identityAssumption": "Published text: Rescue. Added live sections and other recordings are separate versions.",
+      "sourceHash": "0be4401cd601d8049e84132603502a716749fc067e50100e3d69050e8ee209e6",
+      "sourceURL": "https://www.multitracks.com/songs/Bethel-Music/PEACE%2C-Vol.-II/Rescue/",
+      "reason": null
     },
     {
       "id": "expanded-o-lord-lauren-daigle",
       "title": "O'Lord",
       "author": "Associated recording: Lauren Daigle",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "ad71b69f4c73953401d5",
+      "identityAssumption": "Published text: O'Lord. Added live sections and other recordings are separate versions.",
+      "sourceHash": "292cb90d3539474ab43397cf300445d5c73d016e8ca113d2801cfd3e6263c69c",
+      "sourceURL": "https://www.multitracks.com/songs/Lauren-Daigle/How-Can-It-Be-%28Deluxe-Edition%29/O%27Lord/",
+      "reason": null
     },
     {
       "id": "expanded-still-rolling-stones-lauren-daigle",
       "title": "Still Rolling Stones",
       "author": "Associated recording: Lauren Daigle",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "6ebdb9db823be6f70c42",
+      "identityAssumption": "Published text: Still Rolling Stones. Added live sections and other recordings are separate versions.",
+      "sourceHash": "2c3a0a29075ff2455b881e962c43a8d94ab4d7af92f98bd089ae4726a6a99fc6",
+      "sourceURL": "https://www.multitracks.com/songs/Lauren-Daigle/Look-Up-Child/Still-Rolling-Stones/",
+      "reason": null
     },
     {
       "id": "expanded-look-up-child-lauren-daigle",
       "title": "Look Up Child",
       "author": "Associated recording: Lauren Daigle",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "a876f4b62e21f3649c29",
+      "identityAssumption": "Published text: Look Up Child. Added live sections and other recordings are separate versions.",
+      "sourceHash": "63b754c1cae2fe186e349846c9cf788af6ceeba6ebda16ab4944869da32a3a74",
+      "sourceURL": "https://www.multitracks.com/songs/Lauren-Daigle/Look-Up-Child/Look-Up-Child/",
+      "reason": null
     },
     {
       "id": "expanded-hold-on-to-me-lauren-daigle",
       "title": "Hold On to Me",
       "author": "Associated recording: Lauren Daigle",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "8f65d449a9552d0776f5",
+      "identityAssumption": "Published text: Hold On To Me. Added live sections and other recordings are separate versions.",
+      "sourceHash": "e709c6c2d6c6fa1930c3121906c6209e34871fef9eda053bc1f748aac41f6bfc",
+      "sourceURL": "https://www.multitracks.com/songs/Lauren-Daigle/Hold-On-To-Me/Hold-On-To-Me/",
+      "reason": null
     },
     {
       "id": "expanded-thank-god-i-do-lauren-daigle",
       "title": "Thank God I Do",
       "author": "Associated recording: Lauren Daigle",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "f3652fcb97cfbf05dba9",
+      "identityAssumption": "Published text: Thank God I Do. Added live sections and other recordings are separate versions.",
+      "sourceHash": "79a3d1ff24e74cf7994df100892fcf55e890ed149ed4d1e3719394bc801e773b",
+      "sourceURL": "https://www.multitracks.com/songs/Lauren-Daigle/Lauren-Daigle/Thank-God-I-Do/",
+      "reason": null
     },
     {
       "id": "expanded-these-are-the-days-lauren-daigle",
       "title": "These Are the Days",
       "author": "Associated recording: Lauren Daigle",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "8f6283a804c545cbf583",
+      "identityAssumption": "Published text: These Are The Days. Added live sections and other recordings are separate versions.",
+      "sourceHash": "f483b391885a4975ff15d7d55b82c178c9286b6fc4af3edb68bd5299a4e3df8d",
+      "sourceURL": "https://www.multitracks.com/songs/Lauren-Daigle/Lauren-Daigle/These-Are-The-Days/",
+      "reason": null
     },
     {
       "id": "expanded-come-alive-dry-bones-lauren-daigle",
       "title": "Come Alive (Dry Bones)",
       "author": "Associated recording: Lauren Daigle",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "f0598ed817f522499e95",
+      "identityAssumption": "Published text: Come Alive (Dry Bones). Added live sections and other recordings are separate versions.",
+      "sourceHash": "1821d1d1b7a272f62311bdde2feb2bcaf6446e5c8f1392952fc558108bf8569c",
+      "sourceURL": "https://www.multitracks.com/songs/Lauren-Daigle/How-Can-It-Be-%28Deluxe-Edition%29/Come-Alive-%28Dry-Bones%29/",
+      "reason": null
     },
     {
       "id": "expanded-first-lauren-daigle",
       "title": "First",
       "author": "Associated recording: Lauren Daigle",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "f288f0972e86a84b841a",
+      "identityAssumption": "Published text: First. Added live sections and other recordings are separate versions.",
+      "sourceHash": "a1cf1316ff4ed1ad346c32519e6a0e72b8b37b122b89458184bb16efeb7c8738",
+      "sourceURL": "https://www.multitracks.com/songs/Lauren-Daigle/How-Can-It-Be-%28Deluxe-Edition%29/First/",
+      "reason": null
     },
     {
       "id": "expanded-light-of-the-world-lauren-daigle",
       "title": "Light of the World",
       "author": "Associated recording: Lauren Daigle",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "a0168b7b3622faeb39b5",
+      "identityAssumption": "Published text: Light Of The World. Added live sections and other recordings are separate versions.",
+      "sourceHash": "6ea900171bad1d378bd0718d1299a3e80251d1b8386907eeb8e8694919e54846",
+      "sourceURL": "https://www.multitracks.com/songs/Lauren-Daigle/Light-of-the-World/Light-Of-The-World/",
+      "reason": null
     },
     {
       "id": "expanded-in-jesus-name-god-of-possible-katy-nichole",
       "title": "In Jesus Name (God of Possible)",
       "author": "Associated recording: Katy Nichole",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "64fdef54a4d669b8ca56",
+      "identityAssumption": "Published text: In Jesus Name (God Of Possible). Added live sections and other recordings are separate versions.",
+      "sourceHash": "1384bba91a1077d2b428839f852bb17c33a1fe7411589d107b3fd5def4c40679",
+      "sourceURL": "https://www.multitracks.com/songs/Katy-Nichole/Katy-Nichole-EP/In-Jesus-Name-%28God-Of-Possible%29/",
+      "reason": null
     },
     {
       "id": "expanded-god-is-in-this-story-katy-nichole",
@@ -8023,61 +8193,67 @@
       "id": "expanded-hold-on-katy-nichole",
       "title": "Hold On",
       "author": "Associated recording: Katy Nichole",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "468f95c8294ba65263e4",
+      "identityAssumption": "Published text: Hold On. Added live sections and other recordings are separate versions.",
+      "sourceHash": "ea468acae3a49953ab0b6a5442a7725154272585b488b4839df997bf1fdc05b9",
+      "sourceURL": "https://www.multitracks.com/songs/Katy-Nichole/Jesus-Changed-My-Life/Hold-On/",
+      "reason": null
     },
     {
       "id": "expanded-jesus-changed-my-life-katy-nichole",
       "title": "Jesus Changed My Life",
       "author": "Associated recording: Katy Nichole",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "66b2333d5116f54985e2",
+      "identityAssumption": "Published text: Jesus Changed My Life. Added live sections and other recordings are separate versions.",
+      "sourceHash": "6a62a12335dbf96e6f813ed1ffc75e01e798428568ecb53bd7b547419dbb9697",
+      "sourceURL": "https://www.multitracks.com/songs/Katy-Nichole/Katy-Nichole-EP/Jesus-Changed-My-Life/",
+      "reason": null
     },
     {
       "id": "expanded-my-god-can-katy-nichole",
       "title": "My God Can",
       "author": "Associated recording: Katy Nichole",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "27404210b0cbee38bb3b",
+      "identityAssumption": "Published text: My God Can. Added live sections and other recordings are separate versions.",
+      "sourceHash": "06bd733ee735700635ca9c954369e261a52eb8cac00d204b538f5eda49b124bd",
+      "sourceURL": "https://www.multitracks.com/songs/Katy-Nichole/My-God-Can/My-God-Can/",
+      "reason": null
     },
     {
       "id": "expanded-please-katy-nichole",
       "title": "Please",
       "author": "Associated recording: Katy Nichole",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "897a10c36b57e365309e",
+      "identityAssumption": "Published text: Please. Added live sections and other recordings are separate versions.",
+      "sourceHash": "cd7b62639ea68271036c4539d8dd9173f13b3d1f2f1a285381ca4eb2d5224236",
+      "sourceURL": "https://www.multitracks.com/songs/Katy-Nichole/Jesus-Changed-My-Life/Please/",
+      "reason": null
     },
     {
       "id": "expanded-by-the-grace-of-god-katy-nichole",
       "title": "By the Grace of God",
       "author": "Associated recording: Katy Nichole",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "7f4960033e543af096f1",
+      "identityAssumption": "Published text: By The Grace of God. Added live sections and other recordings are separate versions.",
+      "sourceHash": "8da5a14235f9123481e467022d5cfc51a7d9195b450185bb4e727b144a60eeed",
+      "sourceURL": "https://www.multitracks.com/songs/Katy-Nichole/Jesus-Changed-My-Life/By-The-Grace-of-God/",
+      "reason": null
     },
     {
       "id": "expanded-take-it-to-the-cross-katy-nichole",
       "title": "Take It to the Cross",
       "author": "Associated recording: Katy Nichole",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "385ac83b227fe05597d6",
+      "identityAssumption": "Published text: Take It To The Cross. Added live sections and other recordings are separate versions.",
+      "sourceHash": "7ec512f5f3fd2d8c8ac85f4e043f5e55af5c04222d7221254bb0798189759aa8",
+      "sourceURL": "https://www.multitracks.com/songs/Katy-Nichole/Jesus-Changed-My-Life/Take-It-To-The-Cross/",
+      "reason": null
     },
     {
       "id": "expanded-believe-for-it-cece-winans",
@@ -8094,41 +8270,45 @@
       "id": "expanded-that-s-my-king-cece-winans",
       "title": "That's My King",
       "author": "Associated recording: CeCe Winans",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "b79c73bc7ebe3314879e",
+      "identityAssumption": "Published text: That's My King. Added live sections and other recordings are separate versions.",
+      "sourceHash": "66e2eaaa4328d7e1dacc44d3d58607e45520828e1d271b203fa4ae62ef9e9ae0",
+      "sourceURL": "https://www.multitracks.com/songs/CeCe-Winans/More-Than-This/That%27s-My-King/",
+      "reason": null
     },
     {
       "id": "expanded-worthy-of-it-all-cece-winans",
       "title": "Worthy of It All",
       "author": "Associated recording: CeCe Winans",
-      "status": "identity-unresolved",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "Title candidates lack sufficient identity evidence."
+      "status": "reviewed-draft",
+      "analysisKey": "50188a4da529347feb8d",
+      "identityAssumption": "Published text: Worthy Of It All. Added live sections and other recordings are separate versions.",
+      "sourceHash": "65664974904fe3402085c8104b0342e7d018d8665a4046d15c68dfc06d7ad9b2",
+      "sourceURL": "https://www.multitracks.com/songs/CeCe-Winans/Believe-For-It/Worthy-Of-It-All/",
+      "reason": null
     },
     {
       "id": "expanded-come-jesus-come-cece-winans",
       "title": "Come Jesus Come",
       "author": "Associated recording: CeCe Winans",
-      "status": "identity-unresolved",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "Title candidates lack sufficient identity evidence."
+      "status": "reviewed-draft",
+      "analysisKey": "b9fee8d12fde3cda299f",
+      "identityAssumption": "Published text: Come Jesus Come. Added live sections and other recordings are separate versions.",
+      "sourceHash": "32c3b0a60f734f96a386188061c1419937c53dcf1c5a4c69fb9082dcaf5ed5eb",
+      "sourceURL": "https://www.multitracks.com/songs/CeCe-Winans/More-Than-This/Come-Jesus-Come/",
+      "reason": null
     },
     {
       "id": "expanded-alabaster-box-cece-winans",
       "title": "Alabaster Box",
       "author": "Associated recording: CeCe Winans",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "460e4d8d5b820af4cc08",
+      "identityAssumption": "Published text: Alabaster Box. Added live sections and other recordings are separate versions.",
+      "sourceHash": "52b9bdff77e3144f7e875f536fff6332729d90d419b5e70bd9f7a4d547790427",
+      "sourceURL": "https://www.multitracks.com/songs/CeCe-Winans/Believe-For-It/Alabaster-Box/",
+      "reason": null
     },
     {
       "id": "expanded-mercy-said-no-cece-winans",
@@ -8154,11 +8334,12 @@
       "id": "expanded-jesus-you-re-beautiful-cece-winans",
       "title": "Jesus, You're Beautiful",
       "author": "Associated recording: CeCe Winans",
-      "status": "identity-unresolved",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "Title candidates lack sufficient identity evidence."
+      "status": "reviewed-draft",
+      "analysisKey": "0bcaa5d82008d216e128",
+      "identityAssumption": "Published text: Jesus You're Beautiful. Added live sections and other recordings are separate versions.",
+      "sourceHash": "a37d3bf249ece490b8e57d89cd4b42fd6ba86b737c288370bb73e4db556c7cb0",
+      "sourceURL": "https://www.multitracks.com/songs/CeCe-Winans/Believe-For-It/Jesus-You%27re-Beautiful/",
+      "reason": null
     },
     {
       "id": "expanded-he-s-concerned-cece-winans",
@@ -8274,11 +8455,12 @@
       "id": "expanded-my-life-is-in-your-hands-kirk-franklin",
       "title": "My Life Is in Your Hands",
       "author": "Associated recording: Kirk Franklin",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "2f9ea14caadd3d642dba",
+      "identityAssumption": "Published text: My Life Is In Your Hands. Added live sections and other recordings are separate versions.",
+      "sourceHash": "1c15b6f5ae8b8636ad78f81e0a96f422e5bbebde4f047632c64225512fe21bb7",
+      "sourceURL": "https://www.multitracks.com/songs/Maverick-City-Music/Kingdom-Book-One/My-Life-Is-In-Your-Hands/",
+      "reason": null
     },
     {
       "id": "expanded-i-smile-kirk-franklin",
@@ -8324,11 +8506,12 @@
       "id": "expanded-why-we-sing-kirk-franklin",
       "title": "Why We Sing",
       "author": "Associated recording: Kirk Franklin",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "e3a22c44c3350928062d",
+      "identityAssumption": "Published text: Why We Sing. Added live sections and other recordings are separate versions.",
+      "sourceHash": "f3ac029190867734693f7d41cf4332784f169549fd039276846feac11a8d45eb",
+      "sourceURL": "https://www.multitracks.com/songs/Maverick-City-Music/Kingdom-Book-One/Why-We-Sing/",
+      "reason": null
     },
     {
       "id": "expanded-silver-and-gold-kirk-franklin",
@@ -8404,11 +8587,12 @@
       "id": "expanded-melodies-from-heaven-kirk-franklin",
       "title": "Melodies from Heaven",
       "author": "Associated recording: Kirk Franklin",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "9ef2627cee088eccbf0a",
+      "identityAssumption": "Published text: Melodies From Heaven. Added live sections and other recordings are separate versions.",
+      "sourceHash": "5884f5cbc6999c3e5c7f13b0849cfa3b256a793ae65db652c12b63c2adaa5faa",
+      "sourceURL": "https://www.multitracks.com/songs/Maverick-City-Music/Kingdom-Book-One/Melodies-From-Heaven/",
+      "reason": null
     },
     {
       "id": "expanded-no-weapon-fred-hammond",
@@ -8524,31 +8708,34 @@
       "id": "expanded-you-know-my-name-tasha-cobbs-leonard",
       "title": "You Know My Name",
       "author": "Associated recording: Tasha Cobbs Leonard",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "8ceac84f91df71f9882e",
+      "identityAssumption": "Published text: You Know My Name. Added live sections and other recordings are separate versions.",
+      "sourceHash": "68d296c463bcc70555621b68f06764b42a33491257ee53945f42faceea3ef986",
+      "sourceURL": "https://www.multitracks.com/songs/Tasha-Cobbs/Heart.-Passion.-Pursuit/You-Know-My-Name/",
+      "reason": null
     },
     {
       "id": "expanded-for-your-glory-tasha-cobbs-leonard",
       "title": "For Your Glory",
       "author": "Associated recording: Tasha Cobbs Leonard",
-      "status": "identity-unresolved",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "Title candidates lack sufficient identity evidence."
+      "status": "reviewed-draft",
+      "analysisKey": "3eb3f0e5deb23b055e05",
+      "identityAssumption": "Published text: For Your Glory. Added live sections and other recordings are separate versions.",
+      "sourceHash": "47f17b44e7662adee439c7ec332e494d1e33677367959949e7dbccbf231aee80",
+      "sourceURL": "https://www.multitracks.com/songs/Tasha-Cobbs/Grace/For-Your-Glory/",
+      "reason": null
     },
     {
       "id": "expanded-fill-me-up-tasha-cobbs-leonard",
       "title": "Fill Me Up",
       "author": "Associated recording: Tasha Cobbs Leonard",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "0367d421a5bae5a89ee0",
+      "identityAssumption": "Published text: Fill Me Up. Added live sections and other recordings are separate versions.",
+      "sourceHash": "edf7cab8e9887a486cba180f180bc302913886c12b2bf15f9f2fbbd229d85981",
+      "sourceURL": "https://www.multitracks.com/songs/Tasha-Cobbs/One-Place-Live/Fill-Me-Up/",
+      "reason": null
     },
     {
       "id": "expanded-i-m-getting-ready-tasha-cobbs-leonard",
@@ -8574,31 +8761,34 @@
       "id": "expanded-your-spirit-tasha-cobbs-leonard",
       "title": "Your Spirit",
       "author": "Associated recording: Tasha Cobbs Leonard",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "eede9f6c5ae5d4316cc6",
+      "identityAssumption": "Published text: Your Spirit. Added live sections and other recordings are separate versions.",
+      "sourceHash": "435bd8497ef9aecf9abd20073ca1c423dd33f3e1c6c389dbde159f82d1fa3672",
+      "sourceURL": "https://www.multitracks.com/songs/Tasha-Cobbs/Heart.-Passion.-Pursuit/Your-Spirit/",
+      "reason": null
     },
     {
       "id": "expanded-great-god-tasha-cobbs-leonard",
       "title": "Great God",
       "author": "Associated recording: Tasha Cobbs Leonard",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "ee71d11700ffb7eb389d",
+      "identityAssumption": "Published text: Great God. Added live sections and other recordings are separate versions.",
+      "sourceHash": "6e88463db1c0ed308ebd7b9a92551c78fff8b4fa70629914c5635a9898a717e3",
+      "sourceURL": "https://www.multitracks.com/songs/Tasha-Cobbs/Heart.-Passion.-Pursuit/Great-God/",
+      "reason": null
     },
     {
       "id": "expanded-this-is-a-move-tasha-cobbs-leonard",
       "title": "This Is a Move",
       "author": "Associated recording: Tasha Cobbs Leonard",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "ff4e12bf08414a55ca89",
+      "identityAssumption": "Published text: THIS IS A MOVE (LIVE FROM GREENSBORO). Added live sections and other recordings are separate versions.",
+      "sourceHash": "d826ddd0e7813affb9e5c4a57435b88afafd528bda5481f3406c647a2ce7d13f",
+      "sourceURL": "https://www.multitracks.com/songs/Brandon-Lake/TEAR-OFF-THE-ROOF-%28LIVE-FROM-THE-HOLY-CITY%29/THIS-IS-A-MOVE-%28LIVE-FROM-GREENSBORO%29/",
+      "reason": null
     },
     {
       "id": "expanded-royalty-tasha-cobbs-leonard",
@@ -10007,11 +10197,12 @@
       "id": "artist-surrounded-fight-my-battles-upperroom",
       "title": "Surrounded (Fight My Battles)",
       "author": "Associated recording: UPPERROOM",
-      "status": "identity-unresolved",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "Title candidates lack sufficient identity evidence."
+      "status": "reviewed-draft",
+      "analysisKey": "b0a95c52bc9869ace3ca",
+      "identityAssumption": "Published text: Surrounded (Fight My Battles). Added live sections and other recordings are separate versions.",
+      "sourceHash": "33414f9d4944a5489cb427edbfd79d6667d26f4de528fd95b6627d824134d0d2",
+      "sourceURL": "https://www.multitracks.com/songs/UPPERROOM/To-The-One/Surrounded/",
+      "reason": null
     },
     {
       "id": "artist-rest-on-us-upperroom",
@@ -10028,21 +10219,23 @@
       "id": "artist-give-me-jesus-upperroom",
       "title": "Give Me Jesus",
       "author": "Associated recording: UPPERROOM",
-      "status": "identity-unresolved",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "Title candidates lack sufficient identity evidence."
+      "status": "reviewed-draft",
+      "analysisKey": "fcd41ae18ec3a84f217b",
+      "identityAssumption": "Published text: Give Me Jesus. Added live sections and other recordings are separate versions.",
+      "sourceHash": "1aef7175b08a15723738fa0dea6ea711f4e9a0ee8a333ff83a9c7c2462375c8e",
+      "sourceURL": "https://www.multitracks.com/songs/UPPERROOM/Love-Note/Give-Me-Jesus/",
+      "reason": null
     },
     {
       "id": "artist-monday-morning-faith-seu-worship",
       "title": "Monday Morning Faith",
       "author": "Associated recording: SEU Worship",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "79f129ded59642315b32",
+      "identityAssumption": "Published text: Monday Morning Faith. Added live sections and other recordings are separate versions.",
+      "sourceHash": "7f5910af0eb4731411265e9a2aae6552fa7c928b5d2e024af3292b8d1b810d78",
+      "sourceURL": "https://www.multitracks.com/songs/SEU-Worship/Move-of-God/Monday-Morning-Faith/",
+      "reason": null
     },
     {
       "id": "artist-more-than-a-feeling-seu-worship",
@@ -10129,21 +10322,23 @@
       "id": "artist-we-will-feast-in-the-house-of-zion-sandra-mccracken",
       "title": "We Will Feast in the House of Zion",
       "author": "Associated recording: Sandra McCracken",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "e34c53d2a3e52f3a687e",
+      "identityAssumption": "Published text: We Will Feast In The House Of Zion (Live). Added live sections and other recordings are separate versions.",
+      "sourceHash": "4d7614f5545619d5c45d2d533588cb6b5756d8ae7a0fe638651cfa7c07dabe5a",
+      "sourceURL": "https://www.multitracks.com/songs/Anchor-Hymns/The-Garden/We-Will-Feast-In-The-House-Of-Zion-%28Live%29/",
+      "reason": null
     },
     {
       "id": "artist-thy-mercy-my-god-sandra-mccracken",
       "title": "Thy Mercy, My God",
       "author": "Associated recording: Sandra McCracken",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "c43dc31f1a49e9b2fd97",
+      "identityAssumption": "Published text: Thy Mercy, My God (Live). Added live sections and other recordings are separate versions.",
+      "sourceHash": "b70d6f7dc4dc5b1e7b413c4ffbeb1b879cfd3069bda14f0e4702d355e858d43d",
+      "sourceURL": "https://www.multitracks.com/songs/Keith-and-Kristyn-Getty/Sing%21-From-Generation-To-Generation-%28Live-At-The-Getty-Music-Worship-Conference%29/Thy-Mercy%2C-My-God-%28Live%29/",
+      "reason": null
     },
     {
       "id": "artist-steadfast-sandra-mccracken",
@@ -10189,31 +10384,34 @@
       "id": "artist-made-alive-citizens",
       "title": "Made Alive",
       "author": "Associated recording: Citizens",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "ba0d8c5a7deb6b184f0a",
+      "identityAssumption": "Published text: Made Alive. Added live sections and other recordings are separate versions.",
+      "sourceHash": "d3ad8db8f43ed5bf9e0c57ce102048a5f1f921e277d89501fd50de477c0271a6",
+      "sourceURL": "https://www.multitracks.com/songs/Citizens-And-Saints/Citizens/Made-Alive/",
+      "reason": null
     },
     {
       "id": "artist-in-tenderness-citizens",
       "title": "In Tenderness",
       "author": "Associated recording: Citizens",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "0beb5629617b1903cf20",
+      "identityAssumption": "Published text: In Tenderness. Added live sections and other recordings are separate versions.",
+      "sourceHash": "7c1e93cc47303e4c81caa9781e7609df16eb66f7ba05616d8e2112f00db915d0",
+      "sourceURL": "https://www.multitracks.com/songs/Citizens-And-Saints/Already-Not-Yet/In-Tenderness/",
+      "reason": null
     },
     {
       "id": "artist-you-brought-me-back-to-life-citizens",
       "title": "You Brought Me Back to Life",
       "author": "Associated recording: Citizens",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "307a4b9df4f22b35a5c2",
+      "identityAssumption": "Published text: You Brought Me Back To Life. Added live sections and other recordings are separate versions.",
+      "sourceHash": "b0b38e5d728da240d653e3f9d50e58733725a3233b67ce0d4f3be7a4fdefc46b",
+      "sourceURL": "https://www.multitracks.com/songs/Citizens-And-Saints/Join-The-Triumph/You-Brought-Me-Back-To-Life/",
+      "reason": null
     },
     {
       "id": "artist-mercy-seat-travis-cottrell",
@@ -10239,11 +10437,12 @@
       "id": "artist-the-blood-of-jesus-speaks-for-me-travis-cottrell",
       "title": "The Blood of Jesus Speaks for Me",
       "author": "Associated recording: Travis Cottrell",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "7b2f5f5c9fa335c02775",
+      "identityAssumption": "Published text: The Blood of Jesus Speaks for Me. Added live sections and other recordings are separate versions.",
+      "sourceHash": "3ab45cfdcc41cc12b0b9b3bacbdeee056863c66085bc35bb9f8f35d80bc38794",
+      "sourceURL": "https://www.multitracks.com/songs/Travis-Cottrell/All-That-Is-Within-Me/The-Blood-of-Jesus-Speaks-for-Me/",
+      "reason": null
     },
     {
       "id": "artist-the-love-of-god-charles-billingsley",
@@ -10259,11 +10458,12 @@
       "id": "artist-midnight-cry-charles-billingsley",
       "title": "Midnight Cry",
       "author": "Associated recording: Charles Billingsley",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "74b6752c206c9ccf038d",
+      "identityAssumption": "Published text: Midnight Cry. Added live sections and other recordings are separate versions.",
+      "sourceHash": "3eab2f15bb7471c561ee58969a2a5e195a4f683658a73c7b940b392f3704e8b8",
+      "sourceURL": "https://www.multitracks.com/songs/Charles-Billingsley/Replay/Midnight-Cry/",
+      "reason": null
     },
     {
       "id": "artist-no-one-ever-cared-for-me-like-jesus-charles-billingsley",

@@ -35,5 +35,14 @@ export function sortCollectionSongs(songs, sort='alphabetical', counts=new Map()
 export function findCollections(packs,records,query,group='') {
   const terms=normalize(query).split(' ').filter(Boolean);
   return packs.filter(pack=> (!group||pack.group===group) &&
-    (!terms.length||terms.every(term=>normalize([pack.name,pack.group,pack.description].join(' ')).includes(term))||searchSongs(records(pack),query).length>0));
+    (!terms.length||terms.every(term=>normalize([pack.name,pack.subtitle,pack.group,pack.description].join(' ')).includes(term))||searchSongs(records(pack),query).length>0));
+}
+export function sortCollections(packs, records, query='', sort='relevance') {
+  const title=normalize(query);
+  const match=pack=>!title?0:normalize(pack.name)===title?4:
+    normalize([pack.name,pack.subtitle].join(' ')).includes(title)?3:
+    records(pack).some(song=>normalize(song.title)===title)?2:0;
+  return [...packs].sort((a,b)=>
+    (sort==='relevance' ? match(b)-match(a)||(a.browseOrder??999)-(b.browseOrder??999) : 0)
+    ||collator.compare(a.name,b.name)||collator.compare(a.id,b.id));
 }

@@ -27,7 +27,7 @@ export async function checkRepertoireFlows(browser, base) {
     .getByLabel("Collection depth", { exact: true })
     .selectOption("all");
   const modern = page.locator(".collection-row").filter({
-    has: page.getByRole("heading", { name: "Modern Hymns", exact: true }),
+    has: page.getByRole("heading", { name: "Ancient Truth, New Songs", exact: true }),
   });
   await modern.locator(":scope > summary").click();
   assert.equal(

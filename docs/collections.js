@@ -188,6 +188,40 @@ for (const [id, name, group, titles] of [
   songCollections.push({ ...selected(id, name, group === "Eras" ? "Songs associated with this worship era; later recordings may differ. This is an editorial grouping, not verified release-year metadata." : "An editorial topic grouping. Check the chosen lyric version before use.", songIds, 5, 12), group });
 }
 const catalogById = new Map(allCatalogSongs.map(s=>[s.id,s]));
+// Stable editorial browsing order: broad starting points interspersed with artists,
+// eras and themes. These are collection entry points, not song recommendations.
+const browseOrder = [
+  'baptist-mixed','artist-chris-tomlin','modern-hymns','artist-phil-wickham',
+  'era-2020s','artist-elevation-worship','theme-grace','artist-cityalight',
+  'baptist-hymns','artist-keith-kristyn-getty','contemporary-worship','artist-brandon-lake',
+  'cross-resurrection','artist-hillsong','theme-prayer','artist-the-worship-initiative',
+  'era-2010s','artist-charity-gayle','gospel','artist-cody-carnes',
+  'advent-christmas','artist-sovereign-grace','era-2000s','artist-matt-redman',
+  'theme-holiness','artist-bethel-music','ccm-choruses','artist-matt-boswell-matt-papa',
+  'era-classic-choruses','artist-passion','reformed-hymns','artist-maverick-city-music',
+];
+const collectionNames = {
+  'baptist-mixed':['Sunday by Sunday','A broad Baptist church repertoire'],
+  'baptist-hymns':['Hymns We Carry','Traditional hymns & gospel favorites'],
+  'modern-hymns':['Ancient Truth, New Songs','Modern hymns'],
+  'contemporary-worship':['Songs for the Gathering','Contemporary worship'],
+  'ccm-choruses':['Beyond Sunday','CCM & worship choruses'],
+  gospel:['Good News & Gospel','Gospel songs & gospel hymns'],
+  'reformed-hymns':['A Heritage of Praise','Presbyterian & Reformed hymn selections'],
+  'advent-christmas':['Light in the Waiting','Advent & Christmas'],
+  'cross-resurrection':['The Cross & the Empty Tomb','Cross & resurrection'],
+  'era-classic-choruses':['From the Chorus Book','Classic worship · 1970s–1990s'],
+  'era-2000s':['Turn of the Millennium','Worship of the 2000s'],
+  'era-2010s':['A Decade of Anthems','Worship of the 2010s'],
+  'era-2020s':["The Songs We're Singing",'Worship of the 2020s'],
+  'theme-grace':['Held by Grace','Grace & assurance'],
+  'theme-holiness':['Holy Is the Lord',"God's holiness & majesty"],
+  'theme-prayer':['Teach Us to Pray','Prayer & dependence'],
+};
+for (const pack of songCollections) {
+  if(collectionNames[pack.id]) [pack.name,pack.subtitle]=collectionNames[pack.id];
+  pack.browseOrder=browseOrder.includes(pack.id)?browseOrder.indexOf(pack.id):100;
+}
 export function collectionSongs(collection, depth = "essentials") {
   if (!collection || !Object.hasOwn(depthLabels, depth))
     throw new Error("Choose a collection and depth.");

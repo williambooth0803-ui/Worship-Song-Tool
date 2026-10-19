@@ -1,8 +1,16 @@
 import test from'node:test';import assert from'node:assert/strict';
-import{searchSongs}from'../public/core.js';import{createSongMatcher,completedPlanCounts,recordingRelease,sortCollectionSongs,findCollections}from'../public/collection-browse.js';
+import{searchSongs}from'../public/core.js';import{createSongMatcher,completedPlanCounts,recordingRelease,sortCollectionSongs,findCollections,sortCollections}from'../public/collection-browse.js';
 import{saveIndicator}from'../public/save-status.js';import{workspaceSignature}from'../public/saving.js';
 import{portraitMetadata,loadArtistPortraits}from'../public/artist-portraits.js';import{validateRecordings}from'../public/recordings.js';
 const songs=[{id:'z',title:'Zion',author:'Writer',themes:[],recordings:[{releaseDate:'2018-06-01'}]},{id:'a',title:'Amazing Grace',author:'Writer',themes:[],recordings:[]},{id:'b',title:'Behold',author:'Writer',themes:[],recordings:[{releaseDate:'2024-03-01'},{releaseDate:'2001-03-01'}]}];
+test('collection relevance mixes editorial entry points and brings explicit query matches first while old descriptors remain searchable',()=>{
+ const packs=[{id:'hymns',name:'Held by Grace',subtitle:'Grace & assurance',group:'Themes',description:'',browseOrder:0},{id:'artist',name:'A Writer',group:'Artists',description:'',browseOrder:1}];
+ assert.deepEqual(sortCollections(packs,()=>songs).map(p=>p.id),['hymns','artist']);
+ assert.deepEqual(sortCollections(packs,()=>songs,'A Writer').map(p=>p.id),['artist','hymns']);
+ assert.deepEqual(sortCollections(packs,()=>songs,'','alphabetical').map(p=>p.id),['artist','hymns']);
+ assert.deepEqual(findCollections(packs,()=>[],'Grace assurance').map(p=>p.id),['hymns']);
+ assert.equal(packs[0].id,'hymns');
+});
 test('collection title lookup, alphabetic/known-date sorting and completed-plan popularity never invent rankings',()=>{
  assert.deepEqual(sortCollectionSongs(songs).map(s=>s.id),['a','b','z']);assert.deepEqual(sortCollectionSongs(songs,'oldest').map(s=>s.id),['b','z','a']);assert.deepEqual(sortCollectionSongs(songs,'newest').map(s=>s.id),['z','b','a']);assert.equal(recordingRelease(songs[2]),'2001-03-01');
  const counts=completedPlanCounts([{status:'draft',items:[{type:'song',songId:'a'}]},{status:'completed',items:[{type:'song',songId:'z'},{type:'song',songId:'z'}]}]);assert.deepEqual(sortCollectionSongs(songs,'popularity',counts).map(s=>s.id),['z','a','b']);
