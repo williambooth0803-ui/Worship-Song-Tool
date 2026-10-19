@@ -57,7 +57,7 @@ for(const song of allCatalogSongs){
  let analysisKey=null;
  if(source){
   const sourceURL=new URL(source.url);
-  if(sourceURL.protocol!=='https:'||sourceURL.username||sourceURL.password||!['github.com','integrityworship.com','cityalight.com','sovereigngracemusic.com','www.worshiptogether.com','www.mattpapa.com','www.stuarttownend.co.uk','www.jordankauflin.com','essentialworship.com','www.datocms-assets.com','bethelmusic.com','app.theworshipinitiative.com','hymnary.org','gettymusic.store','www.cifraclub.com.br','www.multitracks.com','digitalsongsandhymns.com','klrc.com','www.singhymnal.com','hillsong.com','www.shazam.com'].includes(sourceURL.hostname))throw new Error('Unsafe evidence source URL');
+  if(sourceURL.protocol!=='https:'||sourceURL.username||sourceURL.password||!['github.com','integrityworship.com','cityalight.com','sovereigngracemusic.com','www.worshiptogether.com','www.mattpapa.com','www.stuarttownend.co.uk','www.jordankauflin.com','essentialworship.com','www.datocms-assets.com','bethelmusic.com','app.theworshipinitiative.com','hymnary.org','gettymusic.store','www.cifraclub.com.br','www.multitracks.com','digitalsongsandhymns.com','klrc.com','www.singhymnal.com','hillsong.com','www.shazam.com','sifalyrics.com','www.thousandtongues.org'].includes(sourceURL.hostname))throw new Error('Unsafe evidence source URL');
   // A revised rationale must not collide with an older retained cover report.
   analysisKey=hash(source.key+'|'+JSON.stringify(notes||'scan')+'|'+JSON.stringify(song.review.scores)).slice(0,20);
   if(!analyses[analysisKey]){
