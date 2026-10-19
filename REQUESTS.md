@@ -27,9 +27,9 @@ blockers explicitly. Preserve personal assessments, recordings and workspaces.
 
 - [ ] Complete the owner's requested whole-catalog pass. Start: 408 expanded of
   1,000; 592 remaining. Source/check starting count: 34,445.
-- [x] Retrieve and read 502 additional public music-resource lyric texts. Write
+- [x] Research the lyric texts for 568 additional catalog records. Write
   separate reasons, themes, checked KJV comparisons and exact short concerns.
-  Current coverage: 910 expanded; 90 remaining (10 unresolved, 80 unmatched).
+  Current coverage: 976 expanded; 24 identities unresolved. No unmatched or partial texts remain.
 - [x] Preserve private reviews, notes, recordings, approvals and lens evaluations;
   source refresh remains limited to untouched public defaults.
 - [x] Publish the first 110-record checkpoint `6dcd84c`: App checks
@@ -37,9 +37,11 @@ blockers explicitly. Preserve personal assessments, recordings and workspaces.
   lens/catalog browser flows passed.
 - [x] Check the local 310-record checkpoint and the new collection grid/About UI.
   The full hosted suite passed. Release `5c19428` passed App checks `39261609029` and Pages `39261608789`; all seven changed live assets matched the commit, and live catalog/lens checks passed.
-- [ ] Continue and finish all 90 remaining source-supported evaluations.
+- [ ] Resolve or retire the final 24 ambiguous catalog identities; an optional retirement preference was requested. Keep them visible and unassessed until that choice is resolved.
 
-The 910-report checkpoint adds 142 reports beyond the last publication. Source corrections include the publisher's actual SEVENS text and the full God You're So Good text, including its suffering verse. All previously brief drafts now have expanded reports. All 138 unit/database checks passed, the static build passed, and focused Chromium catalog/lens checks passed at four layouts. Source/check total: 35,105. Publication is in progress. The owner declined further Sites research; retain the current hosting setup.
+The 910-report release `d81f103` passed App checks `39264926791` and Pages `39264927162`, plus direct live catalog checks. The new working checkpoint adds 66 more reports, reaching 976. The whole pass added 568 evaluations, with three distinct reasons, themes, checked KJV quotations and brief exact concerns. All previously brief drafts now have expanded reports. The final 24 records need exact identities rather than additional generic lyric searching: several results are album titles, fragments of already represented songs, or different artist associations. These records have individual on-page explanations and a candidate-reference audit. No personal record or public default has been removed while the retirement choice is pending.
+
+The owner declined further Sites research; retain the current hosting setup. All 138 unit/database checks passed for the 976-report checkpoint. The source/check total is 35,182. Focused Chromium catalog/lens checks passed at four viewport sizes, including saved judgments and plans. Publication is in progress.
 
 ## Manageable catalog, analysis lenses and workflow guidance
 
@@ -64,8 +66,8 @@ The 910-report checkpoint adds 142 reports beyond the last publication. Source c
   workflows and source-supported report checks passed.
   Final source/check count: 34,445.
 
-Current whole-catalog scope: 1,000 preloaded records, 910 expanded reports;
-90 remain (10 unresolved identities and 80 unmatched texts). The prior 2,044-song
+Current whole-catalog scope: 1,000 preloaded records, 976 expanded reports;
+24 identities remain unresolved, with individual explanations in `data/catalog-analysis/identity-issues.json`. The prior 2,044-song
 ledger below is historical coverage, superseded by the owner's reduction request.
 All saved personal records are preserved, including retired default versions.
 

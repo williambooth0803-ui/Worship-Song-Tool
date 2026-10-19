@@ -1,11 +1,11 @@
 {
   "coverage": {
-    "assumed": 678,
+    "assumed": 744,
     "total": 1000,
-    "reviewed": 910,
+    "reviewed": 976,
     "textScans": 0,
-    "unresolved": 10,
-    "missing": 80,
+    "unresolved": 24,
+    "missing": 0,
     "partial": 0,
     "checkedAt": "2026-10-19"
   },
@@ -2710,7 +2710,7 @@
       "analysisKey": null,
       "sourceHash": null,
       "sourceURL": null,
-      "reason": "Title candidates lack sufficient identity evidence."
+      "reason": "The exact Cody Carnes title was not established. God Is Good! is an album; the related song Good (Can’t Be Anything Else) has a different title."
     },
     {
       "id": "expanded-too-good-to-not-believe-cody-carnes",
@@ -2826,11 +2826,11 @@
       "id": "expanded-still-holy-elevation-rhythm",
       "title": "Still Holy",
       "author": "Associated recording: Elevation RHYTHM",
-      "status": "missing-text",
+      "status": "identity-unresolved",
       "analysisKey": null,
       "sourceHash": null,
       "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "reason": "No exact Elevation RHYTHM text was identified. Unrelated artists and lyric fragments are not sufficient to select a song."
     },
     {
       "id": "expanded-walk-on-water-elevation-rhythm",
@@ -3109,11 +3109,11 @@
       "id": "expanded-bless-you-elevation-worship",
       "title": "Bless You",
       "author": "Associated recording: Elevation Worship",
-      "status": "missing-text",
+      "status": "identity-unresolved",
       "analysisKey": null,
       "sourceHash": null,
       "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "reason": "Searches lead to The Blessing rather than a distinct Elevation Worship song called Bless You. The selected record needs an exact identity."
     },
     {
       "id": "expanded-another-one-elevation-worship",
@@ -3163,11 +3163,12 @@
       "id": "expanded-god-is-not-against-me-elevation-worship",
       "title": "God Is Not Against Me",
       "author": "Associated recording: Elevation Worship",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "93bc4a1e30c15f6072c6",
+      "identityAssumption": "Published lyric text: God Is Not Against Me. Other arrangements and added live sections are separate versions.",
+      "sourceHash": "28240b9d440ce31b271ee88c6b097e0380d54e3b46a3d9d6a35e8da21427ea7e",
+      "sourceURL": "https://www.youtube.com/watch?v=LsY6or9_V-w",
+      "reason": null
     },
     {
       "id": "expanded-jesus-be-the-name-elevation-worship",
@@ -3206,11 +3207,11 @@
       "id": "expanded-yesterday-today-forever-elevation-worship",
       "title": "Yesterday Today & Forever",
       "author": "Associated recording: Elevation Worship",
-      "status": "missing-text",
+      "status": "identity-unresolved",
       "analysisKey": null,
       "sourceHash": null,
       "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "reason": "The Elevation association was not established. Results point to Same God and other songs with similar wording."
     },
     {
       "id": "expanded-welcome-resurrection-elevation-worship",
@@ -3315,11 +3316,11 @@
       "id": "expanded-open-the-grave-elevation-worship",
       "title": "Open the Grave",
       "author": "Associated recording: Elevation Worship",
-      "status": "missing-text",
+      "status": "identity-unresolved",
       "analysisKey": null,
       "sourceHash": null,
       "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "reason": "This phrase appears in RATTLE!, which already has a separate evaluated record. A distinct song under this title was not established."
     },
     {
       "id": "expanded-mercy-elevation-worship",
@@ -3369,11 +3370,12 @@
       "id": "expanded-we-praise-you-bethel-music",
       "title": "We Praise You",
       "author": "Associated recording: Bethel Music",
-      "status": "identity-unresolved",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "Title candidates lack sufficient identity evidence."
+      "status": "reviewed-draft",
+      "analysisKey": "59b6a6ea07a204ee3dc7",
+      "identityAssumption": "Published lyric text: We Praise You. Other arrangements and added live sections are separate versions.",
+      "sourceHash": "67fe49d58ba35849facfd4d1eb7a1291c061968afa9ef2d257f1d57c443b9cad",
+      "sourceURL": "https://bethelmusic.com/resources/revivals-in-the-air-live/we-praise-you",
+      "reason": null
     },
     {
       "id": "expanded-reason-to-praise-bethel-music",
@@ -3412,11 +3414,12 @@
       "id": "expanded-our-king-jesus-bethel-music",
       "title": "Our King Jesus",
       "author": "Associated recording: Bethel Music",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "2d96cf022d3459f16393",
+      "identityAssumption": "Published lyric text: Our King Jesus. Other arrangements and added live sections are separate versions.",
+      "sourceHash": "6f518e25bded648ca9f2454dc35881a733d8802b911ad09c8038a4cb7580edb8",
+      "sourceURL": "https://bethelmusic.com/resources/come-up-here/our-king-jesus-holy",
+      "reason": null
     },
     {
       "id": "expanded-ain-t-no-grave-bethel-music",
@@ -3860,11 +3863,12 @@
       "id": "expanded-prince-of-peace-hillsong-worship",
       "title": "Prince of Peace",
       "author": "Associated recording: Hillsong Worship",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "300e6997888c42cd2161",
+      "identityAssumption": "Selected text: Prince Of Peace by Hillsong UNITED from Empires. The catalog associates Hillsong Worship; that recording association is not verified by this source.",
+      "sourceHash": "b5e7bdf0ba0efc25bf16e950df715cdfc4080742828d0e13c606e8fd7c5c429a",
+      "sourceURL": "https://www.multitracks.com/songs/hillsong-united/empires/prince-of-peace/",
+      "reason": null
     },
     {
       "id": "expanded-i-surrender-hillsong-worship",
@@ -4137,7 +4141,7 @@
       "analysisKey": null,
       "sourceHash": null,
       "sourceURL": null,
-      "reason": "Title candidates lack sufficient identity evidence."
+      "reason": "The Hillsong UNITED result is a lyric phrase in Chariot. A distinct song with the catalog title was not established."
     },
     {
       "id": "expanded-god-you-re-so-good-passion",
@@ -4220,11 +4224,11 @@
       "id": "expanded-simple-passion",
       "title": "Simple",
       "author": "Associated recording: Passion",
-      "status": "missing-text",
+      "status": "identity-unresolved",
       "analysisKey": null,
       "sourceHash": null,
       "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "reason": "The identified Passion resource is Simple Pursuit. An exact title or selected version is needed before substituting that text."
     },
     {
       "id": "expanded-worthy-of-your-name-passion",
@@ -4285,11 +4289,11 @@
       "id": "expanded-let-me-see-jesus-passion",
       "title": "Let Me See Jesus",
       "author": "Associated recording: Passion",
-      "status": "missing-text",
+      "status": "identity-unresolved",
       "analysisKey": null,
       "sourceHash": null,
       "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "reason": "An exact Passion text was not established. A Matt Redman song with this title and Let It Be Jesus are different candidates."
     },
     {
       "id": "expanded-fall-like-rain-passion",
@@ -4306,11 +4310,11 @@
       "id": "expanded-because-of-christ-passion",
       "title": "Because of Christ",
       "author": "Associated recording: Passion",
-      "status": "missing-text",
+      "status": "identity-unresolved",
       "analysisKey": null,
       "sourceHash": null,
       "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "reason": "No complete text matching this exact Passion title was established. Related sheet-music and translated-title results do not settle the identity."
     },
     {
       "id": "expanded-he-who-is-to-come-passion",
@@ -4327,11 +4331,11 @@
       "id": "expanded-call-on-heaven-passion",
       "title": "Call on Heaven",
       "author": "Associated recording: Passion",
-      "status": "missing-text",
+      "status": "identity-unresolved",
       "analysisKey": null,
       "sourceHash": null,
       "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "reason": "The title appears as a Passion album and in a later release subtitle. A distinct song/text under this catalog identity was not established."
     },
     {
       "id": "expanded-i-believe-phil-wickham",
@@ -4608,11 +4612,12 @@
       "id": "expanded-more-brandon-lake",
       "title": "More",
       "author": "Associated recording: Brandon Lake",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "9bdd30a40cac7bb53df7",
+      "identityAssumption": "Published lyric text: More. Other arrangements and added live sections are separate versions.",
+      "sourceHash": "10097ae187124e5101ece1f5ec2f05d22bc457dc0b6e1fdf3590707429a750f1",
+      "sourceURL": "https://www.worshiptogether.com/songs/more-brandon-lake/?nav=1",
+      "reason": null
     },
     {
       "id": "expanded-adoption-song-brandon-lake",
@@ -4640,11 +4645,12 @@
       "id": "expanded-greater-still-brandon-lake",
       "title": "Greater Still",
       "author": "Associated recording: Brandon Lake",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "3ec75bc14011b6cd3153",
+      "identityAssumption": "Published lyric text: Greater Still. Other arrangements and added live sections are separate versions.",
+      "sourceHash": "3c1ca4a1197c583b216cae6d0f4e37e8698bc2029b19062e8ab9a14023731c5e",
+      "sourceURL": "https://essentialworship.com/songs/brandon-lake/greater-still/",
+      "reason": null
     },
     {
       "id": "expanded-just-like-heaven-brandon-lake",
@@ -4683,11 +4689,12 @@
       "id": "expanded-help-brandon-lake",
       "title": "Help!",
       "author": "Associated recording: Brandon Lake",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "b081fca67a8368167f92",
+      "identityAssumption": "Published lyric text: Help!. Other arrangements and added live sections are separate versions.",
+      "sourceHash": "012e8d5aa01887f14c29f9240ed761c2903fd16a8611940fcfd1145d91a3f4fd",
+      "sourceURL": "https://www.multitracks.com/songs/Brandon-Lake/HELP%21/HELP%21/",
+      "reason": null
     },
     {
       "id": "expanded-so-close-brandon-lake",
@@ -4726,11 +4733,12 @@
       "id": "expanded-meant-for-good-brandon-lake",
       "title": "Meant for Good",
       "author": "Associated recording: Brandon Lake",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "ae8181ef3c42a1863cec",
+      "identityAssumption": "Published lyric text: Meant for Good. Other arrangements and added live sections are separate versions.",
+      "sourceHash": "2f53ef2afd2c202c0df58f7fd1c5d553bdd4c0a964a1a5375aebc0881768e5cb",
+      "sourceURL": "https://www.multitracks.com/songs/Brandon-Lake/HELP%21/Meant-For-Good/",
+      "reason": null
     },
     {
       "id": "expanded-i-believe-charity-gayle",
@@ -4846,11 +4854,12 @@
       "id": "expanded-cleansed-charity-gayle",
       "title": "Cleansed",
       "author": "Associated recording: Charity Gayle",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "1f2cc8f0708f32ecfb0a",
+      "identityAssumption": "Published lyric text: Cleansed. Other arrangements and added live sections are separate versions.",
+      "sourceHash": "5e4685ac91d66f40f009b9abd130a30296ce16574e91630d2f7e1831b2ab55c6",
+      "sourceURL": "https://www.charitygayle.com/cleansed-lyrics",
+      "reason": null
     },
     {
       "id": "expanded-living-in-the-overflow-charity-gayle",
@@ -4867,11 +4876,12 @@
       "id": "expanded-look-what-the-lord-has-done-charity-gayle",
       "title": "Look What the Lord Has Done",
       "author": "Associated recording: Charity Gayle",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "5b087690333f24d6e754",
+      "identityAssumption": "Published lyric text: Look What the Lord Has Done. Other arrangements and added live sections are separate versions.",
+      "sourceHash": "bb3d136d4ee077d5d026277c509956ab4c3353ec80b6a45bff4abd039cfe9eff",
+      "sourceURL": "https://sifalyrics.com/charity-gayle-look-what-the-lord-has-done-lyrics",
+      "reason": null
     },
     {
       "id": "expanded-amen-charity-gayle",
@@ -4888,11 +4898,12 @@
       "id": "expanded-benediction-as-you-go-charity-gayle",
       "title": "Benediction (As You Go)",
       "author": "Associated recording: Charity Gayle",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "ebb082a3d1188240bffc",
+      "identityAssumption": "Published lyric text: Benediction (As You Go). Other arrangements and added live sections are separate versions.",
+      "sourceHash": "59ffd6b589d5f955146461724ab173cc08607cdba663a0b7d7357a647d75b646",
+      "sourceURL": "https://sifalyrics.com/charity-gayle-benediction-lyrics",
+      "reason": null
     },
     {
       "id": "expanded-promises-maverick-city-music",
@@ -4972,11 +4983,12 @@
       "id": "expanded-god-problems-maverick-city-music",
       "title": "God Problems",
       "author": "Associated recording: Maverick City Music",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "43ce74f83c9fd6d50a4e",
+      "identityAssumption": "Published lyric text: God Problems. Other arrangements and added live sections are separate versions.",
+      "sourceHash": "b1c9baddf6118e6796114f6fcf05c8738148f5ef47f8631be02e5b1508d82a65",
+      "sourceURL": "https://essentialworship.com/songs/maverick-city/god-problems/",
+      "reason": null
     },
     {
       "id": "expanded-most-beautiful-so-in-love-maverick-city-music",
@@ -5004,41 +5016,45 @@
       "id": "expanded-make-it-right-maverick-city-music",
       "title": "Make It Right",
       "author": "Associated recording: Maverick City Music",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "657cc3e739e86ff00917",
+      "identityAssumption": "Published lyric text: Make It Right. Other arrangements and added live sections are separate versions.",
+      "sourceHash": "649308da284bdc2f9fcd02594399a91d86db05b5cf9abad546e7b198f450e873",
+      "sourceURL": "https://essentialworship.com/songs/maverick-city/make-it-right/",
+      "reason": null
     },
     {
       "id": "expanded-getting-ready-maverick-city-music",
       "title": "Getting Ready",
       "author": "Associated recording: Maverick City Music",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "0209b4006df14845819d",
+      "identityAssumption": "Published lyric text: Getting Ready. Other arrangements and added live sections are separate versions.",
+      "sourceHash": "280bebeb7fd9d83cd318a0bcbc91ceea89026012d6d0cd64a2c09a3ae95d381b",
+      "sourceURL": "https://sifalyrics.com/maverick-city-music-getting-ready-lyrics",
+      "reason": null
     },
     {
       "id": "expanded-the-story-i-ll-tell-maverick-city-music",
       "title": "The Story I'll Tell",
       "author": "Associated recording: Maverick City Music",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "7f14d2f421b622443c5d",
+      "identityAssumption": "Published lyric text: The Story I'll Tell. Other arrangements and added live sections are separate versions.",
+      "sourceHash": "40a7e744f96271ddd0d30e111e4b4998f90ceb3af8eac09bdeeeea7f56233a73",
+      "sourceURL": "https://www.multitracks.com/songs/Maverick-City-Music/The-Maverick-Way-Reimagined/The-Story-I%27ll-Tell-%28feat.-Genavieve-Linkowski%29/",
+      "reason": null
     },
     {
       "id": "expanded-to-you-maverick-city-music",
       "title": "To You",
       "author": "Associated recording: Maverick City Music",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "31ded1b711e250866b2d",
+      "identityAssumption": "Published lyric text: To You. Other arrangements and added live sections are separate versions.",
+      "sourceHash": "80625af791608ba29c62fcec5dffd8976cd21f637da233aad2bfc4a459e51880",
+      "sourceURL": "https://www.multitracks.com/songs/Maverick-City-Music/Maverick-City%2C-Vol.-3-Pt.-2/To-You/",
+      "reason": null
     },
     {
       "id": "expanded-be-praised-maverick-city-music",
@@ -5256,11 +5272,12 @@
       "id": "expanded-your-name-is-glorious-jesus-culture",
       "title": "Your Name Is Glorious",
       "author": "Associated recording: Jesus Culture",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "6e8dc78ac7e18709d5c3",
+      "identityAssumption": "Published lyric text: Your Name Is Glorious. Other arrangements and added live sections are separate versions.",
+      "sourceHash": "54fe889223084f3f06b5e75d2c45b2477821b7e73814ac68d7004832acb9e521",
+      "sourceURL": "https://sifalyrics.com/jesus-culture-your-name-is-glorious-lyrics",
+      "reason": null
     },
     {
       "id": "expanded-i-am-not-alone-kari-jobe",
@@ -5539,11 +5556,11 @@
       "id": "expanded-nobody-like-our-god-chris-tomlin",
       "title": "Nobody Like Our God",
       "author": "Associated recording: Chris Tomlin",
-      "status": "missing-text",
+      "status": "identity-unresolved",
       "analysisKey": null,
       "sourceHash": null,
       "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "reason": "The exact Chris Tomlin title was not established. Similar wording in other artists’ songs cannot identify this record."
     },
     {
       "id": "expanded-jesus-son-of-god-chris-tomlin",
@@ -5702,21 +5719,21 @@
       "id": "expanded-come-to-jesus-cityalight",
       "title": "Come to Jesus",
       "author": "Associated recording: CityAlight",
-      "status": "missing-text",
+      "status": "identity-unresolved",
       "analysisKey": null,
       "sourceHash": null,
       "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "reason": "CityAlight results lead to Known and Loved and Jesus, Strong and Kind. The phrase alone cannot select between those texts."
     },
     {
       "id": "expanded-holy-god-cityalight",
       "title": "Holy God",
       "author": "Associated recording: CityAlight",
-      "status": "missing-text",
+      "status": "identity-unresolved",
       "analysisKey": null,
       "sourceHash": null,
       "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "reason": "The primary CityAlight resource is Only a Holy God, already represented by another evaluated record. This shortened title needs confirmation."
     },
     {
       "id": "expanded-my-god-is-all-i-need-cityalight",
@@ -6052,11 +6069,11 @@
       "id": "expanded-in-the-valley-keith-kristyn-getty",
       "title": "In the Valley",
       "author": "Associated recording: Keith & Kristyn Getty",
-      "status": "missing-text",
+      "status": "identity-unresolved",
       "analysisKey": null,
       "sourceHash": null,
       "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "reason": "Several different valley songs exist. No exact Keith & Kristyn Getty text matching this title was established."
     },
     {
       "id": "expanded-still-my-soul-be-still-keith-kristyn-getty",
@@ -6128,11 +6145,12 @@
       "id": "expanded-god-of-grace-keith-kristyn-getty",
       "title": "God of Grace",
       "author": "Associated recording: Keith & Kristyn Getty",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "015f10f55c7a6728f935",
+      "identityAssumption": "Selected text: God of Grace by Keith Getty and Jonathan Rea. The associated Getty recording has not been verified against this text.",
+      "sourceHash": "23fc2ce36865533c0a1aa3b878376c04d800222954165d5343a9a3d14811575b",
+      "sourceURL": "https://www.worshiptogether.com/songs/god-of-grace/",
+      "reason": null
     },
     {
       "id": "expanded-oh-how-good-it-is-keith-kristyn-getty",
@@ -6193,11 +6211,11 @@
       "id": "expanded-come-to-the-waters-keith-kristyn-getty",
       "title": "Come to the Waters",
       "author": "Associated recording: Keith & Kristyn Getty",
-      "status": "missing-text",
+      "status": "identity-unresolved",
       "analysisKey": null,
       "sourceHash": null,
       "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "reason": "No complete text matched this exact title and artist association. Nearby song titles and a phrase in another song are insufficient."
     },
     {
       "id": "expanded-i-am-not-my-own-keith-kristyn-getty",
@@ -6280,11 +6298,12 @@
       "id": "expanded-god-of-every-grace-matt-boswell-matt-papa",
       "title": "God of Every Grace",
       "author": "Associated recording: Matt Boswell & Matt Papa",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "4b333c8fcc1caeb293c8",
+      "identityAssumption": "Published lyric text: God of Every Grace. Other arrangements and added live sections are separate versions.",
+      "sourceHash": "3c6edb9a5c3fe9c6df043ec173d5452c2079e96cf5c43a8377d6a90eae2657ea",
+      "sourceURL": "https://www.multitracks.com/songs/Matt-Boswell/Our-God-Will-Go-Before-Us-The-Hymns-of-Matt-Boswell-And-Matt-Papa%2C-Vol.-3/God-of-Every-Grace/",
+      "reason": null
     },
     {
       "id": "expanded-our-god-will-go-before-us-matt-boswell-matt-papa",
@@ -6312,21 +6331,21 @@
       "id": "expanded-christ-our-glory-matt-boswell-matt-papa",
       "title": "Christ Our Glory",
       "author": "Associated recording: Matt Boswell & Matt Papa",
-      "status": "missing-text",
+      "status": "identity-unresolved",
       "analysisKey": null,
       "sourceHash": null,
       "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "reason": "The primary text found is credited to Henry Lyte, Nathan Stiff and David Zimmer. A matching Boswell/Papa recording or text selection was not established."
     },
     {
       "id": "expanded-he-is-worthy-matt-boswell-matt-papa",
       "title": "He Is Worthy",
       "author": "Associated recording: Matt Boswell & Matt Papa",
-      "status": "missing-text",
+      "status": "identity-unresolved",
       "analysisKey": null,
       "sourceHash": null,
       "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "reason": "The exact Boswell/Papa text was not established. Similar worship titles and repeated worthy phrases are not enough to select a song."
     },
     {
       "id": "expanded-the-king-in-all-his-beauty-matt-boswell-matt-papa",
@@ -6365,31 +6384,32 @@
       "id": "expanded-your-mercy-matt-boswell-matt-papa",
       "title": "Your Mercy",
       "author": "Associated recording: Matt Boswell & Matt Papa",
-      "status": "missing-text",
+      "status": "identity-unresolved",
       "analysisKey": null,
       "sourceHash": null,
       "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "reason": "Searches lead to Lovingkindness and other mercy songs. No exact Boswell/Papa text under this title was established."
     },
     {
       "id": "expanded-come-to-the-waters-matt-boswell-matt-papa",
       "title": "Come to the Waters",
       "author": "Associated recording: Matt Boswell & Matt Papa",
-      "status": "missing-text",
+      "status": "identity-unresolved",
       "analysisKey": null,
       "sourceHash": null,
       "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "reason": "No complete text matched this exact title and artist association. Nearby song titles and a phrase in another song are insufficient."
     },
     {
       "id": "expanded-psalm-51-wisdom-in-the-secret-heart-shane-shane-the-worship-initiative",
       "title": "Psalm 51 (Wisdom in the Secret Heart)",
       "author": "Associated recording: Shane & Shane · The Worship Initiative",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "a6dda9dfa9d083ec6a6e",
+      "identityAssumption": "Published lyric text: Psalm 51 (Wisdom in the Secret Heart). Other arrangements and added live sections are separate versions. The printed third verse has an unclear Lamb wording; that clause is not used as doctrinal evidence.",
+      "sourceHash": "5bf5fe268d4d2c0aca85f33c0ae2f31e1492a564cdf84388d3dc93f4c9ff438e",
+      "sourceURL": "https://www.multitracks.com/songs/Shane-and-Shane/Psalms-Vol.-2/Psalm-51-(Wisdom-In-The-Secret-Heart)/",
+      "reason": null
     },
     {
       "id": "expanded-psalm-91-on-eagles-wings-shane-shane-the-worship-initiative",
@@ -6406,51 +6426,56 @@
       "id": "expanded-psalm-98-sing-unto-the-lord-shane-shane-the-worship-initiative",
       "title": "Psalm 98 (Sing Unto the Lord)",
       "author": "Associated recording: Shane & Shane · The Worship Initiative",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "ec15061b6c66cc28468a",
+      "identityAssumption": "Published lyric text: Psalm 98 (Sing Unto the Lord). Other arrangements and added live sections are separate versions.",
+      "sourceHash": "43fccab1cb6e4c490021b20983987a2afdaad23d26a8c9bfb5bd8ce7251510be",
+      "sourceURL": "https://www.multitracks.com/songs/Shane-and-Shane/Psalms-Vol.-2/Psalm-98-%28Sing-Unto-The-Lord%29/",
+      "reason": null
     },
     {
       "id": "expanded-psalm-139-far-too-wonderful-shane-shane-the-worship-initiative",
       "title": "Psalm 139 (Far Too Wonderful)",
       "author": "Associated recording: Shane & Shane · The Worship Initiative",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "37621704285e704cb05d",
+      "identityAssumption": "Published lyric text: Psalm 139 (Far Too Wonderful). Other arrangements and added live sections are separate versions.",
+      "sourceHash": "bef1ece00c0e0183df81dd6031a955f6fef3b63b2cacd528ac4a406c9c7703df",
+      "sourceURL": "https://sifalyrics.com/shane-shane-psalm-139-far-too-wonderful-lyrics",
+      "reason": null
     },
     {
       "id": "expanded-psalm-63-better-than-life-shane-shane-the-worship-initiative",
       "title": "Psalm 63 (Better Than Life)",
       "author": "Associated recording: Shane & Shane · The Worship Initiative",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "75b0c982121cd1b36cbf",
+      "identityAssumption": "Published lyric text: Psalm 63 (Better Than Life). Other arrangements and added live sections are separate versions.",
+      "sourceHash": "0bbe97f1e6e541c88bdd7b2417dce3d39be9d43130c0400e34f8b82852f2f772",
+      "sourceURL": "https://sifalyrics.com/shane-shane-psalm-63-better-than-life-lyrics",
+      "reason": null
     },
     {
       "id": "expanded-psalm-16-fullness-of-joy-shane-shane-the-worship-initiative",
       "title": "Psalm 16 (Fullness of Joy)",
       "author": "Associated recording: Shane & Shane · The Worship Initiative",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "4a690d7d4752a045913d",
+      "identityAssumption": "Published lyric text: Psalm 16 (Fullness of Joy). Other arrangements and added live sections are separate versions.",
+      "sourceHash": "e6e84a3d1968eb1b4d5cc7103efab464c220501466217051486fe0adb002be40",
+      "sourceURL": "https://sifalyrics.com/shane-shane-psalm-16-fullness-of-joy-lyrics",
+      "reason": null
     },
     {
       "id": "expanded-psalm-13-how-long-o-lord-shane-shane-the-worship-initiative",
       "title": "Psalm 13 (How Long O Lord)",
       "author": "Associated recording: Shane & Shane · The Worship Initiative",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "35ab5207ce0907103267",
+      "identityAssumption": "Published lyric text: Psalm 13 (How Long O Lord). Other arrangements and added live sections are separate versions.",
+      "sourceHash": "9214d23b71eb4b2f6f6e3b60b2e05e85c3d0f06861171faa056ad8e84c0be221",
+      "sourceURL": "https://sifalyrics.com/shane-shane-psalm-13-lyrics",
+      "reason": null
     },
     {
       "id": "expanded-psalm-27-one-thing-shane-shane-the-worship-initiative",
@@ -6467,11 +6492,12 @@
       "id": "expanded-psalm-130-i-will-wait-for-you-shane-shane-the-worship-initiative",
       "title": "Psalm 130 (I Will Wait for You)",
       "author": "Associated recording: Shane & Shane · The Worship Initiative",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "318cbeafc772b45e349c",
+      "identityAssumption": "Published lyric text: Psalm 130 (I Will Wait for You). Other arrangements and added live sections are separate versions.",
+      "sourceHash": "5af909d0d47afd5f51de539d953dbac2195c27e77e31e0c64197a1f8850d36e5",
+      "sourceURL": "https://www.worshiptogether.com/songs/i-will-wait-for-you-psalm130-keith-and-kristyn-getty/?nav=1",
+      "reason": null
     },
     {
       "id": "expanded-psalm-42-loudest-praise-shane-shane-the-worship-initiative",
@@ -6488,31 +6514,34 @@
       "id": "expanded-psalm-45-fairest-of-all-shane-shane-the-worship-initiative",
       "title": "Psalm 45 (Fairest of All)",
       "author": "Associated recording: Shane & Shane · The Worship Initiative",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "e94d0f84d5881c3ba225",
+      "identityAssumption": "Published lyric text: Psalm 45 (Fairest of All). Other arrangements and added live sections are separate versions.",
+      "sourceHash": "bdba87cf665ae7d3ace4c8ca7e559d232c4d86b6070cd0b4e5e778801fb757bf",
+      "sourceURL": "https://sifalyrics.com/shane-shane-psalm-45-fairest-of-all-lyrics",
+      "reason": null
     },
     {
       "id": "expanded-psalm-84-i-m-home-shane-shane-the-worship-initiative",
       "title": "Psalm 84 (I'm Home)",
       "author": "Associated recording: Shane & Shane · The Worship Initiative",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "aa5c097abeb2d3f492db",
+      "identityAssumption": "Published lyric text: Psalm 84 (I'm Home). Other arrangements and added live sections are separate versions.",
+      "sourceHash": "4e8e48cb0565d12134fa29f1da26c33cdc17318a03cfa5ec715756c5edf9dbb2",
+      "sourceURL": "https://sifalyrics.com/shane-shane-psalm-84-im-home-lyrics",
+      "reason": null
     },
     {
       "id": "expanded-psalm-8-how-majestic-is-your-name-shane-shane-the-worship-initiative",
       "title": "Psalm 8 (How Majestic Is Your Name)",
       "author": "Associated recording: Shane & Shane · The Worship Initiative",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "e0b96cbfcc996a61f196",
+      "identityAssumption": "Published lyric text: Psalm 8 (How Majestic Is Your Name). Other arrangements and added live sections are separate versions.",
+      "sourceHash": "7d8c5af1ead72f87798c3a0e495daa6945dabedac17b935b6f2c0f50ef52aa26",
+      "sourceURL": "https://sifalyrics.com/shane-shane-psalm-8-how-majestic-is-your-name-lyrics",
+      "reason": null
     },
     {
       "id": "expanded-you-ve-already-won-shane-shane-the-worship-initiative",
@@ -6540,101 +6569,109 @@
       "id": "expanded-all-my-hope-shane-shane-the-worship-initiative",
       "title": "All My Hope",
       "author": "Associated recording: Shane & Shane · The Worship Initiative",
-      "status": "missing-text",
+      "status": "identity-unresolved",
       "analysisKey": null,
       "sourceHash": null,
       "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "reason": "The Shane & Shane results identify My Hope Is Built and All My Boast Is in Jesus. Neither establishes the exact catalog title."
     },
     {
       "id": "expanded-though-you-slay-me-shane-shane-the-worship-initiative",
       "title": "Though You Slay Me",
       "author": "Associated recording: Shane & Shane · The Worship Initiative",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "48c8dfeed0eaf834e34f",
+      "identityAssumption": "Published lyric text: Though You Slay Me. Other arrangements and added live sections are separate versions.",
+      "sourceHash": "da364a5bf96aebaf8407fba158596c0d5083d7063e9a2238e015ea8fff165824",
+      "sourceURL": "https://sifalyrics.com/shane-shane-though-you-slay-me-lyrics",
+      "reason": null
     },
     {
       "id": "expanded-burn-us-up-shane-shane-the-worship-initiative",
       "title": "Burn Us Up",
       "author": "Associated recording: Shane & Shane · The Worship Initiative",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "31367d2a26bec1421589",
+      "identityAssumption": "Published lyric text: Burn Us Up. Other arrangements and added live sections are separate versions.",
+      "sourceHash": "ee85333acfa784f73166ce8f4ca71118bd7a0f2b31d6785e19d4869badb1bcff",
+      "sourceURL": "https://sifalyrics.com/shane-shane-burn-us-up-lyrics",
+      "reason": null
     },
     {
       "id": "expanded-when-i-think-about-the-lord-shane-shane-the-worship-initiative",
       "title": "When I Think About the Lord",
       "author": "Associated recording: Shane & Shane · The Worship Initiative",
-      "status": "identity-unresolved",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "Title candidates lack sufficient identity evidence."
+      "status": "reviewed-draft",
+      "analysisKey": "9ed20a7a2c74dc3e30c4",
+      "identityAssumption": "Published lyric text: When I Think About the Lord. Other arrangements and added live sections are separate versions.",
+      "sourceHash": "98583d53b8048699067c8f1daa4ac9d3acf69bf539bca016ccc492cfec6a132c",
+      "sourceURL": "https://integrityworship.com/songs/when-i-think-about-the-lord-shane-and-shane/",
+      "reason": null
     },
     {
       "id": "expanded-we-love-you-jesus-shane-shane-the-worship-initiative",
       "title": "We Love You Jesus",
       "author": "Associated recording: Shane & Shane · The Worship Initiative",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "9cf33cf1e5d9bb47ba68",
+      "identityAssumption": "Published lyric text: We Love You Jesus. Other arrangements and added live sections are separate versions.",
+      "sourceHash": "18f6cdad6e61f05b87b0071ceab137996800605facb7c31cae8c28b03ef0b007",
+      "sourceURL": "https://sifalyrics.com/shane-shane-we-love-you-jesus-lyrics",
+      "reason": null
     },
     {
       "id": "expanded-you-said-shane-shane-the-worship-initiative",
       "title": "You Said",
       "author": "Associated recording: Shane & Shane · The Worship Initiative",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "cb128e5e5cf0aa62526d",
+      "identityAssumption": "Published lyric text: You Said. Other arrangements and added live sections are separate versions.",
+      "sourceHash": "2a53bf1c2ca8016e35b896e2e9e077eb80e587394d365f78d11d0303447dd7b4",
+      "sourceURL": "https://sifalyrics.com/shane-shane-you-said-lyrics",
+      "reason": null
     },
     {
       "id": "expanded-yearn-shane-shane-the-worship-initiative",
       "title": "Yearn",
       "author": "Associated recording: Shane & Shane · The Worship Initiative",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "1adaa49304dfb218b2fa",
+      "identityAssumption": "Published lyric text: Yearn. Other arrangements and added live sections are separate versions.",
+      "sourceHash": "845c653069dcbc6ecec9a68aea563d771686be971dafd29dce34d0723f7dd247",
+      "sourceURL": "https://www.worshiptogether.com/songs/yearn-shane-and-shane/?nav=1",
+      "reason": null
     },
     {
       "id": "expanded-lord-of-all-shane-shane-the-worship-initiative",
       "title": "Lord of All",
       "author": "Associated recording: Shane & Shane · The Worship Initiative",
-      "status": "missing-text",
+      "status": "identity-unresolved",
       "analysisKey": null,
       "sourceHash": null,
       "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "reason": "The phrase occurs in Be Enthroned, Cornerstone and other Shane & Shane songs. The exact text remains unidentified."
     },
     {
       "id": "expanded-unto-you-shane-shane-the-worship-initiative",
       "title": "Unto You",
       "author": "Associated recording: Shane & Shane · The Worship Initiative",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "d884dde2abe222d012b9",
+      "identityAssumption": "Published lyric text: Unto You. Other arrangements and added live sections are separate versions.",
+      "sourceHash": "7fa4c353ec892b1c2b9240e8d5deb27c7da3949a4505ea3955966b722c0936df",
+      "sourceURL": "https://sifalyrics.com/shane-shane-unto-you-lyrics",
+      "reason": null
     },
     {
       "id": "expanded-you-never-let-go-matt-redman",
       "title": "You Never Let Go",
       "author": "Associated recording: Matt Redman",
-      "status": "identity-unresolved",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "Title candidates lack sufficient identity evidence."
+      "status": "reviewed-draft",
+      "analysisKey": "38350423177fbc2e03a1",
+      "identityAssumption": "Published lyric text: You Never Let Go. Other arrangements and added live sections are separate versions.",
+      "sourceHash": "fc1f46f5017d543d95abd74d07ed7553496208d9acd8c38e645855cdaff37f1f",
+      "sourceURL": "https://sifalyrics.com/matt-redman-you-never-let-go-lyrics",
+      "reason": null
     },
     {
       "id": "expanded-once-again-matt-redman",
@@ -6814,11 +6851,12 @@
       "id": "expanded-alive-breathing-matt-maher",
       "title": "Alive & Breathing",
       "author": "Associated recording: Matt Maher",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "07ceb6913d6cc3ab1558",
+      "identityAssumption": "Published lyric text: Alive & Breathing. Other arrangements and added live sections are separate versions.",
+      "sourceHash": "2f7db2526ed324c9eefaa9ee96e04dd9583dabe9f381ed3f5e8077f673c0866c",
+      "sourceURL": "https://sifalyrics.com/matt-maher-alive-breathing-lyrics",
+      "reason": null
     },
     {
       "id": "expanded-the-lord-s-prayer-it-s-yours-matt-maher",
@@ -6857,21 +6895,23 @@
       "id": "expanded-turn-around-matt-maher",
       "title": "Turn Around",
       "author": "Associated recording: Matt Maher",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "560b5df06f5d03b6a77e",
+      "identityAssumption": "Published lyric text: Turn Around. Other arrangements and added live sections are separate versions.",
+      "sourceHash": "942aaba7fb742cbb4f019d9ca296c24c08a38fc0cea7919a40e2041934e265b3",
+      "sourceURL": "https://sifalyrics.com/matt-maher-turn-around-lyrics",
+      "reason": null
     },
     {
       "id": "expanded-in-the-room-matt-maher",
       "title": "In the Room",
       "author": "Associated recording: Matt Maher",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "b8a5f37634937e7f94b0",
+      "identityAssumption": "Published lyric text: In the Room. Other arrangements and added live sections are separate versions.",
+      "sourceHash": "fb013124885678a6c25486830391f6c9640672e3fdd03158cc33bd854525c052",
+      "sourceURL": "https://essentialworship.com/songs/matt-maher/in-the-room/",
+      "reason": null
     },
     {
       "id": "expanded-your-love-defends-me-matt-maher",
@@ -6888,11 +6928,12 @@
       "id": "expanded-the-in-between-matt-maher",
       "title": "The In Between",
       "author": "Associated recording: Matt Maher",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "d32784b77c4a99761280",
+      "identityAssumption": "Published lyric text: The In Between. Other arrangements and added live sections are separate versions.",
+      "sourceHash": "5699b0c2d9d54c4244ac11f4e24a844547c1385e50501a190a10784c9192aff6",
+      "sourceURL": "https://essentialworship.com/songs/matt-maher/the-in-between-from-the-chosen/",
+      "reason": null
     },
     {
       "id": "expanded-who-am-i-casting-crowns",
@@ -7028,11 +7069,12 @@
       "id": "expanded-already-there-casting-crowns",
       "title": "Already There",
       "author": "Associated recording: Casting Crowns",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "dab653e3b7e3cc4031d7",
+      "identityAssumption": "Published lyric text: Already There. Other arrangements and added live sections are separate versions.",
+      "sourceHash": "ee1cd09a8f522cbdcce77ac0a3d9f585cfbaebfff61aed3796163f31d90aff39",
+      "sourceURL": "https://www.worshiptogether.com/songs/already-there-casting-crowns/",
+      "reason": null
     },
     {
       "id": "expanded-lifesong-casting-crowns",
@@ -7180,11 +7222,12 @@
       "id": "expanded-god-with-us-mercyme",
       "title": "God with Us",
       "author": "Associated recording: MercyMe",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "0e519c19c021a5ed432a",
+      "identityAssumption": "Published lyric text: God with Us. Other arrangements and added live sections are separate versions.",
+      "sourceHash": "0a2e0687f913d56eecbe5385d5ebbfef3bade22a3895e9c51c9a70586aabda08",
+      "sourceURL": "https://sifalyrics.com/mercyme-god-with-us-lyrics",
+      "reason": null
     },
     {
       "id": "expanded-you-are-i-am-mercyme",
@@ -7223,11 +7266,12 @@
       "id": "expanded-here-with-me-mercyme",
       "title": "Here with Me",
       "author": "Associated recording: MercyMe",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "a242a4bbbf3115675e83",
+      "identityAssumption": "Published lyric text: Here with Me. Other arrangements and added live sections are separate versions.",
+      "sourceHash": "77ac9804b27489ef56542960aa244fd287b78c64a41cadcd450bf68c10548f84",
+      "sourceURL": "https://sifalyrics.com/mercyme-here-with-me-lyrics",
+      "reason": null
     },
     {
       "id": "expanded-beautiful-mercyme",
@@ -7332,11 +7376,12 @@
       "id": "expanded-our-god-is-an-awesome-god-michael-w-smith",
       "title": "Our God Is an Awesome God",
       "author": "Associated recording: Michael W. Smith",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "b81fdafb9087aca7795f",
+      "identityAssumption": "Selected recording lyric text: Awesome God by Michael W. Smith. This refrain-only version does not include the additional verses in Rich Mullins’ full original song.",
+      "sourceHash": "56edff5c4525872ad1b6c9f2129bbeae8965c0bff7cff3f2fa5c4afcd9e4ebad",
+      "sourceURL": "https://www.shazam.com/song/303181975/awesome-god",
+      "reason": null
     },
     {
       "id": "expanded-you-are-holy-prince-of-peace-michael-w-smith",
@@ -7353,11 +7398,12 @@
       "id": "expanded-great-expectations-steven-curtis-chapman",
       "title": "Great Expectations",
       "author": "Associated recording: Steven Curtis Chapman",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "cb2f18d8e0732d93f5cd",
+      "identityAssumption": "Published lyric text: Great Expectations. Other arrangements and added live sections are separate versions.",
+      "sourceHash": "0b7da0b4adb71648d3ed1f82cd235b05ecf6d5294a8f33941ca4199fff5a9d33",
+      "sourceURL": "https://sifalyrics.com/steven-curtis-chapman-great-expectations-lyrics",
+      "reason": null
     },
     {
       "id": "expanded-speechless-steven-curtis-chapman",
@@ -7418,21 +7464,23 @@
       "id": "expanded-god-is-god-steven-curtis-chapman",
       "title": "God Is God",
       "author": "Associated recording: Steven Curtis Chapman",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "95583b447672ee437b8d",
+      "identityAssumption": "Published lyric text: God Is God. Other arrangements and added live sections are separate versions.",
+      "sourceHash": "5d54a8d726af292b8d9bb0e737998efcdc2377a8b31f74f5b0660a5b6b3f983f",
+      "sourceURL": "https://zionlyrics.com/song/stevencurtischapman-god-is-god-lyrics",
+      "reason": null
     },
     {
       "id": "expanded-magnificent-obsession-steven-curtis-chapman",
       "title": "Magnificent Obsession",
       "author": "Associated recording: Steven Curtis Chapman",
-      "status": "identity-unresolved",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "Title candidates lack sufficient identity evidence."
+      "status": "reviewed-draft",
+      "analysisKey": "d7795fdb67b607120a01",
+      "identityAssumption": "Published lyric text: Magnificent Obsession. Other arrangements and added live sections are separate versions.",
+      "sourceHash": "96299077182a674e0c0bdf1814b03926a13f7120935a57aa4f640f7d23cf2706",
+      "sourceURL": "https://zionlyrics.com/song/stevencurtischapman-magnificent-obsession-lyrics",
+      "reason": null
     },
     {
       "id": "expanded-my-redeemer-is-faithful-and-true-steven-curtis-chapman",
@@ -7625,11 +7673,12 @@
       "id": "expanded-cages-we-the-kingdom",
       "title": "Cages",
       "author": "Associated recording: We The Kingdom",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "605352469a872b4a50c9",
+      "identityAssumption": "Published lyric text: Cages. Other arrangements and added live sections are separate versions.",
+      "sourceHash": "17b154ca23f958b166ac8c8b9437a11a12fed6cf5097637d2abd0e3a2bcfec14",
+      "sourceURL": "https://www.worshiptogether.com/songs/cages-we-the-kingdom/",
+      "reason": null
     },
     {
       "id": "expanded-rise-up-lazarus-cain",
@@ -7976,31 +8025,34 @@
       "id": "expanded-oh-happiness-crowder",
       "title": "Oh Happiness",
       "author": "Associated recording: Crowder",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "b6096f6ac29f34724a31",
+      "identityAssumption": "Published lyric text: Oh Happiness. Other arrangements and added live sections are separate versions.",
+      "sourceHash": "e953d3141e956fa2316edefe276df6e662c3418203c3e576f632a1e359d874ce",
+      "sourceURL": "https://sifalyrics.com/david-crowder-band-oh-happiness-lyrics",
+      "reason": null
     },
     {
       "id": "expanded-everything-glorious-crowder",
       "title": "Everything Glorious",
       "author": "Associated recording: Crowder",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "17ba877ff3922acc9083",
+      "identityAssumption": "Published lyric text: Everything Glorious. Other arrangements and added live sections are separate versions.",
+      "sourceHash": "5ca0c0763a4e969cdde8d6a93f078f4a72b0328d3d074015b4aa02fc32f8f7fd",
+      "sourceURL": "https://www.multitracks.com/songs/david-crowder-band/remedy/everything-glorious/",
+      "reason": null
     },
     {
       "id": "expanded-after-all-holy-crowder",
       "title": "After All (Holy)",
       "author": "Associated recording: Crowder",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "b300aaa5a0b5d86b5ba3",
+      "identityAssumption": "Published lyric text: After All (Holy). Other arrangements and added live sections are separate versions.",
+      "sourceHash": "89b1ca881820c915895f8ea0100c06b000b689337cf63f14b07d2101424f1805",
+      "sourceURL": "https://sifalyrics.com/david-crowder-band-after-all-holy-lyrics",
+      "reason": null
     },
     {
       "id": "expanded-chain-breaker-zach-williams",
@@ -8270,11 +8322,12 @@
       "id": "expanded-god-is-in-this-story-katy-nichole",
       "title": "God Is in This Story",
       "author": "Associated recording: Katy Nichole",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "6a9d50251965b02a9f00",
+      "identityAssumption": "Published lyric text: God Is in This Story. Other arrangements and added live sections are separate versions.",
+      "sourceHash": "a79218fa87813253cf18b9895bec5cd36eaf4ffb51a949e33eae5e0f0d2f66b2",
+      "sourceURL": "https://sifalyrics.com/katy-nichole-god-is-in-this-story-lyrics",
+      "reason": null
     },
     {
       "id": "expanded-hold-on-katy-nichole",
@@ -8643,11 +8696,12 @@
       "id": "expanded-stomp-kirk-franklin",
       "title": "Stomp",
       "author": "Associated recording: Kirk Franklin",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "e4653a45989585a3470b",
+      "identityAssumption": "Published lyric text: Stomp. Other arrangements and added live sections are separate versions.",
+      "sourceHash": "37b4d898ed57e8788156c082842dce958ba8f026763b7701c16b207fdba2ff4d",
+      "sourceURL": "https://zionlyrics.com/song/kirk-franklin-stomp-lyrics",
+      "reason": null
     },
     {
       "id": "expanded-brighter-day-kirk-franklin",
@@ -8763,11 +8817,12 @@
       "id": "expanded-glory-to-glory-to-glory-fred-hammond",
       "title": "Glory to Glory to Glory",
       "author": "Associated recording: Fred Hammond",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "323a52e940e264c25680",
+      "identityAssumption": "Published lyric text: Glory to Glory to Glory. Other arrangements and added live sections are separate versions.",
+      "sourceHash": "64f78ab4c5be66a9ce6a4c9e616985c2234f6076aadb47c52cc7fbd3fd8858bd",
+      "sourceURL": "https://sifalyrics.com/fred-hammond-glory-to-glory-to-glory-lyrics",
+      "reason": null
     },
     {
       "id": "expanded-when-the-spirit-of-the-lord-fred-hammond",
@@ -9103,11 +9158,12 @@
       "id": "expanded-labor-of-love-andrew-peterson",
       "title": "Labor of Love",
       "author": "Associated recording: Andrew Peterson",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "7e1f70a083cb4d947bb0",
+      "identityAssumption": "Published lyric text: Labor of Love. Other arrangements and added live sections are separate versions.",
+      "sourceHash": "d5f968002f7cfa16e2db2d689b25c97f7fe86cafe774b70654a3b91064221f9a",
+      "sourceURL": "https://sifalyrics.com/andrew-peterson-labor-of-love-lyrics",
+      "reason": null
     },
     {
       "id": "expanded-don-t-you-want-to-thank-someone-andrew-peterson",
@@ -9190,11 +9246,12 @@
       "id": "expanded-give-me-jesus-fernando-ortega",
       "title": "Give Me Jesus",
       "author": "Associated recording: Fernando Ortega",
-      "status": "identity-unresolved",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "Title candidates lack sufficient identity evidence."
+      "status": "reviewed-draft",
+      "analysisKey": "9c7bd352468dcd5f0dae",
+      "identityAssumption": "Published lyric text: Give Me Jesus. Other arrangements and added live sections are separate versions.",
+      "sourceHash": "f869e5a42d218e1aab9c47469a9eb1cb3b2d517d7e5ea304febf49a04bfaa45b",
+      "sourceURL": "https://sifalyrics.com/fernando-ortega-give-me-jesus-lyrics",
+      "reason": null
     },
     {
       "id": "expanded-come-down-o-love-divine-fernando-ortega",
@@ -9222,21 +9279,22 @@
       "id": "expanded-this-good-day-fernando-ortega",
       "title": "This Good Day",
       "author": "Associated recording: Fernando Ortega",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "a9df088b967b25795222",
+      "identityAssumption": "Published lyric text: This Good Day. Other arrangements and added live sections are separate versions.",
+      "sourceHash": "a452abab660d307ad2dd62a2daa839308b42a5cd1258b75655d80c5716d77bcd",
+      "sourceURL": "https://www.newreleasetoday.com/lyricsdetail.php?lyrics_id=36101",
+      "reason": null
     },
     {
       "id": "expanded-our-great-savior-fernando-ortega",
       "title": "Our Great Savior",
       "author": "Associated recording: Fernando Ortega",
-      "status": "missing-text",
+      "status": "identity-unresolved",
       "analysisKey": null,
       "sourceHash": null,
       "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "reason": "Several traditional Savior hymns are possible. An exact Fernando Ortega text or recording under this title was not established."
     },
     {
       "id": "expanded-sing-to-jesus-fernando-ortega",
@@ -9253,21 +9311,23 @@
       "id": "expanded-trisagion-fernando-ortega",
       "title": "Trisagion",
       "author": "Associated recording: Fernando Ortega",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "ccea05236d828c7e83d3",
+      "identityAssumption": "Published lyric text: Trisagion. Other arrangements and added live sections are separate versions.",
+      "sourceHash": "783e2a8b56f15e5e5eef6553c4acc7bb309495341ad02cea6198bf2a1c24889f",
+      "sourceURL": "https://gettymusic.store/products/trisagion",
+      "reason": null
     },
     {
       "id": "expanded-lord-of-eternity-fernando-ortega",
       "title": "Lord of Eternity",
       "author": "Associated recording: Fernando Ortega",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "0bfe178c6da958963d31",
+      "identityAssumption": "Published lyric text: Lord of Eternity. Other arrangements and added live sections are separate versions.",
+      "sourceHash": "2fd98f60b8b38d6d2332c15830a391b74d0925ec6e7de1aa28aa80b9d35ae561",
+      "sourceURL": "https://sifalyrics.com/fernando-ortega-lord-of-eternity-lyrics",
+      "reason": null
     },
     {
       "id": "expanded-jesus-is-tenderly-calling-fanny-j-crosby",
@@ -10428,11 +10488,11 @@
       "id": "artist-more-than-a-feeling-seu-worship",
       "title": "More Than a Feeling",
       "author": "Associated recording: SEU Worship",
-      "status": "missing-text",
+      "status": "identity-unresolved",
       "analysisKey": null,
       "sourceHash": null,
       "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "reason": "SEU Worship results identify this phrase within Worship Freely. A distinct song called More Than a Feeling was not established."
     },
     {
       "id": "artist-do-it-again-seu-worship",
@@ -10449,21 +10509,23 @@
       "id": "artist-happy-day-ben-cantelon",
       "title": "Happy Day",
       "author": "Associated recording: Ben Cantelon",
-      "status": "identity-unresolved",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "Title candidates lack sufficient identity evidence."
+      "status": "reviewed-draft",
+      "analysisKey": "0b3eeed53c853a8acec1",
+      "identityAssumption": "Published lyric text: Happy Day. Other arrangements and added live sections are separate versions.",
+      "sourceHash": "fb2f5cacf1a97b32b975f44c520ed3c836f81902efe1939bf56db181fd4880b8",
+      "sourceURL": "https://www.worshiptogether.com/songs/happy-day/",
+      "reason": null
     },
     {
       "id": "artist-savior-of-the-world-ben-cantelon",
       "title": "Savior of the World",
       "author": "Associated recording: Ben Cantelon",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "364a21b341956904ef84",
+      "identityAssumption": "Published lyric text: Savior of the World. Other arrangements and added live sections are separate versions.",
+      "sourceHash": "2a20ff474e09ae1d28030e6ad51ed241f09567dfe12481fefe56cea0575a3500",
+      "sourceURL": "https://sifalyrics.com/ben-cantelon-saviour-of-the-world-lyrics",
+      "reason": null
     },
     {
       "id": "artist-guardian-ben-cantelon",
@@ -10555,21 +10617,23 @@
       "id": "artist-that-s-why-we-praise-him-tommy-walker",
       "title": "That's Why We Praise Him",
       "author": "Associated recording: Tommy Walker",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "2d879de4c3a42a72a060",
+      "identityAssumption": "Published lyric text: That's Why We Praise Him. Other arrangements and added live sections are separate versions.",
+      "sourceHash": "989baa3f5f68d89e267921ddabde632bdb405d199cbab6d445a1e64b1db1e15a",
+      "sourceURL": "https://sifalyrics.com/tommy-walker-thats-why-we-praise-him-lyrics",
+      "reason": null
     },
     {
       "id": "artist-we-will-remember-tommy-walker",
       "title": "We Will Remember",
       "author": "Associated recording: Tommy Walker",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "4d393cc896045783c178",
+      "identityAssumption": "Published lyric text: We Will Remember. Other arrangements and added live sections are separate versions.",
+      "sourceHash": "6875d85a6e37ea8d4130a7c6d2754d631418ea3878993b6e57cd77837bf25265",
+      "sourceURL": "https://sifalyrics.com/tommy-walker-we-will-remember-lyrics",
+      "reason": null
     },
     {
       "id": "artist-made-alive-citizens",
@@ -10608,21 +10672,23 @@
       "id": "artist-mercy-seat-travis-cottrell",
       "title": "Mercy Seat",
       "author": "Associated recording: Travis Cottrell",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "aea85601fd6713050850",
+      "identityAssumption": "Published lyric text: Mercy Seat. Other arrangements and added live sections are separate versions.",
+      "sourceHash": "277004e703849e163647bbaa5ceba71d454d2732fdcfac7537528ba55fa238fd",
+      "sourceURL": "https://sifalyrics.com/travis-cottrell-mercy-seat-lord-have-mercy-lyrics",
+      "reason": null
     },
     {
       "id": "artist-jesus-saves-travis-cottrell",
       "title": "Jesus Saves",
       "author": "Associated recording: Travis Cottrell",
-      "status": "identity-unresolved",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "Title candidates lack sufficient identity evidence."
+      "status": "reviewed-draft",
+      "analysisKey": "2652876659a31a34f54c",
+      "identityAssumption": "Published lyric text: Jesus Saves. Other arrangements and added live sections are separate versions.",
+      "sourceHash": "034e757c56a7e86216e64d2e98f500f9e55052fe08810be317a31fae05dd3dbb",
+      "sourceURL": "https://sifalyrics.com/travis-cottrell-jesus-saves-lyrics",
+      "reason": null
     },
     {
       "id": "artist-the-blood-of-jesus-speaks-for-me-travis-cottrell",
@@ -10665,7 +10731,7 @@
       "analysisKey": null,
       "sourceHash": null,
       "sourceURL": null,
-      "reason": "Title candidates lack sufficient identity evidence."
+      "reason": "Distinct traditional and modern texts share this title. No source established which belongs to the Charles Billingsley association."
     },
     {
       "id": "artist-nothing-but-the-blood-matt-redman",

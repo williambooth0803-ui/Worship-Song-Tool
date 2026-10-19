@@ -15,6 +15,7 @@ const checkedAt=corpus.checkedAt || new Date().toISOString().slice(0,10);
 if(!/^\d{4}-\d{2}-\d{2}$/.test(checkedAt))throw new Error('Supply an ISO research date.');
 const bibleHash=hash(await readFile(bibleFile,'utf8'));
 const previousManifest=JSON.parse(await readFile(new URL('../data/catalog-analysis/coverage.json',import.meta.url),'utf8'));
+const identityIssues=JSON.parse(await readFile(new URL('../data/catalog-analysis/identity-issues.json',import.meta.url),'utf8'));
 if(corpus.partial && bibleHash!==previousData.scriptureSource.hash)throw new Error('Incremental research must retain the same checked Scripture transcription.');
 const inputRecords=new Map();
 for(const record of corpus.records){
@@ -52,12 +53,13 @@ for(const song of allCatalogSongs){
  if(!r||r.title!==song.title||r.author!==song.author)throw new Error('Corpus/catalog identity mismatch '+song.id);
  if(corpus.partial && (!r.sourceKeys?.length||!sourceMap.has(r.sourceKeys[0])))throw new Error('Incremental replacement needs an inspected source '+song.id);
  const source=sourceMap.get(r.sourceKeys[0]),notes=reviewed.get(norm(song.id))||reviewed.get(norm(song.title));
+ if(source?.kind==='publisher-page')source.kind='artist-publisher-page';
  const incomplete=r.partialText ?? (source?.complete===false || (source?.complete!==true && ['Unstoppable God','Most Beautiful / So in Love'].includes(song.title)));
  let status=source?incomplete?'partial-text':notes?'reviewed-draft':'text-scan':r.status==='title-only'?'identity-unresolved':'missing-text';
  let analysisKey=null;
  if(source){
   const sourceURL=new URL(source.url);
-  if(sourceURL.protocol!=='https:'||sourceURL.username||sourceURL.password||!['github.com','integrityworship.com','cityalight.com','sovereigngracemusic.com','www.worshiptogether.com','www.mattpapa.com','www.stuarttownend.co.uk','www.jordankauflin.com','essentialworship.com','www.datocms-assets.com','bethelmusic.com','app.theworshipinitiative.com','hymnary.org','gettymusic.store','www.cifraclub.com.br','www.multitracks.com','digitalsongsandhymns.com','klrc.com','www.singhymnal.com','hillsong.com','www.shazam.com','sifalyrics.com','www.thousandtongues.org'].includes(sourceURL.hostname))throw new Error('Unsafe evidence source URL');
+  if(sourceURL.protocol!=='https:'||sourceURL.username||sourceURL.password||!['github.com','integrityworship.com','cityalight.com','sovereigngracemusic.com','www.worshiptogether.com','www.mattpapa.com','www.stuarttownend.co.uk','www.jordankauflin.com','essentialworship.com','www.datocms-assets.com','bethelmusic.com','app.theworshipinitiative.com','hymnary.org','gettymusic.store','www.cifraclub.com.br','www.multitracks.com','digitalsongsandhymns.com','klrc.com','www.singhymnal.com','hillsong.com','www.shazam.com','sifalyrics.com','www.thousandtongues.org', 'www.charitygayle.com', 'zionlyrics.com', 'www.newreleasetoday.com', 'www.youtube.com'].includes(sourceURL.hostname))throw new Error('Unsafe evidence source URL');
   // A revised rationale must not collide with an older retained cover report.
   analysisKey=hash(source.key+'|'+JSON.stringify(notes||'scan')+'|'+JSON.stringify(song.review.scores)).slice(0,20);
   if(!analyses[analysisKey]){
@@ -84,6 +86,14 @@ for(const song of allCatalogSongs){
  }
  records[song.id]={id:song.id,title:song.title,author:song.author,status,analysisKey,...(r.identityAssumption?{identityAssumption:r.identityAssumption}:{})};
  manifest.push({...records[song.id],sourceHash:source?hash(source.text):null,sourceURL:source?.url||null,reason:source?null:r.status==='title-only'?'Title candidates lack sufficient identity evidence.':'No source text matched in the audited collections.'});
+}
+for(const issue of identityIssues){
+ const record=records[issue.id];
+ if(!record)continue;
+ if(record.title!==issue.title||record.author!==issue.author)throw new Error('Stale identity issue '+issue.id);
+ if(record.analysisKey)continue; // A subsequently inspected text resolves the issue.
+ Object.assign(record,{status:'identity-unresolved',reason:issue.reason});
+ Object.assign(manifest.find(r=>r.id===issue.id),record);
 }
 const count=status=>Object.values(records).filter(r=>r.status===status).length;
 for(const record of Object.values(records)){
