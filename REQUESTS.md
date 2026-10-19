@@ -21,8 +21,14 @@ blockers explicitly. Preserve personal assessments, recordings and workspaces.
 - [x] Verify locally: 139 unit/database checks and focused catalog/lens browser
   checks pass, including all 24 saved copies, review/recording preservation,
   libraries/plans, 69 starters, 42 artist groups and 58 collections.
-- [ ] Publish and verify the live retirement. Starting source/check count:
-  35,182; final source/check count: 35,203.
+- [x] Publish release `71077c4`. [App checks](https://github.com/williambooth0803-ui/Worship-Song-Tool/actions/runs/39276042461)
+  and [Pages deployment](https://github.com/williambooth0803-ui/Worship-Song-Tool/actions/runs/39276041533)
+  passed, including MCP type checking, scale and the complete hosted browser suite.
+  All three changed live assets matched the release. Direct live checks confirmed
+  976 expanded defaults, all 24 absent from discovery/collections, and all 24 saved
+  copies preserved through reload with human reviews, removed recording links,
+  library membership and a service plan. Disposable browser data only.
+  Starting source/check count: 35,182; final source/check count: 35,203.
 
 ## More visible About and a visual Collections grid
 
