@@ -33,8 +33,17 @@ blockers explicitly. Preserve personal assessments, recordings and workspaces.
   observed concurrent-token-refresh timing assertion (2 rotations instead of 1);
   account code was unchanged. The second run passed all account/shared-workspace,
   planning, library, catalog and new flashcard flows.
-- [ ] Publish both changes and verify the live page/catalog. Starting source/check
-  count: 35,203; final source/check count: 35,548.
+- [x] Publish release `8edd050`. [App checks](https://github.com/williambooth0803-ui/Worship-Song-Tool/actions/runs/39316088366)
+  and [Pages deployment](https://github.com/williambooth0803-ui/Worship-Song-Tool/actions/runs/39316084335)
+  passed, including the full hosted suite, MCP type checking and scale.
+  Nine live assets matched the release. Live catalog checks confirmed 835
+  expanded defaults, 69 starters, 42 artist groups and all 165 recent retirements
+  absent from discovery/collections. Live reload preserved all 165 saved copies,
+  human reviews, removed recording links, library membership and a service plan.
+  Direct live flashcard checks passed for all review, rating/evaluation, note,
+  undo/reload, backup, storage-failure, AI-hiding and four-width layout flows.
+  Disposable browser fixtures only; no real-account reads/writes.
+  Starting source/check count: 35,203; final source/check count: 35,548.
 
 ## Retire 24 unresolved defaults and review the next 150
 
