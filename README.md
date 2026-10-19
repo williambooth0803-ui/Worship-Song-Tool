@@ -6,6 +6,10 @@ The public website is hosted at https://williambooth0803-ui.github.io/Worship-So
 
 [Project links](PROJECT-LINKS.md) collects the website, repository, Supabase dashboard and deployment shortcuts.
 
+[Cloudflare Pages setup](CLOUDFLARE-SETUP.md) documents the Git-connected build,
+Node 24 selection, account redirects and saved-work migration. The current GitHub
+site remains available until the actual Cloudflare deployment is verified.
+
 ## Navigation and public About
 
 The primary flow is **Discover → Evaluate → Libraries → Plans**. Discover groups

@@ -6,6 +6,27 @@ do not treat a new prompt as cancellation unless the owner says so. Mark an item
 complete only with implementation and meaningful verification. Record external
 blockers explicitly. Preserve personal assessments, recordings and workspaces.
 
+## Cloudflare hosting setup
+
+- [x] Owner created a Cloudflare account and connected GitHub. Inspect the
+  existing build and current Cloudflare Git integration documentation.
+- [x] Prepare `.node-version` for Node 24 and exact Pages settings in
+  `CLOUDFLARE-SETUP.md`: repository root, `main`, no framework,
+  `npm run build:site`, output `docs`; existing public Supabase configuration.
+- [x] Document the separate browser-data migration and coordinated auth/OAuth
+  domain switch. Preserve GitHub hosting, Supabase data and current connector.
+- [x] Build succeeds. Root-hosted browser checks pass for public About,
+  flashcards and consent with locally emulated Cloudflare extensionless redirects
+  and query preservation. This does not verify an actual Cloudflare deployment.
+  Push the setup guide and Node version pin for the Git-connected build.
+  Starting/final source/check count: 35,548 (no application source changes).
+- [ ] Create/verify the actual Cloudflare project. No Cloudflare control tool
+  or matching plugin was found; Cloudflare API credentials are not configured
+  in this environment. The owner needs to select the repository in the Pages
+  dashboard and provide the actual deployment URL. Do not invent a live URL.
+- [ ] Once the URL is known, verify serving/redirect behavior and account
+  confirmation/reset redirect configuration before switching the primary domain.
+
 ## Flashcards and final decisions on the 150-song shortlist
 
 - [x] Build a one-card-at-a-time review with Keep, Remove, Decide later,
