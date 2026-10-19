@@ -1,10 +1,10 @@
 {
   "coverage": {
     "assumed": 744,
-    "total": 1000,
+    "total": 976,
     "reviewed": 976,
     "textScans": 0,
-    "unresolved": 24,
+    "unresolved": 0,
     "missing": 0,
     "partial": 0,
     "checkedAt": "2026-10-19"
@@ -2703,16 +2703,6 @@
       "reason": null
     },
     {
-      "id": "expanded-god-is-good-cody-carnes",
-      "title": "God Is Good",
-      "author": "Associated recording: Cody Carnes",
-      "status": "identity-unresolved",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "The exact Cody Carnes title was not established. God Is Good! is an album; the related song Good (Can’t Be Anything Else) has a different title."
-    },
-    {
       "id": "expanded-too-good-to-not-believe-cody-carnes",
       "title": "Too Good to Not Believe",
       "author": "Associated recording: Cody Carnes",
@@ -2821,16 +2811,6 @@
       "sourceHash": "a728816e3beffc3a85cb1b23c4428b8f948ac447ee8fd83ceeefd6448380bd8b",
       "sourceURL": "https://www.multitracks.com/songs/ELEVATION-RHYTHM/This-Is-The-Gospel/This-Is-The-Gospel/",
       "reason": null
-    },
-    {
-      "id": "expanded-still-holy-elevation-rhythm",
-      "title": "Still Holy",
-      "author": "Associated recording: Elevation RHYTHM",
-      "status": "identity-unresolved",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No exact Elevation RHYTHM text was identified. Unrelated artists and lyric fragments are not sufficient to select a song."
     },
     {
       "id": "expanded-walk-on-water-elevation-rhythm",
@@ -3106,16 +3086,6 @@
       "reason": null
     },
     {
-      "id": "expanded-bless-you-elevation-worship",
-      "title": "Bless You",
-      "author": "Associated recording: Elevation Worship",
-      "status": "identity-unresolved",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "Searches lead to The Blessing rather than a distinct Elevation Worship song called Bless You. The selected record needs an exact identity."
-    },
-    {
       "id": "expanded-another-one-elevation-worship",
       "title": "Another One",
       "author": "Associated recording: Elevation Worship",
@@ -3202,16 +3172,6 @@
       "sourceHash": "fbcf7c394d4591545024e85a632d568b7f5b72a9030ff2a6f267c995cb638c81",
       "sourceURL": "https://essentialworship.com/songs/elevation-worship/when-wind-meets-fire/",
       "reason": null
-    },
-    {
-      "id": "expanded-yesterday-today-forever-elevation-worship",
-      "title": "Yesterday Today & Forever",
-      "author": "Associated recording: Elevation Worship",
-      "status": "identity-unresolved",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "The Elevation association was not established. Results point to Same God and other songs with similar wording."
     },
     {
       "id": "expanded-welcome-resurrection-elevation-worship",
@@ -3311,16 +3271,6 @@
       "sourceHash": "f60a4320304803e7f8e3468bbea1ac47fff57625c81f478c7d71577dc24cf4f9",
       "sourceURL": "https://essentialworship.com/songs/elevation-worship/mighty-god-another-hallelujah/",
       "reason": null
-    },
-    {
-      "id": "expanded-open-the-grave-elevation-worship",
-      "title": "Open the Grave",
-      "author": "Associated recording: Elevation Worship",
-      "status": "identity-unresolved",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "This phrase appears in RATTLE!, which already has a separate evaluated record. A distinct song under this title was not established."
     },
     {
       "id": "expanded-mercy-elevation-worship",
@@ -4134,16 +4084,6 @@
       "reason": null
     },
     {
-      "id": "expanded-nobody-like-you-hillsong-united",
-      "title": "Nobody Like You",
-      "author": "Associated recording: Hillsong UNITED",
-      "status": "identity-unresolved",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "The Hillsong UNITED result is a lyric phrase in Chariot. A distinct song with the catalog title was not established."
-    },
-    {
       "id": "expanded-god-you-re-so-good-passion",
       "title": "God, You're So Good",
       "author": "Associated recording: Passion",
@@ -4221,16 +4161,6 @@
       "reason": null
     },
     {
-      "id": "expanded-simple-passion",
-      "title": "Simple",
-      "author": "Associated recording: Passion",
-      "status": "identity-unresolved",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "The identified Passion resource is Simple Pursuit. An exact title or selected version is needed before substituting that text."
-    },
-    {
       "id": "expanded-worthy-of-your-name-passion",
       "title": "Worthy of Your Name",
       "author": "Associated recording: Passion",
@@ -4286,16 +4216,6 @@
       "reason": null
     },
     {
-      "id": "expanded-let-me-see-jesus-passion",
-      "title": "Let Me See Jesus",
-      "author": "Associated recording: Passion",
-      "status": "identity-unresolved",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "An exact Passion text was not established. A Matt Redman song with this title and Let It Be Jesus are different candidates."
-    },
-    {
       "id": "expanded-fall-like-rain-passion",
       "title": "Fall Like Rain",
       "author": "Associated recording: Passion",
@@ -4307,16 +4227,6 @@
       "reason": null
     },
     {
-      "id": "expanded-because-of-christ-passion",
-      "title": "Because of Christ",
-      "author": "Associated recording: Passion",
-      "status": "identity-unresolved",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No complete text matching this exact Passion title was established. Related sheet-music and translated-title results do not settle the identity."
-    },
-    {
       "id": "expanded-he-who-is-to-come-passion",
       "title": "He Who Is to Come",
       "author": "Associated recording: Passion",
@@ -4326,16 +4236,6 @@
       "sourceHash": "ebd0870663810c54281c22367980fa5bee775f227172574aa670376a9442f4fc",
       "sourceURL": "https://www.multitracks.com/songs/Passion/He-Who-Is-To-Come/He-Who-Is-To-Come/",
       "reason": null
-    },
-    {
-      "id": "expanded-call-on-heaven-passion",
-      "title": "Call on Heaven",
-      "author": "Associated recording: Passion",
-      "status": "identity-unresolved",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "The title appears as a Passion album and in a later release subtitle. A distinct song/text under this catalog identity was not established."
     },
     {
       "id": "expanded-i-believe-phil-wickham",
@@ -5553,16 +5453,6 @@
       "reason": null
     },
     {
-      "id": "expanded-nobody-like-our-god-chris-tomlin",
-      "title": "Nobody Like Our God",
-      "author": "Associated recording: Chris Tomlin",
-      "status": "identity-unresolved",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "The exact Chris Tomlin title was not established. Similar wording in other artists’ songs cannot identify this record."
-    },
-    {
       "id": "expanded-jesus-son-of-god-chris-tomlin",
       "title": "Jesus Son of God",
       "author": "Associated recording: Chris Tomlin",
@@ -5714,26 +5604,6 @@
       "sourceHash": "7e92439822c26e135a190a300ea782830cfbf6da7fbeef8fd5b55c915c68abdc",
       "sourceURL": "https://cityalight.com/song/jesus-is-alive/",
       "reason": null
-    },
-    {
-      "id": "expanded-come-to-jesus-cityalight",
-      "title": "Come to Jesus",
-      "author": "Associated recording: CityAlight",
-      "status": "identity-unresolved",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "CityAlight results lead to Known and Loved and Jesus, Strong and Kind. The phrase alone cannot select between those texts."
-    },
-    {
-      "id": "expanded-holy-god-cityalight",
-      "title": "Holy God",
-      "author": "Associated recording: CityAlight",
-      "status": "identity-unresolved",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "The primary CityAlight resource is Only a Holy God, already represented by another evaluated record. This shortened title needs confirmation."
     },
     {
       "id": "expanded-my-god-is-all-i-need-cityalight",
@@ -6066,16 +5936,6 @@
       "reason": null
     },
     {
-      "id": "expanded-in-the-valley-keith-kristyn-getty",
-      "title": "In the Valley",
-      "author": "Associated recording: Keith & Kristyn Getty",
-      "status": "identity-unresolved",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "Several different valley songs exist. No exact Keith & Kristyn Getty text matching this title was established."
-    },
-    {
       "id": "expanded-still-my-soul-be-still-keith-kristyn-getty",
       "title": "Still, My Soul, Be Still",
       "author": "Associated recording: Keith & Kristyn Getty",
@@ -6208,16 +6068,6 @@
       "reason": null
     },
     {
-      "id": "expanded-come-to-the-waters-keith-kristyn-getty",
-      "title": "Come to the Waters",
-      "author": "Associated recording: Keith & Kristyn Getty",
-      "status": "identity-unresolved",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No complete text matched this exact title and artist association. Nearby song titles and a phrase in another song are insufficient."
-    },
-    {
       "id": "expanded-i-am-not-my-own-keith-kristyn-getty",
       "title": "I Am Not My Own",
       "author": "Associated recording: Keith & Kristyn Getty",
@@ -6328,26 +6178,6 @@
       "reason": null
     },
     {
-      "id": "expanded-christ-our-glory-matt-boswell-matt-papa",
-      "title": "Christ Our Glory",
-      "author": "Associated recording: Matt Boswell & Matt Papa",
-      "status": "identity-unresolved",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "The primary text found is credited to Henry Lyte, Nathan Stiff and David Zimmer. A matching Boswell/Papa recording or text selection was not established."
-    },
-    {
-      "id": "expanded-he-is-worthy-matt-boswell-matt-papa",
-      "title": "He Is Worthy",
-      "author": "Associated recording: Matt Boswell & Matt Papa",
-      "status": "identity-unresolved",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "The exact Boswell/Papa text was not established. Similar worship titles and repeated worthy phrases are not enough to select a song."
-    },
-    {
       "id": "expanded-the-king-in-all-his-beauty-matt-boswell-matt-papa",
       "title": "The King in All His Beauty",
       "author": "Associated recording: Matt Boswell & Matt Papa",
@@ -6379,26 +6209,6 @@
       "sourceHash": "827c80969930b76aa350ff7cee15af37a43abaaf09309e2f88851a497ff6b2b5",
       "sourceURL": "https://www.mattpapa.com/songs/o-fount-of-love",
       "reason": null
-    },
-    {
-      "id": "expanded-your-mercy-matt-boswell-matt-papa",
-      "title": "Your Mercy",
-      "author": "Associated recording: Matt Boswell & Matt Papa",
-      "status": "identity-unresolved",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "Searches lead to Lovingkindness and other mercy songs. No exact Boswell/Papa text under this title was established."
-    },
-    {
-      "id": "expanded-come-to-the-waters-matt-boswell-matt-papa",
-      "title": "Come to the Waters",
-      "author": "Associated recording: Matt Boswell & Matt Papa",
-      "status": "identity-unresolved",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No complete text matched this exact title and artist association. Nearby song titles and a phrase in another song are insufficient."
     },
     {
       "id": "expanded-psalm-51-wisdom-in-the-secret-heart-shane-shane-the-worship-initiative",
@@ -6566,16 +6376,6 @@
       "reason": null
     },
     {
-      "id": "expanded-all-my-hope-shane-shane-the-worship-initiative",
-      "title": "All My Hope",
-      "author": "Associated recording: Shane & Shane · The Worship Initiative",
-      "status": "identity-unresolved",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "The Shane & Shane results identify My Hope Is Built and All My Boast Is in Jesus. Neither establishes the exact catalog title."
-    },
-    {
       "id": "expanded-though-you-slay-me-shane-shane-the-worship-initiative",
       "title": "Though You Slay Me",
       "author": "Associated recording: Shane & Shane · The Worship Initiative",
@@ -6640,16 +6440,6 @@
       "sourceHash": "845c653069dcbc6ecec9a68aea563d771686be971dafd29dce34d0723f7dd247",
       "sourceURL": "https://www.worshiptogether.com/songs/yearn-shane-and-shane/?nav=1",
       "reason": null
-    },
-    {
-      "id": "expanded-lord-of-all-shane-shane-the-worship-initiative",
-      "title": "Lord of All",
-      "author": "Associated recording: Shane & Shane · The Worship Initiative",
-      "status": "identity-unresolved",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "The phrase occurs in Be Enthroned, Cornerstone and other Shane & Shane songs. The exact text remains unidentified."
     },
     {
       "id": "expanded-unto-you-shane-shane-the-worship-initiative",
@@ -9287,16 +9077,6 @@
       "reason": null
     },
     {
-      "id": "expanded-our-great-savior-fernando-ortega",
-      "title": "Our Great Savior",
-      "author": "Associated recording: Fernando Ortega",
-      "status": "identity-unresolved",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "Several traditional Savior hymns are possible. An exact Fernando Ortega text or recording under this title was not established."
-    },
-    {
       "id": "expanded-sing-to-jesus-fernando-ortega",
       "title": "Sing to Jesus",
       "author": "Associated recording: Fernando Ortega",
@@ -10485,16 +10265,6 @@
       "reason": null
     },
     {
-      "id": "artist-more-than-a-feeling-seu-worship",
-      "title": "More Than a Feeling",
-      "author": "Associated recording: SEU Worship",
-      "status": "identity-unresolved",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "SEU Worship results identify this phrase within Worship Freely. A distinct song called More Than a Feeling was not established."
-    },
-    {
       "id": "artist-do-it-again-seu-worship",
       "title": "Do It Again",
       "author": "Associated recording: SEU Worship",
@@ -10722,16 +10492,6 @@
       "sourceHash": "3eab2f15bb7471c561ee58969a2a5e195a4f683658a73c7b940b392f3704e8b8",
       "sourceURL": "https://www.multitracks.com/songs/Charles-Billingsley/Replay/Midnight-Cry/",
       "reason": null
-    },
-    {
-      "id": "artist-no-one-ever-cared-for-me-like-jesus-charles-billingsley",
-      "title": "No One Ever Cared for Me Like Jesus",
-      "author": "Associated recording: Charles Billingsley",
-      "status": "identity-unresolved",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "Distinct traditional and modern texts share this title. No source established which belongs to the Charles Billingsley association."
     },
     {
       "id": "artist-nothing-but-the-blood-matt-redman",

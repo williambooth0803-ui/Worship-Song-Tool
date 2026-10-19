@@ -36,5 +36,5 @@ test('reduced catalog migration preserves a retired song and its plan/library re
  const w=fixture();w.songs.push(retired);w.libraries[0].songIds.push(retired.id);w.plans=[{id:'old',title:'Older service',date:'',theme:'',passage:'',items:[{id:'old-item',type:'song',songId:retired.id,role:'',key:'D',minutes:4,notes:''}]}];
  const before=structuredClone(w),next=validateWorkspace(syncCatalog(w));
  assert.deepEqual(next.songs.find(s=>s.id===retired.id).review,retired.review);assert.deepEqual(next.songs.find(s=>s.id===retired.id).recordings,[]);assert.deepEqual(next.plans.map(p=>p.items),before.plans.map(p=>p.items));assert.deepEqual(next.libraries,before.libraries);
- assert.equal(allCatalogSongs.length,1000);
+ assert.equal(allCatalogSongs.length,976);
 });

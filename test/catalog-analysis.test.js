@@ -1,3 +1,6 @@
+import {readFileSync} from 'node:fs';
+import {expandedCatalog} from '../public/expanded-catalog.js';
+import {artistCatalog} from '../public/artist-catalog.js';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {allCatalogSongs,catalogSongs,syncCatalog,CATALOG_REVISION} from '../public/catalog.js';
@@ -10,15 +13,17 @@ import {reviewForDisplay} from '../public/profile.js';
 test('catalog analysis accounts for every record without calling missing or partial evidence completed',()=>{
  assert.equal(Object.keys(data.records).length,allCatalogSongs.length);
  const c=data.coverage;assert.equal(c.reviewed+c.textScans+c.unresolved+c.missing+c.partial,c.total);
- assert.equal(c.total,1000);assert.equal(c.partial,Object.values(data.records).filter(r=>r.status==='partial-text').length);assert.ok(c.reviewed>200);assert.ok(c.missing+c.unresolved>0);
+ assert.equal(c.total,976);assert.equal(c.partial,Object.values(data.records).filter(r=>r.status==='partial-text').length);assert.equal(c.reviewed,c.total);assert.equal(c.missing+c.unresolved+c.partial+c.textScans,0);
  for(const song of allCatalogSongs){const r=data.records[song.id];assert.equal(r.title,song.title);assert.equal(r.author,song.author);
   if(r.status==='reviewed-draft'){const a=data.analyses[r.analysisKey];assert.equal(a.reasons.length,3);assert.equal(new Set(a.reasons.map(r=>r.criterion)).size,3);assert.ok(a.reasons.every(r=>r.explanation.length>80));assert.ok(a.scriptures.length>=1);assert.ok(a.themes.length);assert.equal(a.scores.time,null);assert.ok(['accuracy','substance','language'].every(key=>Number.isFinite(a.scores[key])));assert.ok(Object.values(a.scores).every(s=>s===null||Number.isFinite(s)&&s>=0&&s<=10));assert.equal(a.source.hash.length,64);assert.equal(new URL(a.source.url).protocol,'https:');assert.ok(a.quote.length<=90);assert.ok(a.quote.split(/\s+/).filter(Boolean).length<=10);}
  }
 });
-test('new source-supported drafts carry lyric reasons and leave unresolved records genuinely unknown',()=>{
+test('source-supported drafts carry lyric reasons and standalone unknown records stay unassessed',()=>{
  const song=allCatalogSongs.find(s=>s.title==='I Sing the Mighty Power of God');assert.equal(song.review.status,'ai');assert.ok(song.review.claims.length>=3);assert.ok(song.review.sources.length);assert.equal(song.review.scores.time,null);
- const unknown=allCatalogSongs.find(s=>['missing-text','identity-unresolved'].includes(data.records[s.id].status)&&s.review.status==='unreviewed');assert.ok(unknown);assert.ok(Object.values(unknown.review.scores).every(s=>s===null));assert.equal(unknown.review.summary,'');assert.deepEqual(unknown.themes,[]);
- const unresolved=data.records[unknown.id];assert.ok(unresolved.reason);assert.ok(catalogAnalysisMarkup({...unresolved,analysis:null},s=>s).includes(unresolved.reason));
+ const unknown={id:'standalone-unassessed',title:'Unassessed text',author:'Unknown',review:{status:'unreviewed',scores:{accuracy:null,substance:null,language:null,time:null},summary:''},themes:[]};
+ assert.equal(catalogAnalysisFor(unknown),null);assert.deepEqual(enrichCatalogEvaluation(unknown),unknown);
+ const unresolved={id:unknown.id,status:'identity-unresolved',analysis:null,reason:'Exact text identity has not been established.'};
+ assert.ok(catalogAnalysisMarkup(unresolved,s=>s).includes(unresolved.reason));
  for(const s of allCatalogSongs.filter(s=>data.records[s.id].status==='partial-text'))assert.equal(s.review.status,'unreviewed');
 });
 test('every starter record has expanded reasons and ambiguous modern wording retains its source context',()=>{
@@ -94,4 +99,24 @@ test('expanded report respects hidden attributes and escapes source text',()=>{
  assert.ok(!html.includes('analysis-reasons'));assert.ok(!html.includes('analysis-scriptures'));assert.ok(!html.includes('analysis-themes'));assert.ok(!html.includes('href='));
  const changed=structuredClone(record);changed.analysis.summary='<script>unsafe()</script>';
  assert.ok(!catalogAnalysisMarkup(changed,escape).includes('<script>'));
+});
+
+
+test('retiring the 24 ambiguous defaults preserves saved reviews, libraries and plans through refresh and backup',()=>{
+ const retired=JSON.parse(readFileSync(new URL('../data/catalog-analysis/identity-issues.json',import.meta.url),'utf8'));
+ assert.equal(retired.length,24);
+ const source=[...expandedCatalog,...artistCatalog];
+ const songs=retired.map(({id})=>{
+  assert.ok(!allCatalogSongs.some(s=>s.id===id));assert.equal(data.records[id],undefined);
+  const song=structuredClone(source.find(s=>s.id===id));assert.ok(song);
+  song.review.status='manual';song.review.notes='Keep my saved evaluation';song.review.scores.accuracy=7;
+  song.review.customScores={'custom-my-context':8};song.recordings=[];song.approval={status:'context',notes:'My decision',updatedAt:null};
+  return song;
+ });
+ const workspace={version:1,profile:structuredClone(defaultProfile),songs,libraries:[{id:'saved',name:'Saved selections',songIds:songs.map(s=>s.id)}],plans:[{id:'saved-plan',title:'Saved service',theme:'',passage:'',date:'2026-10-19',status:'draft',items:songs.map((s,i)=>({id:'item-'+i,type:'song',songId:s.id,role:'',key:'D',notes:'',minutes:4}))}]};
+ const before=validateWorkspace(structuredClone(workspace));
+ const next=validateWorkspace(syncCatalog(before));
+ for(const old of before.songs){const kept=next.songs.find(s=>s.id===old.id);assert.ok(kept);assert.deepEqual(kept.review,old.review);assert.deepEqual(kept.recordings,old.recordings);assert.deepEqual(kept.approval,old.approval);}
+ assert.deepEqual(next.libraries,before.libraries);assert.deepEqual(next.plans,before.plans);
+ assert.equal(catalogSongs.length,69);
 });

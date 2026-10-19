@@ -1,25 +1,19 @@
 # Catalog lyric-analysis coverage
 
-The owner's request is for a deeper first-pass evaluation of **every** catalog
-song, now scoped to the reduced 1,000-record working catalog. This work has not yet completed that goal. `coverage.json` contains all
-1,000 song/version records and their precise status, source URL and text hash.
+The deeper first-pass evaluation now covers **all 976 retained catalog records**.
+`coverage.json` records each song/version identity, source URL and text hash.
 
 - **976 expanded drafts:** three separate criterion reasons, themes, source
-  provenance, short exact excerpts for specific wording concerns, and KJV
-  supporting comparisons. Some records share the same underlying text. The new batch adds 568 source-supported records in the current whole-catalog pass.
-- **0 partial/suspect texts remain in this batch:** a complete music-resource
-  source now resolves the Unstoppable God victory wording, corroborated by
-  Elevation's official lyric-video description. A complete medley source supplies
-  both Most Beautiful and So in Love. The reports assess the replacement words,
-  rather than penalizing an apparent copying error or inventing missing verses.
-- **24 unresolved identities:** further public searches found mismatched artist
-  associations, possible album titles, lyric fragments and competing song texts.
-  `identity-issues.json` documents each record and candidate references. The
-  website shows its specific explanation. No source is silently substituted.
-- **0 unmatched texts:** the remaining gaps are identity questions.
+  provenance, short exact excerpts for wording concerns and KJV supporting
+  comparisons. Some records share the same underlying text. The whole-catalog
+  pass added 568 source-supported records.
+- **0 partial, unmatched or unresolved retained records.** Complete replacement
+  sources resolved the Unstoppable God wording and Most Beautiful / So in Love medley.
+- **24 owner-approved retirements:** ambiguous identities were discarded from
+  preloaded defaults on October 19, 2026. `identity-issues.json` keeps the
+  historical issues, candidate references and retirement disposition. Existing
+  workspace copies retain their saved data; no unsupported rating was supplied.
 
-There are now 976 rated catalog records, all with expanded text analysis. The
-remaining 24 stay unscored; no earlier brief draft is counted as a completed review.
 Numerical scores are provisional AI editorial judgments, not mechanically derived
 from word counts, church approvals or a verified consensus. Reading a cited text
 supports that text's analysis; it does not verify every associated recording.
@@ -34,9 +28,9 @@ versions. Community transcriptions can contain errors, omissions and inaccurate
 artist attribution. A matching source supports examination of that text, not proof
 of the words in every associated recording. Traditional hymn stanza/translation
 choices still need review. Identified texts and explicitly labeled usual-text assumptions were admitted;
-286 records state that a selected familiar text is assumed and the associated
+744 records state that a selected familiar text is assumed and the associated
 artist/recording remains unverified. Conflicting title candidates without a
-supportable selection remain unresolved in the manifest. A separate radio-analysis repository was inspected but its AI judgments
+supportable selection were retained unassessed until the owner retired them. A separate radio-analysis repository was inspected but its AI judgments
 were not imported as lyric evidence.
 
 Primary artist/publisher pages were consulted directly for In Christ Alone,
@@ -119,7 +113,7 @@ Human church-use decisions are never changed by a catalog research refresh.
 The owner confirmed that public title-plus-lyrics searches are the available
 source approach. A shared SongSelect login was mentioned but was not used; no
 account credentials are needed for these public pages. The all-song request
-remains open and public-source research continues. The remaining work is to identify the 24 ambiguous records or retire them under
-the owner's catalog-trimming preference. Candidate references in the audit explain
-why a nearby title was not silently substituted. Existing workspace songs, notes,
-reviews, recordings, libraries and plans remain intact if a default is retired.
+is complete for the 976 retained defaults. The owner approved retiring the 24
+ambiguous records. Candidate references explain why a nearby title was not
+silently substituted. Existing workspace songs, notes, reviews, recordings,
+libraries and plans remain intact when a default is retired.

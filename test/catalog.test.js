@@ -104,7 +104,7 @@ test("catalog records distinguish explicit AI drafts from titles without an asse
     new Set(allCatalogSongs.map((s) => s.id)).size,
     allCatalogSongs.length,
   );
-  assert.ok(allCatalogSongs.length >= 1000);
+  assert.equal(allCatalogSongs.length, 976);
   for (const song of allCatalogSongs) {
     if (song.review.status === "unreviewed") {
       assert.ok(Object.values(song.review.scores).every(score => score === null));

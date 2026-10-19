@@ -6,6 +6,24 @@ do not treat a new prompt as cancellation unless the owner says so. Mark an item
 complete only with implementation and meaningful verification. Record external
 blockers explicitly. Preserve personal assessments, recordings and workspaces.
 
+## Retire 24 unresolved defaults and review the next 150
+
+- [x] Owner explicitly approved discarding all 24 unresolved song identities.
+  Remove only preloaded defaults and their analysis manifest entries. Retain
+  saved workspace songs, evaluations, notes, recordings, libraries and plans.
+- [x] Retain all 69 starter songs and all 42 artist groups. Remaining catalog:
+  976 defaults, all 976 with expanded lyric evaluations. Catalog revision 16.
+- [x] Prepare `data/catalog-selection/review-150.md` and CSV: 150 editorial
+  trimming candidates, grouped by artist with stable numbers and exact IDs.
+  The owner clarified least familiar/useful, not lowest evaluation scores.
+  Flag default weighted AI scores of 8.0 or higher (45 records).
+- [ ] Keep all 150 review candidates until the owner chooses which to discard.
+- [x] Verify locally: 139 unit/database checks and focused catalog/lens browser
+  checks pass, including all 24 saved copies, review/recording preservation,
+  libraries/plans, 69 starters, 42 artist groups and 58 collections.
+- [ ] Publish and verify the live retirement. Starting source/check count:
+  35,182; final source/check count: 35,203.
+
 ## More visible About and a visual Collections grid
 
 - [x] Make About more noticeable without overwhelming the workspace; include
@@ -25,7 +43,7 @@ blockers explicitly. Preserve personal assessments, recordings and workspaces.
 
 ## Finish the remaining 592 evaluations
 
-- [ ] Complete the owner's requested whole-catalog pass. Start: 408 expanded of
+- [x] Complete the owner's requested whole-catalog pass. Start: 408 expanded of
   1,000; 592 remaining. Source/check starting count: 34,445.
 - [x] Research the lyric texts for 568 additional catalog records. Write
   separate reasons, themes, checked KJV comparisons and exact short concerns.
@@ -37,13 +55,13 @@ blockers explicitly. Preserve personal assessments, recordings and workspaces.
   lens/catalog browser flows passed.
 - [x] Check the local 310-record checkpoint and the new collection grid/About UI.
   The full hosted suite passed. Release `5c19428` passed App checks `39261609029` and Pages `39261608789`; all seven changed live assets matched the commit, and live catalog/lens checks passed.
-- [ ] Resolve or retire the final 24 ambiguous catalog identities; an optional retirement preference was requested. Keep them visible and unassessed until that choice is resolved.
+- [x] Retire the final 24 ambiguous identities after the owner explicitly approved discarding all of them. Saved workspace copies remain intact.
 
 The 910-report release `d81f103` passed App checks `39264926791` and Pages `39264927162`, plus direct live catalog checks. The new working checkpoint adds 66 more reports, reaching 976. The whole pass added 568 evaluations, with three distinct reasons, themes, checked KJV quotations and brief exact concerns. All previously brief drafts now have expanded reports. The final 24 records need exact identities rather than additional generic lyric searching: several results are album titles, fragments of already represented songs, or different artist associations. These records have individual on-page explanations and a candidate-reference audit. No personal record or public default has been removed while the retirement choice is pending.
 
 The owner declined further Sites research; retain the current hosting setup. Release `5985085` published the 976-report checkpoint. [App checks](https://github.com/williambooth0803-ui/Worship-Song-Tool/actions/runs/39267291847) and [Pages deployment](https://github.com/williambooth0803-ui/Worship-Song-Tool/actions/runs/39267291324) succeeded. All 138 local unit/database checks passed; CI also passed MCP type checking, scale and the full hosted browser suite. Eight live assets matched the committed release. Direct live checks passed for report reasons, KJV quotations, source links, four layouts, human-only hiding and saved human judgments/libraries/plans. The live mixed collection grid, prominent signed-in/signed-out About, and individual unscored identity explanations passed at four widths. Disposable browser data was used without real-account writes. Source/check total: 35,182.
 
-Two temporary live-check fixtures initially used an invalid empty-library workspace; that test setup was corrected to include a required synthetic library. No website fix was needed. The final 24 identity questions remain pending the owner's retirement preference; the catalog still contains 1,000 records and all saved data remains intact.
+Two temporary live-check fixtures initially used an invalid empty-library workspace; that test setup was corrected to include a required synthetic library. No website fix was needed. At that checkpoint, the final 24 identity questions were pending the owner's retirement preference and the catalog contained 1,000 records. The owner subsequently approved retiring all 24; see the current request above.
 
 ## Manageable catalog, analysis lenses and workflow guidance
 
@@ -68,8 +86,8 @@ Two temporary live-check fixtures initially used an invalid empty-library worksp
   workflows and source-supported report checks passed.
   Final source/check count: 34,445.
 
-Current whole-catalog scope: 1,000 preloaded records, 976 expanded reports;
-24 identities remain unresolved, with individual explanations in `data/catalog-analysis/identity-issues.json`. The prior 2,044-song
+Current whole-catalog scope: 976 preloaded records, all with expanded reports.
+The 24 unresolved defaults were retired with owner approval; historical issues remain in `data/catalog-analysis/identity-issues.json`. The prior 2,044-song
 ledger below is historical coverage, superseded by the owner's reduction request.
 All saved personal records are preserved, including retired default versions.
 

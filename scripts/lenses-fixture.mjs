@@ -26,7 +26,7 @@ export async function checkLensFlows(browser,base){
   await page.locator('#profile-form').getByRole('button',{name:'Save evaluation criteria',exact:true}).click();
   for(const width of [320,390,900,1440]){await page.setViewportSize({width,height:900});assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),`Lens controls fit ${width}px`);}
   await page.goto(base+'#about');await page.getByRole('heading',{name:'Recommended use',exact:true}).waitFor();assert.match(await page.locator('.recommended-use').textContent(),/last year's services/);assert.match(await page.locator('.recommended-use').textContent(),/youth, college, children and Sunday school/);
-  assert.equal(allCatalogSongs.length,1000);assert.deepEqual(errors,[]);
-  console.log('PASS: 1,000-song catalog, independent lens criteria/reviews, shared notes and plans, reload, unsaved-edit guard, four layouts and recommended workflows.');
+  assert.equal(allCatalogSongs.length,976);assert.deepEqual(errors,[]);
+  console.log('PASS: 976-song catalog, independent lens criteria/reviews, shared notes and plans, reload, unsaved-edit guard, four layouts and recommended workflows.');
  }finally{await page.close();}
 }
