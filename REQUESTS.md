@@ -6,6 +6,17 @@ do not treat a new prompt as cancellation unless the owner says so. Mark an item
 complete only with implementation and meaningful verification. Record external
 blockers explicitly. Preserve personal assessments, recordings and workspaces.
 
+## Finish the remaining 592 evaluations
+
+- [ ] Complete the owner's requested whole-catalog pass. Start: 408 expanded of
+  1,000; 592 remaining. Source/check starting count: 34,445.
+- [x] Retrieve and read 110 additional public music-resource lyric texts. Write
+  separate reasons, themes, checked KJV comparisons and exact short concerns.
+  Current coverage: 518 expanded; 482 remaining (50 unresolved, 432 unmatched).
+- [x] Preserve private reviews, notes, recordings, approvals and lens evaluations;
+  source refresh remains limited to untouched public defaults.
+- [ ] Check and publish this checkpoint, then continue the remaining sources.
+
 ## Manageable catalog, analysis lenses and workflow guidance
 
 - [x] Reduce preloaded discovery/index catalog to 1,000 useful, familiar
@@ -29,8 +40,8 @@ blockers explicitly. Preserve personal assessments, recordings and workspaces.
   workflows and source-supported report checks passed.
   Final source/check count: 34,445.
 
-Current whole-catalog scope: 1,000 preloaded records, 408 expanded reports;
-592 remain (64 unresolved identities and 528 unmatched texts). The prior 2,044-song
+Current whole-catalog scope: 1,000 preloaded records, 518 expanded reports;
+482 remain (50 unresolved identities and 432 unmatched texts). The prior 2,044-song
 ledger below is historical coverage, superseded by the owner's reduction request.
 All saved personal records are preserved, including retired default versions.
 
