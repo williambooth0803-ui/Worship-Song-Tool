@@ -31,13 +31,15 @@ blockers explicitly. Preserve personal assessments, recordings and workspaces.
   allowlist (CONNECT 403); the web-reading tool also could not open the URL.
   Do not describe this network restriction as a website error or claim that
   live asset hashes/every browser flow were independently verified.
-- [ ] Add the exact Cloudflare root URL to Supabase auth redirect URLs. The
-  available management credential was rejected (HTTP 401), including an explicit
-  request using the configured ready `s` binding. No auth writes were attempted.
-  Provide the exact dashboard addition in `CLOUDFLARE-SETUP.md`; preserve all
-  existing entries and the current Site URL/OAuth setup pending confirmation.
-  Actual email confirmation/reset and cross-domain browser-data migration
-  still require owner verification. Source/check count remains 35,548.
+- [x] Owner confirmed adding `https://faithful-repertoire.pages.dev/` to
+  Supabase's redirect list on October 19, 2026. Initial Cloudflare hosting and
+  sign-in setup is complete, with the existing Site URL/ChatGPT consent flow
+  retained. The owner made the dashboard change after the configured management
+  credential was rejected (HTTP 401); no auth writes were performed by Codex.
+  Email confirmation/reset delivery has not been independently tested.
+  Browser-only copies remain on their original origin until explicitly exported
+  and restored. Source/check count remains 35,548.
+
 
 ## Flashcards and final decisions on the 150-song shortlist
 

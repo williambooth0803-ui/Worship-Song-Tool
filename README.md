@@ -8,7 +8,7 @@ The Cloudflare website is https://faithful-repertoire.pages.dev/. Cloudflare rep
 
 [Cloudflare Pages setup](CLOUDFLARE-SETUP.md) documents the Git-connected build,
 Node 24 selection, account redirects and saved-work migration. The current GitHub
-site remains available for browser-data migration and the existing ChatGPT consent flow; Cloudflare email-link redirect configuration still needs the dashboard addition described in the setup guide.
+site remains available for browser-data migration and the existing ChatGPT consent flow; the owner confirmed adding the Cloudflare root URL to Supabase’s email-link redirect list.
 
 ## Navigation and public About
 

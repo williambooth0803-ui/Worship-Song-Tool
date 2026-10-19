@@ -70,11 +70,12 @@ GitHub URL during verification. This permits confirmation/password-reset links
 requested from the new site to return there. The same Supabase project means
 existing accounts and server-saved workspaces remain available after sign-in.
 
-The configured management credential was rejected by Supabase (HTTP 401), so
-this redirect-list change has **not** been applied by Codex. The owner needs to
-make the dashboard change above or restore valid management access. Preserve
-all other redirect entries and retain the current Site URL during this stage.
-No Supabase auth settings, workspaces or connector settings were modified.
+The owner confirmed adding `https://faithful-repertoire.pages.dev/` on October 19,
+2026. Initial hosting and account sign-in setup is complete. The owner made the
+dashboard change because the configured management credential was rejected
+(HTTP 401); Codex did not modify Supabase auth settings. Keep the other redirect
+entries and existing Site URL/ChatGPT consent setup during this stage. Actual
+confirmation/password-reset email delivery has not been independently tested.
 
 Browser-only workspaces, remembered sessions and flashcard decisions belong to
 the original browser origin. They do not automatically appear at a different
