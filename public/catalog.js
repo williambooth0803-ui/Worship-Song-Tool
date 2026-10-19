@@ -533,7 +533,7 @@ export const catalogSongs = [
   ...modernCatalog.filter((s) => s.title.startsWith("Forever (")),
   ...expandedAdditions.filter(s => newStarterTitles.includes(s.title)),
 ].map(enrichCatalogEvaluation);
-export const CATALOG_REVISION = 16;
+export const CATALOG_REVISION = 17;
 export const approvalLabels = {
   unreviewed: "Not reviewed",
   approved: "Approved for use",

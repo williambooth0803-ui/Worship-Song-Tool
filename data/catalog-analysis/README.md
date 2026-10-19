@@ -1,18 +1,21 @@
 # Catalog lyric-analysis coverage
 
-The deeper first-pass evaluation now covers **all 976 retained catalog records**.
+The deeper first-pass evaluation now covers **all 835 retained catalog records**.
 `coverage.json` records each song/version identity, source URL and text hash.
 
-- **976 expanded drafts:** three separate criterion reasons, themes, source
+- **835 expanded drafts:** three separate criterion reasons, themes, source
   provenance, short exact excerpts for wording concerns and KJV supporting
   comparisons. Some records share the same underlying text. The whole-catalog
-  pass added 568 source-supported records.
+  pass added 568 source-supported records before the owner’s further trimming.
 - **0 partial, unmatched or unresolved retained records.** Complete replacement
   sources resolved the Unstoppable God wording and Most Beautiful / So in Love medley.
 - **24 owner-approved retirements:** ambiguous identities were discarded from
   preloaded defaults on October 19, 2026. `identity-issues.json` keeps the
   historical issues, candidate references and retirement disposition. Existing
   workspace copies retain their saved data; no unsupported rating was supplied.
+- **141 further owner-approved retirements:** the original 150-song shortlist
+  keeps two named songs and seven rated above 8.5 for further review.
+  `../catalog-selection/decisions-150.json` records the exact choices.
 
 Numerical scores are provisional AI editorial judgments, not mechanically derived
 from word counts, church approvals or a verified consensus. Reading a cited text
@@ -28,7 +31,7 @@ versions. Community transcriptions can contain errors, omissions and inaccurate
 artist attribution. A matching source supports examination of that text, not proof
 of the words in every associated recording. Traditional hymn stanza/translation
 choices still need review. Identified texts and explicitly labeled usual-text assumptions were admitted;
-744 records state that a selected familiar text is assumed and the associated
+604 records state that a selected familiar text is assumed and the associated
 artist/recording remains unverified. Conflicting title candidates without a
 supportable selection were retained unassessed until the owner retired them. A separate radio-analysis repository was inspected but its AI judgments
 were not imported as lyric evidence.
@@ -113,7 +116,7 @@ Human church-use decisions are never changed by a catalog research refresh.
 The owner confirmed that public title-plus-lyrics searches are the available
 source approach. A shared SongSelect login was mentioned but was not used; no
 account credentials are needed for these public pages. The all-song request
-is complete for the 976 retained defaults. The owner approved retiring the 24
+is complete for the 835 retained defaults. The owner approved retiring the 24
 ambiguous records. Candidate references explain why a nearby title was not
 silently substituted. Existing workspace songs, notes, reviews, recordings,
 libraries and plans remain intact when a default is retired.

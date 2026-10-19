@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta name="theme-color" content="#163e35" />
+    <title>Review 150 songs · Faithful Repertoire</title>
+    <link rel="stylesheet" href="./styles.css" />
+    <link rel="stylesheet" href="./theme.css" />
+  </head>
+  <body class="shortlist-review">
+    <header class="review-header"><a href="./">← Faithful Repertoire</a><span>Catalog review</span></header>
+    <main class="review-main">
+      <div class="review-intro"><p class="review-eyebrow">One song at a time</p><h1>Seven songs for another look.</h1><p>Your shortlist decisions are recorded: 141 retired, two familiar songs kept, and seven rated above 8.5 retained for review. Start with those seven, or revisit any of the original 150.</p></div>
+      <section aria-label="Review progress" class="review-progress">
+        <div id="review-counts"></div><progress id="review-progress" max="150" value="0" aria-label="Songs decided"></progress>
+        <p id="review-save" role="status">Progress saves in this browser. Download a backup to keep a copy or move devices.</p>
+      </section>
+      <div class="review-filters">
+        <label>Show<select id="review-filter"><option value="later">Decide later · 7 to start</option><option value="unreviewed">Not reviewed</option><option value="all">All 150 songs</option><option value="keep">Keep</option><option value="remove">Remove</option></select></label>
+        <label class="review-search">Find a song<input type="search" id="review-search" placeholder="Title, artist or list number"></label>
+        <label class="review-check"><input type="checkbox" id="review-high">Highly rated only · 8+</label>
+      </div>
+      <div class="review-navigation"><button type="button" id="review-previous">← Previous</button><span id="review-position"></span><button type="button" id="review-next">Next →</button></div>
+      <section id="review-card" aria-label="Song review"></section>
+      <div class="review-after"><button type="button" id="review-undo" disabled>Undo last choice</button><label class="review-check"><input type="checkbox" id="review-ai" checked>Show catalog AI evaluations</label></div>
+      <p class="review-shortcuts">Keyboard: K keep · R remove · L later · ← → browse · U undo</p>
+      <details class="review-results"><summary>Your decisions &amp; backups</summary>
+        <p>Your original choices retired 141 defaults. New choices here are a draft for the next catalog update. Saved workspace songs, ratings, libraries and plans stay intact. Copy or download your decisions to share when you are ready to update the catalog.</p>
+        <div class="review-export-actions"><button type="button" id="review-copy">Copy decisions</button><button type="button" id="review-csv">Download CSV</button><button type="button" id="review-backup">Download backup</button><label class="review-file">Restore backup<input id="review-import" type="file" accept=".json,application/json"></label></div>
+        <p>Restoring merges newer choices and notes from a decision backup. Existing newer choices remain.</p>
+        <div id="review-summary"></div>
+      </details>
+      <p id="review-message" class="review-message" role="status" aria-live="polite"></p>
+      <noscript>This review needs JavaScript. The <a href="https://github.com/williambooth0803-ui/Worship-Song-Tool/blob/main/data/catalog-selection/review-150.md">numbered review list</a> is also available.</noscript>
+    </main>
+    <script type="module" src="./review.js"></script>
+  </body>
+</html>

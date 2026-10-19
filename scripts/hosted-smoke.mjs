@@ -1,3 +1,4 @@
+import {checkShortlistReviewFlows} from './shortlist-review-fixture.mjs';
 import {checkLensFlows} from "./lenses-fixture.mjs";
 import {checkCatalogAnalysisFlows} from "./catalog-analysis-fixture.mjs";
 import {checkRebuildFlows} from "./rebuild-fixture.mjs";
@@ -336,6 +337,7 @@ try {
     `http://127.0.0.1:${server.address().port}/Worship-Song-Tool/`,
   );
   await checkCatalogAnalysisFlows(browser, `http://127.0.0.1:${server.address().port}/Worship-Song-Tool/`);
+  await checkShortlistReviewFlows(browser, `http://127.0.0.1:${server.address().port}/Worship-Song-Tool/`);
   await checkLensFlows(browser, `http://127.0.0.1:${server.address().port}/Worship-Song-Tool/`);
   await checkRebuildFlows(browser, `http://127.0.0.1:${server.address().port}/Worship-Song-Tool/`);
   await checkNavigationFlows(

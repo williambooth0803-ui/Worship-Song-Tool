@@ -1,3 +1,4 @@
+import {shortlistEntries} from "./shortlist-data.js";
 // Stable editorial shortlist; see data/catalog-selection/README.md. Saved workspace records are never removed.
 export const retainedArtistIds = new Set([
   "artist-the-lord-s-my-shepherd-psalm-23-stuart-townend",
@@ -30,6 +31,7 @@ export const retainedArtistIds = new Set([
   "artist-ancient-of-days-michael-w-smith"
 ]);
 export const retiredCoreIds = new Set([
+  ...shortlistEntries.filter(song=>song.initialChoice === "remove").map(song=>song.id),
   "expanded-iykyk-elevation-rhythm",
   "expanded-fake-love-elevation-rhythm",
   "expanded-growing-pains-elevation-rhythm",

@@ -13,7 +13,7 @@ import {reviewForDisplay} from '../public/profile.js';
 test('catalog analysis accounts for every record without calling missing or partial evidence completed',()=>{
  assert.equal(Object.keys(data.records).length,allCatalogSongs.length);
  const c=data.coverage;assert.equal(c.reviewed+c.textScans+c.unresolved+c.missing+c.partial,c.total);
- assert.equal(c.total,976);assert.equal(c.partial,Object.values(data.records).filter(r=>r.status==='partial-text').length);assert.equal(c.reviewed,c.total);assert.equal(c.missing+c.unresolved+c.partial+c.textScans,0);
+ assert.equal(c.total,835);assert.equal(c.partial,Object.values(data.records).filter(r=>r.status==='partial-text').length);assert.equal(c.reviewed,c.total);assert.equal(c.missing+c.unresolved+c.partial+c.textScans,0);
  for(const song of allCatalogSongs){const r=data.records[song.id];assert.equal(r.title,song.title);assert.equal(r.author,song.author);
   if(r.status==='reviewed-draft'){const a=data.analyses[r.analysisKey];assert.equal(a.reasons.length,3);assert.equal(new Set(a.reasons.map(r=>r.criterion)).size,3);assert.ok(a.reasons.every(r=>r.explanation.length>80));assert.ok(a.scriptures.length>=1);assert.ok(a.themes.length);assert.equal(a.scores.time,null);assert.ok(['accuracy','substance','language'].every(key=>Number.isFinite(a.scores[key])));assert.ok(Object.values(a.scores).every(s=>s===null||Number.isFinite(s)&&s>=0&&s<=10));assert.equal(a.source.hash.length,64);assert.equal(new URL(a.source.url).protocol,'https:');assert.ok(a.quote.length<=90);assert.ok(a.quote.split(/\s+/).filter(Boolean).length<=10);}
  }
@@ -102,9 +102,11 @@ test('expanded report respects hidden attributes and escapes source text',()=>{
 });
 
 
-test('retiring the 24 ambiguous defaults preserves saved reviews, libraries and plans through refresh and backup',()=>{
- const retired=JSON.parse(readFileSync(new URL('../data/catalog-analysis/identity-issues.json',import.meta.url),'utf8'));
- assert.equal(retired.length,24);
+test('retiring the 24 ambiguous and 141 owner-selected defaults preserves saved reviews, libraries and plans through refresh and backup',()=>{
+ const ambiguous=JSON.parse(readFileSync(new URL('../data/catalog-analysis/identity-issues.json',import.meta.url),'utf8'));
+ const decisions=JSON.parse(readFileSync(new URL('../data/catalog-selection/decisions-150.json',import.meta.url),'utf8'));
+ const retired=[...ambiguous,...decisions.records.filter(r=>r.initialChoice==='remove')];
+ assert.equal(retired.length,165);
  const source=[...expandedCatalog,...artistCatalog];
  const songs=retired.map(({id})=>{
   assert.ok(!allCatalogSongs.some(s=>s.id===id));assert.equal(data.records[id],undefined);

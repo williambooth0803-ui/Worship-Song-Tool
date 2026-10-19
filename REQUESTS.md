@@ -6,6 +6,36 @@ do not treat a new prompt as cancellation unless the owner says so. Mark an item
 complete only with implementation and meaningful verification. Record external
 blockers explicitly. Preserve personal assessments, recordings and workspaces.
 
+## Flashcards and final decisions on the 150-song shortlist
+
+- [x] Build a one-card-at-a-time review with Keep, Remove, Decide later,
+  notes, undo, keyboard controls, search/filter, rating flags, listening/lyric
+  links and expandable source-bound evaluations. Public catalog data only.
+- [x] Preserve browser progress, export CSV/JSON and copied-number summaries,
+  and merge validated decision backups without replacing newer notes/choices.
+  Keep new review choices separate from catalog changes and personal workspaces.
+- [x] Owner subsequently decided: keep All of a Sudden and Lord of the Dance;
+  retain every original shortlist song strictly above 8.5 for further review;
+  retire the rest. This retains 9 (7 pending review), retires 141 and leaves
+  835 evaluated defaults. Record exact IDs/scores in `decisions-150.json`.
+- [x] Focus flashcards on the seven pending songs, with the original choices
+  prefilled. Retain all 150 identities/original ratings for historical review.
+- [x] Verify: all 143 unit/database checks pass, including exact owner choices,
+  strict threshold, source coverage, backup merge/validation, CSV and all 165
+  recent retirements preserving saved human reviews, custom scores, recording
+  removals, libraries and plans. All 69 starters, 42 artist groups and 58
+  collections remain.
+- [x] Focused review browser checks pass for notes, shortcuts, undo without
+  losing other notes, reload, ratings/evaluations, AI hiding, retired metadata,
+  validated imports/downloads, unavailable storage and unreadable-copy preservation.
+  Desktop/mobile visuals checked; no horizontal overflow at 320/390/900/1440.
+- [x] Full local hosted suite passes on retry. The first run hit the previously
+  observed concurrent-token-refresh timing assertion (2 rotations instead of 1);
+  account code was unchanged. The second run passed all account/shared-workspace,
+  planning, library, catalog and new flashcard flows.
+- [ ] Publish both changes and verify the live page/catalog. Starting source/check
+  count: 35,203; final source/check count: 35,548.
+
 ## Retire 24 unresolved defaults and review the next 150
 
 - [x] Owner explicitly approved discarding all 24 unresolved song identities.
@@ -17,7 +47,7 @@ blockers explicitly. Preserve personal assessments, recordings and workspaces.
   trimming candidates, grouped by artist with stable numbers and exact IDs.
   The owner clarified least familiar/useful, not lowest evaluation scores.
   Flag default weighted AI scores of 8.0 or higher (45 records).
-- [ ] Keep all 150 review candidates until the owner chooses which to discard.
+- [x] Preserve all 150 pending the owner’s decision. The owner subsequently kept 9 and approved retiring 141; see the current request above.
 - [x] Verify locally: 139 unit/database checks and focused catalog/lens browser
   checks pass, including all 24 saved copies, review/recording preservation,
   libraries/plans, 69 starters, 42 artist groups and 58 collections.
@@ -92,7 +122,7 @@ Two temporary live-check fixtures initially used an invalid empty-library worksp
   workflows and source-supported report checks passed.
   Final source/check count: 34,445.
 
-Current whole-catalog scope: 976 preloaded records, all with expanded reports.
+Current whole-catalog scope: 835 preloaded records, all with expanded reports.
 The 24 unresolved defaults were retired with owner approval; historical issues remain in `data/catalog-analysis/identity-issues.json`. The prior 2,044-song
 ledger below is historical coverage, superseded by the owner's reduction request.
 All saved personal records are preserved, including retired default versions.

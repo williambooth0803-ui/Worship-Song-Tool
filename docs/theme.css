@@ -832,3 +832,87 @@ button.setting-row:disabled { opacity: .55; cursor: default; }
   .collection-card[open] > summary::after { bottom:21px; }
   .collection-card .collection-body { padding:4px 16px 18px; }
 }
+/* A standalone review keeps catalog-trimming choices separate from workspaces. */
+.shortlist-review .review-header { max-width: 1120px; margin: auto; padding: 24px; display:flex; justify-content:space-between; gap:16px; border-bottom:1px solid var(--line); }
+.shortlist-review .review-header a { color:var(--green); font-weight:600; text-decoration:none; }
+.shortlist-review .review-header span { color:var(--muted); }
+.shortlist-review .review-main { width:min(100%, 880px); margin:0 auto; padding:32px 24px 64px; }
+.shortlist-review .review-intro { max-width:680px; margin-bottom:24px; }
+.shortlist-review .review-intro h1 { margin:4px 0 12px; font-family:var(--serif); font-size:clamp(28px,5vw,40px); line-height:1.15; }
+.shortlist-review .review-intro p { color:var(--muted); }
+.shortlist-review .review-eyebrow { font-size:12px; text-transform:uppercase; letter-spacing:.12em; font-weight:700; }
+.shortlist-review button, .shortlist-review .review-file { padding:10px 16px; min-height:44px; background:var(--white); border:1px solid var(--line); border-radius:12px; color:var(--ink); font-weight:600; cursor:pointer; }
+.shortlist-review button:hover, .shortlist-review .review-file:hover { background:var(--green-light); }
+.shortlist-review button:disabled { opacity:.45; cursor:default; }
+.shortlist-review :is(button,a,input,textarea,select,summary):focus-visible { outline:3px solid #9d7837; outline-offset:3px; }
+.shortlist-review :is(h2):focus { outline:none; }
+.shortlist-review .review-progress { padding:20px 24px; border:1px solid var(--line); border-radius:18px; background:#edf2eb; }
+.shortlist-review #review-counts { display:flex; justify-content:space-between; flex-wrap:wrap; gap:8px; }
+.shortlist-review #review-counts span { color:var(--muted); font-size:13px; }
+.shortlist-review progress { display:block; width:100%; height:8px; margin:12px 0; accent-color:var(--green); border:0; border-radius:8px; overflow:hidden; }
+.shortlist-review progress::-webkit-progress-bar { background:#d7e2d7; }
+.shortlist-review progress::-webkit-progress-value { background:var(--green); }
+.shortlist-review #review-save { margin:0; color:var(--muted); font-size:12px; }
+.shortlist-review .review-filters { display:flex; align-items:end; flex-wrap:wrap; gap:12px; margin:24px 0 16px; }
+.shortlist-review label { display:block; color:var(--ink); font-size:13px; font-weight:600; }
+.shortlist-review :is(input[type="search"],select,textarea) { display:block; width:100%; max-width:100%; margin-top:6px; border:1px solid var(--line); background:var(--white); color:var(--ink); border-radius:12px; padding:10px 12px; min-height:44px; }
+.shortlist-review .review-search { flex:1; min-width:160px; }
+.shortlist-review label.review-check { display:flex; align-items:center; gap:8px; min-height:44px; font-weight:400; }
+.shortlist-review .review-check input { width:18px; height:18px; accent-color:var(--green); margin:0; }
+.shortlist-review .review-navigation { display:flex; justify-content:space-between; align-items:center; gap:8px; margin-bottom:12px; }
+.shortlist-review #review-position { color:var(--muted); font-size:13px; text-align:center; }
+.shortlist-review .review-flashcard, .shortlist-review .review-empty { padding:28px; border:1px solid var(--line); border-radius:24px; background:var(--white); box-shadow:0 8px 32px #1a3d2f0a; overflow-wrap:anywhere; }
+.shortlist-review .review-card-top { display:flex; flex-wrap:wrap; justify-content:space-between; gap:8px; color:var(--muted); font-size:12px; }
+.shortlist-review .review-choice-status { color:var(--green); font-weight:600; }
+.shortlist-review #review-card { scroll-margin-top:16px; }
+.shortlist-review .review-identity { text-align:center; padding:24px 0 8px; }
+.shortlist-review .review-identity img { display:block; width:88px; height:88px; border-radius:14px; margin:0 auto 16px; object-fit:cover; }
+.shortlist-review .review-identity h2 { font-family:var(--serif); font-size:clamp(27px,5vw,38px); line-height:1.2; margin:0 0 10px; }
+.shortlist-review .review-identity p { color:var(--muted); margin:0; }
+.shortlist-review .review-rating { margin:12px auto; width:fit-content; padding:6px 12px; background:#f3f5f0; border-radius:8px; font-size:13px; }
+.shortlist-review .review-rating-high { color:#705321; background:#f7efdd; }
+.shortlist-review .review-resources { display:flex; flex-wrap:wrap; justify-content:center; align-items:center; gap:8px 20px; margin:20px 0; }
+.shortlist-review .review-resources a { color:var(--green); font-weight:600; font-size:13px; padding:8px 0; }
+.shortlist-review #review-evaluation[hidden] { display:none; }
+.shortlist-review #review-evaluation { margin:20px 0; border-top:1px solid var(--line); }
+.shortlist-review .review-score-context { font-size:12px; color:var(--muted); }
+.shortlist-review .catalog-analysis { max-width:100%; background:#f8faf6; }
+.shortlist-review .catalog-analysis a { overflow-wrap:anywhere; }
+.shortlist-review .review-note-label span { font-weight:400; color:var(--muted); }
+.shortlist-review textarea { resize:vertical; }
+.shortlist-review .review-decisions { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:12px; margin-top:20px; }
+.shortlist-review .review-decisions button { min-height:56px; padding:12px 8px; }
+.shortlist-review .review-decisions .review-keep { background:var(--green); color:white; border-color:var(--green); }
+.shortlist-review .review-decisions .review-keep:hover { background:#163f32; }
+.shortlist-review .review-decisions .review-remove { color:#8a3e36; border-color:#ddc5c0; background:#fcf7f5; }
+.shortlist-review .review-decisions [aria-pressed="true"] { box-shadow:0 0 0 2px #acbda9; }
+.shortlist-review kbd { font:inherit; font-size:11px; opacity:.7; margin-left:8px; }
+.shortlist-review .review-draft-note { color:var(--muted); font-size:12px; margin:12px 0 0; text-align:center; }
+.shortlist-review .review-after { display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; gap:12px; margin-top:16px; }
+.shortlist-review .review-shortcuts { color:var(--muted); font-size:12px; text-align:center; }
+.shortlist-review .review-results { margin-top:28px; padding:20px 24px; background:var(--white); border:1px solid var(--line); border-radius:18px; }
+.shortlist-review summary { cursor:pointer; padding:8px 0; font-weight:600; }
+.shortlist-review .review-results p { color:var(--muted); font-size:13px; }
+.shortlist-review .review-export-actions { display:flex; flex-wrap:wrap; align-items:center; gap:8px; }
+.shortlist-review .review-file { position:relative; overflow:hidden; }
+.shortlist-review .review-file input { position:absolute; inset:0; width:100%; height:100%; opacity:0; cursor:pointer; }
+.shortlist-review .review-file:focus-within { outline:3px solid #9d7837; outline-offset:3px; }
+.shortlist-review #review-summary { margin-top:20px; }
+.shortlist-review #review-summary details { border-top:1px solid var(--line); }
+.shortlist-review #review-summary ul { padding-left:20px; }
+.shortlist-review #review-summary li { padding:8px 0; }
+.shortlist-review #review-summary li button { border:0; padding:0; min-height:40px; text-align:left; color:var(--green); }
+.shortlist-review #review-summary li span { display:block; color:var(--muted); font-size:12px; }
+.shortlist-review #review-summary li p { white-space:pre-wrap; }
+.shortlist-review .review-message { min-height:24px; color:var(--green); }
+@media screen and (max-width:600px) {
+  .shortlist-review .review-header { padding:16px; font-size:12px; }
+  .shortlist-review .review-main { padding:24px 16px 40px; }
+  .shortlist-review .review-flashcard, .shortlist-review .review-empty { padding:20px 16px; }
+  .shortlist-review .review-progress, .shortlist-review .review-results { padding:16px; }
+  .shortlist-review .review-filters>label:first-child { width:100%; }
+  .shortlist-review .review-decisions { gap:8px; }
+  .shortlist-review kbd { display:none; }
+  .shortlist-review .review-check { font-size:12px; }
+  .shortlist-review .review-navigation button { padding:8px 10px; }
+}
