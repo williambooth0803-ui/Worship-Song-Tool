@@ -20,12 +20,24 @@ blockers explicitly. Preserve personal assessments, recordings and workspaces.
   and query preservation. This does not verify an actual Cloudflare deployment.
   Push the setup guide and Node version pin for the Git-connected build.
   Starting/final source/check count: 35,548 (no application source changes).
-- [ ] Create/verify the actual Cloudflare project. No Cloudflare control tool
-  or matching plugin was found; Cloudflare API credentials are not configured
-  in this environment. The owner needs to select the repository in the Pages
-  dashboard and provide the actual deployment URL. Do not invent a live URL.
-- [ ] Once the URL is known, verify serving/redirect behavior and account
-  confirmation/reset redirect configuration before switching the primary domain.
+- [x] Owner supplied `https://faithful-repertoire.pages.dev/`. Cloudflare's
+  GitHub check reports a successful deployment of `6075c76`, deployment ID
+  `255770a8-516a-4044-bda9-648c31413ccd`. App checks and GitHub Pages also passed
+  that commit. Record the Cloudflare URL while preserving the original site.
+- [x] Owner confirmed that the Cloudflare site opens normally and existing
+  account sign-in works. Use Cloudflare as the frontend link; keep GitHub for
+  existing browser copies and the current ChatGPT consent flow.
+  Automated live browser checks remain blocked by this workspace's hostname
+  allowlist (CONNECT 403); the web-reading tool also could not open the URL.
+  Do not describe this network restriction as a website error or claim that
+  live asset hashes/every browser flow were independently verified.
+- [ ] Add the exact Cloudflare root URL to Supabase auth redirect URLs. The
+  available management credential was rejected (HTTP 401), including an explicit
+  request using the configured ready `s` binding. No auth writes were attempted.
+  Provide the exact dashboard addition in `CLOUDFLARE-SETUP.md`; preserve all
+  existing entries and the current Site URL/OAuth setup pending confirmation.
+  Actual email confirmation/reset and cross-domain browser-data migration
+  still require owner verification. Source/check count remains 35,548.
 
 ## Flashcards and final decisions on the 150-song shortlist
 

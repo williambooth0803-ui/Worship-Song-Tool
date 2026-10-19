@@ -2,13 +2,13 @@
 
 A workspace helping worship leaders think deeply about the words they lead, with practical tools for evaluation, libraries and human-created plans.
 
-The public website is hosted at https://williambooth0803-ui.github.io/Worship-Song-Tool/. GitHub Pages publishes `main` → `/docs`; regenerate and commit those files after frontend changes.
+The Cloudflare website is https://faithful-repertoire.pages.dev/. Cloudflare reports a successful Git-connected deployment, and the owner confirmed that the site and existing account sign-in work. The original https://williambooth0803-ui.github.io/Worship-Song-Tool/ remains available for existing browser-only data and the current ChatGPT consent flow. Both hosts serve the `docs` build from `main`; regenerate and commit those files after frontend changes.
 
 [Project links](PROJECT-LINKS.md) collects the website, repository, Supabase dashboard and deployment shortcuts.
 
 [Cloudflare Pages setup](CLOUDFLARE-SETUP.md) documents the Git-connected build,
 Node 24 selection, account redirects and saved-work migration. The current GitHub
-site remains available until the actual Cloudflare deployment is verified.
+site remains available for browser-data migration and the existing ChatGPT consent flow; Cloudflare email-link redirect configuration still needs the dashboard addition described in the setup guide.
 
 ## Navigation and public About
 

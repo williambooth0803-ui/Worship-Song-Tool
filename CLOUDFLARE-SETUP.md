@@ -51,16 +51,30 @@ the flashcard link (`review.html` → `/review`) and the consent page
 (`connect.html` → `/connect`), including preservation of the consent query string.
 See [Serving Pages](https://developers.cloudflare.com/pages/configuration/serving-pages/).
 
-The Cloudflare project has not been created or verified by repository changes
-alone. The account-side creation and actual deployment URL are still required.
+The owner created the project and supplied
+[faithful-repertoire.pages.dev](https://faithful-repertoire.pages.dev/). Cloudflare's
+GitHub check reports a successful deployment of `6075c76`, deployment
+`255770a8-516a-4044-bda9-648c31413ccd`. This confirms the provider-reported deployment,
+not an automated browser test. The owner confirmed on October 19, 2026 that the
+site opens normally and existing account sign-in works. Direct checks from the managed workspace
+are blocked because `faithful-repertoire.pages.dev` is outside its network
+allowlist (proxy CONNECT 403); the web-reading tool also could not open it.
+The old GitHub site stays available.
 
 ## Authentication and saved-work migration
 
-Once the production URL is known, add its exact trailing-slash root URL to
-Supabase **Authentication → URL Configuration → Redirect URLs**. Keep the existing
+In the [Supabase project](https://supabase.com/dashboard/project/inhqxwratimjvzsnuwik),
+open **Authentication → URL Configuration → Redirect URLs → Add URL**, add
+`https://faithful-repertoire.pages.dev/` if it is not already listed, and save. Keep the existing
 GitHub URL during verification. This permits confirmation/password-reset links
 requested from the new site to return there. The same Supabase project means
 existing accounts and server-saved workspaces remain available after sign-in.
+
+The configured management credential was rejected by Supabase (HTTP 401), so
+this redirect-list change has **not** been applied by Codex. The owner needs to
+make the dashboard change above or restore valid management access. Preserve
+all other redirect entries and retain the current Site URL during this stage.
+No Supabase auth settings, workspaces or connector settings were modified.
 
 Browser-only workspaces, remembered sessions and flashcard decisions belong to
 the original browser origin. They do not automatically appear at a different
