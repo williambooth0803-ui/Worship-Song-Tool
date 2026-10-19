@@ -22,8 +22,12 @@ blockers explicitly. Preserve personal assessments, recordings and workspaces.
   hosted suite passes, including lens creation, independent reviews/weights,
   shared personal notes, reload, dirty-form guard, four viewport sizes, public
   About, private/shared account workflows, backups and plan preservation.
-- [ ] Publish and verify CI, Pages assets and live lens/report/workflow behavior.
-  Source/check count before release: 34,445.
+- [x] Publish release `0e0337b`: App checks `39193303667` and Pages
+  `39193303353` succeeded. All 12 changed live assets matched the checked
+  release. Live lens creation, independent ratings/weights, shared notes and
+  existing plan preservation, reload, dirty-form guard, four layouts, About
+  workflows and source-supported report checks passed.
+  Final source/check count: 34,445.
 
 Current whole-catalog scope: 1,000 preloaded records, 408 expanded reports;
 592 remain (64 unresolved identities and 528 unmatched texts). The prior 2,044-song
