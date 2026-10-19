@@ -30,7 +30,7 @@ test("depth levels are nested and every collection uses real distinct catalog re
       standards = collectionSongs(pack, "standards"),
       all = collectionSongs(pack, "all");
     assert.ok(
-      essentials.length < standards.length && standards.length < all.length,
+      essentials.length <= standards.length && standards.length <= all.length && all.length > 0,
     );
     assert.deepEqual(standards.slice(0, essentials.length), essentials);
     assert.deepEqual(all.slice(0, standards.length), standards);

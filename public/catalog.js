@@ -1,8 +1,9 @@
+import {artistCatalog} from "./artist-catalog.js";
+import {retainedArtistIds,retiredCoreIds} from "./catalog-selection.js";
 import {enrichCatalogEvaluation} from "./catalog-analysis.js";
 import { prewrittenReview } from "./prewritten-reviews.js";
 import { modernCatalog } from "./modern-catalog.js";
 import { expandedCatalog, newStarterTitles } from "./expanded-catalog.js";
-import { artistCatalog } from "./artist-catalog.js";
 import { seedSongs } from "./seeds.js";
 import { additionalSongs, mixedStarterTitles } from "./repertoire-data.js";
 import { overall, normalize } from "./core.js";
@@ -499,19 +500,12 @@ export const traditionalCatalog = [
 const reviewedAdditions = additionalSongs.map(prewrittenReview);
 const previousTitles = new Set([...traditionalCatalog, ...reviewedAdditions, ...modernCatalog].map(s => normalize(s.title)));
 const expandedAdditions = expandedCatalog.filter(s => !previousTitles.has(normalize(s.title)));
-const seenAssociations = new Set([...traditionalCatalog, ...reviewedAdditions, ...modernCatalog, ...expandedAdditions].map(s => normalize(s.title) + ":" + normalize(s.author.replace(/^Associated recording:\s*/i, ""))));
-const artistAdditions = artistCatalog.filter(s => {
-  const key = normalize(s.title) + ":" + normalize(s.author.replace(/^Associated recording:\s*/i, ""));
-  if (seenAssociations.has(key)) return false;
-  seenAssociations.add(key); return true;
-});
 const rawCatalogSongs = [
   ...traditionalCatalog,
   ...reviewedAdditions,
   ...modernCatalog,
   ...expandedAdditions,
-  ...artistAdditions,
-];
+].filter(song=>!retiredCoreIds.has(song.id)).concat(artistCatalog.filter(song=>retainedArtistIds.has(song.id)));
 export const baseCatalogSongs = rawCatalogSongs;
 export const allCatalogSongs = rawCatalogSongs.map(enrichCatalogEvaluation);
 export const catalogSongs = [
@@ -539,7 +533,7 @@ export const catalogSongs = [
   ...modernCatalog.filter((s) => s.title.startsWith("Forever (")),
   ...expandedAdditions.filter(s => newStarterTitles.includes(s.title)),
 ].map(enrichCatalogEvaluation);
-export const CATALOG_REVISION = 9;
+export const CATALOG_REVISION = 10;
 export const approvalLabels = {
   unreviewed: "Not reviewed",
   approved: "Approved for use",

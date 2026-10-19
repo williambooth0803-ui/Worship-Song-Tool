@@ -44,7 +44,7 @@ export async function checkSearchCollectionFlows(browser,base) {
   assert.equal(await page.locator('#picker-songs input[type="checkbox"]').count(),100,'Large libraries render one bounded page at a time');
   await page.locator('#picker-songs input[type="checkbox"]').first().check();await page.locator('#picker-next').click();assert.match(await page.locator('#picker-count').textContent(),/^1 selected/);await page.locator('#picker-previous').click();assert.equal(await page.locator('#picker-songs input[type="checkbox"]').first().isChecked(),true);
   await page.evaluate(()=>window.fixturePickerInput=document.querySelector('#picker-search'));await page.locator('#picker-search').pressSequentially('How Great Is Our God',{delay:8});assert.ok(await page.evaluate(()=>window.fixturePickerInput===document.querySelector('#picker-search')));assert.ok(await page.locator('#picker-songs input[type="checkbox"]').count()<100);await page.getByRole('button',{name:'Close dialog',exact:true}).click();
-  assert.deepEqual(errors,[]);console.log('PASS: 2,044-record search input stability/IME, direct collection song lookup, per-collection search/depth, alphabetical and evidence-based sorts, attributed portrait loading and mobile layout. Search updates: '+times.map(value=>Math.round(value)+' ms').join(', '));
+  assert.deepEqual(errors,[]);console.log('PASS: Reduced-catalog search input stability/IME, direct collection song lookup, per-collection search/depth, alphabetical and evidence-based sorts, attributed portrait loading and mobile layout. Search updates: '+times.map(value=>Math.round(value)+' ms').join(', '));
  }finally{await page.close();}
 }
 export async function checkRememberAndSaveFlows(browser,base) {

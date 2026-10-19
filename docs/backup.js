@@ -442,6 +442,27 @@ export function validateWorkspace(input) {
       principles: text(profile.principles, "rating parameters", 6000, true),
     },
   };
+  if (profile.evaluationPurpose !== undefined) result.profile.evaluationPurpose = text(profile.evaluationPurpose, 'lens purpose', 2000);
+  if (input.lenses !== undefined) {
+    result.lenses = array(input.lenses, 'evaluation lenses', 12).map(lens => {
+      object(lens, 'lens'); object(lens.evaluations, 'lens evaluations');
+      if (Object.keys(lens.evaluations).length > 5000) fail('too many lens evaluations.');
+      const checked = {id:id(lens.id), name:text(lens.name, 'lens name', 100, true),
+        profile:validateWorkspace({version:1, songs:[], libraries:[{id:"lens-validation",name:"Lens",songIds:[]}], plans:[], profile:lens.profile}).profile, evaluations:{}};
+      for (const [songId, saved] of Object.entries(lens.evaluations)) {
+        id(songId); if(['__proto__','constructor','prototype'].includes(songId))fail('invalid lens song ID.'); object(saved, 'lens song evaluation');
+        const entry = {review:review(saved.review), themes:texts(saved.themes || [], 'lens themes')};
+        if (saved.aiReview !== undefined) {entry.aiReview=review(saved.aiReview); if(entry.aiReview.status!=='ai') fail('secondary lens review must be AI.');}
+        if (saved.aiDismissed !== undefined) {if(typeof saved.aiDismissed!=='boolean')fail('invalid lens AI dismissal.');entry.aiDismissed=saved.aiDismissed;}
+        checked.evaluations[songId]=entry;
+      }
+      return checked;
+    });
+    unique(result.lenses.map(lens=>lens.id), 'lens IDs');
+    unique(result.lenses.map(lens=>lens.name.toLowerCase()), 'lens names');
+    result.activeLensId = id(input.activeLensId);
+    if (!result.lenses.some(lens=>lens.id===result.activeLensId)) fail('active lens does not exist.');
+  } else if (input.activeLensId !== undefined) fail('active lens requires saved lenses.');
   if (input.indexViews !== undefined) {
     result.indexViews = array(input.indexViews, "saved index views", 100).map(validateIndexView);
     unique(result.indexViews.map((v) => v.id), "saved index views");

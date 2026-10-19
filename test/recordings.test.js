@@ -99,7 +99,8 @@ test("catalog recordings use normalized real provider URLs and retained metadata
   const { readFile } = await import("node:fs/promises");
   const { evidence } = JSON.parse(await readFile(new URL("../data/recording-evidence.json", import.meta.url), "utf8"));
   for (const [id, links] of Object.entries(catalogRecordings)) {
-    assert.ok(allCatalogSongs.some(s => s.id === id));
+    // Retired catalog versions keep their source evidence for existing workspaces.
+    assert.ok(evidence[id]?.length);
     assert.deepEqual(validateRecordings(links), links);
     for (const link of links) {
       const source = evidence[id].find(e => e.url === link.url);

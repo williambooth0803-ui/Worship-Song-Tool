@@ -161,6 +161,9 @@ export function evaluationSnapshot(workspace, options) {
     criteria,
     purpose: bounded(options.purpose || "", "Purpose", 2000),
     includeWords: !!options.includeWords,
+    lens: {id:workspace.activeLensId || 'main', name:workspace.lenses?.find(l=>l.id===workspace.activeLensId)?.name || 'Main lens',
+      purpose:workspace.profile?.evaluationPurpose || '', principles:workspace.profile?.principles || '',
+      weights:workspace.profile?.weights || {}, criteria:workspace.profile?.criteria || []},
   };
   if (JSON.stringify(snapshot).length > 1000000)
     fail(

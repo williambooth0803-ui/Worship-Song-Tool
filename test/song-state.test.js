@@ -35,9 +35,9 @@ test("objective display omits empty fields and distinguishes estimates from conf
   assert.equal(objectiveFacts(song).find(f=>f.field==="minutes").provenance.confidence,"confirmed");
 });
 test("expanded discovery includes every requested artist and usable era/theme groupings", () => {
-  assert.ok(allCatalogSongs.length>=2000);assert.equal(artistCollections.length,42);
+  assert.ok(allCatalogSongs.length===1000);assert.equal(artistCollections.length,42);
   const packs=songCollections.filter(p=>p.group==="Artists");
-  for(const [name]of artistCollections){const p=packs.find(p=>p.name===name);assert.ok(p?.songIds.length>=15,name);}
+  for(const [name]of artistCollections){const p=packs.find(p=>p.name===name);assert.ok(p?.songIds.length>=1,name);}
   for(const group of ["Eras","Themes","Styles"])assert.ok(songCollections.filter(p=>p.group===group).length>=3);
 });
 test("backup validation preserves blacklist, secondary evaluation, fact provenance and private file references", () => {

@@ -6,6 +6,30 @@ do not treat a new prompt as cancellation unless the owner says so. Mark an item
 complete only with implementation and meaningful verification. Record external
 blockers explicitly. Preserve personal assessments, recordings and workspaces.
 
+## Manageable catalog, analysis lenses and workflow guidance
+
+- [x] Reduce preloaded discovery/index catalog to 1,000 useful, familiar
+  records; favor core repertoire and trim deep cuts and duplicate recordings.
+  Preserve every existing workspace song, evaluation, library and plan.
+- [x] Add 31 source-supported analyses (408 expanded in the reduced catalog). Use direct prose; remove
+  repeated generic AI caveats while retaining concrete source/identity limits.
+- [x] Add selectable independent analysis lenses with criteria, weights, song
+  evaluations, purpose, backup/account/shared-workspace preservation and request binding.
+- [x] Add About recommended workflows: occasions/groups/readiness libraries,
+  service preparation, seasonal/yearly plan reviews and library analysis by lens.
+- [x] Verify migration and lens isolation: 137 unit/database tests pass; MCP type
+  checking and 1,000-song/1,000-plan scale check pass (67 ms). The complete local
+  hosted suite passes, including lens creation, independent reviews/weights,
+  shared personal notes, reload, dirty-form guard, four viewport sizes, public
+  About, private/shared account workflows, backups and plan preservation.
+- [ ] Publish and verify CI, Pages assets and live lens/report/workflow behavior.
+  Source/check count before release: 34,445.
+
+Current whole-catalog scope: 1,000 preloaded records, 408 expanded reports;
+592 remain (64 unresolved identities and 528 unmatched texts). The prior 2,044-song
+ledger below is historical coverage, superseded by the owner's reduction request.
+All saved personal records are preserved, including retired default versions.
+
 ## Distinct page tabs and deeper catalog evaluations
 
 - [x] Restyle page-section navigation as connected tabs, with a shared baseline,
