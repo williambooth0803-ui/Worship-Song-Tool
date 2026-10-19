@@ -1,11 +1,11 @@
 {
   "coverage": {
-    "assumed": 486,
+    "assumed": 536,
     "total": 1000,
-    "reviewed": 718,
+    "reviewed": 768,
     "textScans": 0,
-    "unresolved": 28,
-    "missing": 254,
+    "unresolved": 24,
+    "missing": 208,
     "partial": 0,
     "checkedAt": "2026-10-19"
   },
@@ -7028,11 +7028,12 @@
       "id": "expanded-the-altar-and-the-door-casting-crowns",
       "title": "The Altar and the Door",
       "author": "Associated recording: Casting Crowns",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "6f10931ccd1dccf0099a",
+      "identityAssumption": "Published text: The Altar and the Door. Added live sections and other recordings are separate versions.",
+      "sourceHash": "e0bc6c16c192248dd3234afde5aae2727c6ed3289f3395153fb4d71fde735b11",
+      "sourceURL": "https://www.multitracks.com/songs/Casting-Crowns/Lifesongs-A-Celebration-of-the-First-20-Years/The-Altar-and-the-Door/",
+      "reason": null
     },
     {
       "id": "expanded-courageous-casting-crowns",
@@ -8019,11 +8020,12 @@
       "id": "expanded-slave-to-nothing-zach-williams",
       "title": "Slave to Nothing",
       "author": "Associated recording: Zach Williams",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "ffa0058a181847a9dd28",
+      "identityAssumption": "Published text: Slave To Nothing. Added live sections and other recordings are separate versions.",
+      "sourceHash": "1dccb97b15b870fc8b2a49219a42b8cb606f8f4fb708e800c8b08190c28554a8",
+      "sourceURL": "https://www.multitracks.com/songs/Zach-Williams/Rescue-Story/Slave-To-Nothing/",
+      "reason": null
     },
     {
       "id": "expanded-you-say-lauren-daigle",
@@ -8598,51 +8600,56 @@
       "id": "expanded-no-weapon-fred-hammond",
       "title": "No Weapon",
       "author": "Associated recording: Fred Hammond",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "906673a10d52450dd7ee",
+      "identityAssumption": "The assessment uses the complete lyrics displayed for the cited Fred Hammond recording. Other live arrangements and added sections are separate versions.",
+      "sourceHash": "b320d1f9e697c53a7430a7c784bc7910cde5b6c0ddb326a8ba63358134741065",
+      "sourceURL": "https://www.shazam.com/en-us/song/308298866/no-weapon",
+      "reason": null
     },
     {
       "id": "expanded-we-re-blessed-fred-hammond",
       "title": "We're Blessed",
       "author": "Associated recording: Fred Hammond",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "6bdfb0a15b6b5b1f551f",
+      "identityAssumption": "The assessment uses the complete lyrics displayed for the cited Fred Hammond recording. Other live arrangements and added sections are separate versions.",
+      "sourceHash": "db721b10c25c93c87083c1ed4bfb2150819f176ab7d2d9737e607ea1a617d29a",
+      "sourceURL": "https://www.shazam.com/song/303180595/were-blessed",
+      "reason": null
     },
     {
       "id": "expanded-you-are-the-living-word-fred-hammond",
       "title": "You Are the Living Word",
       "author": "Associated recording: Fred Hammond",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "e042db1e7fa7553c56d0",
+      "identityAssumption": "The assessment uses the complete lyrics displayed for the cited Fred Hammond recording. Other live arrangements and added sections are separate versions.",
+      "sourceHash": "df2a61b8f9db4de9fdb73b77fa2c8011c2677f65b80a34aa1c4378d0993e398a",
+      "sourceURL": "https://www.shazam.com/song/254356842/you-are-the-living-word",
+      "reason": null
     },
     {
       "id": "expanded-jesus-be-a-fence-around-me-fred-hammond",
       "title": "Jesus Be a Fence Around Me",
       "author": "Associated recording: Fred Hammond",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "b05e9d9a97b8037a0e08",
+      "identityAssumption": "The assessment uses the complete lyrics displayed for the cited Fred Hammond recording. Other live arrangements and added sections are separate versions.",
+      "sourceHash": "027716b70802de09ceffd429aeca0423e9b89eb376a5282587015e477b251543",
+      "sourceURL": "https://www.shazam.com/song/254355466/jesus-be-a-fence-around-me",
+      "reason": null
     },
     {
       "id": "expanded-let-the-praise-begin-fred-hammond",
       "title": "Let the Praise Begin",
       "author": "Associated recording: Fred Hammond",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "f6dbac85d3e2559c5cb1",
+      "identityAssumption": "The assessment uses the complete lyrics displayed for the cited Fred Hammond recording. Other live arrangements and added sections are separate versions.",
+      "sourceHash": "bb1d861d65566b4a43bb799719372f3732d5e6e2845964e502826299b0a55e23",
+      "sourceURL": "https://www.shazam.com/song/303172999/let-the-praise-begin",
+      "reason": null
     },
     {
       "id": "expanded-glory-to-glory-to-glory-fred-hammond",
@@ -8678,11 +8685,12 @@
       "id": "expanded-i-will-trust-fred-hammond",
       "title": "I Will Trust",
       "author": "Associated recording: Fred Hammond",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "024c1ab304f8cc768584",
+      "identityAssumption": "The assessment uses the complete lyrics displayed for the cited Fred Hammond recording. Other live arrangements and added sections are separate versions.",
+      "sourceHash": "b11d32e0e9adb4e331b2f8db7659948138555e49cd5cb86cc1e67b6c3d24839f",
+      "sourceURL": "https://www.shazam.com/song/930165195/i-will-trust-feat-breeann-hammond",
+      "reason": null
     },
     {
       "id": "expanded-this-is-the-day-fred-hammond",
@@ -8814,11 +8822,12 @@
       "id": "expanded-the-king-is-coming-gaither-vocal-band",
       "title": "The King Is Coming",
       "author": "Associated recording: Gaither Vocal Band",
-      "status": "identity-unresolved",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "Title candidates lack sufficient identity evidence."
+      "status": "reviewed-draft",
+      "analysisKey": "6ece1cc0384894af3b90",
+      "identityAssumption": "The selected printed collection contains 3 stanzas and a refrain. This assessment covers that text selection; other original stanzas, adaptations and associated recordings are separate versions.",
+      "sourceHash": "f9e06c788a4430639c8d9fb24f7d9745807cf009659a45dd473716f7db4f52be",
+      "sourceURL": "https://github.com/josmithua/song-data/blob/ac3c2c5cd8a46c2269a734e4f1d34097cd0b3bce/ssfss_songs.min.json",
+      "reason": null
     },
     {
       "id": "expanded-alpha-and-omega-gaither-vocal-band",
@@ -8844,11 +8853,12 @@
       "id": "expanded-i-believe-in-a-hill-called-mount-calvary-gaither-vocal-band",
       "title": "I Believe in a Hill Called Mount Calvary",
       "author": "Associated recording: Gaither Vocal Band",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "4e7c0f9f30b5daf514b6",
+      "identityAssumption": "The selected printed collection contains 3 stanzas and a refrain. This assessment covers that text selection; other original stanzas, adaptations and associated recordings are separate versions.",
+      "sourceHash": "1f5db41148cb8b8fa5bfcd3009fd8eeb6e2195cb907eaa7c1a239673df148313",
+      "sourceURL": "https://github.com/josmithua/song-data/blob/ac3c2c5cd8a46c2269a734e4f1d34097cd0b3bce/ssfss_songs.min.json",
+      "reason": null
     },
     {
       "id": "expanded-sinner-saved-by-grace-gaither-vocal-band",
@@ -8884,11 +8894,12 @@
       "id": "expanded-there-s-something-about-that-name-gaither-vocal-band",
       "title": "There's Something About That Name",
       "author": "Associated recording: Gaither Vocal Band",
-      "status": "identity-unresolved",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "Title candidates lack sufficient identity evidence."
+      "status": "reviewed-draft",
+      "analysisKey": "bc3416bcb2de90b86e95",
+      "identityAssumption": "The selected printed collection contains 1 stanzas. This assessment covers that text selection; other original stanzas, adaptations and associated recordings are separate versions.",
+      "sourceHash": "15411a76e726fe8869f640ee201f8e8892ae213a3e045ee41cb8d0adba6fc69d",
+      "sourceURL": "https://github.com/josmithua/song-data/blob/ac3c2c5cd8a46c2269a734e4f1d34097cd0b3bce/ssfss_songs.min.json",
+      "reason": null
     },
     {
       "id": "expanded-sometimes-it-takes-a-mountain-gaither-vocal-band",
@@ -9124,11 +9135,12 @@
       "id": "expanded-jesus-is-tenderly-calling-fanny-j-crosby",
       "title": "Jesus Is Tenderly Calling",
       "author": "Fanny J. Crosby",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "74b065e7234b385668d3",
+      "identityAssumption": "This assessment uses the representative hymn text printed on the cited Hymnary page. Other stanza selections, modernized words and added refrains are separate versions.",
+      "sourceHash": "c861ad261b9dccf4e4ac114339666167d9c077cffd0009c675ea99421bb75e38",
+      "sourceURL": "https://hymnary.org/text/jesus_is_tenderly_calling_thee_home_call",
+      "reason": null
     },
     {
       "id": "expanded-near-the-cross-fanny-j-crosby",
@@ -9154,11 +9166,12 @@
       "id": "expanded-tell-me-the-story-of-jesus-fanny-j-crosby",
       "title": "Tell Me the Story of Jesus",
       "author": "Fanny J. Crosby",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "23a7d79121801d6028b9",
+      "identityAssumption": "This assessment uses the representative hymn text printed on the cited Hymnary page. Other stanza selections, modernized words and added refrains are separate versions.",
+      "sourceHash": "ae19f5f3967c9b9abcd8a11fd59ebc29416ead79454c5a0133da4045b943c024",
+      "sourceURL": "https://hymnary.org/text/tell_me_the_story_of_jesus_write_on_my_h",
+      "reason": null
     },
     {
       "id": "expanded-he-hideth-my-soul-fanny-j-crosby",
@@ -9204,11 +9217,12 @@
       "id": "expanded-hiding-in-thee-william-o-cushing",
       "title": "Hiding in Thee",
       "author": "William O. Cushing",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "5f06e2ea7822e07df899",
+      "identityAssumption": "This assessment uses the representative hymn text printed on the cited Hymnary page. Other stanza selections, modernized words and added refrains are separate versions.",
+      "sourceHash": "5a7f05cbe93276d5f4a3cd31a3b79fef84d16252a1ccb8bcf5b059bb08f96fcd",
+      "sourceURL": "https://hymnary.org/text/o_safe_to_the_rock_that_is_higher_than_i",
+      "reason": null
     },
     {
       "id": "expanded-under-his-wings-william-o-cushing",
@@ -9224,11 +9238,12 @@
       "id": "expanded-ring-the-bells-of-heaven-william-o-cushing",
       "title": "Ring the Bells of Heaven",
       "author": "William O. Cushing",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "d99556c616efbaa99243",
+      "identityAssumption": "This assessment uses the representative hymn text printed on the cited Hymnary page. Other stanza selections, modernized words and added refrains are separate versions.",
+      "sourceHash": "675c4ed6e96daa58e9f20b62a16d2cf561ff5b77b9529eb428aaa6874469bb9b",
+      "sourceURL": "https://hymnary.org/text/ring_the_bells_of_heaven_there_is_joy_to",
+      "reason": null
     },
     {
       "id": "expanded-jesus-lover-of-my-soul-charles-wesley",
@@ -9264,21 +9279,23 @@
       "id": "expanded-soldiers-of-christ-arise-charles-wesley",
       "title": "Soldiers of Christ, Arise",
       "author": "Charles Wesley",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "56ac9e5a3a90ca973bad",
+      "identityAssumption": "This assessment uses the representative hymn text printed on the cited Hymnary page. Other stanza selections, modernized words and added refrains are separate versions.",
+      "sourceHash": "1b6d7f1f8766d53b9b93897fb5a3ffa2c0626844faaea0e54a85435bf941c914",
+      "sourceURL": "https://hymnary.org/text/soldiers_of_christ_arise_andputyour_stro",
+      "reason": null
     },
     {
       "id": "expanded-depth-of-mercy-charles-wesley",
       "title": "Depth of Mercy",
       "author": "Charles Wesley",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "77f7d71c922374556f34",
+      "identityAssumption": "This assessment uses the representative hymn text printed on the cited Hymnary page. Other stanza selections, modernized words and added refrains are separate versions.",
+      "sourceHash": "d1fb90492ea79d7d378626c3254eb4ac981c6e2738381ed890416a56dbc4d5dc",
+      "sourceURL": "https://hymnary.org/text/depth_of_mercy_can_there_be",
+      "reason": null
     },
     {
       "id": "expanded-arise-my-soul-arise-charles-wesley",
@@ -9294,11 +9311,12 @@
       "id": "expanded-come-sinners-to-the-gospel-feast-charles-wesley",
       "title": "Come, Sinners, to the Gospel Feast",
       "author": "Charles Wesley",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "46976ce6d2aa1132602b",
+      "identityAssumption": "This assessment uses the representative hymn text printed on the cited Hymnary page. Other stanza selections, modernized words and added refrains are separate versions.",
+      "sourceHash": "c43e567ae68748e942e2392abb72541a423e95324502fb6711377c1ecd1218f5",
+      "sourceURL": "https://hymnary.org/text/come_sinners_to_the_gospel_feast_let_ev",
+      "reason": null
     },
     {
       "id": "expanded-i-sing-the-mighty-power-of-god-isaac-watts",
@@ -9325,31 +9343,34 @@
       "id": "expanded-am-i-a-soldier-of-the-cross-isaac-watts",
       "title": "Am I a Soldier of the Cross",
       "author": "Isaac Watts",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "035134cd2fddf1680991",
+      "identityAssumption": "This assessment uses the representative hymn text printed on the cited Hymnary page. Other stanza selections, modernized words and added refrains are separate versions.",
+      "sourceHash": "eb0ddd9d935ecc9003c8830e428aad6494e3cf6c772e8c6bea376fbeaf222cff",
+      "sourceURL": "https://hymnary.org/text/am_i_a_soldier_of_the_cross",
+      "reason": null
     },
     {
       "id": "expanded-o-god-our-help-in-ages-past-isaac-watts",
       "title": "O God, Our Help in Ages Past",
       "author": "Isaac Watts",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "424d1df5e857a6e240d6",
+      "identityAssumption": "The selected printed collection contains 4 stanzas. This assessment covers that text selection; other original stanzas, adaptations and associated recordings are separate versions.",
+      "sourceHash": "1b4d17200153fd73a8cb7ba6be89c67456689bcf966d88a848582d28b26db5a3",
+      "sourceURL": "https://github.com/josmithua/song-data/blob/ac3c2c5cd8a46c2269a734e4f1d34097cd0b3bce/bhb_songs.json",
+      "reason": null
     },
     {
       "id": "expanded-come-we-that-love-the-lord-isaac-watts",
       "title": "Come, We That Love the Lord",
       "author": "Isaac Watts",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "371a6822fad96b1e6d68",
+      "identityAssumption": "This assessment uses the representative hymn text printed on the cited Hymnary page. Other stanza selections, modernized words and added refrains are separate versions.",
+      "sourceHash": "a7219e3764eca2c3c99eac5eb5544cbee3bdc06e7e28c3053c19b302b1b1a56c",
+      "sourceURL": "https://hymnary.org/text/come_we_that_love_the_lord_and_let_our",
+      "reason": null
     },
     {
       "id": "expanded-we-re-marching-to-zion-isaac-watts-robert-lowry-refrain",
@@ -9365,21 +9386,23 @@
       "id": "expanded-jesus-my-great-high-priest-isaac-watts",
       "title": "Jesus, My Great High Priest",
       "author": "Isaac Watts",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "fb1bcfe97bb30d213d23",
+      "identityAssumption": "This assessment uses the representative hymn text printed on the cited Hymnary page. Other stanza selections, modernized words and added refrains are separate versions.",
+      "sourceHash": "0e0b5f82b30bd752f85cd7915821daf3f813a5a515a5e7eab14963ba5648df0a",
+      "sourceURL": "https://hymnary.org/text/jesus_my_great_high_priest",
+      "reason": null
     },
     {
       "id": "expanded-join-all-the-glorious-names-isaac-watts",
       "title": "Join All the Glorious Names",
       "author": "Isaac Watts",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "d4dfbb3d3b07837a005d",
+      "identityAssumption": "The selected printed collection contains 4 stanzas. This assessment covers that text selection; other original stanzas, adaptations and associated recordings are separate versions.",
+      "sourceHash": "aa01c3b76d28bae0cf5dd20d15edd0157fb5cda95cb6fdc9210ad1357fe703ab",
+      "sourceURL": "https://github.com/josmithua/song-data/blob/ac3c2c5cd8a46c2269a734e4f1d34097cd0b3bce/bhb_songs.json",
+      "reason": null
     },
     {
       "id": "expanded-from-all-that-dwell-below-the-skies-isaac-watts",
@@ -9395,31 +9418,34 @@
       "id": "expanded-there-is-a-land-of-pure-delight-isaac-watts",
       "title": "There Is a Land of Pure Delight",
       "author": "Isaac Watts",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "e6e217c86396cbe457a1",
+      "identityAssumption": "This assessment uses the representative hymn text printed on the cited Hymnary page. Other stanza selections, modernized words and added refrains are separate versions.",
+      "sourceHash": "d4eb5d4d8e101b40675a1fbf73711c1186ee335f803fcd930fd561b9b3213459",
+      "sourceURL": "https://hymnary.org/text/there_is_a_land_of_pure_delight_where_sa",
+      "reason": null
     },
     {
       "id": "expanded-my-shepherd-will-supply-my-need-isaac-watts",
       "title": "My Shepherd Will Supply My Need",
       "author": "Isaac Watts",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "3830aeea090fc66c8eb2",
+      "identityAssumption": "This assessment uses the representative hymn text printed on the cited Hymnary page. Other stanza selections, modernized words and added refrains are separate versions.",
+      "sourceHash": "77bba232be0ed2a2ca9844028aebe8d7fd4ab54189e5cc8ee474cca91376618c",
+      "sourceURL": "https://hymnary.org/text/my_shepherd_will_supply_my_need",
+      "reason": null
     },
     {
       "id": "expanded-how-sweet-and-awesome-is-the-place-isaac-watts",
       "title": "How Sweet and Awesome Is the Place",
       "author": "Isaac Watts",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "3ec9cbe8e5e791b62365",
+      "identityAssumption": "This assessment uses the representative hymn text printed on the cited Hymnary page. Other stanza selections, modernized words and added refrains are separate versions. The source prints the older word awful, meaning awe-inspiring; the catalog title uses awesome.",
+      "sourceHash": "45e2c6272ff7a83a3a496f892b9ac75fe01b3e0e1e74a32dff5d96c3f01782ad",
+      "sourceURL": "https://hymnary.org/text/how_sweet_and_aweful_is_the_place",
+      "reason": null
     },
     {
       "id": "expanded-come-holy-spirit-heavenly-dove-isaac-watts",
@@ -9435,31 +9461,34 @@
       "id": "expanded-brethren-we-have-met-to-worship-george-atkins",
       "title": "Brethren, We Have Met to Worship",
       "author": "George Atkins",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "e483f5371ee86964eb67",
+      "identityAssumption": "This assessment uses the representative hymn text printed on the cited Hymnary page. Other stanza selections, modernized words and added refrains are separate versions. The cited page names George Askins; the catalog uses George Atkins. The matching text is assessed without treating that attribution difference as resolved.",
+      "sourceHash": "3f0105fc720accdd968beb61b192e507c6fe766e4552d41ce889c8ece4a91951",
+      "sourceURL": "https://hymnary.org/text/brethren_we_have_met_to_worship",
+      "reason": null
     },
     {
       "id": "expanded-on-jordan-s-stormy-banks-i-stand-samuel-stennett",
       "title": "On Jordan's Stormy Banks I Stand",
       "author": "Samuel Stennett",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "a9df3dd3d7baaed02fe4",
+      "identityAssumption": "This assessment uses the representative hymn text printed on the cited Hymnary page. Other stanza selections, modernized words and added refrains are separate versions.",
+      "sourceHash": "f9a836d5a955b760ddfc26270731b04fcadd9021a3bb90c476835468006aaddc",
+      "sourceURL": "https://hymnary.org/text/on_jordans_stormy_banks_i_stand",
+      "reason": null
     },
     {
       "id": "expanded-come-ye-sinners-poor-and-needy-joseph-hart",
       "title": "Come, Ye Sinners, Poor and Needy",
       "author": "Joseph Hart",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "ff8e45a685efe1ef4858",
+      "identityAssumption": "This assessment uses the representative hymn text printed on the cited Hymnary page. Other stanza selections, modernized words and added refrains are separate versions.",
+      "sourceHash": "03285e0cb15be8f07ed19227adba8ab775b08711d3ac1448a5306f85f272740f",
+      "sourceURL": "https://hymnary.org/text/come_ye_sinners_poor_and_needy_weak_and",
+      "reason": null
     },
     {
       "id": "expanded-he-leadeth-me-joseph-h-gilmore",
@@ -9475,11 +9504,12 @@
       "id": "expanded-jesus-saves-priscilla-j-owens",
       "title": "Jesus Saves",
       "author": "Priscilla J. Owens",
-      "status": "identity-unresolved",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "Title candidates lack sufficient identity evidence."
+      "status": "reviewed-draft",
+      "analysisKey": "406625d91f5d9fdada62",
+      "identityAssumption": "This assessment uses the representative hymn text printed on the cited Hymnary page. Other stanza selections, modernized words and added refrains are separate versions.",
+      "sourceHash": "cb44ab0029eed6ae33812e810668aefed9aa457abe0d85a9199e255582b5563a",
+      "sourceURL": "https://hymnary.org/text/we_have_heard_the_joyful_sound",
+      "reason": null
     },
     {
       "id": "expanded-will-your-anchor-hold-priscilla-j-owens",
@@ -9545,51 +9575,56 @@
       "id": "expanded-o-for-a-closer-walk-with-god-william-cowper",
       "title": "O for a Closer Walk with God",
       "author": "William Cowper",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "225e67f441809315907d",
+      "identityAssumption": "This assessment uses the representative hymn text printed on the cited Hymnary page. Other stanza selections, modernized words and added refrains are separate versions.",
+      "sourceHash": "a45a601c3838ccdaa8fadbba5960f9c091e64acdc370dd2a7f6936f57b90912b",
+      "sourceURL": "https://hymnary.org/text/o_for_a_closer_walk_with_god",
+      "reason": null
     },
     {
       "id": "expanded-there-is-a-fountain-filled-with-blood-william-cowper",
       "title": "There Is a Fountain Filled with Blood",
       "author": "William Cowper",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "a121e908b3b79afa5ed3",
+      "identityAssumption": "The selected printed collection contains 7 stanzas. This assessment covers that text selection; other original stanzas, adaptations and associated recordings are separate versions.",
+      "sourceHash": "98b1e16e10632d6121dd919e99c1d1f973d1d55df8cc37512ef72c23baf7fcfe",
+      "sourceURL": "https://github.com/josmithua/song-data/blob/ac3c2c5cd8a46c2269a734e4f1d34097cd0b3bce/bhb_songs.json",
+      "reason": null
     },
     {
       "id": "expanded-god-moves-in-a-mysterious-way-william-cowper",
       "title": "God Moves in a Mysterious Way",
       "author": "William Cowper",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "ccce39d0740148872be8",
+      "identityAssumption": "The selected printed collection contains 6 stanzas. This assessment covers that text selection; other original stanzas, adaptations and associated recordings are separate versions.",
+      "sourceHash": "062f09f265e0e3d799beae535c0a7e959191962a22b64525c262ed0ff47feebc",
+      "sourceURL": "https://github.com/josmithua/song-data/blob/ac3c2c5cd8a46c2269a734e4f1d34097cd0b3bce/bhb_songs.json",
+      "reason": null
     },
     {
       "id": "expanded-sometimes-a-light-surprises-william-cowper",
       "title": "Sometimes a Light Surprises",
       "author": "William Cowper",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "357d770e7e17e0eb2f15",
+      "identityAssumption": "This assessment uses the representative hymn text printed on the cited Hymnary page. Other stanza selections, modernized words and added refrains are separate versions.",
+      "sourceHash": "0cd61ab2b38f1d0b487f67b47e49e5e7677449bb12a6d586fd01347bd40447e2",
+      "sourceURL": "https://hymnary.org/text/sometimes_a_light_surprises",
+      "reason": null
     },
     {
       "id": "expanded-how-sweet-the-name-of-jesus-sounds-john-newton",
       "title": "How Sweet the Name of Jesus Sounds",
       "author": "John Newton",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "056b5a0aa2597629164b",
+      "identityAssumption": "The selected printed collection contains 6 stanzas. This assessment covers that text selection; other original stanzas, adaptations and associated recordings are separate versions.",
+      "sourceHash": "f595b987a7f3387389a7988894948ee0e6ef3c3a1bc5731c079a9698845b0a3a",
+      "sourceURL": "https://github.com/josmithua/song-data/blob/ac3c2c5cd8a46c2269a734e4f1d34097cd0b3bce/bhb_songs.json",
+      "reason": null
     },
     {
       "id": "expanded-glorious-things-of-thee-are-spoken-john-newton",
@@ -9605,11 +9640,12 @@
       "id": "expanded-i-asked-the-lord-that-i-might-grow-john-newton",
       "title": "I Asked the Lord That I Might Grow",
       "author": "John Newton",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "9d4743553d4f2014a681",
+      "identityAssumption": "This assessment uses the representative hymn text printed on the cited Hymnary page. Other stanza selections, modernized words and added refrains are separate versions.",
+      "sourceHash": "cbb33fba924d4d3b87e6ab438e07ac1ecdd4379e69075cb65f982a3596fb8369",
+      "sourceURL": "https://hymnary.org/text/i_asked_the_lord_that_i_might_grow",
+      "reason": null
     },
     {
       "id": "expanded-like-a-river-glorious-frances-r-havergal",
@@ -9625,11 +9661,12 @@
       "id": "expanded-who-is-on-the-lord-s-side-frances-r-havergal",
       "title": "Who Is on the Lord's Side?",
       "author": "Frances R. Havergal",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "2c0fd6ba2729b7f68496",
+      "identityAssumption": "This assessment uses the representative hymn text printed on the cited Hymnary page. Other stanza selections, modernized words and added refrains are separate versions.",
+      "sourceHash": "92f0d0baa5abfb514271c35ea2b2ec309f2302e908228d6845d8cf9e81b21b24",
+      "sourceURL": "https://hymnary.org/text/who_is_on_the_lords_side_who_will_serve",
+      "reason": null
     },
     {
       "id": "expanded-i-gave-my-life-for-thee-frances-r-havergal",
@@ -9725,11 +9762,12 @@
       "id": "expanded-saved-saved-jack-p-scholfield",
       "title": "Saved, Saved!",
       "author": "Jack P. Scholfield",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "293bdfede4273ca41793",
+      "identityAssumption": "This assessment uses the representative hymn text printed on the cited Hymnary page. Other stanza selections, modernized words and added refrains are separate versions.",
+      "sourceHash": "fcdf9c6b474f324b0661d00b4f3e57762a1f220e28b11e1e6c4d8da715d26c13",
+      "sourceURL": "https://hymnary.org/text/ive_found_a_friend_who_is_all_to_me",
+      "reason": null
     },
     {
       "id": "expanded-he-keeps-me-singing-luther-b-bridgers",
@@ -9765,11 +9803,12 @@
       "id": "expanded-showers-of-blessing-daniel-w-whittle",
       "title": "Showers of Blessing",
       "author": "Daniel W. Whittle",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "1671be5bcd6724249cd0",
+      "identityAssumption": "The selected printed collection contains 2 stanzas and a refrain. This assessment covers that text selection; other original stanzas, adaptations and associated recordings are separate versions.",
+      "sourceHash": "8af7e65a1b1fb17088aa3ba4034983f2aba5a6182b9248b3d2427739931e6b86",
+      "sourceURL": "https://github.com/josmithua/song-data/blob/ac3c2c5cd8a46c2269a734e4f1d34097cd0b3bce/ssfss_songs.min.json",
+      "reason": null
     },
     {
       "id": "expanded-moment-by-moment-daniel-w-whittle",
@@ -9835,11 +9874,12 @@
       "id": "expanded-o-to-be-like-thee-thomas-o-chisholm",
       "title": "O to Be Like Thee!",
       "author": "Thomas O. Chisholm",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "6545eeb60e61edea849c",
+      "identityAssumption": "This assessment uses the representative hymn text printed on the cited Hymnary page. Other stanza selections, modernized words and added refrains are separate versions.",
+      "sourceHash": "5d584770a1aa0591bfe2388706c1ac32c6d4c047e155a8cfd490e9756fcb3b80",
+      "sourceURL": "https://hymnary.org/text/o_to_be_like_thee_blessed_redeemer_this",
+      "reason": null
     },
     {
       "id": "expanded-trust-and-obey-john-h-sammis",
@@ -9896,11 +9936,12 @@
       "id": "expanded-is-your-all-on-the-altar-elisha-a-hoffman",
       "title": "Is Your All on the Altar?",
       "author": "Elisha A. Hoffman",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "79f489e1f188a9d3086b",
+      "identityAssumption": "This assessment uses the representative hymn text printed on the cited Hymnary page. Other stanza selections, modernized words and added refrains are separate versions.",
+      "sourceHash": "8827fcbe0a0610e8837de3ba657847ba5910da799c1517c2c279211c2aefb492",
+      "sourceURL": "https://hymnary.org/text/you_have_longed_for_sweet_peace",
+      "reason": null
     },
     {
       "id": "expanded-i-must-tell-jesus-elisha-a-hoffman",
@@ -9916,11 +9957,12 @@
       "id": "expanded-what-a-wonderful-savior-elisha-a-hoffman",
       "title": "What a Wonderful Savior!",
       "author": "Elisha A. Hoffman",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "ffbf3276d1416e1b6edd",
+      "identityAssumption": "This assessment uses the representative hymn text printed on the cited Hymnary page. Other stanza selections, modernized words and added refrains are separate versions.",
+      "sourceHash": "526bf7f7931c09685bb039c5401573721e26493a057cbfdbab64c02beb2a56fa",
+      "sourceURL": "https://hymnary.org/text/christ_has_for_sin_atonement_made",
+      "reason": null
     },
     {
       "id": "expanded-shall-we-gather-at-the-river-robert-lowry",
@@ -9976,11 +10018,12 @@
       "id": "expanded-face-to-face-with-christ-my-savior-carrie-e-breck",
       "title": "Face to Face with Christ, My Savior",
       "author": "Carrie E. Breck",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "35c399afabc87704b1b9",
+      "identityAssumption": "This assessment uses the representative hymn text printed on the cited Hymnary page. Other stanza selections, modernized words and added refrains are separate versions.",
+      "sourceHash": "e363fc678150ba11d1037684e21658f1b959cdb89a831df572faad9c0195de8f",
+      "sourceURL": "https://hymnary.org/text/face_to_face_with_christ_my_savior_breck",
+      "reason": null
     },
     {
       "id": "expanded-when-the-roll-is-called-up-yonder-james-m-black",
@@ -10036,31 +10079,34 @@
       "id": "expanded-we-ll-work-till-jesus-comes-elizabeth-mills-attribution",
       "title": "We'll Work Till Jesus Comes",
       "author": "Elizabeth Mills attribution",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "99ad239d2611df410bbc",
+      "identityAssumption": "This assessment uses the representative hymn text printed on the cited Hymnary page. Other stanza selections, modernized words and added refrains are separate versions.",
+      "sourceHash": "f13f489d65a70b646b4bf7b74dc91e2fcfe69556e8eed84b50cac4f330dc56d9",
+      "sourceURL": "https://hymnary.org/text/o_land_of_rest_for_thee_i_sigh",
+      "reason": null
     },
     {
       "id": "expanded-jesus-loves-the-little-children-c-herbert-woolston",
       "title": "Jesus Loves the Little Children",
       "author": "C. Herbert Woolston",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "a543dd93e0026284b4a3",
+      "identityAssumption": "This assessment uses the representative hymn text printed on the cited Hymnary page. Other stanza selections, modernized words and added refrains are separate versions. This representative setting contains the familiar five-line chorus, without additional narrative verses.",
+      "sourceHash": "16fed84d9856fb7d07a118938e10461f5776dc8733e311e54021b598bfe45ad6",
+      "sourceURL": "https://hymnary.org/text/jesus_loves_the_little_children_all_the",
+      "reason": null
     },
     {
       "id": "expanded-the-king-of-love-my-shepherd-is-henry-w-baker",
       "title": "The King of Love My Shepherd Is",
       "author": "Henry W. Baker",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "4efdadd24d9ad0e426ba",
+      "identityAssumption": "The selected printed collection contains 6 stanzas. This assessment covers that text selection; other original stanzas, adaptations and associated recordings are separate versions.",
+      "sourceHash": "a88c0ab6d6a9622068f4d9f3feb13a8c03534271737e47d438723537e1b9bdf5",
+      "sourceURL": "https://github.com/josmithua/song-data/blob/ac3c2c5cd8a46c2269a734e4f1d34097cd0b3bce/bhb_songs.json",
+      "reason": null
     },
     {
       "id": "expanded-the-strife-is-o-er-the-battle-done-traditional-latin-francis-pott-translation",
@@ -10106,21 +10152,23 @@
       "id": "expanded-more-love-to-thee-o-christ-elizabeth-p-prentiss",
       "title": "More Love to Thee, O Christ",
       "author": "Elizabeth P. Prentiss",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "416e7075841cbed8e0c6",
+      "identityAssumption": "This assessment uses the representative hymn text printed on the cited Hymnary page. Other stanza selections, modernized words and added refrains are separate versions.",
+      "sourceHash": "5290821448845aeb4b914ea65035386b5ae1391729a1cf41bdfe30a06542ebb7",
+      "sourceURL": "https://hymnary.org/text/more_love_to_thee_o_christ",
+      "reason": null
     },
     {
       "id": "expanded-jesus-the-very-thought-of-thee-latin-hymn-edward-caswall-translation",
       "title": "Jesus, the Very Thought of Thee",
       "author": "Latin hymn · Edward Caswall translation",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "5d2f465d5a398b5c301d",
+      "identityAssumption": "This assessment uses the representative hymn text printed on the cited Hymnary page. Other stanza selections, modernized words and added refrains are separate versions.",
+      "sourceHash": "e7dd979ebca9950486bea80672471aef0375e3eee830e33ace06d7ac5a5c012f",
+      "sourceURL": "https://hymnary.org/text/jesus_the_very_thought_of_thee",
+      "reason": null
     },
     {
       "id": "expanded-o-zion-haste-mary-a-thomson",
@@ -10176,11 +10224,12 @@
       "id": "expanded-must-jesus-bear-the-cross-alone-thomas-shepherd-later-additions",
       "title": "Must Jesus Bear the Cross Alone?",
       "author": "Thomas Shepherd · later additions",
-      "status": "missing-text",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "No source text matched in the audited collections."
+      "status": "reviewed-draft",
+      "analysisKey": "e980569c2a9e42817b2e",
+      "identityAssumption": "This assessment uses the representative hymn text printed on the cited Hymnary page. Other stanza selections, modernized words and added refrains are separate versions.",
+      "sourceHash": "8823be4801cf0e73436fbc95ec2247c0ba63288d960a152489c64d21d28b9382",
+      "sourceURL": "https://hymnary.org/text/must_jesus_bear_the_cross_alone",
+      "reason": null
     },
     {
       "id": "artist-the-lord-s-my-shepherd-psalm-23-stuart-townend",
@@ -10448,11 +10497,12 @@
       "id": "artist-the-love-of-god-charles-billingsley",
       "title": "The Love of God",
       "author": "Associated recording: Charles Billingsley",
-      "status": "identity-unresolved",
-      "analysisKey": null,
-      "sourceHash": null,
-      "sourceURL": null,
-      "reason": "Title candidates lack sufficient identity evidence."
+      "status": "reviewed-draft",
+      "analysisKey": "84f2af5e7a9f112a9c43",
+      "identityAssumption": "The selected printed collection contains 3 stanzas and a refrain. This assessment covers that text selection; other original stanzas, adaptations and associated recordings are separate versions.",
+      "sourceHash": "09c417246949ccda73d7b7c9c46499d9d58f36f76d7db5388a0d8137fae2bb7f",
+      "sourceURL": "https://github.com/josmithua/song-data/blob/ac3c2c5cd8a46c2269a734e4f1d34097cd0b3bce/ssfss_songs.min.json",
+      "reason": null
     },
     {
       "id": "artist-midnight-cry-charles-billingsley",

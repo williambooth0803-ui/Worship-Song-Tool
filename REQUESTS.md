@@ -19,24 +19,25 @@ blockers explicitly. Preserve personal assessments, recordings and workspaces.
   and unavailable images. 138 unit/database checks passed. The full hosted
   browser suite passed on retry after the existing concurrent-refresh timing
   assertion failed once. Focused grid/About checks passed at four viewport sizes.
-- Publishing is pending explicit user authorization after automatic approval
-  review rejected the direct push to main. No publication was attempted again.
+- The owner explicitly authorized publishing after seeing the pending question.
+  Automatic approval review had previously blocked the direct push; that block
+  was respected until this authorization arrived.
 
 ## Finish the remaining 592 evaluations
 
 - [ ] Complete the owner's requested whole-catalog pass. Start: 408 expanded of
   1,000; 592 remaining. Source/check starting count: 34,445.
-- [x] Retrieve and read 310 additional public music-resource lyric texts. Write
+- [x] Retrieve and read 360 additional public music-resource lyric texts. Write
   separate reasons, themes, checked KJV comparisons and exact short concerns.
-  Current coverage: 718 expanded; 282 remaining (28 unresolved, 254 unmatched).
+  Current coverage: 768 expanded; 232 remaining (24 unresolved, 208 unmatched).
 - [x] Preserve private reviews, notes, recordings, approvals and lens evaluations;
   source refresh remains limited to untouched public defaults.
 - [x] Publish the first 110-record checkpoint `6dcd84c`: App checks
   `39195915766` and Pages `39195914870` succeeded; 137 local tests and focused
   lens/catalog browser flows passed.
 - [x] Check the local 310-record checkpoint and the new collection grid/About UI.
-  The full hosted suite passed; publication remains pending explicit authorization.
-- [ ] Continue and finish all 282 remaining source-supported evaluations.
+  The full hosted suite passed; publication was subsequently authorized and the latest 768-report build is being checked.
+- [ ] Continue and finish all 232 remaining source-supported evaluations.
 
 ## Manageable catalog, analysis lenses and workflow guidance
 
@@ -61,8 +62,8 @@ blockers explicitly. Preserve personal assessments, recordings and workspaces.
   workflows and source-supported report checks passed.
   Final source/check count: 34,445.
 
-Current whole-catalog scope: 1,000 preloaded records, 718 expanded reports;
-282 remain (28 unresolved identities and 254 unmatched texts). The prior 2,044-song
+Current whole-catalog scope: 1,000 preloaded records, 768 expanded reports;
+232 remain (24 unresolved identities and 208 unmatched texts). The prior 2,044-song
 ledger below is historical coverage, superseded by the owner's reduction request.
 All saved personal records are preserved, including retired default versions.
 

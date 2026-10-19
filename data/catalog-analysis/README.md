@@ -4,21 +4,21 @@ The owner's request is for a deeper first-pass evaluation of **every** catalog
 song, now scoped to the reduced 1,000-record working catalog. This work has not yet completed that goal. `coverage.json` contains all
 1,000 song/version records and their precise status, source URL and text hash.
 
-- **718 expanded drafts:** three separate criterion reasons, themes, source
+- **768 expanded drafts:** three separate criterion reasons, themes, source
   provenance, short exact excerpts for specific wording concerns, and KJV
-  supporting comparisons. Some records share the same underlying text. The new batch adds 310 source-supported records in the current whole-catalog pass.
+  supporting comparisons. Some records share the same underlying text. The new batch adds 360 source-supported records in the current whole-catalog pass.
 - **0 partial/suspect texts remain in this batch:** a complete music-resource
   source now resolves the Unstoppable God victory wording, corroborated by
   Elevation's official lyric-video description. A complete medley source supplies
   both Most Beautiful and So in Love. The reports assess the replacement words,
   rather than penalizing an apparent copying error or inventing missing verses.
-- **28 unresolved identities:** title candidates exist, but the audit has not
+- **24 unresolved identities:** title candidates exist, but the audit has not
   established that they belong to the record's song/text.
-- **254 unmatched texts:** no match was found in the collections audited. This
+- **208 unmatched texts:** no match was found in the collections audited. This
   does not prove that a reliable text is unavailable elsewhere.
 
-There are now 720 rated catalog records: 718 with expanded text analysis and 2
-retained earlier brief model-knowledge drafts. The remaining 280 stay unscored.
+There are now 770 rated catalog records: 768 with expanded text analysis and 2
+retained earlier brief model-knowledge drafts. The remaining 230 stay unscored.
 Numerical scores are provisional AI editorial judgments, not mechanically derived
 from word counts, church approvals or a verified consensus. Reading a cited text
 supports that text's analysis; it does not verify every associated recording.
@@ -26,7 +26,7 @@ No arrangement measurements or global popularity claims were generated.
 
 ## Sources and method
 
-The audit inspected public collections from mattgraham/worship,
+The audit inspected public collections from josmithua/song-data, mattgraham/worship,
 joeycortez42/worship, ChurchApps/WorshipCommonsContent, h1rdr3v2/open-hymnal-json,
 and marvinjude/gospel-hymns. GitHub citations point to observed commit/file
 versions. Community transcriptions can contain errors, omissions and inaccurate
@@ -46,6 +46,8 @@ Elevation/Essential Worship, Bethel Music, Worship Together and The Worship
 Initiative. Further CityAlight and modern hymn pages, plus an actual Hymnary
 representative text, have since been read. Public music-resource pages and a
 clearly labeled community lyric transcription support the October 18 additions.
+The continuing pass also uses Hymnary representative texts and publicly displayed
+Shazam lyric transcriptions, with source-specific versions and checked short excerpts.
 A public search-index copy of the Digital Songs & Hymns This Far By Faith edition
 was used for Goodson’s song when direct retrieval failed; its report states this
 access limit and selected verse variant. Other visibly garbled transcriptions were
@@ -117,5 +119,5 @@ The owner confirmed that public title-plus-lyrics searches are the available
 source approach. A shared SongSelect login was mentioned but was not used; no
 account credentials are needed for these public pages. The all-song request
 remains open and public-source research continues. The next step is to retrieve and identify the
-282 remaining texts and apply the same review, rather than fill those records
+232 remaining texts and apply the same review, rather than fill those records
 with title-based conjecture or repeat generic paragraphs as completed evaluations.
