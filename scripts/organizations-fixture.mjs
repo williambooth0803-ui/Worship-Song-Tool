@@ -88,6 +88,9 @@ export async function checkOrganizationFlows(browser,base) {
    await orgs(page);await page.locator('[data-accept-invitation]').click();await page.locator(`[data-open-organization="${org}"]`).waitFor();await page.locator(`[data-open-organization="${org}"]`).click();await page.locator('.organization-banner').waitFor();
   }
   assert.match(await viewer.locator('.organization-banner').textContent(),/View only/);assert.equal(await viewer.locator('.ai-mark').count(),0,'Personal Human-only mode also hides shared AI content');
+  await viewer.locator('.header-home').click();await viewer.locator('.landing-page').waitFor();
+  assert.equal(await viewer.getByLabel('Workspace',{exact:true}).inputValue(),org,'Home keeps the active shared workspace');
+  await viewer.locator('.landing-tool [data-view="discover"]').click();
   await viewer.getByRole('button',{name:'Manage files',exact:true}).click();
   assert.equal(await viewer.locator('#song-file-form').count(),0,'View-only file dialog offers no upload controls');
   assert.equal(await viewer.locator('[data-action="delete-song-file"]').count(),0);

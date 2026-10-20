@@ -1,3 +1,4 @@
+import {landingPage} from './landing.js';
 import {VersionHistory,CloudHistory} from './version-history.js';
 import {openVersionHistory} from './version-history-ui.js';
 import {collectionArtwork,collectionIllustration} from './collection-art.js';
@@ -206,7 +207,7 @@ try {
   storageProblem = true;
 }
 let personalAI={aiMode:state.profile.aiMode,aiLabels:state.profile.aiLabels};
-let view = location.hash === "#about" ? "about" : "discover",
+let view = location.hash === "#home" ? "home" : location.hash === "#about" ? "about" : "discover",
   query = "",
   selected = null,
   libraryId = state.libraries[0]?.id,
@@ -254,7 +255,7 @@ function rememberSignInMarkup(mode) {
   return `<label class="check-label remember-sign-in"><input id="remember-me" name="remember" type="checkbox" ${accounts.rememberMe?'checked':''}>Remember me</label><p class="sign-in-hint">Keep me signed in and remember my email on this browser. Leave unchecked on a shared device. Your password stays with your browser’s password manager.</p>${mode==='signup'?'':'<button class="text-button" type="button" data-action="saved-password">Use saved password</button>'}`;
 }
 function loginScreen(mode = "signin") {
-  return `<main class="login-screen" data-screen="auth"><section class="profile-panel"><h1>Faithful Repertoire</h1><h2>${mode === "signup" ? "Create your account" : mode === "recover" ? "Reset your password" : "Sign in to keep your repertoire"}</h2>${accountConnectionMessage ? `<p class="connection-notice" role="status">${e(accountConnectionMessage)}</p>` : ""}<p>Your account keeps your songs, libraries and plans together. Changes save in this browser immediately and autosave to your account when connected.</p>${accounts.configured ? `<form id="auth-form" name="login" method="post" autocomplete="on" data-mode="${mode}"><label for="login-email">Email</label><input id="login-email" name="email" type="email" value="${e(accounts.rememberedEmail)}" autocomplete="username" inputmode="email" autocapitalize="none" spellcheck="false" required>${mode !== "recover" ? `<label for="login-password">Password</label><input id="login-password" name="password" type="password" ${mode==="signin"&&accounts.rememberedEmail?"autofocus":""} autocomplete="${mode === "signup" ? "new-password" : "current-password"}" ${mode === "signup" ? 'minlength="10"' : ""} required>` : ""}${rememberSignInMarkup(mode)}<p id="account-error" role="alert"></p><button type="submit" class="button primary">${mode === "signup" ? "Create account" : mode === "recover" ? "Send reset email" : "Sign in"}</button></form><div class="account-links">${mode !== "signin" ? '<button class="text-button" data-action="account" data-mode="signin">Return to sign in</button>' : ""}<button class="text-button" data-action="account" data-mode="signup">Create an account</button><button class="text-button" data-action="account" data-mode="recover">Forgot password?</button></div>` : '<p>Account sign-in is unavailable in this configuration. No private token is required to use the browser workspace.</p>'}<p><a class="about-link about-entry" href="#about" data-action="nav" data-view="about">About Faithful Repertoire</a></p><details><summary>Existing browser-only work or offline use</summary><p>Browser-only work stays on this device and is not saved to an account. Your existing guest workspace has been preserved.</p><button class="button" data-action="guest-opt-in">Use browser-only workspace</button></details></section></main>`;
+  return `<main class="login-screen" data-screen="auth"><section class="profile-panel"><h1><a class="auth-home-link" href="#home" data-action="nav" data-view="home">Faithful Repertoire</a></h1><h2>${mode === "signup" ? "Create your account" : mode === "recover" ? "Reset your password" : "Sign in to keep your repertoire"}</h2>${accountConnectionMessage ? `<p class="connection-notice" role="status">${e(accountConnectionMessage)}</p>` : ""}<p>Your account keeps your songs, libraries and plans together. Changes save in this browser immediately and autosave to your account when connected.</p>${accounts.configured ? `<form id="auth-form" name="login" method="post" autocomplete="on" data-mode="${mode}"><label for="login-email">Email</label><input id="login-email" name="email" type="email" value="${e(accounts.rememberedEmail)}" autocomplete="username" inputmode="email" autocapitalize="none" spellcheck="false" required>${mode !== "recover" ? `<label for="login-password">Password</label><input id="login-password" name="password" type="password" ${mode==="signin"&&accounts.rememberedEmail?"autofocus":""} autocomplete="${mode === "signup" ? "new-password" : "current-password"}" ${mode === "signup" ? 'minlength="10"' : ""} required>` : ""}${rememberSignInMarkup(mode)}<p id="account-error" role="alert"></p><button type="submit" class="button primary">${mode === "signup" ? "Create account" : mode === "recover" ? "Send reset email" : "Sign in"}</button></form><div class="account-links">${mode !== "signin" ? '<button class="text-button" data-action="account" data-mode="signin">Return to sign in</button>' : ""}<button class="text-button" data-action="account" data-mode="signup">Create an account</button><button class="text-button" data-action="account" data-mode="recover">Forgot password?</button></div>` : '<p>Account sign-in is unavailable in this configuration. No private token is required to use the browser workspace.</p>'}<p><a class="about-link about-entry" href="#about" data-action="nav" data-view="about">About Faithful Repertoire</a></p><details><summary>Existing browser-only work or offline use</summary><p>Browser-only work stays on this device and is not saved to an account. Your existing guest workspace has been preserved.</p><button class="button" data-action="guest-opt-in">Use browser-only workspace</button></details></section></main>`;
 }
 function settingRow(label, description, action, { value = "", view: targetView = "", id = "", disabled = false } = {}) {
   const content = `<span class="setting-copy"><span class="setting-label">${e(label)}</span>${description ? `<span class="setting-description">${e(description)}</span>` : ""}</span><span class="setting-trailing">${value ? `<span class="setting-value">${e(value)}</span>` : ""}${action ? '<span class="setting-chevron" aria-hidden="true">›</span>' : ""}</span>`;
@@ -594,7 +595,7 @@ function resetSelection() {
   Object.assign(songSorts,defaultSongSorts);
   libraryId = state.libraries[0]?.id;
   planId = state.plans[0]?.id;
-  view = location.hash === "#about" ? "about" : "discover";
+  view = location.hash === "#home" ? "home" : location.hash === "#about" ? "about" : "discover";
   query = themeFilter = approvalFilter = "";
   typeFilter = reviewFilter = "";
   songPage = indexPageNumber = 1;
@@ -794,8 +795,8 @@ function workspaceTabs() {
 }
 function render() {
   cancelSearchUpdate();browseCache=null;
-  if (view === "about" && !accounts.user && !guestOptIn) {
-    app.innerHTML = `<main class="public-about">${aboutPage()}</main>`;
+  if (["home","about"].includes(view) && !accounts.user && !guestOptIn) {
+    app.innerHTML = `<main class="public-site"><nav class="public-site-nav" aria-label="Website navigation"><a class="public-brand" href="#home" data-action="nav" data-view="home" aria-label="Faithful Repertoire home"><span aria-hidden="true">✣</span> Faithful Repertoire</a><div><a class="about-link" href="#about" data-action="nav" data-view="about" ${view==="about"?'aria-current="page"':""}>About</a><button class="button" data-action="nav" data-view="discover">Sign in</button></div></nav>${view==="home"?landingPage(false):aboutPage()}</main>`;
     return;
   }
   if (accounts.user && activeStore === STORE) {
@@ -810,7 +811,7 @@ function render() {
   for (const node of app.querySelectorAll("details[data-disclosure]"))
     disclosureState.set(node.dataset.disclosure, node.open);
   const count = new Set(state.libraries.flatMap((x) => x.songIds).filter(id => browseData().visibleIds.has(id))).size;
-  app.innerHTML = `<aside class="sidebar ${suppressRailHover ? "suppress-hover" : ""}"><a class="brand" aria-label="Faithful Repertoire" href="#" data-action="nav" data-view="discover"><span class="brand-mark">✣</span><span class="brand-name">Faithful<br>Repertoire</span></a><nav aria-label="Main navigation">${[
+  app.innerHTML = `<aside class="sidebar ${suppressRailHover ? "suppress-hover" : ""}"><a class="brand" aria-label="Faithful Repertoire" title="Faithful Repertoire home" href="#home" data-action="nav" data-view="home"><span class="brand-mark">✣</span><span class="brand-name">Faithful<br>Repertoire</span></a><nav aria-label="Main navigation">${[
     ["discover", "", "Discover"],
     ["evaluate", "", "Evaluate"],
     ["library", "", "Libraries"],
@@ -822,7 +823,7 @@ function render() {
     )
     .join(
       "",
-    )}</nav><div class="sidebar-bottom"><button class="text-button" data-action="export">↓ Export your data</button></div></aside><main><header class="topbar"><span>Faithful Repertoire <span class="divider">/</span> ${e({ discover: "Discover", index: "Song index", collections: "Collections", library: "Libraries", plans: "Plans", evaluate: "Evaluate", profile: "Evaluation criteria", settings: "Settings", blacklist: "No Approval", about: "About" }[view])}</span><div class="topbar-actions"><a class="about-link" href="#about" data-action="nav" data-view="about" ${view === "about" ? 'aria-current="page"' : ""}>About</a><div class="topbar-selectors">${lensSelector()}${accounts.user&&activeStore!==STORE?`<label class="workspace-switch"><span class="workspace-label-small">Workspace</span><select id="workspace-select" aria-label="Workspace"><option value="personal">Personal</option></select></label>`:""}</div>${saveStrip()}<button class="button" data-action="account">${accounts.user && activeStore !== STORE ? "My account" : "Sign in"}</button><button class="button settings-gear" aria-label="Settings" title="Settings" data-action="nav" data-view="settings"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="m9 3-1 3-3 1-2 5 2 5 3 1 1 3h6l1-3 3-1 2-5-2-5-3-1-1-3Z"/><circle cx="12" cy="12" r="3"/></svg></button></div></header><div class="page">${activeStore === STORE ? '<p class="guest-banner" role="status">Browser-only workspace · saved on this device. <button class="text-button" data-action="account">Sign in to save across devices</button></p>' : ""}${activeOrganization?`<p class="organization-banner" role="status"><strong>${e(activeOrganization.name)}</strong> · ${e(organizationRoles[activeOrganization.role])}${editableWorkspace()?" · Shared changes sync automatically":" · Changes are disabled in this workspace"}</p>`:""}${["about","settings"].includes(view) ? "" : profilePrompt()}${workspaceTabs()}${view === "evaluate" ? `<p class="catalog-analysis-coverage">Catalog text analysis: <strong>${catalogAnalysisCoverage.reviewed} expanded drafts</strong> of ${catalogAnalysisCoverage.total} records · ${catalogAnalysisCoverage.unresolved + catalogAnalysisCoverage.missing + catalogAnalysisCoverage.partial + catalogAnalysisCoverage.textScans} need further text or identity review.</p>` : ""}${["discover", "evaluate", "library", "blacklist"].includes(view) ? songWorkspace() : view === "index" ? indexPage() : view === "collections" ? collectionsPage() : view === "plans" ? plansPage() : view === "settings" ? settingsPage() : view === "about" ? aboutPage() : profilePage()}</div><footer>Faithful Repertoire · <a href="#about" data-action="nav" data-view="about">About</a></footer></main>`;
+    )}</nav><div class="sidebar-bottom"><button class="text-button" data-action="export">↓ Export your data</button></div></aside><main><header class="topbar"><span><a class="header-home" href="#home" data-action="nav" data-view="home" aria-label="Faithful Repertoire home"><span aria-hidden="true">✣</span> Faithful Repertoire</a> <span class="divider">/</span> ${e({ discover: "Discover", index: "Song index", collections: "Collections", library: "Libraries", plans: "Plans", evaluate: "Evaluate", profile: "Evaluation criteria", settings: "Settings", blacklist: "No Approval", home: "Home", about: "About" }[view])}</span><div class="topbar-actions"><a class="about-link" href="#about" data-action="nav" data-view="about" ${view === "about" ? 'aria-current="page"' : ""}>About</a><div class="topbar-selectors">${lensSelector()}${accounts.user&&activeStore!==STORE?`<label class="workspace-switch"><span class="workspace-label-small">Workspace</span><select id="workspace-select" aria-label="Workspace"><option value="personal">Personal</option></select></label>`:""}</div>${saveStrip()}<button class="button" data-action="account">${accounts.user && activeStore !== STORE ? "My account" : "Sign in"}</button><button class="button settings-gear" aria-label="Settings" title="Settings" data-action="nav" data-view="settings"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="m9 3-1 3-3 1-2 5 2 5 3 1 1 3h6l1-3 3-1 2-5-2-5-3-1-1-3Z"/><circle cx="12" cy="12" r="3"/></svg></button></div></header><div class="page">${activeStore === STORE ? '<p class="guest-banner" role="status">Browser-only workspace · saved on this device. <button class="text-button" data-action="account">Sign in to save across devices</button></p>' : ""}${activeOrganization?`<p class="organization-banner" role="status"><strong>${e(activeOrganization.name)}</strong> · ${e(organizationRoles[activeOrganization.role])}${editableWorkspace()?" · Shared changes sync automatically":" · Changes are disabled in this workspace"}</p>`:""}${["home","about","settings"].includes(view) ? "" : profilePrompt()}${workspaceTabs()}${view === "evaluate" ? `<p class="catalog-analysis-coverage">Catalog text analysis: <strong>${catalogAnalysisCoverage.reviewed} expanded drafts</strong> of ${catalogAnalysisCoverage.total} records · ${catalogAnalysisCoverage.unresolved + catalogAnalysisCoverage.missing + catalogAnalysisCoverage.partial + catalogAnalysisCoverage.textScans} need further text or identity review.</p>` : ""}${["discover", "evaluate", "library", "blacklist"].includes(view) ? songWorkspace() : view === "index" ? indexPage() : view === "collections" ? collectionsPage() : view === "plans" ? plansPage() : view === "settings" ? settingsPage() : view === "home" ? landingPage(true) : view === "about" ? aboutPage() : profilePage()}</div><footer class="site-footer"><span>Faithful Repertoire</span><a class="about-link" href="#about" data-action="nav" data-view="about">About Faithful Repertoire</a></footer></main>`;
   for (const node of app.querySelectorAll("details")) {
     const key = node.dataset.disclosureKey || (node.closest(".detail-panel")
       ? "song:" + selected + ":" + (node.dataset.attribute || node.className)
@@ -2277,7 +2278,7 @@ document.addEventListener("click", async (event) => {
     const nextView = button.dataset.view;
     const criteriaVisit = [view,nextView].includes("profile") && [view,nextView].every(v=>["profile","evaluate","index"].includes(v));
     view = nextView;
-    history.replaceState(null, "", location.pathname + location.search + (view === "about" ? "#about" : ""));
+    history.replaceState(null, "", location.pathname + location.search + (["home","about"].includes(view) ? `#${view}` : ""));
     if (dialog.open) dialog.close();
     if (!criteriaVisit) { query = ""; themeFilter = approvalFilter = ""; typeFilter = reviewFilter = ""; songPage = 1; }
     render();
@@ -3423,8 +3424,13 @@ window.addEventListener("storage", async event => {
   else { accountReady = true; render(); }
 });
 window.addEventListener("hashchange", () => {
-  if (location.hash === "#about") { view = "about"; render(); }
-  else if (view === "about") { view = "discover"; render(); }
+  const nextView=location.hash==="#home"?"home":location.hash==="#about"?"about":["home","about"].includes(view)?"discover":view;
+  if(nextView===view)return;
+  if(view==="profile" && (unsavedForm || hasUnsubmittedEdits())) {
+    if(!confirm("Discard unsaved evaluation criteria? Choose Cancel to keep editing.")){history.replaceState(null,"",location.pathname+location.search);return;}
+    unsavedForm=false;
+  }
+  view=nextView;render();window.scrollTo(0,0);
 });
 render();
 if (!storageProblem && (accounts.user || guestOptIn)) persist();

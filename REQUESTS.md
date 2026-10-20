@@ -6,6 +6,22 @@ do not treat a new prompt as cancellation unless the owner says so. Mark an item
 complete only with implementation and meaningful verification. Record external
 blockers explicitly. Preserve personal assessments, recordings and workspaces.
 
+## Landing page and visible About navigation (October 19, 2026)
+
+- [x] Add an editorial landing page at #home, opened by the menu logo and header
+  wordmark, with prominent About access and four tool entry points. Keep the
+  existing root sign-in/Discover entry and four primary menu destinations.
+- [x] Replace the 9px inherited footer link with explicit 14px text and a 44px
+  target. Add Home navigation to the sign-in wordmark and public Home/About
+  header. Public pages never activate or create a browser workspace.
+- [x] Check 320/390/768/1024/1440px layouts, all tool links, Home reload, menu and
+  header navigation, criteria discard/cancel guards (including URL changes),
+  view-only shared-workspace context and preservation of notes, libraries,
+  plans and evaluations. All 149 unit/database tests passed; targeted landing
+  browser checks and the full hosted regression suite passed.
+- [ ] Publish the verified frontend and confirm hosting deployment.
+  Starting source/check count: 36,351; final: 36,542.
+
 ## Version history and visual audit (October 19, 2026)
 
 - [x] Add automatic device checkpoints in IndexedDB, named versions, dated lists,

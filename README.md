@@ -24,6 +24,12 @@ shared-workspace permissions.
 
 ## Navigation and public About
 
+Click the menu logo or the header wordmark to open **Home** (`#home`). The landing
+page introduces the workflow, provides direct entry points into the four tools,
+and features a prominent About link. Home and About are public without creating
+a browser workspace. Footer About links use readable text and a full touch target.
+The existing root sign-in/Discover entry stays in place.
+
 The primary flow is **Discover → Evaluate → Libraries → Plans**. Discover groups
 Songs and Collections; Evaluate keeps the song workspace, advanced Song index and
 Evaluation criteria together. Criteria visits preserve the selected song and

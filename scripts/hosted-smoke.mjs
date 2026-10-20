@@ -1,3 +1,4 @@
+import {checkLandingFlows} from './landing-fixture.mjs';
 import {checkVersionHistoryFlows} from './version-history-fixture.mjs';
 import {checkShortlistReviewFlows} from './shortlist-review-fixture.mjs';
 import {checkLensFlows} from "./lenses-fixture.mjs";
@@ -341,6 +342,7 @@ try {
   await checkCatalogAnalysisFlows(browser, `http://127.0.0.1:${server.address().port}/Worship-Song-Tool/`);
   await checkShortlistReviewFlows(browser, `http://127.0.0.1:${server.address().port}/Worship-Song-Tool/`);
   await checkLensFlows(browser, `http://127.0.0.1:${server.address().port}/Worship-Song-Tool/`);
+  await checkLandingFlows(browser, `http://127.0.0.1:${server.address().port}/Worship-Song-Tool/`);
   await checkRebuildFlows(browser, `http://127.0.0.1:${server.address().port}/Worship-Song-Tool/`);
   await checkNavigationFlows(
     browser,
