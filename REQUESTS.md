@@ -34,15 +34,18 @@ blockers explicitly. Preserve personal assessments, recordings and workspaces.
   completed. The fixture now waits for the dialog to close. Follow-up UI shows
   restoring progress, prevents concurrent restores and guards reload/Escape while
   recovery is pending; a controlled-delay browser test verifies these states.
-- [ ] Install account-history production migration. The local management
-  credential returns HTTP 401, and the initial anonymous metadata probe found
-  `history_list` absent (PGRST202). Located the existing successful GitHub
-  deployment workflow and added a dedicated history deployment using that
-  separately encrypted credential. It checks authentication before writes,
-  applies only the tested history migration and verifies the resulting objects.
-  Deployment status is being checked; manual SQL remains a fallback. Device
-  history works immediately; unavailable account history is explicit in the UI.
-  Private production account contents are never used in tests.
+- [x] Installed and verified account-history production migration through the
+  existing encrypted GitHub Supabase deployment credential. The local management
+  credential still returns HTTP 401, but the separate GitHub credential works.
+  `Deploy workspace history` passed all tests, applied the migration and verified
+  the table, four RPCs and two triggers on commit `e655ebd`. The production REST
+  probe now returns permission denied for anonymous history access (42501),
+  confirming that the RPC exists and is protected. No manual SQL is required.
+  The corrected frontend `095a6a9` passed all GitHub App checks; Cloudflare Pages,
+  Worker builds and GitHub Pages published successfully. Production browser
+  checks on the reachable GitHub fallback save/preview device history on mobile.
+  This environment still cannot directly open the Cloudflare hostname. No
+  private production account contents were used in tests.
   Starting source/check count: 35,548; final: 36,351.
 
 ## Cloudflare hosting setup

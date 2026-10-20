@@ -16,8 +16,9 @@ site remains available for browser-data migration and the existing ChatGPT conse
 change previews, downloads and guarded restores with a recovery copy. Device
 history works immediately. Account history requires the additive
 [supabase/version-history.sql](supabase/version-history.sql) migration. The
-**Deploy workspace history** workflow applies and verifies it using the existing
-encrypted deployment credential; manual SQL installation is also supported.
+**Deploy workspace history** workflow installed and verified it in production
+using the existing encrypted deployment credential. Manual SQL installation is
+also supported for another deployment.
 See [version history](VERSION-HISTORY.md) for installation, retention and
 shared-workspace permissions.
 
