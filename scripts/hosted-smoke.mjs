@@ -1,3 +1,4 @@
+import {checkVersionHistoryFlows} from './version-history-fixture.mjs';
 import {checkShortlistReviewFlows} from './shortlist-review-fixture.mjs';
 import {checkLensFlows} from "./lenses-fixture.mjs";
 import {checkCatalogAnalysisFlows} from "./catalog-analysis-fixture.mjs";
@@ -348,6 +349,7 @@ try {
     browser,
     `http://127.0.0.1:${server.address().port}/Worship-Song-Tool/`,
   );
+  await checkVersionHistoryFlows(browser, `http://127.0.0.1:${server.address().port}/Worship-Song-Tool/`);
   await checkAccountStartupFlows(browser, `http://127.0.0.1:${server.address().port}/Worship-Song-Tool/`);
   await checkAccountFlows(
     browser,

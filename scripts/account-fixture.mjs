@@ -285,6 +285,8 @@ export async function checkAccountFlows(browser, base) {
     ),
   );
   await login("one@example.test");
+  // The account button appears before the asynchronous profile download finishes.
+  await page.waitForFunction(()=>JSON.parse(localStorage.getItem('faithful-repertoire-user:00000000-0000-0000-0000-000000000001'))?.profile.aiMode==='manual');
   assert.equal(
     await page.evaluate(
       () =>

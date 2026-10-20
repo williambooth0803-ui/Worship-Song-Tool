@@ -1,3 +1,5 @@
+import {VersionHistory,CloudHistory} from './version-history.js';
+import {openVersionHistory} from './version-history-ui.js';
 import {collectionArtwork,collectionIllustration} from './collection-art.js';
 import {activeLens,lensList,switchLens,createLens,renameActiveLens} from './lenses.js';
 import {catalogAnalysisFor,catalogAnalysisMarkup,catalogAnalysisCoverage} from "./catalog-analysis.js";
@@ -96,6 +98,7 @@ import {
 
 const STORE = "hymn-heart-v1";
 let activeStore = STORE;
+const versionHistory = new VersionHistory();
 let browseCache=null;
 function browseData() {
   const mode=effectiveProfile().aiMode;
@@ -258,7 +261,7 @@ function settingRow(label, description, action, { value = "", view: targetView =
 }
 function settingsPage() {
   const signedIn = Boolean(accounts.user && activeStore !== STORE);
-  return `<div class="settings-page"><div class="page-heading"><h1>Settings</h1></div><section aria-labelledby="settings-account-heading"><h2 id="settings-account-heading" class="settings-group-title">Account & saving</h2><div class="settings-group">${signedIn ? settingRow("Signed in", accounts.user.email, "account") + settingRow("Organizations", "Shared libraries, plans and member access", "organizations") + settingRow("Change password", "", "change-password") : settingRow("Sign in", "Keep your repertoire across devices", "account") }<div class="setting-row"><span class="setting-copy"><span class="setting-label">${signedIn ? (activeOrganization ? "Shared sync" : "Account autosave") : "Browser saving"}</span><span id="settings-save-status" class="setting-description" role="status">${signedIn ? e(activeOrganization?organizationSaveLabel():saveLabel(accountSave,state)) : "Saved on this device only"}</span></span><span class="setting-trailing"><span id="settings-save-value" class="setting-value">${signedIn ? (accountSave.phase === "saving" ? "Saving…" : autosave.enabled ? "On" : "Paused") : "On"}</span></span></div>${signedIn ? settingRow("Save now / retry", "", "retry-autosave", {id:"settings-save-now",disabled:["saving","checking","conflict","review"].includes(accountSave.phase)}) + settingRow("Review saved account workspace", "", "cloud-load") : ""}</div><p class="settings-footnote">Changes save in this browser after each action. Account uploads pause when offline or when another device has saved a newer copy.</p></section><section aria-labelledby="settings-preferences-heading"><h2 id="settings-preferences-heading" class="settings-group-title">Preferences</h2><div class="settings-group">${settingRow("Edit church profile", "", "setup-profile", {value:denominations[state.profile.denomination]})}${settingRow("Evaluation criteria", "", "nav", {view:"profile",value:activeCriteria(state.profile).length+" active"})}<button class="setting-row" role="switch" aria-label="AI labels" aria-checked="${effectiveProfile().aiLabels}" data-action="toggle-ai-labels"><span class="setting-copy"><span class="setting-label">AI labels</span><span class="setting-description">Identify generated ratings and content</span></span><span class="setting-switch" aria-hidden="true"></span></button></div></section><details class="settings-advanced" data-disclosure-key="settings:advanced"><summary>Advanced account tools</summary><div class="settings-group">${settingRow("Backup & restore", "Download or restore a workspace copy", "backup")}${signedIn ? settingRow("Retry profile sync", "", "sync-profile") + settingRow("Private organization drafts", "Unsynced copies kept in this browser", "organization-drafts") + settingRow("Previous church-use decisions", "Move previous decisions into optional libraries", "starter-libraries") + (!activeOrganization ? settingRow("Import previous browser-only workspace", "Review before replacing account data", "copy-browser") : "") + settingRow("ChatGPT connections", "Manage read-only access", "chatgpt-connections") : ""}</div><p class="settings-footnote">Keep an independent backup. Browser storage and account uploads cannot guarantee recovery after every device or network failure.</p></details></div>`;
+  return `<div class="settings-page"><div class="page-heading"><h1>Settings</h1></div><section aria-labelledby="settings-account-heading"><h2 id="settings-account-heading" class="settings-group-title">Account & saving</h2><div class="settings-group">${signedIn ? settingRow("Signed in", accounts.user.email, "account") + settingRow("Organizations", "Shared libraries, plans and member access", "organizations") + settingRow("Change password", "", "change-password") : settingRow("Sign in", "Keep your repertoire across devices", "account") }<div class="setting-row"><span class="setting-copy"><span class="setting-label">${signedIn ? (activeOrganization ? "Shared sync" : "Account autosave") : "Browser saving"}</span><span id="settings-save-status" class="setting-description" role="status">${signedIn ? e(activeOrganization?organizationSaveLabel():saveLabel(accountSave,state)) : "Saved on this device only"}</span></span><span class="setting-trailing"><span id="settings-save-value" class="setting-value">${signedIn ? (accountSave.phase === "saving" ? "Saving…" : autosave.enabled ? "On" : "Paused") : "On"}</span></span></div>${settingRow("Version history", "Preview and restore earlier workspace versions", "version-history")}${signedIn ? settingRow("Save now / retry", "", "retry-autosave", {id:"settings-save-now",disabled:["saving","checking","conflict","review"].includes(accountSave.phase)}) + settingRow("Review saved account workspace", "", "cloud-load") : ""}</div><p class="settings-footnote">Changes save in this browser after each action. Account uploads pause when offline or when another device has saved a newer copy.</p></section><section aria-labelledby="settings-preferences-heading"><h2 id="settings-preferences-heading" class="settings-group-title">Preferences</h2><div class="settings-group">${settingRow("Edit church profile", "", "setup-profile", {value:denominations[state.profile.denomination]})}${settingRow("Evaluation criteria", "", "nav", {view:"profile",value:activeCriteria(state.profile).length+" active"})}<button class="setting-row" role="switch" aria-label="AI labels" aria-checked="${effectiveProfile().aiLabels}" data-action="toggle-ai-labels"><span class="setting-copy"><span class="setting-label">AI labels</span><span class="setting-description">Identify generated ratings and content</span></span><span class="setting-switch" aria-hidden="true"></span></button></div></section><details class="settings-advanced" data-disclosure-key="settings:advanced"><summary>Advanced account tools</summary><div class="settings-group">${settingRow("Backup & restore", "Download or restore a workspace copy", "backup")}${signedIn ? settingRow("Retry profile sync", "", "sync-profile") + settingRow("Private organization drafts", "Unsynced copies kept in this browser", "organization-drafts") + settingRow("Previous church-use decisions", "Move previous decisions into optional libraries", "starter-libraries") + (!activeOrganization ? settingRow("Import previous browser-only workspace", "Review before replacing account data", "copy-browser") : "") + settingRow("ChatGPT connections", "Manage read-only access", "chatgpt-connections") : ""}</div><p class="settings-footnote">Keep an independent backup. Browser storage and account uploads cannot guarantee recovery after every device or network failure.</p></details></div>`;
 }
 function accountLoadingScreen() {
   return `<main class="account-startup" data-screen="account-loading" aria-busy="true"><div class="account-startup-content"><div class="startup-brand">Faithful Repertoire</div><div class="startup-indicator" aria-hidden="true"></div><h1>Opening your repertoire</h1><p role="status">${accountCheckSlow ? "Your connection is taking a little longer." : "Checking your saved sign-in…"}</p><p class="startup-caption">${accountCheckSlow ? "You can open your saved browser copy while account sync is paused." : "Your saved songs and plans will be ready shortly."}</p>${accountCheckSlow ? '<div class="startup-actions"><button class="button primary" data-action="open-local-account">Open saved browser copy</button><button class="text-button" data-action="retry-account-check">Try again</button></div>' : ""}</div></main>`;
@@ -320,11 +323,95 @@ async function startAccountCheck(confirmation = null) {
   } finally { clearTimeout(slowTimer); clearTimeout(deadline); }
 }
 
+function historyContext() {
+  return {key:activeStore,owner:accounts.user?.id || null,organization:activeOrganization?.id || null,signedIn:Boolean(accounts.user && activeStore!==STORE)};
+}
+function historyContextValid(token) {
+  return token.key===activeStore && token.owner===(accounts.user?.id || null) && token.organization===(activeOrganization?.id || null);
+}
+function captureBeforeWrite(next) {
+  try {
+    const previous=localStorage.getItem(activeStore);
+    if(previous && previous!==JSON.stringify(next))versionHistory.capture(activeStore,JSON.parse(previous)).catch(()=>{});
+  } catch { /* Current saving must still work if history storage is unavailable. */ }
+}
+async function prepareHistory(token) {
+  if(!historyContextValid(token))throw new Error('The active workspace changed. Open version history again.');
+  if(token.signedIn && autosave.enabled && (autosave.running || autosave.pending))await autosave.flush();
+  if(!historyContextValid(token))throw new Error('The active workspace changed. Open version history again.');
+}
+function requireHistorySync(token) {
+  if(token.signedIn && (!accountReady || !autosave.enabled || ['error','conflict','review','checking'].includes(accountSave.phase) || accountSave.signature!==workspaceSignature(state)))
+    throw new Error('Finish syncing or resolve the saved account copy before restoring. Your current workspace is preserved.');
+}
+function requireCurrentHistoryPreview(token,signature) {
+  if(!historyContextValid(token) || workspaceSignature(state)!==signature)throw new Error('The workspace changed after the preview. Open the version and review its changes again.');
+  const cached=localStorage.getItem(token.key);
+  if(cached && workspaceSignature(JSON.parse(cached))!==signature)throw new Error('Another tab changed this workspace. Reload its saved browser copy, then preview again.');
+}
+async function saveHistoryCheckpoint(label,cloudAvailable,token) {
+  await prepareHistory(token);
+  if(!editableWorkspace())throw new Error('This organization is view only.');
+  await versionHistory.capture(token.key,state,{label,force:true});
+  if(!historyContextValid(token))throw new Error('The active workspace changed.');
+  if(token.signedIn && cloudAvailable) {
+    requireHistorySync(token);
+    try {await new CloudHistory(accounts).capture(token.organization,label);}
+    catch {throw new Error('The version was saved on this device. The account checkpoint failed; check your connection and retry.');}
+  }
+}
+async function restoreHistoryWorkspace(workspace,expectedSignature,cloudAvailable,token,{preserveAI=true}={}) {
+  await prepareHistory(token);
+  if(!editableWorkspace())throw new Error('This organization is view only.');
+  if(unsavedForm || hasUnsubmittedEdits())throw new Error('Save or discard your form edits before restoring.');
+  requireCurrentHistoryPreview(token,expectedSignature);
+  requireHistorySync(token);
+  const restored=syncCatalog(validateWorkspace(workspace));
+  // Restoring an old profile must not turn AI content back on without consent.
+  if(preserveAI && !activeOrganization)Object.assign(restored.profile,personalAI);
+  await versionHistory.capture(token.key,state,{label:'Before restoring a version',force:true});
+  requireCurrentHistoryPreview(token,expectedSignature);
+  const enabled=autosave.enabled;
+  let result;
+  try {
+    if(token.signedIn) {
+      autosave.reset(false);
+      if(cloudAvailable)result=await new CloudHistory(accounts).apply(token.organization,restored,token.organization?null:accounts.workspaceVersion,token.organization?organizationRevision:null);
+      else if(token.organization)result=await organizationsClient.save(token.organization,organizationRevision,restored);
+      else result=await accounts.saveWorkspace(restored);
+      if(!historyContextValid(token))throw new Error('The active workspace changed. The restore completed for the previous workspace; reopen it to load its saved copy.');
+      if(token.organization){organizationRevision=result.revision;organizationBase=clone(restored);saveOrganizationBase();}
+      else accounts.workspaceVersion=result.updatedAt;
+      accountSave={phase:'local',signature:workspaceSignature(restored),remoteAvailable:true};
+      rememberAccountSave(accountSave.signature);
+    }
+    // After a successful account restore, keep the returned data in memory even
+    // if localStorage fills up. The server copy must not be silently overwritten.
+    if(token.signedIn) {
+      state=restored;
+      try{localStorage.setItem(activeStore,JSON.stringify(state));localSaveFailed=false;}catch{localSaveFailed=true;}
+    } else {
+      localStorage.setItem(activeStore,JSON.stringify(restored));state=restored;localSaveFailed=false;
+    }
+    if(!activeOrganization)personalAI={aiMode:state.profile.aiMode,aiLabels:state.profile.aiLabels};
+    autosave.reset(enabled);resetSelection();dialog.close();render();
+    toast(localSaveFailed?'Version restored to your account. Browser storage is full; download a backup.':'Version restored. The previous workspace is saved in version history.');
+    if(token.signedIn && !token.organization && !cloudAvailable) {
+      try {await accounts.saveProfile(restored.profile);}
+      catch {if(historyContextValid(token))toast('Workspace restored. Profile sync failed; retry profile sync in Settings.');}
+    }
+  } catch(error) {
+    if(historyContextValid(token))autosave.reset(enabled);
+    if(error.code==='40001' || error.name==='WorkspaceConflictError')throw new Error('Another device saved a newer copy. Sync the account workspace, then preview again.');
+    throw error;
+  }
+}
 function persist() {
   browseCache=null;
   if(!activeOrganization)personalAI={aiMode:state.profile.aiMode,aiLabels:state.profile.aiLabels};
   if(activeOrganization&&!editableWorkspace()&&organizationBase&&workspaceSignature(state)!==workspaceSignature(organizationBase)) {state=clone(organizationBase);toast("This organization is view only.");return false;}
   try {
+    captureBeforeWrite(state);
     localStorage.setItem(activeStore, JSON.stringify(state));
     localSaveFailed = false;
     queueAccountSave();
@@ -341,6 +428,7 @@ function persist() {
 function commitWorkspace(next) {
   if(!editableWorkspace()){toast("This organization is view only.");return false;}
   try {
+    captureBeforeWrite(next);
     localStorage.setItem(activeStore, JSON.stringify(next));
     state = next;
     if(!activeOrganization)personalAI={aiMode:state.profile.aiMode,aiLabels:state.profile.aiLabels};
@@ -621,10 +709,12 @@ function confirmCloudRestore(saved, title = "Load your account backup?") {
   modal(
     `<h2>${e(title)}</h2><p>${restored.songs.length} songs · ${restored.libraries.length} libraries · ${restored.plans.length} plans</p><p class="muted">This replaces the current account workspace in this browser. Download a backup first if you want to keep it.</p><button class="text-button" data-action="export">Download current workspace</button><p id="account-error" role="alert"></p><div class="form-actions"><button class="button" data-action="close">Cancel</button><button class="button primary" id="apply-cloud">Load this backup</button></div>`,
   );
-  document.querySelector("#apply-cloud").onclick = () => {
+  document.querySelector("#apply-cloud").onclick = async () => {
     try {
       if (accounts.user?.id !== owner || activeStore !== store)
         throw new Error("Account changed");
+      await versionHistory.capture(store,state,{label:"Before loading an account backup",force:true});
+      if(accounts.user?.id !== owner || activeStore !== store)throw new Error("The active workspace changed.");
       localStorage.setItem(activeStore, JSON.stringify(restored));
       state = restored;
       accountSave = {
@@ -726,7 +816,7 @@ function render() {
     )
     .join(
       "",
-    )}</nav><div class="sidebar-bottom"><button class="text-button" data-action="export">↓ Export your data</button></div></aside><main><header class="topbar"><span>Faithful Repertoire <span class="divider">/</span> ${e({ discover: "Discover", index: "Song index", collections: "Collections", library: "Libraries", plans: "Plans", evaluate: "Evaluate", profile: "Evaluation criteria", settings: "Settings", blacklist: "No Approval", about: "About" }[view])}</span><div class="topbar-actions"><a class="about-link" href="#about" data-action="nav" data-view="about" ${view === "about" ? 'aria-current="page"' : ""}>About</a>${lensSelector()}${accounts.user&&activeStore!==STORE?`<label class="workspace-switch"><span class="workspace-label-small">Workspace</span><select id="workspace-select" aria-label="Workspace"><option value="personal">Personal</option></select></label>`:""}${saveStrip()}<button class="button" data-action="account">${accounts.user && activeStore !== STORE ? "My account" : "Sign in"}</button><button class="button settings-gear" aria-label="Settings" title="Settings" data-action="nav" data-view="settings"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="m9 3-1 3-3 1-2 5 2 5 3 1 1 3h6l1-3 3-1 2-5-2-5-3-1-1-3Z"/><circle cx="12" cy="12" r="3"/></svg></button></div></header><div class="page">${activeStore === STORE ? '<p class="guest-banner" role="status">Browser-only workspace · saved on this device. <button class="text-button" data-action="account">Sign in to save across devices</button></p>' : ""}${activeOrganization?`<p class="organization-banner" role="status"><strong>${e(activeOrganization.name)}</strong> · ${e(organizationRoles[activeOrganization.role])}${editableWorkspace()?" · Shared changes sync automatically":" · Changes are disabled in this workspace"}</p>`:""}${["about","settings"].includes(view) ? "" : profilePrompt()}${workspaceTabs()}${view === "evaluate" ? `<p class="catalog-analysis-coverage">Catalog text analysis: <strong>${catalogAnalysisCoverage.reviewed} expanded drafts</strong> of ${catalogAnalysisCoverage.total} records · ${catalogAnalysisCoverage.unresolved + catalogAnalysisCoverage.missing + catalogAnalysisCoverage.partial + catalogAnalysisCoverage.textScans} need further text or identity review.</p>` : ""}${["discover", "evaluate", "library", "blacklist"].includes(view) ? songWorkspace() : view === "index" ? indexPage() : view === "collections" ? collectionsPage() : view === "plans" ? plansPage() : view === "settings" ? settingsPage() : view === "about" ? aboutPage() : profilePage()}</div><footer>Faithful Repertoire · <a href="#about" data-action="nav" data-view="about">About</a></footer></main>`;
+    )}</nav><div class="sidebar-bottom"><button class="text-button" data-action="export">↓ Export your data</button></div></aside><main><header class="topbar"><span>Faithful Repertoire <span class="divider">/</span> ${e({ discover: "Discover", index: "Song index", collections: "Collections", library: "Libraries", plans: "Plans", evaluate: "Evaluate", profile: "Evaluation criteria", settings: "Settings", blacklist: "No Approval", about: "About" }[view])}</span><div class="topbar-actions"><a class="about-link" href="#about" data-action="nav" data-view="about" ${view === "about" ? 'aria-current="page"' : ""}>About</a><div class="topbar-selectors">${lensSelector()}${accounts.user&&activeStore!==STORE?`<label class="workspace-switch"><span class="workspace-label-small">Workspace</span><select id="workspace-select" aria-label="Workspace"><option value="personal">Personal</option></select></label>`:""}</div>${saveStrip()}<button class="button" data-action="account">${accounts.user && activeStore !== STORE ? "My account" : "Sign in"}</button><button class="button settings-gear" aria-label="Settings" title="Settings" data-action="nav" data-view="settings"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="m9 3-1 3-3 1-2 5 2 5 3 1 1 3h6l1-3 3-1 2-5-2-5-3-1-1-3Z"/><circle cx="12" cy="12" r="3"/></svg></button></div></header><div class="page">${activeStore === STORE ? '<p class="guest-banner" role="status">Browser-only workspace · saved on this device. <button class="text-button" data-action="account">Sign in to save across devices</button></p>' : ""}${activeOrganization?`<p class="organization-banner" role="status"><strong>${e(activeOrganization.name)}</strong> · ${e(organizationRoles[activeOrganization.role])}${editableWorkspace()?" · Shared changes sync automatically":" · Changes are disabled in this workspace"}</p>`:""}${["about","settings"].includes(view) ? "" : profilePrompt()}${workspaceTabs()}${view === "evaluate" ? `<p class="catalog-analysis-coverage">Catalog text analysis: <strong>${catalogAnalysisCoverage.reviewed} expanded drafts</strong> of ${catalogAnalysisCoverage.total} records · ${catalogAnalysisCoverage.unresolved + catalogAnalysisCoverage.missing + catalogAnalysisCoverage.partial + catalogAnalysisCoverage.textScans} need further text or identity review.</p>` : ""}${["discover", "evaluate", "library", "blacklist"].includes(view) ? songWorkspace() : view === "index" ? indexPage() : view === "collections" ? collectionsPage() : view === "plans" ? plansPage() : view === "settings" ? settingsPage() : view === "about" ? aboutPage() : profilePage()}</div><footer>Faithful Repertoire · <a href="#about" data-action="nav" data-view="about">About</a></footer></main>`;
   for (const node of app.querySelectorAll("details")) {
     const key = node.dataset.disclosureKey || (node.closest(".detail-panel")
       ? "song:" + selected + ":" + (node.dataset.attribute || node.className)
@@ -740,6 +830,7 @@ function render() {
   if (resultList) resultList.scrollTop = listScroll;
   updateWorkspaceSwitcher();restrictOrganizationControls();
   hydrateCollectionPortraits();
+  updateSaveStrip();
 }
 function songWorkspace() {
   const isLibrary = view === "library";
@@ -1478,7 +1569,7 @@ function rubricMarkup() {
   return `<details class="score-rubric"><summary>What do 0–10 scores mean?</summary><p>Ten is possible. Unknown evidence is left blank, never scored zero. Judge each criterion independently using the exact version, explain the evidence and uncertainty, and avoid false precision. A high average does not decide whether you use a song.</p><table><thead><tr><th>Score</th><th>Meaning</th><th>Evidence anchor</th></tr></thead><tbody>${scoreAnchors.map(([score,name,rule]) => `<tr><th>${e(score)}</th><td>${e(name)}</td><td>${e(rule)}</td></tr>`).join("")}</tbody></table></details>`;
 }
 function profilePage() {
-  return `<div class="page-heading"><div><h1>Evaluation criteria</h1><p>Choose what you measure. Ratings support human judgment.</p></div></div><div class="form-actions"><button class="button" data-action="new-lens">New lens</button></div><p>Each lens keeps its own criteria, weights and evaluations. Libraries and plans stay together; switch lenses to examine them for another purpose.</p><form id="profile-form" class="profile-panel"><label>Lens name<input name="lensName" maxlength="100" required value="${e(activeLens(state).name)}"></label><label>Purpose of this lens<textarea name="evaluationPurpose" maxlength="2000" rows="2" placeholder="For example: Sunday congregation, acoustic prayer night, or youth worship">${e(state.profile.evaluationPurpose||'')}</textarea></label><h2>${e(denominations[state.profile.denomination])}</h2><p>${e(statements[state.profile.statement].name)}</p><button class="text-button" type="button" data-action="setup-profile">Choose denomination & statement of faith</button><label>AI content preference<select name="aiMode" aria-label="AI content preference">${Object.entries(aiModes).map(([key,mode]) => `<option value="${key}" ${key === effectiveProfile().aiMode ? "selected" : ""}>${e(mode.title)}</option>`).join("")}</select></label><label>AI Labels<select name="aiLabels" aria-label="AI Labels"><option value="on" ${effectiveProfile().aiLabels ? "selected" : ""}>On</option><option value="off" ${!effectiveProfile().aiLabels ? "selected" : ""}>Off</option></select></label><h3>Rating criteria</h3><p>The displayed average uses only active criteria with a positive weight and an assessed score. Missing scores are excluded. Deactivating or removing a criterion never deletes saved scores. Existing weights are preserved; equal weights are available below. Serious doctrinal concerns remain visible independently of the average.</p>${rubricMarkup()}<div id="criterion-rows">${ratingCriteria(state.profile).map(criterionRow).join("")}</div><div class="form-actions"><button type="button" class="button" data-action="add-criterion">Add custom criterion</button><button type="button" class="button" data-action="equal-weights">Use equal weights</button><button type="button" class="button" data-action="restore-criteria">Restore built-in criteria</button></div><details data-disclosure-key="scoring-suggestions"><summary>Other useful criteria</summary><p>These require evidence for the exact text, melody, arrangement or congregation. Add only what serves your review purpose. Avoid double-counting overlapping criteria.</p>${suggestedCriteria.map((c,i) => `<p><strong>${e(c.label)}</strong> — ${e(c.rubric)} <button type="button" class="text-button" data-action="suggest-criterion" data-id="${i}">Add ${e(c.label)}</button></p>`).join("")}</details><label>Theological & editorial parameters<textarea name="principles" rows="7" maxlength="6000" required>${e(state.profile.principles)}</textarea></label><p>Changing criteria updates displayed ratings, not past evaluations. New scores remain blank until reviewed. Arrangement coherence replaces the former time label; it is not a preference for shorter songs.</p><p id="profile-error" role="alert"></p><button class="button primary" type="submit">Save evaluation criteria</button></form>`;
+  return `<div class="page-heading"><div><h1>Evaluation criteria</h1><p>Choose what you measure. Ratings support human judgment.</p></div><button class="button" data-action="new-lens">New lens</button></div><p>Each lens keeps its own criteria, weights and evaluations. Libraries and plans stay together; switch lenses to examine them for another purpose.</p><form id="profile-form" class="profile-panel"><label>Lens name<input name="lensName" maxlength="100" required value="${e(activeLens(state).name)}"></label><label>Purpose of this lens<textarea name="evaluationPurpose" maxlength="2000" rows="2" placeholder="For example: Sunday congregation, acoustic prayer night, or youth worship">${e(state.profile.evaluationPurpose||'')}</textarea></label><h2>${e(denominations[state.profile.denomination])}</h2><p>${e(statements[state.profile.statement].name)}</p><button class="text-button" type="button" data-action="setup-profile">Choose denomination & statement of faith</button><label>AI content preference<select name="aiMode" aria-label="AI content preference">${Object.entries(aiModes).map(([key,mode]) => `<option value="${key}" ${key === effectiveProfile().aiMode ? "selected" : ""}>${e(mode.title)}</option>`).join("")}</select></label><label>AI Labels<select name="aiLabels" aria-label="AI Labels"><option value="on" ${effectiveProfile().aiLabels ? "selected" : ""}>On</option><option value="off" ${!effectiveProfile().aiLabels ? "selected" : ""}>Off</option></select></label><h3>Rating criteria</h3><p>The displayed average uses only active criteria with a positive weight and an assessed score. Missing scores are excluded. Deactivating or removing a criterion never deletes saved scores. Existing weights are preserved; equal weights are available below. Serious doctrinal concerns remain visible independently of the average.</p>${rubricMarkup()}<div id="criterion-rows">${ratingCriteria(state.profile).map(criterionRow).join("")}</div><div class="form-actions"><button type="button" class="button" data-action="add-criterion">Add custom criterion</button><button type="button" class="button" data-action="equal-weights">Use equal weights</button><button type="button" class="button" data-action="restore-criteria">Restore built-in criteria</button></div><details data-disclosure-key="scoring-suggestions"><summary>Other useful criteria</summary><p>These require evidence for the exact text, melody, arrangement or congregation. Add only what serves your review purpose. Avoid double-counting overlapping criteria.</p>${suggestedCriteria.map((c,i) => `<p><strong>${e(c.label)}</strong> — ${e(c.rubric)} <button type="button" class="text-button" data-action="suggest-criterion" data-id="${i}">Add ${e(c.label)}</button></p>`).join("")}</details><label>Theological & editorial parameters<textarea name="principles" rows="7" maxlength="6000" required>${e(state.profile.principles)}</textarea></label><p>Changing criteria updates displayed ratings, not past evaluations. New scores remain blank until reviewed. Arrangement coherence replaces the former time label; it is not a preference for shorter songs.</p><p id="profile-error" role="alert"></p><button class="button primary" type="submit">Save evaluation criteria</button></form>`;
 }
 function newSongDialog() {
   modal(
@@ -1605,6 +1696,10 @@ document.addEventListener("click", async (event) => {
   if (menu) {
     menu.open = false;
     disclosureState.set(menu.dataset.disclosure, false);
+  }
+  if (button.dataset.action === "version-history") {
+    if(unsavedForm || hasUnsubmittedEdits())return toast("Save or discard your current form edits before opening version history.");
+    await openVersionHistory({history:versionHistory,cloud:new CloudHistory(accounts),context:historyContext,current:()=>clone(state),valid:historyContextValid,editable:editableWorkspace,modal,dialog,prepare:prepareHistory,normalize:workspace=>{const restored=syncCatalog(validateWorkspace(workspace));if(!activeOrganization)Object.assign(restored.profile,personalAI);return restored;},checkpoint:saveHistoryCheckpoint,restore:restoreHistoryWorkspace,download});return;
   }
   if (button.dataset.action === "new-lens") {
     if(!editableWorkspace())return toast("This workspace is view only.");
@@ -2970,23 +3065,11 @@ document.addEventListener("submit", async (event) => {
       modal(
         `<h2>Restore this workspace?</h2><p>This backup contains <strong>${restored.songs.length} songs</strong>, <strong>${restored.libraries.length} libraries</strong> and <strong>${restored.plans.length} plans</strong>.</p><p class="muted">It will replace the data in this browser. Download your current workspace first if you want to keep it.</p><button class="text-button" data-action="export">Download current workspace</button><p id="confirm-restore-error" role="alert"></p><div class="form-actions"><button class="button" data-action="close">Cancel</button><button class="button primary" id="confirm-restore">Replace with this backup</button></div>`,
       );
-      document.querySelector("#confirm-restore").onclick = () => {
-        try {
-          // Write successfully before changing the in-memory state.
-          localStorage.setItem(activeStore, JSON.stringify(restored));
-          state = restored;
-          selected = null;
-          libraryId = state.libraries[0].id;
-          planId = state.plans[0]?.id;
-          query = "";
-          view = "discover";
-          dialog.close();
-          render();
-          toast("Your workspace has been restored.");
-        } catch {
-          document.querySelector("#confirm-restore-error").textContent =
-            "Browser storage is unavailable or full. Your current workspace has not been replaced.";
-        }
+      const restoreContext=historyContext(),restoreSignature=workspaceSignature(state);
+      document.querySelector("#confirm-restore").onclick = async event => {
+        const button=event.currentTarget;button.disabled=true;
+        try {await restoreHistoryWorkspace(restored,restoreSignature,false,restoreContext,{preserveAI:false});}
+        catch(error){const message=document.querySelector("#confirm-restore-error");if(message)message.textContent=error.message;button.disabled=false;}
       };
     } catch (error) {
       form.querySelector("#restore-error").textContent =
@@ -3156,6 +3239,7 @@ document.addEventListener("submit", async (event) => {
       setupComplete: true,
     };
     try {if(!commitWorkspace(validateWorkspace(renameActiveLens({...state,profile:nextProfile},values.lensName))))return;}catch(error){form.querySelector("#profile-error").textContent=error.message;return;}
+    unsavedForm=false;
     persist();
     render();
     toast("Evaluation criteria saved. Existing assessments preserved.");
@@ -3385,7 +3469,7 @@ function organizationStore(id,user=accounts.user?.id) { return `faithful-reperto
 function editableWorkspace() { return canEditOrganization(activeOrganization); }
 function effectiveProfile() { return activeOrganization ? {...state.profile,...personalAI} : state.profile; }
 function saveOrganizationBase() { if(activeOrganization&&organizationBase)try{localStorage.setItem(activeStore+":sync-base",JSON.stringify({revision:organizationRevision,workspace:organizationBase}));}catch{} }
-function cacheOrganization() { try{localStorage.setItem(activeStore,JSON.stringify(state));return true;}catch{localSaveFailed=true;toast("Browser storage is full. Download a backup before leaving.");return false;} }
+function cacheOrganization() { try{captureBeforeWrite(state);localStorage.setItem(activeStore,JSON.stringify(state));return true;}catch{localSaveFailed=true;toast("Browser storage is full. Download a backup before leaving.");return false;} }
 function keepOrganizationDraft() { if(!activeOrganization)return;try{localStorage.setItem(activeStore+":draft:"+Date.now(),JSON.stringify(state));}catch{toast("The browser draft could not be stored. Download a backup before switching.");throw new Error("Browser storage is unavailable.");} }
 async function savePersonalAIPreferences() {
   if(!accounts.user)return;
@@ -3528,7 +3612,7 @@ function organizationDraftsDialog() {
 }
 function restrictOrganizationControls() {
   if(editableWorkspace())return;
-  const readActions=new Set(["nav","account","organizations","organization-drafts","close","song-select","song-tab","library-select","plan-select","index-open","catalog-open","clear-filters","song-page","index-page","first-song-page","last-song-page","collection-page","sync-profile","sort","export","export-plan","export-plan-json","export-library","print-plan","download-song-file","song-files","song-recordings","backup","cloud-load","retry-autosave","toggle-ai-labels","signout","change-password","reset-index","remove-index-filter","apply-index-view","export-index","library-audit","workspace-evaluation","plan-templates","copy-criteria-prompt","prepare-chatgpt-criteria"]);
+  const readActions=new Set(["nav","account","organizations","organization-drafts","version-history","close","song-select","song-tab","library-select","plan-select","index-open","catalog-open","clear-filters","song-page","index-page","first-song-page","last-song-page","collection-page","sync-profile","sort","export","export-plan","export-plan-json","export-library","print-plan","download-song-file","song-files","song-recordings","backup","cloud-load","retry-autosave","toggle-ai-labels","signout","change-password","reset-index","remove-index-filter","apply-index-view","export-index","library-audit","workspace-evaluation","plan-templates","copy-criteria-prompt","prepare-chatgpt-criteria"]);
   for(const button of app.querySelectorAll("button[data-action]"))if(!readActions.has(button.dataset.action)){button.disabled=true;button.title="View-only organization access";}
   for(const row of app.querySelectorAll("[data-plan-item]"))row.draggable=false;
 }

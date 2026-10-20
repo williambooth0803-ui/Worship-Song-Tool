@@ -10,6 +10,16 @@ The Cloudflare website is https://faithful-repertoire.pages.dev/. Cloudflare rep
 Node 24 selection, account redirects and saved-work migration. The current GitHub
 site remains available for browser-data migration and the existing ChatGPT consent flow; the owner confirmed adding the Cloudflare root URL to Supabase’s email-link redirect list.
 
+## Version history
+
+**Settings → Version history** offers automatic checkpoints, named versions,
+change previews, downloads and guarded restores with a recovery copy. Device
+history works immediately. Account history requires the additive
+[supabase/version-history.sql](supabase/version-history.sql) migration; deployment
+of that migration is pending administrator access (the configured management
+credential returns HTTP 401). See [version history](VERSION-HISTORY.md) for
+installation, retention and shared-workspace permissions.
+
 ## Navigation and public About
 
 The primary flow is **Discover → Evaluate → Libraries → Plans**. Discover groups

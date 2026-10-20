@@ -1,14 +1,14 @@
 # Running code total
 
-**35,548 lines of source and checks** across 136 files.
+**36,279 lines of source and checks** across 141 files.
 
 | Scope | Files | Lines |
 | --- | ---: | ---: |
-| App, backend and support scripts | 78 | 29,017 |
-| Tests and browser checks | 58 | 6,531 |
-| **Source and checks total** | **136** | **35,548** |
-| Generated website copy (excluded above) | 60 | 27,024 |
-| All code including generated website | 196 | 62,572 |
+| App, backend and support scripts | 81 | 29,506 |
+| Tests and browser checks | 60 | 6,773 |
+| **Source and checks total** | **141** | **36,279** |
+| Generated website copy (excluded above) | 62 | 27,354 |
+| All code including generated website | 203 | 63,633 |
 
 Run `npm run code:count` to refresh this file. Site builds refresh it automatically.
 Counts physical lines, including comments and blank lines, in repository code files;

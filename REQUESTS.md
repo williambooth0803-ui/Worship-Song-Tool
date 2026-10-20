@@ -6,6 +6,37 @@ do not treat a new prompt as cancellation unless the owner says so. Mark an item
 complete only with implementation and meaningful verification. Record external
 blockers explicitly. Preserve personal assessments, recordings and workspaces.
 
+## Version history and visual audit (October 19, 2026)
+
+- [x] Add automatic device checkpoints in IndexedDB, named versions, dated lists,
+  change previews, JSON downloads and guarded restores. Preserve a recovery copy
+  before replacing data, including file-backup and account-copy loads.
+- [x] Add private database history triggers/RPCs with native owner/member access,
+  current organization roles, OAuth denial, bounded retention and atomic
+  timestamp/revision checks. Device and account histories remain separate from
+  the workspace itself. Keep current AI visibility during history restores.
+- [x] Audit Discover, Collections, Evaluate, Song index, Criteria, Libraries,
+  No Approval, Plans, Settings, About, account and review flows at phone/tablet/
+  desktop widths. Fix label/control margins and heights, cramped shared selectors,
+  clipped phone tabs, sticky criteria actions, the detached New lens bar and a
+  stale unsaved-form warning after criteria saves. Include long lens names and
+  populated/shared workspaces.
+- [x] All 148 unit/database tests, 1,000-song/1,000-plan scale check and MCP type
+  check pass. Real IndexedDB browser checks cover isolation, immutable capture,
+  throttle, concurrent retention, storage failure, previews, downloads, cancel,
+  restore, recovery, reload and stale-tab rejection. Real PostgreSQL browser
+  fixtures cover personal and shared cloud restores and view-only restrictions.
+  The full hosted regression suite passed. A fixture
+  now waits for the asynchronous profile download before asserting its value.
+- [ ] Publish the verified frontend and confirm hosting deployment.
+- [ ] Account-history production migration remains pending: the configured
+  Supabase management credential returns HTTP 401; an anonymous metadata probe
+  confirms `history_list` is absent (PGRST202). Provided the tested
+  `supabase/version-history.sql` for the owner's SQL Editor. Device history works
+  immediately, and the UI explicitly identifies unavailable account history.
+  No production database writes or private account tests were performed.
+  Starting source/check count: 35,548; final: 36,279.
+
 ## Cloudflare hosting setup
 
 - [x] Owner created a Cloudflare account and connected GitHub. Inspect the
