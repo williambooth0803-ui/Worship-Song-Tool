@@ -1,0 +1,34 @@
+name: Deploy workspace history
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/deploy-history.yml
+      - scripts/deploy-history.mjs
+      - supabase/version-history.sql
+permissions:
+  contents: read
+concurrency:
+  group: faithful-history-production
+  cancel-in-progress: false
+jobs:
+  deploy-history:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+      - run: npm ci --no-audit --no-fund
+      - name: Verify history permissions and atomic restores
+        run: node --test test/version-history.test.js
+      - name: Apply and verify the private history migration
+        env:
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+        run: node scripts/deploy-history.mjs

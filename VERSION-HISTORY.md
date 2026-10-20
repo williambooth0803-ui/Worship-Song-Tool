@@ -36,6 +36,14 @@ versions remain usable. Signed-in restores require completed account sync.
 
 ## Install account history
 
+The **Deploy workspace history** GitHub workflow runs when this migration or its
+runner changes on `main`, or when manually dispatched. It tests the migration,
+checks the existing encrypted `SUPABASE_ACCESS_TOKEN` credential before any
+writes, applies the SQL and verifies the history table, four RPCs and two
+checkpoint triggers. It never logs credentials or private workspace contents.
+
+For manual installation:
+
 1. Open the project's Supabase **SQL Editor** with an administrator account.
 2. Run [supabase/version-history.sql](supabase/version-history.sql) after the
    existing `schema.sql` and `organizations.sql` migrations. The migration is

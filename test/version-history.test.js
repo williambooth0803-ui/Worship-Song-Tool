@@ -32,6 +32,29 @@ test('cloud history uses the authenticated account transport and structured RPC 
   assert.deepEqual(calls[0],{path:'/rest/v1/rpc/history_list',method:'POST',authenticated:true,body:{target_org:null}});
   assert.equal(calls[1].body.version_label,'Named version');assert.equal(calls[2].body.new_workspace,workspace);
 });
+test('history deployment stops before writes on failed authentication and verifies migration results',async()=>{
+  const originalFetch=globalThis.fetch,originalToken=process.env.SUPABASE_ACCESS_TOKEN,originalLog=console.log;
+  const calls=[],messages=[];
+  try {
+    process.env.SUPABASE_ACCESS_TOKEN='synthetic-deployment-credential';console.log=value=>messages.push(value);
+    globalThis.fetch=async(url,options)=>{calls.push({url,options});return {ok:false,status:401};};
+    await assert.rejects(import('../scripts/deploy-history.mjs?unauthorized'),/HTTP 401/);
+    assert.equal(calls.length,1);assert.equal(calls[0].options.method,'GET','Failed authentication must not reach a database write');
+    calls.length=0;
+    globalThis.fetch=async(url,options)=>{
+      calls.push({url,options});return {ok:true,json:async()=>calls.length===3?[{history_table:true,history_rpcs:true,history_triggers:true}]:{}};
+    };
+    await import('../scripts/deploy-history.mjs?verified');
+    assert.equal(calls.length,3);assert.ok(calls[1].url.endsWith('/database/query'));
+    assert.equal(JSON.parse(calls[1].options.body).query,await readFile('supabase/version-history.sql','utf8'));
+    assert.match(messages.join(' '),/installed and verified/);assert.ok(!messages.join(' ').includes(process.env.SUPABASE_ACCESS_TOKEN));
+    globalThis.fetch=async()=>({ok:true,json:async()=>[]});
+    await assert.rejects(import('../scripts/deploy-history.mjs?invalid-verification'),/verification failed/);
+  }finally{
+    globalThis.fetch=originalFetch;console.log=originalLog;
+    if(originalToken===undefined)delete process.env.SUPABASE_ACCESS_TOKEN;else process.env.SUPABASE_ACCESS_TOKEN=originalToken;
+  }
+});
 
 test('database history enforces native owner/member access, bounded checkpoints and atomic stale-safe restores',async()=>{
   const db=new PGlite();

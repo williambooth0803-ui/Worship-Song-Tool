@@ -21,7 +21,7 @@ blockers explicitly. Preserve personal assessments, recordings and workspaces.
   clipped phone tabs, sticky criteria actions, the detached New lens bar and a
   stale unsaved-form warning after criteria saves. Include long lens names and
   populated/shared workspaces.
-- [x] All 148 unit/database tests, 1,000-song/1,000-plan scale check and MCP type
+- [x] All 149 unit/database tests, 1,000-song/1,000-plan scale check and MCP type
   check pass. Real IndexedDB browser checks cover isolation, immutable capture,
   throttle, concurrent retention, storage failure, previews, downloads, cancel,
   restore, recovery, reload and stale-tab rejection. Real PostgreSQL browser
@@ -34,13 +34,16 @@ blockers explicitly. Preserve personal assessments, recordings and workspaces.
   completed. The fixture now waits for the dialog to close. Follow-up UI shows
   restoring progress, prevents concurrent restores and guards reload/Escape while
   recovery is pending; a controlled-delay browser test verifies these states.
-- [ ] Account-history production migration remains pending: the configured
-  Supabase management credential returns HTTP 401; an anonymous metadata probe
-  confirms `history_list` is absent (PGRST202). Provided the tested
-  `supabase/version-history.sql` for the owner's SQL Editor. Device history works
-  immediately, and the UI explicitly identifies unavailable account history.
-  No production database writes or private account tests were performed.
-  Starting source/check count: 35,548; final: 36,300.
+- [ ] Install account-history production migration. The local management
+  credential returns HTTP 401, and the initial anonymous metadata probe found
+  `history_list` absent (PGRST202). Located the existing successful GitHub
+  deployment workflow and added a dedicated history deployment using that
+  separately encrypted credential. It checks authentication before writes,
+  applies only the tested history migration and verifies the resulting objects.
+  Deployment status is being checked; manual SQL remains a fallback. Device
+  history works immediately; unavailable account history is explicit in the UI.
+  Private production account contents are never used in tests.
+  Starting source/check count: 35,548; final: 36,351.
 
 ## Cloudflare hosting setup
 
