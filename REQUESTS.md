@@ -19,7 +19,11 @@ blockers explicitly. Preserve personal assessments, recordings and workspaces.
   view-only shared-workspace context and preservation of notes, libraries,
   plans and evaluations. All 149 unit/database tests passed; targeted landing
   browser checks and the full hosted regression suite passed.
-- [ ] Publish the verified frontend and confirm hosting deployment.
+- [x] Publish frontend `43527cc`. Cloudflare Pages, the Cloudflare Worker build
+  and GitHub Pages reported success. A live check on the reachable GitHub site
+  confirms public Home/About, explicit guest entry, mobile logo navigation and
+  the readable footer About control. The Cloudflare hostname remains blocked
+  by this execution environment; its provider deployment result is verified.
   Starting source/check count: 36,351; final: 36,542.
 
 ## Version history and visual audit (October 19, 2026)
