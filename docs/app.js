@@ -99,6 +99,7 @@ import {
 const STORE = "hymn-heart-v1";
 let activeStore = STORE;
 const versionHistory = new VersionHistory();
+let historyRestorePending=false;
 let browseCache=null;
 function browseData() {
   const mode=effectiveProfile().aiMode;
@@ -360,7 +361,12 @@ async function saveHistoryCheckpoint(label,cloudAvailable,token) {
     catch {throw new Error('The version was saved on this device. The account checkpoint failed; check your connection and retry.');}
   }
 }
-async function restoreHistoryWorkspace(workspace,expectedSignature,cloudAvailable,token,{preserveAI=true}={}) {
+async function restoreHistoryWorkspace(...args) {
+  if(historyRestorePending)throw new Error('A workspace restore is already running.');
+  historyRestorePending=true;
+  try{return await applyHistoryRestore(...args);}finally{historyRestorePending=false;}
+}
+async function applyHistoryRestore(workspace,expectedSignature,cloudAvailable,token,{preserveAI=true}={}) {
   await prepareHistory(token);
   if(!editableWorkspace())throw new Error('This organization is view only.');
   if(unsavedForm || hasUnsubmittedEdits())throw new Error('Save or discard your form edits before restoring.');
@@ -1692,6 +1698,7 @@ document.addEventListener("click", async (event) => {
   const button = event.target.closest("[data-action]");
   if (!button || button.disabled) return;
   event.preventDefault();
+  if(button.dataset.action==='close' && historyRestorePending)return toast('Restoring the workspace. Please wait until it finishes.');
   const menu = button.closest(".more-menu,.account-save-strip");
   if (menu) {
     menu.open = false;
@@ -3067,9 +3074,9 @@ document.addEventListener("submit", async (event) => {
       );
       const restoreContext=historyContext(),restoreSignature=workspaceSignature(state);
       document.querySelector("#confirm-restore").onclick = async event => {
-        const button=event.currentTarget;button.disabled=true;
+        const button=event.currentTarget;button.disabled=true;button.textContent='Restoring…';
         try {await restoreHistoryWorkspace(restored,restoreSignature,false,restoreContext,{preserveAI:false});}
-        catch(error){const message=document.querySelector("#confirm-restore-error");if(message)message.textContent=error.message;button.disabled=false;}
+        catch(error){const message=document.querySelector("#confirm-restore-error");if(message)message.textContent=error.message;button.disabled=false;button.textContent='Replace with this backup';}
       };
     } catch (error) {
       form.querySelector("#restore-error").textContent =
@@ -3400,8 +3407,9 @@ function hasUnsubmittedEdits() {
 }
 window.addEventListener("beforeunload", event => {
   const accountPending = accounts.user && activeStore !== STORE && accountSave.signature !== workspaceSignature(state) && (accountSave.remoteAvailable || accountSave.initialSignature !== workspaceSignature(state));
-  if (localSaveFailed || unsavedForm || hasUnsubmittedEdits() || accountPending) { event.preventDefault(); event.returnValue = ""; }
+  if (historyRestorePending || localSaveFailed || unsavedForm || hasUnsubmittedEdits() || accountPending) { event.preventDefault(); event.returnValue = ""; }
 });
+dialog.addEventListener('cancel',event=>{if(historyRestorePending)event.preventDefault();});
 window.addEventListener("online", () => { if (accounts.user && autosave.enabled) autosave.retry(); });
 document.addEventListener("visibilitychange", () => { if (document.visibilityState === "hidden" && autosave.enabled) autosave.flush(); });
 dialog.addEventListener("close", () => { unsavedForm = false; updateSaveStrip(); });

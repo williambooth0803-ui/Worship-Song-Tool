@@ -50,9 +50,9 @@ export async function openVersionHistory({history,cloud,context,current,valid,ed
     confirm.onclick=()=>{confirmation.hidden=false;confirm.hidden=true;dialog.querySelector('#history-restore').focus();};
     dialog.querySelector('#history-cancel').onclick=()=>{confirmation.hidden=true;confirm.hidden=false;confirm.focus();};
     dialog.querySelector('#history-restore').onclick=async event=>{
-      const button=event.currentTarget;button.disabled=true;
+      const button=event.currentTarget;button.disabled=true;button.textContent='Restoring…';
       try{await restore(restored,signature,cloudAvailable,token);}
-      catch(error){if(live(generation)){dialog.querySelector('#history-error').textContent=errorMessage(error);button.disabled=false;}}
+      catch(error){if(live(generation)){dialog.querySelector('#history-error').textContent=errorMessage(error);button.disabled=false;button.textContent='Replace workspace';}}
     };
   }
   await list();

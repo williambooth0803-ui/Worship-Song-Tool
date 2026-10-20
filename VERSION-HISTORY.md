@@ -9,7 +9,8 @@ reference cannot recover a file deleted from storage.
 Automatic checkpoints save the previous workspace before an edit, at most once
 every five minutes. **Save version** creates an immediate, optionally named
 checkpoint. Preview shows additions, changes and removals before a second
-confirmation replaces anything. The current workspace is saved as **Before
+confirmation replaces anything. Restore progress is visible, and reload/Escape
+are guarded while the operation is running. The current workspace is saved as **Before
 restoring a version** first, so the restore can itself be undone. Current AI
 display preferences are preserved. Another device's newer save or another tab's
 newer browser copy blocks a stale restore.

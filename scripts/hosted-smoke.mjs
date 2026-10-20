@@ -187,6 +187,7 @@ try {
   await page
     .getByRole("button", { name: "Replace with this backup", exact: true })
     .click();
+  await page.locator('dialog').waitFor({state:'hidden'});
   await page.reload();
   await chooseSong(page,originalSong);
   assert.match(

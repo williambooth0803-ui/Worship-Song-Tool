@@ -50,7 +50,19 @@ export async function checkVersionHistoryFlows(browser,base) {
     assert.ok(await page.locator('#history-confirmation').isHidden());
     assert.ok(await page.evaluate(()=>JSON.parse(localStorage.getItem('hymn-heart-v1')).libraries.some(row=>row.name==='Christmas rehearsal')),'Cancel preserves the current workspace');
     await page.screenshot({path:'/tmp/faithful-history-preview-mobile.png'});
+    await page.evaluate(async()=>{
+      const {VersionHistory}=await import('./version-history.js'),capture=VersionHistory.prototype.capture;
+      VersionHistory.prototype.capture=function(...args){
+        if(args[2]?.label!=='Before restoring a version')return capture.apply(this,args);
+        return new Promise((resolve,reject)=>{window.releaseRecoveryCheckpoint=()=>{VersionHistory.prototype.capture=capture;capture.apply(this,args).then(resolve,reject);};});
+      };
+    });
     await page.locator('#history-confirm').click();await page.locator('#history-restore').click();
+    await page.waitForFunction(()=>Boolean(window.releaseRecoveryCheckpoint));
+    assert.equal(await page.locator('#history-restore').textContent(),'Restoring…');
+    assert.ok(await page.evaluate(()=>{const event=new Event('beforeunload',{cancelable:true});window.dispatchEvent(event);return event.defaultPrevented;}),'Reload is guarded while recovery is pending');
+    assert.ok(await page.evaluate(()=>{const event=new Event('cancel',{cancelable:true});document.querySelector('dialog').dispatchEvent(event);return event.defaultPrevented;}),'Escape cannot dismiss a running restore');
+    await page.evaluate(()=>window.releaseRecoveryCheckpoint());
     await page.locator('dialog').waitFor({state:'hidden'});
     assert.ok(!await page.evaluate(()=>JSON.parse(localStorage.getItem('hymn-heart-v1')).libraries.some(row=>row.name==='Christmas rehearsal')));
     assert.equal(await page.evaluate(()=>JSON.parse(localStorage.getItem('hymn-heart-v1')).profile.aiMode),'manual','Restoring old data keeps human-only visibility');

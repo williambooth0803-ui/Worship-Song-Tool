@@ -28,14 +28,19 @@ blockers explicitly. Preserve personal assessments, recordings and workspaces.
   fixtures cover personal and shared cloud restores and view-only restrictions.
   The full hosted regression suite passed. A fixture
   now waits for the asynchronous profile download before asserting its value.
-- [ ] Publish the verified frontend and confirm hosting deployment.
+- [x] Published frontend `6e0db78`; Cloudflare Pages, the Cloudflare Worker build
+  and GitHub Pages all reported success. GitHub's first browser run reloaded
+  immediately after clicking restore, before the new asynchronous recovery copy
+  completed. The fixture now waits for the dialog to close. Follow-up UI shows
+  restoring progress, prevents concurrent restores and guards reload/Escape while
+  recovery is pending; a controlled-delay browser test verifies these states.
 - [ ] Account-history production migration remains pending: the configured
   Supabase management credential returns HTTP 401; an anonymous metadata probe
   confirms `history_list` is absent (PGRST202). Provided the tested
   `supabase/version-history.sql` for the owner's SQL Editor. Device history works
   immediately, and the UI explicitly identifies unavailable account history.
   No production database writes or private account tests were performed.
-  Starting source/check count: 35,548; final: 36,279.
+  Starting source/check count: 35,548; final: 36,300.
 
 ## Cloudflare hosting setup
 
