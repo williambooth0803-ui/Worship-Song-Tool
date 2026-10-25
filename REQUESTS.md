@@ -27,7 +27,14 @@ blockers explicitly. Preserve personal assessments, recordings and workspaces.
   final: 36,939. One preliminary overlapping hosted run reported two refresh
   rotations instead of one; the final full run passed that assertion. Account
   refresh logic is unchanged.
-- [ ] Publish and verify provider deployment results.
+- [x] Publish frontend `ed361d3`. Cloudflare Pages, the Cloudflare Worker build
+  and GitHub Pages reported successful deployments. HTTPS readback of the reachable
+  GitHub site's manifest, HTML, worker, install module and icons matches the tested
+  build. Cloudflare's hostname remains outside this execution environment's
+  allowlist; provider success is verified without bypassing that policy.
+  [Release checks](https://github.com/williambooth0803-ui/Worship-Song-Tool/actions/runs/40222167217)
+  passed, including unit/database tests, MCP type checking, scale, real PWA and
+  full hosted browser checks, and exact generated-file parity.
 - [ ] Owner-device checks: actual iPhone/iPad/Mac installation and real-account
   offline recovery. Automated browser fixtures cannot establish those flows.
 
