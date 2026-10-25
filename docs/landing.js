@@ -25,6 +25,10 @@ export function landingPage(hasWorkspace) {
         <div class="landing-byline"><strong>Created by William Booth</strong><span>Church music · Baylor University</span></div>
       </aside>
     </section>
+    <section class="landing-install" aria-labelledby="landing-install-title">
+      <div><h2 id="landing-install-title">Keep your repertoire close.</h2><p>Install on your phone, tablet or computer for a dedicated app window. Account saving keeps your work available across devices.</p></div>
+      <button class="button" data-pwa-install>Install app</button>
+    </section>
     <section class="landing-tools" aria-labelledby="landing-tools-title">
       <div class="landing-section-heading"><div><p class="landing-eyebrow">From a song to a service</p><h2 id="landing-tools-title">A place for each part of preparation.</h2></div><p>Start wherever you need to work today.</p></div>
       <div class="landing-tool-grid">${steps.map(([number,view,name,title,description])=>`<article class="landing-tool"><p class="landing-tool-number">${number} <span>${name}</span></p><h3>${title}</h3><p>${description}</p><button class="text-button" data-action="nav" data-view="${view}">Open ${name}<span aria-hidden="true"> →</span></button></article>`).join('')}</div>

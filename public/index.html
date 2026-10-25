@@ -4,14 +4,22 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <meta name="theme-color" content="#163e35" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content="Faithful Repertoire" />
     <title>Faithful Repertoire · Worship planning</title>
+    <link rel="manifest" href="./manifest.webmanifest" />
+    <link rel="icon" type="image/png" sizes="192x192" href="./app-icon-192.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="./apple-touch-icon.png" />
     <link rel="stylesheet" href="./styles.css" />
     <link rel="stylesheet" href="./theme.css" />
   </head>
   <body>
     <div id="app"></div>
+    <div id="pwa-notice" class="pwa-notice" role="status" aria-live="polite" hidden></div>
     <div id="toast" role="status" aria-live="polite"></div>
     <dialog id="dialog"></dialog>
+    <dialog id="pwa-dialog" aria-labelledby="pwa-dialog-title"></dialog>
     <script type="module" src="./app.js"></script>
   </body>
 </html>

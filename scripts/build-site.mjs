@@ -10,13 +10,14 @@ import path from "node:path";
 import { validateAccountConfig } from "../public/accounts.js";
 import { siteConfig } from "../public/config.js";
 import { reportCodeStats } from "./code-stats.mjs";
+import { buildPWA } from "./build-pwa.mjs";
 
 const project = fileURLToPath(new URL("../", import.meta.url));
 const source = path.join(project, "public");
 const destination = path.join(project, "docs");
 await mkdir(destination, { recursive: true });
 for (const file of await readdir(source, { withFileTypes: true })) {
-  if (!file.isFile() || !/\.(js|css|html|svg|png|ico)$/.test(file.name))
+  if (!file.isFile() || (!/\.(js|css|html|svg|png|ico|webmanifest)$/.test(file.name) && file.name !== '_headers'))
     continue;
   if (file.name === "config.js") continue;
   if (file.name === "index.html") {
@@ -52,6 +53,7 @@ await writeFile(path.join(destination, ".nojekyll"), "");
     `export const siteConfig = ${JSON.stringify(config)};\n`,
   );
 }
+await buildPWA(source,destination);
 console.log(
   "Static website prepared in docs/. No credentials or personal browser data are included.",
 );

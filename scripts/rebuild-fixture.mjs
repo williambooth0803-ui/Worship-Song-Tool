@@ -59,7 +59,7 @@ export async function checkRebuildFlows(browser,base) {
   await page.locator('#evaluation-json').fill(JSON.stringify(fresh));
   await page.getByRole('button',{name:'Preview evaluation',exact:true}).click();
   await page.getByRole('button',{name:'Apply evaluation',exact:true}).click();
-  assert.equal(await page.locator('dialog').isVisible(),false);
+  assert.equal(await page.locator('#dialog').isVisible(),false);
   const hiddenTitle=await page.evaluate(()=>{
     const state=JSON.parse(localStorage.getItem('hymn-heart-v1'));
     const hidden=state.songs[0],visible=state.songs[1]; hidden.blacklisted=true;

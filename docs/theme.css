@@ -962,6 +962,24 @@ button.setting-row:disabled { opacity: .55; cursor: default; }
   .public-brand { font-size:20px; }
   .site-footer { padding-bottom:28px; }
 }
+/* Installation and connection/update status stay outside the editable workspace. */
+.landing-install { display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:24px; padding:24px 28px; margin:0 0 48px; border:1px solid var(--line); border-radius:20px; background:var(--white); }
+.landing-install h2 { font-size:26px; margin-bottom:8px; }
+.landing-install p { max-width:650px; margin:0; color:var(--muted); font-size:14px; line-height:1.6; }
+.landing-install .button { flex-shrink:0; min-height:44px; }
+.pwa-notice[hidden] { display:none; }
+.pwa-notice { position:fixed; z-index:45; inset:auto 24px 24px auto; display:flex; flex-wrap:wrap; align-items:center; gap:12px; width:min(560px,calc(100% - 48px)); padding:16px 20px; border:1px solid #b9c9bb; border-radius:18px; background:#f2f6ee; color:var(--ink); box-shadow:0 8px 32px #173c3020; font:14px/1.5 var(--sans); }
+.pwa-notice>span { flex:1 1 180px; }
+.pwa-notice .button, .pwa-notice .text-button { min-height:44px; flex-shrink:0; }
+.pwa-notice .pwa-update-error { flex-basis:100%; color:#8a3e36; }
+#pwa-dialog { max-width:560px; }
+#pwa-dialog li { margin:12px 0; line-height:1.5; }
+@media screen and (max-width:760px) {
+  .pwa-notice { inset:auto 12px calc(104px + env(safe-area-inset-bottom)) 12px; width:auto; padding:14px 16px; }
+  .landing-install { padding:20px; margin-bottom:32px; }
+}
+@media print { .pwa-notice, .landing-install, #pwa-dialog { display:none !important; } }
+
 /* A standalone review keeps catalog-trimming choices separate from workspaces. */
 .shortlist-review .review-header { max-width: 1120px; margin: auto; padding: 24px; display:flex; justify-content:space-between; gap:16px; border-bottom:1px solid var(--line); }
 .shortlist-review .review-header a { color:var(--green); font-weight:600; text-decoration:none; }

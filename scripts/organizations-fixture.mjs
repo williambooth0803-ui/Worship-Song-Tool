@@ -71,7 +71,7 @@ export async function checkOrganizationFlows(browser,base) {
   await owner.getByLabel('Library name',{exact:true}).fill('Personal addition');await owner.getByRole('button',{name:'Create library',exact:true}).click();
   await navigate(owner,'settings');await owner.getByRole('button',{name:'Version history',exact:true}).click();
   await owner.locator('.history-row').filter({hasText:'Personal checkpoint'}).filter({hasText:'Account'}).getByRole('button').click();
-  await owner.locator('#history-confirm').click();await owner.locator('#history-restore').click();await owner.locator('dialog').waitFor({state:'hidden'});
+  await owner.locator('#history-confirm').click();await owner.locator('#history-restore').click();await owner.locator('#dialog').waitFor({state:'hidden'});
   assert.ok(!await owner.evaluate(id=>JSON.parse(localStorage.getItem('faithful-repertoire-user:'+id)).libraries.some(row=>row.name==='Personal addition'),users[0].id));
   const orgs=async page=>{await page.getByLabel('Workspace',{exact:true}).selectOption('__manage__');await page.locator('#organization-create-form').waitFor();};
   await orgs(owner);await owner.locator('#organization-create-form input').fill('Shared worship team');await owner.locator('#organization-create-form button').click();
@@ -138,7 +138,7 @@ export async function checkOrganizationFlows(browser,base) {
   await navigate(owner,'settings');await owner.getByRole('button',{name:'Version history',exact:true}).click();
   await owner.locator('.history-row').filter({hasText:'Before teammate edits'}).filter({hasText:'Account'}).getByRole('button').click();
   await owner.locator('#history-confirm').click();await owner.locator('#history-restore').click();
-  await owner.locator('dialog').waitFor({state:'hidden'});
+  await owner.locator('#dialog').waitFor({state:'hidden'});
   await navigate(owner,'plans');await owner.getByRole('heading',{name:'Shared Sunday',exact:true}).waitFor();
   await editor.getByRole('heading',{name:'Shared Sunday',exact:true}).waitFor({timeout:12000});
   await viewer.getByRole('heading',{name:'Shared Sunday',exact:true}).waitFor({timeout:12000});

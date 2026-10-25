@@ -70,7 +70,7 @@ try {
   await page.locator("#evaluation-json").fill(JSON.stringify(draft));
   await page.getByRole("button",{name:"Preview evaluation",exact:true}).click();
   assert.equal(await page.locator("#evaluation-preview").evaluate(n=>n===document.activeElement),true);
-  const preview=await page.locator("#evaluation-preview h3").boundingBox(), dialogRect=await page.locator("dialog").boundingBox();
+  const preview=await page.locator("#evaluation-preview h3").boundingBox(), dialogRect=await page.locator("#dialog").boundingBox();
   assert.ok(preview.y>=dialogRect.y && preview.y<dialogRect.y+dialogRect.height);
   await page.getByRole("button",{name:"Close dialog",exact:true}).click();
   await reveal(page,"button",{name:"Move to No Approval",exact:true});

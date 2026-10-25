@@ -61,15 +61,15 @@ export async function checkVersionHistoryFlows(browser,base) {
     await page.waitForFunction(()=>Boolean(window.releaseRecoveryCheckpoint));
     assert.equal(await page.locator('#history-restore').textContent(),'Restoring…');
     assert.ok(await page.evaluate(()=>{const event=new Event('beforeunload',{cancelable:true});window.dispatchEvent(event);return event.defaultPrevented;}),'Reload is guarded while recovery is pending');
-    assert.ok(await page.evaluate(()=>{const event=new Event('cancel',{cancelable:true});document.querySelector('dialog').dispatchEvent(event);return event.defaultPrevented;}),'Escape cannot dismiss a running restore');
+    assert.ok(await page.evaluate(()=>{const event=new Event('cancel',{cancelable:true});document.querySelector('#dialog').dispatchEvent(event);return event.defaultPrevented;}),'Escape cannot dismiss a running restore');
     await page.evaluate(()=>window.releaseRecoveryCheckpoint());
-    await page.locator('dialog').waitFor({state:'hidden'});
+    await page.locator('#dialog').waitFor({state:'hidden'});
     assert.ok(!await page.evaluate(()=>JSON.parse(localStorage.getItem('hymn-heart-v1')).libraries.some(row=>row.name==='Christmas rehearsal')));
     assert.equal(await page.evaluate(()=>JSON.parse(localStorage.getItem('hymn-heart-v1')).profile.aiMode),'manual','Restoring old data keeps human-only visibility');
     await page.reload();await navigate(page,'settings');await page.getByRole('button',{name:'Version history',exact:true}).click();
     await page.locator('.history-row').filter({hasText:'Before restoring a version'}).getByRole('button').click();
     await page.locator('#history-confirm').click();await page.locator('#history-restore').click();
-    await page.locator('dialog').waitFor({state:'hidden'});
+    await page.locator('#dialog').waitFor({state:'hidden'});
     assert.ok(await page.evaluate(()=>JSON.parse(localStorage.getItem('hymn-heart-v1')).libraries.some(row=>row.name==='Christmas rehearsal')),'Recovery version restores the workspace replaced by the first restore');
     // A stale browser preview cannot overwrite an edit from another tab.
     await navigate(page,'settings');await page.getByRole('button',{name:'Version history',exact:true}).click();
@@ -78,7 +78,7 @@ export async function checkVersionHistoryFlows(browser,base) {
     await page.locator('#history-confirm').click();await page.locator('#history-restore').click();
     await page.getByText('Another tab changed this workspace.',{exact:false}).waitFor();
     assert.ok(await page.evaluate(()=>JSON.parse(localStorage.getItem('hymn-heart-v1')).libraries.some(row=>row.id==='other-tab')));
-    await page.evaluate(()=>document.querySelector('dialog').close());await page.reload();
+    await page.evaluate(()=>document.querySelector('#dialog').close());await page.reload();
     for(const width of [320,390,768,1024,1440]) {
       await page.setViewportSize({width,height:950});
       for(const view of ['discover','collections','evaluate','index','profile','library','blacklist','plans','settings']) {
@@ -92,7 +92,7 @@ export async function checkVersionHistoryFlows(browser,base) {
         if(width<=600)for(const tab of await page.locator('.workspace-tab').all())assert.ok(await tab.evaluate(el=>el.getBoundingClientRect().right<=innerWidth),'Every workspace tab fits on a phone');
       }
       await page.getByRole('button',{name:'Version history',exact:true}).click();await page.locator('#history-save').waitFor();
-      assert.ok(await page.locator('dialog').evaluate(el=>el.scrollWidth<=el.clientWidth),`History overflow at ${width}`);
+      assert.ok(await page.locator('#dialog').evaluate(el=>el.scrollWidth<=el.clientWidth),`History overflow at ${width}`);
       await page.screenshot({path:`/tmp/faithful-history-list-${width}.png`});await page.getByRole('button',{name:'Close dialog',exact:true}).click();
     }
     assert.deepEqual(errors,[]);

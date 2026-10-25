@@ -68,8 +68,12 @@ const browser = await chromium.launch({
 });
 // These regression workflows intentionally exercise the preserved browser workspace.
 const originalNewPage = browser.newPage.bind(browser);
+// Existing provider fixtures intercept page requests. Real service-worker
+// caching/lifecycle checks run separately in pwa-smoke.mjs without those stubs.
+const originalNewContext = browser.newContext.bind(browser);
+browser.newContext = options => originalNewContext({...options,serviceWorkers:'block'});
 browser.newPage = async options => {
-  const page = await originalNewPage(options);
+  const page = await originalNewPage({...options,serviceWorkers:'block'});
   await page.addInitScript(() => sessionStorage.setItem("faithful-guest-opt-in", "1"));
   // Keep ordinary regression tests deterministic and avoid live image-provider traffic.
   // The dedicated collection fixture installs its synthetic portrait responses afterwards.
@@ -188,7 +192,7 @@ try {
   await page
     .getByRole("button", { name: "Replace with this backup", exact: true })
     .click();
-  await page.locator('dialog').waitFor({state:'hidden'});
+  await page.locator('#dialog').waitFor({state:'hidden'});
   await page.reload();
   await chooseSong(page,originalSong);
   assert.match(

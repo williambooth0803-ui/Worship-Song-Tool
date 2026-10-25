@@ -10,6 +10,15 @@ The Cloudflare website is https://faithful-repertoire.pages.dev/. Cloudflare rep
 Node 24 selection, account redirects and saved-work migration. The current GitHub
 site remains available for browser-data migration and the existing ChatGPT consent flow; the owner confirmed adding the Cloudflare root URL to Supabase’s email-link redirect list.
 
+## Installable app
+
+Choose **Install app** on Home or in Settings to use a dedicated phone, tablet or
+desktop window. After the public app shell finishes downloading, it can reopen
+offline with work already saved on the device. Sign-in, account sync/history and
+account files require a connection. App updates protect unapplied edits and
+pending saves across open windows. Installation never replaces workspace data.
+See [PWA installation, offline behavior and verification](PWA.md).
+
 ## Version history
 
 **Settings → Version history** offers automatic checkpoints, named versions,

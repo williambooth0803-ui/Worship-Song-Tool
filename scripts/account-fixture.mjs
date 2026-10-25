@@ -300,7 +300,7 @@ export async function checkAccountFlows(browser, base) {
   );
   await reveal(page, "button", { name: "My account", exact: true });
   await page.getByRole("button", { name: "My account", exact: true }).click();
-  await page.locator("dialog").getByRole("button", {name:"Settings",exact:true}).click();
+  await page.locator("#dialog").getByRole("button", {name:"Settings",exact:true}).click();
   await page.getByRole("button", {name:"Review saved account workspace",exact:true}).click();
   await reveal(page, "button", { name: "Load this backup" });
   await page.getByRole("button", { name: "Load this backup" }).click();

@@ -6,6 +6,31 @@ do not treat a new prompt as cancellation unless the owner says so. Mark an item
 complete only with implementation and meaningful verification. Record external
 blockers explicitly. Preserve personal assessments, recordings and workspaces.
 
+## Installable web app (October 25, 2026)
+
+- [x] Add a path-relative manifest, home-screen/Apple icons, standalone launch
+  metadata and installation controls on Home and in Settings. Native install
+  prompts are optional; provide Safari/browser instructions and distinguish
+  dismissal from confirmed installation.
+- [x] Build a versioned public app shell for Cloudflare root and GitHub repository
+  paths. Preserve existing workspaces and offline account recovery. Keep private
+  responses, tokens, remote artwork, consent pages and attachments out of Cache
+  Storage. Display offline status separately from save acknowledgement.
+- [x] Add an update-ready notice with explicit activation protected by each open
+  app window's existing form/save/restore guards. Retain the working version if
+  installation fails; remove only obsolete shell caches within the same scope.
+- [x] All 149 unit/database tests, native Chromium installability at both hosting
+  paths, offline note/plan reloads, private-response exclusion, failed-install
+  recovery, guarded multiwindow updates and the complete hosted regression suite
+  passed. The 1,000-song/1,000-plan scale check passed. Installation/offline
+  screenshots were visually inspected. Starting source/check count: 36,542;
+  final: 36,939. One preliminary overlapping hosted run reported two refresh
+  rotations instead of one; the final full run passed that assertion. Account
+  refresh logic is unchanged.
+- [ ] Publish and verify provider deployment results.
+- [ ] Owner-device checks: actual iPhone/iPad/Mac installation and real-account
+  offline recovery. Automated browser fixtures cannot establish those flows.
+
 ## Landing page and visible About navigation (October 19, 2026)
 
 - [x] Add an editorial landing page at #home, opened by the menu logo and header
