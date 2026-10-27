@@ -22,8 +22,19 @@ blockers explicitly. Preserve personal assessments, recordings and workspaces.
   updated writers can explicitly restore/delete. Ignore wire-only capability
   fields when comparing saved content, preserving pending-save protections.
   Starting source/check count: 37,522; final: 37,766.
-- [ ] Publish and verify provider deployments, production history-guard metadata
-  and static HTTPS readback; suggest further features.
+- [x] Published `bd74cde`; Cloudflare Pages, Worker and GitHub Pages reported
+  success. [Release checks](https://github.com/williambooth0803-ui/Worship-Song-Tool/actions/runs/40601145209)
+  passed all 165 unit/database tests, MCP types, scale, full hosted browsers,
+  native PWA checks and generated-file parity. HTTPS readback of all 13 changed
+  evaluator/history/save/UI assets matches the tested build on the reachable
+  GitHub host. Cloudflare's hostname remains outside the executor allowlist;
+  provider success is verified. Supabase's Git integration applied the guard:
+  read-only production metadata confirms both enabled triggers, invoker execution,
+  empty search path and revoked direct execution. Security advisors match the
+  baseline. No private workspace rows were read or changed for verification.
+  Prepare a fresh request for the three scores; existing reports gain sorting.
+  Suggested follow-ups: reuse verified song mappings across plans, compare saved
+  evaluations/lenses side by side, and add leader annotations to assessments.
 
 ## Faster evaluation workflow (October 27, 2026)
 
