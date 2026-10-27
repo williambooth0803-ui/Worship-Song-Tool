@@ -31,6 +31,9 @@ jobs:
       - name: Verify history permissions and atomic restores
         run: node --test test/version-history.test.js test/evaluation-history-database.test.js
       - name: Apply and verify the private history migration
+        # Generated migrations deploy through the connected Supabase integration.
+        # Keep the older Management API path as an explicit manual fallback.
+        if: github.event_name == 'workflow_dispatch'
         env:
           SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
         run: node scripts/deploy-history.mjs

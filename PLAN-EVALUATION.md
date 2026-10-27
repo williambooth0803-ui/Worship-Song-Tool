@@ -69,8 +69,11 @@ older reports. Existing archives are never silently trimmed to make room.
 `supabase/migrations/20261027154912_preserve_evaluation_history.sql` adds row-local update guards so older cached
 clients omitting the new field cannot erase history. Explicit arrays, including
 an empty array after deletion, remain authoritative. Existing RLS, organization
-roles and revision checks stay in effect. The **Deploy workspace history** workflow
-tests, installs and verifies these guards with its encrypted deployment credential.
+roles and revision checks stay in effect. Generated migrations deploy through
+Supabase's connected GitHub integration. **Deploy workspace history** tests the
+guards on pushes; its manual dispatch can reapply the legacy history SQL using a
+valid encrypted deployment credential. That older token currently returns 401;
+it is not required for the connected integration or normal app history saving.
 
 ## Adding songs while planning
 

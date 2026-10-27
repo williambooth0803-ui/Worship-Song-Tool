@@ -33,10 +33,17 @@ blockers explicitly. Preserve personal assessments, recordings and workspaces.
   passed across owner/editor/viewer clients. Final mobile spacing was visually
   inspected and the lyrical workflow rechecked after that CSS polish.
   Starting source/check count: 36,939; final: 37,458.
-- [ ] Publish frontend and database guards. The connected Supabase migration call
-  stalled without applying the guard (confirmed through read-only metadata).
-  Use the existing encrypted GitHub deployment workflow and verify its result;
-  no manual SQL or credentials are needed from the owner.
+- [x] Publish frontend `df18f28`; Cloudflare Worker and GitHub Pages reported
+  success. Supabase's connected GitHub integration applied the generated migration;
+  read-only production metadata confirms both personal/shared preservation
+  triggers. Security advisors match the pre-change baseline. No private rows were
+  read or changed for verification.
+- [x] The older Management API workflow returned HTTP 401 before any SQL. Keep it
+  as a manual fallback, with automated pushes running its database tests only;
+  generated migrations use the working Supabase integration. The connected tool's
+  earlier migration call stalled without applying SQL. No manual SQL or credential
+  replacement is needed for this release.
+- [ ] Record final release-check and deployed-asset verification results.
 
 ## Installable web app (October 25, 2026)
 
