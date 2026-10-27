@@ -108,11 +108,12 @@ try {
   const request=await page.locator("#scope-request").inputValue();
   assert.ok(!request.includes('"notes"'));
   const report=JSON.parse(request.split("Response shape:\n")[1].split("\nSelected snapshot")[0]);
+  for(const row of report.assessments||[])for(const key of ['scripture','theology','flow'])row[key].reason='No reviewed lyric evidence in this synthetic fixture.';
   report.summary="AUDIT READY";for(const song of report.songs)song.evidence="Fixture words not verified.";
   for(const criterion of report.criteria){for(const finding of criterion.findings)finding.observation="No verified source text in fixture.";criterion.coverage.explanation="One library; no mixed comparison.";}
   await page.locator("#audit-json").fill(JSON.stringify(report));await page.getByRole("button",{name:"Preview evaluation report",exact:true}).click();
   assert.equal(await page.locator(".audit-chart").count(),0);
-  const after=await state();delete after.evaluationHistory;const original=structuredClone(before);delete original.evaluationHistory;assert.deepEqual(after,original);
+  const after=await state();delete after.evaluationHistory;delete after.evaluationSchema;delete after.evaluationClient;const original=structuredClone(before);delete original.evaluationHistory;delete original.evaluationSchema;delete original.evaluationClient;assert.deepEqual(after,original);
   assert.equal(await page.locator("#scope-preview").evaluate(n=>n===document.activeElement),true);
   const downloading=page.waitForEvent("download");await page.getByRole("button",{name:"Download evaluation report",exact:true}).click();await downloading;
   await page.getByRole("button",{name:"Close evaluation",exact:true}).click();

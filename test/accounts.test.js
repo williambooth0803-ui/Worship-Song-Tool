@@ -261,6 +261,11 @@ test("responses for a previous account cannot replace the new account version", 
   await assert.rejects(pending, /account changed/);
   assert.equal(client.workspaceVersion, undefined);
 });
+test('an unreadable remote workspace cannot advance the save timestamp',async()=>{
+  const client=new AccountClient(config,{storage:storage(),fetcher:async()=>response([{workspace:{version:999},updated_at:'2026-10-27T12:00:00Z'}])});
+  client.setSession(session);client.workspaceVersion='2026-10-26T12:00:00Z';
+  await assert.rejects(client.loadWorkspace());assert.equal(client.workspaceVersion,'2026-10-26T12:00:00Z');
+});
 test("a delayed expired-token response reuses a token already refreshed by another tab", async () => {
   const values = new Map(), storage = { getItem: k => values.get(k) ?? null, setItem: (k,v) => values.set(k,v), removeItem: k => values.delete(k) };
   let client, refreshes = 0, requests = 0;

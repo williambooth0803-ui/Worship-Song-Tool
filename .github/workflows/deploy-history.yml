@@ -8,6 +8,7 @@ on:
       - scripts/deploy-history.mjs
       - supabase/version-history.sql
       - supabase/migrations/20261027154912_preserve_evaluation_history.sql
+      - supabase/migrations/20261027230003_guard_scored_evaluations.sql
       - test/evaluation-history-database.test.js
 permissions:
   contents: read

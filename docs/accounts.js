@@ -365,10 +365,11 @@ export class AccountClient {
       !Number.isFinite(Date.parse(rows[0].updated_at))
     )
       throw new Error("The account copy has an invalid save date.");
+    const workspace=validateWorkspace(rows[0].workspace);
     if (requestNumber === this.workspaceRequest)
       this.workspaceVersion = rows[0].updated_at;
     return {
-      workspace: validateWorkspace(rows[0].workspace),
+      workspace,
       updatedAt: rows[0].updated_at,
     };
   }
@@ -448,7 +449,7 @@ export class AccountClient {
   }
   async saveWorkspace(workspace) {
     const owner = this.userId(),
-      checked = validateWorkspace(workspace);
+      checked = {...validateWorkspace(workspace),evaluationClient:4};
     if (this.workspaceVersion === undefined) await this.loadWorkspace();
     if (this.user?.id !== owner)
       throw new Error("The signed-in account changed. Please try again.");

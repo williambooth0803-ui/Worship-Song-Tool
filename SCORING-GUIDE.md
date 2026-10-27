@@ -69,7 +69,13 @@ performance. Several ideas can share a line, so percentages need not total 100.
 Coverage adequacy depends on the user's purpose and the substance of the words.
 
 The preview has a compact coverage/emphasis table, an expandable song-by-song map
-and editable repetitions per plan occurrence. Sources and classifications require
+and editable repetitions per plan occurrence. Relevance sorting reflects emphasis
+and song coverage; show all results or filter a criterion. Optional scope scores
+separately assess Scripture relevance, theological soundness with gospel coverage,
+and logical flow of the existing order. Each has a reason, evidence and rubric;
+unknown is unassessed, not zero. Library flow and absent passage context are N/A.
+These scores never follow automatically from theme proportions, and do not edit
+individual song judgments. Sources and classifications require
 review. Valid reports save to Evaluation History with their original context and
 can be downloaded. Reports never select songs, change ratings or edit plan order.
 See [plan evaluation](PLAN-EVALUATION.md) for details and history limits.

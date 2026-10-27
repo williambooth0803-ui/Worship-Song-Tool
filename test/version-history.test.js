@@ -30,7 +30,7 @@ test('cloud history uses the authenticated account transport and structured RPC 
   const cloud=new CloudHistory(accounts);
   await cloud.list(null);await cloud.capture('team','Named version');await cloud.apply(null,workspace,'2026-10-19T12:00:00Z',null);
   assert.deepEqual(calls[0],{path:'/rest/v1/rpc/history_list',method:'POST',authenticated:true,body:{target_org:null}});
-  assert.equal(calls[1].body.version_label,'Named version');assert.equal(calls[2].body.new_workspace,workspace);
+  assert.equal(calls[1].body.version_label,'Named version');assert.deepEqual(calls[2].body.new_workspace,{...workspace,evaluationClient:4});
 });
 test('history deployment stops before writes on failed authentication and verifies migration results',async()=>{
   const originalFetch=globalThis.fetch,originalToken=process.env.SUPABASE_ACCESS_TOKEN,originalLog=console.log;
@@ -46,7 +46,7 @@ test('history deployment stops before writes on failed authentication and verifi
     };
     await import('../scripts/deploy-history.mjs?verified');
     assert.equal(calls.length,3);assert.ok(calls[1].url.endsWith('/database/query'));
-    assert.equal(JSON.parse(calls[1].options.body).query,(await Promise.all(['version-history.sql','migrations/20261027154912_preserve_evaluation_history.sql'].map(name=>readFile('supabase/'+name,'utf8')))).join('\n'));
+    assert.equal(JSON.parse(calls[1].options.body).query,(await Promise.all(['version-history.sql','migrations/20261027154912_preserve_evaluation_history.sql','migrations/20261027230003_guard_scored_evaluations.sql'].map(name=>readFile('supabase/'+name,'utf8')))).join('\n'));
     assert.match(messages.join(' '),/installed and verified/);assert.ok(!messages.join(' ').includes(process.env.SUPABASE_ACCESS_TOKEN));
     globalThis.fetch=async()=>({ok:true,json:async()=>[]});
     await assert.rejects(import('../scripts/deploy-history.mjs?invalid-verification'),/verification failed/);

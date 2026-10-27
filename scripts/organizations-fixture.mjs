@@ -20,7 +20,7 @@ export async function checkOrganizationFlows(browser,base) {
   await db.exec(await readFile('supabase/schema.sql','utf8'));
   await db.exec(await readFile('supabase/organizations.sql','utf8'));
   await db.exec(await readFile('supabase/version-history.sql','utf8'));
-  await db.exec(await readFile('supabase/migrations/20261027154912_preserve_evaluation_history.sql','utf8'));
+  await db.exec(await readFile('supabase/migrations/20261027230003_guard_scored_evaluations.sql','utf8'));
   for(const user of users) {
    await db.query('insert into auth.users values($1,$2,now())',[user.id,user.email]);
    const state=syncCatalog({version:1,songs:structuredClone(seedSongs),libraries:[{id:'mine',name:'My private songs',songIds:[]}],plans:[],profile:{...defaultProfile,setupComplete:true,aiMode:user.name==='viewer'?'manual':'full'}});
@@ -123,6 +123,7 @@ export async function checkOrganizationFlows(browser,base) {
   await owner.locator('#prepare-scope-evaluation').click();
   const savedRequest=await owner.locator('#scope-request').inputValue();
   const savedReport=JSON.parse(savedRequest.split('Response shape:\n')[1].split('\nSelected snapshot')[0]);
+  for(const row of savedReport.assessments||[])for(const key of ['scripture','theology','flow'])row[key].reason='No reviewed lyric evidence; empty fixture scope.';
   savedReport.summary='Shared saved evaluation';
   for(const criterion of savedReport.criteria){for(const finding of criterion.findings)finding.observation='Empty existing plan; no lyric evidence.';criterion.coverage.explanation='One selected plan.';}
   await owner.locator('#audit-json').fill(JSON.stringify(savedReport));await owner.locator('#preview-scope-evaluation').click();

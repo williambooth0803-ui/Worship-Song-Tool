@@ -10,7 +10,7 @@ const text=(value,label,max=1500)=>typeof value==='string'&&value.trim()&&value.
 const keys=(row,allowed)=>{if(!row||typeof row!=='object'||Array.isArray(row)||Object.keys(row).some(k=>!allowed.includes(k)))fail('Unsupported lyrical evidence fields; scores and edits are not accepted.');};
 const integer=(n,min,max,label)=>Number.isInteger(n)&&n>=min&&n<=max?n:fail(`Invalid ${label}.`);
 // V3 groups category counts and explains the evidence once per section.
-// Accepted wire responses normalize to v2 for existing history clients.
+// V3 normalizes to v2; scored v4 retains its explicit assessment metadata.
 export function sectionIdeas(section) {
   if(Array.isArray(section.ideas))return section.ideas;
   if(!section.ideas||typeof section.ideas!=='object')fail('Invalid section idea groups.');
@@ -28,7 +28,7 @@ export function contentSources(sources) {
     return {label:source.label,url:source.url};
   });
 }
-export function parseContentSong(row,snapshot,compact=false) {
+export function parseContentSong(row,snapshot,compact=false,allowExpanded=false) {
   keys(row,['id','textStatus','sections','evidence','sources']);
   if(!['complete','partial','unverified'].includes(row.textStatus))fail('Invalid text review status.');
   text(row.evidence,'Song evidence');
@@ -37,13 +37,14 @@ export function parseContentSong(row,snapshot,compact=false) {
   if(row.textStatus!=='unverified'&&!row.sections.length)fail('Reviewed words need section evidence.');
   const seen=new Set(),selected=new Set(snapshot.criteria.map(c=>c.id)),unmappedEvidence=[];
   const sections=row.sections.map(section=>{
-    keys(section,['id','label','lineCount','repetitions','repeatEvidence','ideas',...(compact?['evidence']:[])]);
+    const sectionCompact=compact&&!(allowExpanded&&Array.isArray(section.ideas));
+    keys(section,['id','label','lineCount','repetitions','repeatEvidence','ideas',...(sectionCompact?['evidence']:[])]);
     text(section.id,'Section ID',100);text(section.label,'Section label',100);
     if(seen.has(section.id))fail('Duplicate lyrical section.');seen.add(section.id);
     integer(section.lineCount,1,1000,'lyrical line count');
     if(section.repetitions!==null){integer(section.repetitions,1,50,'repetition count');text(section.repeatEvidence,'Repetition evidence',500);}
     else if(typeof section.repeatEvidence!=='string'||section.repeatEvidence.length>500)fail('Invalid repetition evidence.');
-    if(compact){
+    if(sectionCompact){
       text(section.evidence,'Section evidence',500);
       if(!section.ideas||typeof section.ideas!=='object'||Array.isArray(section.ideas))fail('Use grouped idea counts for a compact report.');
       if(Object.keys(section.ideas).some(id=>!selected.has(id)||(!Object.hasOwn(textAxes,id)&&id!=='themes')))fail('An idea group references an unselected textual criterion.');
@@ -61,7 +62,7 @@ export function parseContentSong(row,snapshot,compact=false) {
       integer(idea.lineCount,1,section.lineCount,'idea line count');text(idea.evidence,'Idea evidence',500);
       return {...idea,category};
     });
-    if(compact&&!ideas.length)unmappedEvidence.push(`${section.label}: ${section.evidence}`);
+    if(sectionCompact&&!ideas.length)unmappedEvidence.push(`${section.label}: ${section.evidence}`);
     const {evidence,...fields}=section;
     return {...fields,ideas};
   });
@@ -74,7 +75,7 @@ export function contentInstructions(criteria) {
   return `Focus on song WORDS. Do not discuss missing tempo, key, range, arrangement, duration or instrumental information unless the user explicitly selected a relevant musical criterion. Describe lyrical transitions only for sequence. Keep limitations concise and relevant, not a checklist of unrequested metadata.
 Use overlapping, section-level ideas rather than one dominant category for a whole song. Selected categories: ${JSON.stringify(Object.fromEntries(Object.entries(textAxes).filter(([id])=>selected.includes(id)).map(([id,a])=>[id,a.categories])))}. ${selected.includes('themes')?'For themes, use concise consistent lower-case topic labels across songs; include any evidenced idea, even a single line.':''}
 For every song, textStatus is complete only when the entire reference lyric text was reviewed, partial for an excerpt, and unverified when words cannot be established. Unverified songs have sections: []. Source identity must match the selected song. Exact local edits remain a relevant limitation, not a reason to repeat disclaimers throughout a report.
-For reviewed words, list distinct lyrical sections, each with a stable id, label, lineCount, repetitions, repeatEvidence, evidence and ideas. Count lyric lines consistently, excluding headings/chords/stage directions. Give each section ONE concise original evidence explanation (one or two sentences, at most 500 characters) supporting its categories and counts. Do not repeat an explanation for each category. Use no more than 10 quoted lyric words per song across the report. In v3, ideas is a grouped count object, for example {"themes":{"grace":2},"function":{"confession":1},"voice":{"individual":4}}. Include only selected textual criterion IDs; omit groups without evidenced categories. Values are positive integer line counts, not scores. A line may express several ideas; each category's count cannot exceed its section's lineCount. No mixed/unknown bucket is needed. Missing evidence is represented by textStatus, not invented measurements. Use at most 60 consistent theme labels across the report. An empty ideas object is allowed when no selected textual category applies.
+For reviewed words, list distinct lyrical sections, each with a stable id, label, lineCount, repetitions, repeatEvidence, evidence and ideas. Count lyric lines consistently, excluding headings/chords/stage directions. Give each section ONE concise original evidence explanation (one or two sentences, at most 500 characters) supporting its categories and counts. Do not repeat an explanation for each category. Use no more than 10 quoted lyric words per song across the report. In compact responses, ideas is a grouped count object, for example {"themes":{"grace":2},"function":{"confession":1},"voice":{"individual":4}}. Include only selected textual criterion IDs; omit groups without evidenced categories. Values are positive integer line counts, not scores. A line may express several ideas; each category's count cannot exceed its section's lineCount. No mixed/unknown bucket is needed. Missing evidence is represented by textStatus, not invented measurements. Use at most 60 consistent theme labels across the report. An empty ideas object is allowed when no selected textual category applies.
 Record repetitions only when the published source explicitly specifies repeated sections; otherwise null with repeatEvidence: "". Never assume choruses or bridges repeat a standard number of times, or transfer a recording's pattern to the user's performance. Count separately printed repetitions either through repetitions or expanded sections, never both. The preview uses each unmarked section once and lets the user adjust plan occurrence repetitions. References to chorus/bridge repetition must distinguish source evidence from actual performance.
 Coverage and emphasis are separate: one clear line can establish an idea's presence without making it dominant. Do not infer adequacy or deficiency from a percentage, impose equal proportions, or treat overlapping idea percentages as parts that must sum to 100. Use findings to explain the substance and context of the coverage; numerical lyric proportions are descriptive measurements, never quality scores.`;
 }

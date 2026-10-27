@@ -1,12 +1,15 @@
 // JSONB reorders object keys; stable comparison must preserve array order.
 export function workspaceSignature(value) {
+  return signature(value,true);
+}
+function signature(value,root=false) {
   if (value === null || typeof value !== "object") return JSON.stringify(value);
   if (Array.isArray(value))
-    return `[${value.map(workspaceSignature).join(",")}]`;
+    return `[${value.map(item=>signature(item)).join(",")}]`;
   return `{${Object.keys(value)
     .sort()
-    .filter((k) => value[k] !== undefined)
-    .map((k) => `${JSON.stringify(k)}:${workspaceSignature(value[k])}`)
+    .filter((k) => value[k] !== undefined && !(root&&value.version===1&&Array.isArray(value.songs)&&['evaluationClient','evaluationSchema'].includes(k)))
+    .map((k) => `${JSON.stringify(k)}:${signature(value[k])}`)
     .join(",")}}`;
 }
 export function saveLabel(status, workspace) {

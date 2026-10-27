@@ -992,6 +992,18 @@ dialog.workspace-evaluation-dialog[open] { display:grid; grid-template-rows:auto
 .idea-summary-table thead th:nth-child(2) { width:25%; }
 .idea-summary-table tbody th { position:static; min-width:0; max-width:none; box-shadow:none; }
 .idea-map-detail { padding-top:8px; }
+.idea-result-controls { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px; margin-top:16px; }
+.idea-result-controls label { min-width:0; font-size:12px; }
+.idea-result-controls select { width:100%; min-height:44px; }
+.idea-expand { min-height:44px; margin-bottom:12px; }
+.evaluation-score-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:12px; margin:16px 0; }
+.evaluation-score-card { min-width:0; padding:16px; border:1px solid var(--line); border-radius:14px; background:var(--white); }
+.evaluation-score-card h5 { min-height:42px; font:600 14px/1.5 var(--sans); margin:0 0 8px; }
+.evaluation-score-value { display:block; color:var(--ink); font:600 26px/1.3 var(--sans); }
+.evaluation-score-card small { display:block; margin-top:8px; color:var(--muted); }
+.evaluation-score-card p { margin:12px 0; }
+.evaluation-score-card summary,.evaluation-score-rubric summary { font-size:13px; }
+.evaluation-score-options { margin-top:20px; }
 .idea-present>span { font-size:10px; margin-right:4px; }
 .repetition-editor { margin-top:16px; border-top:1px solid var(--line); padding-top:12px; }
 .repetition-song { margin:16px 0; border:1px solid var(--line); border-radius:12px; padding:12px 16px; }
@@ -1012,6 +1024,8 @@ dialog.workspace-evaluation-dialog[open] { display:grid; grid-template-rows:auto
 .picker-tabs button[aria-selected="true"] { border-bottom-color:var(--green); background:var(--green-light); color:var(--green); }
 #picker-create-form[hidden],#picker-browse-panel[hidden],#picker-library-label[hidden] { display:none; }
 @media screen and (max-width:550px) {
+  .idea-result-controls,.evaluation-score-grid { grid-template-columns:minmax(0,1fr); }
+  .evaluation-score-card h5 { min-height:0; }
   .evaluation-dialog-header { padding:6px 8px 6px 16px; }
   .evaluation-dialog-header h2 { font-size:20px; }
   .evaluation-dialog-body { padding:16px; }

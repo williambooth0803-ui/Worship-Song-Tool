@@ -12,7 +12,8 @@ const id=v=>str(v,200).trim()||fail('Missing evaluation history ID.');
 const list=(v,max)=>Array.isArray(v)&&v.length<=max?v:fail('Invalid evaluation history list.');
 const unique=rows=>{if(new Set(rows.map(v=>v.id)).size!==rows.length)fail('Duplicate evaluation history ID.');return rows;};
 function savedSnapshot(input) {
-  object(input,['scopes','songs','criteria','purpose','includeWords','lens']);
+  object(input,['scopes','songs','criteria','purpose','includeWords','includeAssessments','lens']);
+  if(input.includeAssessments!==undefined&&typeof input.includeAssessments!=='boolean')fail('Invalid archived assessment selection.');
   const songs=unique(list(input.songs,5000).map(song=>{
     object(song,['id','title','artist','version','tempo','key','lowNote','highNote']);
     const copy={id:id(song.id),title:str(song.title,200),artist:str(song.artist||'',300),version:str(song.version||'',300)};
@@ -47,6 +48,7 @@ function savedSnapshot(input) {
   if(!criteria.length||!scopes.length)fail('Archived reports need criteria and scopes.');
   const lens=object(input.lens||{},['id','name','purpose','principles','weights','criteria']);
   const snapshot={scopes,songs,criteria,purpose:str(input.purpose||'',2000),includeWords:input.includeWords===true,
+    ...(input.includeAssessments===true?{includeAssessments:true}:{}),
     lens:{id:id(lens.id||'main'),name:str(lens.name||'Main lens',100),purpose:str(lens.purpose||'',2000),principles:str(lens.principles||'',6000)}};
   // Numeric/string measurements are only ever rendered as data. Reject nested
   // objects, nonfinite values and unexpected payloads before retaining them.

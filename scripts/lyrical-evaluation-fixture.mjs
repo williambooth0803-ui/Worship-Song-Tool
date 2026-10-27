@@ -6,7 +6,7 @@ export async function checkLyricalEvaluationFlows(browser,base) {
   const page=await browser.newPage({viewport:{width:1440,height:1000}}),errors=[];
   page.on('pageerror',error=>errors.push(error.message));
   const state=()=>page.evaluate(()=>JSON.parse(localStorage.getItem('hymn-heart-v1')));
-  const human=w=>{const copy=structuredClone(w);delete copy.evaluationHistory;return copy;};
+  const human=w=>{const copy=structuredClone(w);delete copy.evaluationHistory;delete copy.evaluationSchema;delete copy.evaluationClient;return copy;};
   try{
     await page.goto(base);await page.getByRole('heading',{name:'Discover songs',exact:true}).waitFor();
     await page.evaluate(()=>{
@@ -28,20 +28,25 @@ export async function checkLyricalEvaluationFlows(browser,base) {
     response.summary='Overlapping ideas from verified fixture sections.';
     for(const song of response.songs){song.evidence='Synthetic fixture evidence.';if(song.id!==a.id)continue;
       song.textStatus='complete';song.sections=[
-        {id:'verse',label:'Verse 1',lineCount:4,repetitions:null,repeatEvidence:'',evidence:'One confession line within a verse using singular grammar.',ideas:{function:{confession:1},voice:{individual:4}}},
+        {id:'verse',label:'Verse 1',lineCount:4,repetitions:null,repeatEvidence:'',evidence:'Synthetic verse map: one confession line with overlapping brief ideas and singular grammar.',ideas:{function:{confession:1},voice:{individual:4},themes:Object.fromEntries(['patience','mercy','love','repentance','forgiveness','obedience','justice','peace','humility'].map(t=>[t,1]))}},
         {id:'chorus',label:'Chorus',lineCount:2,repetitions:null,repeatEvidence:'',evidence:'Both chorus lines express hope with plural grammar.',ideas:{themes:{hope:2},voice:{corporate:2}}}
       ];
     }
     for(const criterion of response.criteria){for(const finding of criterion.findings)finding.observation='Text-based fixture finding.';criterion.coverage.explanation='One plan; no library comparison.';}
+    for(const row of response.assessments)for(const [key,score] of [['scripture',7.5],['theology',8],['flow',7]])row[key]={status:'assessed',score,reason:'Synthetic fixture judgment grounded in the reviewed reference text.',evidenceSongIds:[a.id]};
     await page.locator('#audit-json').fill(JSON.stringify(response));await page.locator('#preview-scope-evaluation').click();
     assert.equal(await page.locator('#scope-error').textContent(),'');assert.equal(await page.locator('meter,.audit-bar-row').count(),0);
     assert.equal((await state()).evaluationHistory.length,1);assert.ok(!(await state()).evaluationHistory[0].data.includes('Private opted-in words'));
     const archived=JSON.parse((await state()).evaluationHistory[0].data).report;
-    assert.equal(archived.schema,'faithful-workspace-evaluation-v2');assert.equal(archived.songs[0].sections[0].ideas.find(i=>i.category==='confession').lineCount,1);
+    assert.equal(archived.schema,'faithful-workspace-evaluation-v4');assert.equal(archived.songs[0].sections[0].ideas.find(i=>i.category==='confession').lineCount,1);
+    assert.equal((await state()).evaluationSchema,4);assert.equal(await page.locator('[data-assessment="scripture"] .evaluation-score-value').textContent(),'7.5/10');
+    await page.locator('.evaluation-assessments').scrollIntoViewIfNeeded();await page.screenshot({path:'/tmp/faithful-score-cards-desktop.png',fullPage:true});
+    await page.setViewportSize({width:390,height:900});await page.locator('.evaluation-assessments').scrollIntoViewIfNeeded();await page.screenshot({path:'/tmp/faithful-score-cards-mobile.png',fullPage:true});
+    await page.setViewportSize({width:1440,height:1000});
     const evidenceToggle=page.getByText(/^Song and section evidence \(/);
     await evidenceToggle.click();const evidence=page.locator('.evaluation-song-evidence').first();
     await evidence.locator('details > summary').first().click();
-    assert.equal(await evidence.getByText('One confession line within a verse using singular grammar.',{exact:true}).count(),1,'Shared supporting prose is shown once');
+    assert.equal(await evidence.getByText('Synthetic verse map: one confession line with overlapping brief ideas and singular grammar.',{exact:true}).count(),1,'Shared supporting prose is shown once');
     await evidenceToggle.click();
     assert.deepEqual(human(await state()),human(before));
     const hope=page.locator('.idea-table tbody tr').filter({hasText:'hope'}).first();assert.match(await hope.locator('td').nth(1).textContent(),/33\.3%/);
@@ -50,6 +55,14 @@ export async function checkLyricalEvaluationFlows(browser,base) {
     const chorus=page.locator('input[aria-label$="/ Chorus repetitions"]').first();await chorus.fill('3');await chorus.dispatchEvent('change');
     assert.match(await hope.locator('td').nth(1).textContent(),/50%/);assert.match(await confession.locator('td').first().textContent(),/1\/2/);
     await page.locator('#save-scope-evaluation').click();assert.equal((await state()).evaluationHistory.length,2);
+    const beforeSorting=await state(),cohort=page.locator('[data-cohort="plan:lyrical-plan"]'),rows=cohort.locator('.idea-summary-table tbody tr');
+    assert.equal(await rows.count(),8);await cohort.locator('[data-idea-sort]').selectOption('least');
+    assert.ok(!(await rows.first().textContent()).includes('hope'),'Least relevance starts with brief ideas');
+    await cohort.locator('[data-idea-expand]').click();assert.equal(await rows.count(),13);
+    await cohort.locator('[data-idea-filter]').selectOption('themes');assert.equal(await rows.count(),10);
+    await cohort.locator('[data-idea-filter]').selectOption('all');await cohort.locator('[data-idea-sort]').selectOption('most');
+    await cohort.locator('[data-idea-expand]').click();assert.equal(await rows.count(),8);
+    assert.deepEqual(await state(),beforeSorting,'Sorting and expansion never change the workspace or archive');
     for(const width of [320,390,768,1440]){
       await page.setViewportSize({width,height:900});await page.locator('.evaluation-dialog-body').evaluate(el=>el.scrollTop=el.scrollHeight);
       const header=await page.locator('.evaluation-dialog-header').boundingBox(),close=await page.getByRole('button',{name:'Close evaluation',exact:true}).boundingBox(),bounds=await page.locator('#dialog').boundingBox(),body=await page.locator('.evaluation-dialog-body').boundingBox();
@@ -68,6 +81,7 @@ export async function checkLyricalEvaluationFlows(browser,base) {
     await page.reload();await navigate(page,'plans');await page.getByRole('button',{name:'Evaluation History',exact:true}).click();
     assert.equal(await page.locator('[data-open-evaluation]').count(),2);await page.locator('[data-open-evaluation]').first().click();
     await page.locator('.evaluation-cohort > summary').filter({hasText:'Original plan context'}).waitFor();assert.equal(await page.locator('[data-repeat-key]').count(),0,'Saved reports are immutable views');
+    assert.equal(await page.locator('[data-assessment="theology"] .evaluation-score-value').textContent(),'8/10','Scores reopen in immutable history');
     const downloading=page.waitForEvent('download');await page.locator('#download-scope-evaluation').click();const file=await downloading;
     const saved=JSON.parse(await readFile(await file.path(),'utf8'));assert.ok(Object.values(saved.repeats).includes(3));assert.equal(saved.snapshot.scopes[0].name,'Original plan context');
     await page.keyboard.press('Escape');assert.equal(await page.locator('#dialog').isVisible(),false);

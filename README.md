@@ -262,8 +262,17 @@ unions; plans retain repeated occurrences.
 New requests use a smaller response format with one supporting explanation per
 lyrical section and concise findings. They stop redundant lyric research once a
 matching text is established; opted-in stored words can avoid lookups. Coverage,
-overlapping ideas and repetition weighting are retained. Earlier reports work,
-and imports save in the existing history format for compatibility across devices.
+overlapping ideas and repetition weighting are retained. Sort ideas by most/least
+relevant (lyric emphasis, then coverage), by criterion or A–Z; filter a criterion
+and expand the initial eight results to the complete list.
+
+Optional **three 0–10 assessments** cover Scripture relevance when a plan records
+a passage, theological soundness with gospel coverage, and logical flow of ideas.
+Each score includes reasons and reviewed evidence; unknown stays unassessed.
+Libraries have no sequence score. These scope judgments never change song ratings
+or plan order. Earlier reports remain readable; scores need a fresh evaluation.
+Scored history requires the updated app across devices, with a database guard
+preventing older clients from overwriting it.
 
 Valid previews save automatically to **Evaluation History** in editable
 workspaces. Save changed repetition patterns as new versions. Reopen history from
@@ -277,7 +286,8 @@ Review the copied snapshot: selected names, themes, Scripture context, headings,
 order and song identities are included. Words require opt-in. Private notes,
 files, unselected scopes, account settings and No Approval details stay excluded.
 Saved archives omit raw song words. Changed selections, evidence, lens or account
-require a fresh request. Import validation rejects recommendations/scores/edits;
+require a fresh request. Import validation accepts only the requested scoped
+assessments and rejects recommendations, song/composite scores and edits;
 AI prose and sources still require human verification. The Close header stays
 outside the scrolling report. [Plan evaluation and history](PLAN-EVALUATION.md)
 documents the model, limits, compatibility and backend preservation guards.

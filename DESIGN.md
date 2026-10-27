@@ -8,8 +8,12 @@ deterministic lookup of recorded song data, using filters selected by the user.
 AI song assessment is optional per account and does not select worship songs.
 Explicit plan/library evaluations may describe existing content against criteria
 chosen by the user, including mixed coverage comparisons. Keep them read-only:
-no candidate song recommendations, replacements, reordering, quality scores or
-automatic edits. Count libraries as distinct songs and plans as ordered occurrences;
+no candidate song recommendations, replacements, reordering or automatic edits.
+The owner explicitly authorized three separate 0–10 scope judgments: Scripture
+relevance when a passage is recorded, theological soundness with gospel coverage,
+and logical lyrical flow for ordered plans. Keep reasons and reviewed evidence
+with each score; unknown is unassessed, not zero. Do not create an overall/composite
+worship score or change individual song ratings. Count libraries as distinct songs and plans as ordered occurrences;
 separate unknown evidence from demonstrated gaps. Review copied scope/privacy and
 AI prose; validating a JSON shape does not prove its claims. Reports are downloadable
 snapshots and immutable Evaluation History entries, never plan/song edits or approvals.
@@ -19,6 +23,10 @@ emphasis. Multiple themes, voices and functions may overlap in one section.
 Never infer adequacy from a percentage or invent actual repetition patterns.
 Unmarked sections count once with editable report-level repetitions. Musical
 criteria and their data are opt-in; default reports focus on words.
+Result relevance means repeat-weighted lyric emphasis followed by song coverage.
+Offer most/least sorting, criterion filtering and an expandable full list. Sorting
+never reorders a human plan. Numeric scope assessments are distinct from these
+descriptive proportions and stay fixed when report-only repeat controls change.
 An explicitly requested AI search may list tentative matches to a user-defined
 subjective criterion within a selected personal library. It requires Full AI
 content, evidence and uncertainty labels. It does not rank songs or edit plans.

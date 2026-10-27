@@ -6,6 +6,25 @@ do not treat a new prompt as cancellation unless the owner says so. Mark an item
 complete only with implementation and meaningful verification. Record external
 blockers explicitly. Preserve personal assessments, recordings and workspaces.
 
+## Evaluation sorting and scoped scores (October 27, 2026)
+
+- [x] Owner clarified relevance means strength of expression in the songs.
+  Sort by emphasis/coverage in both directions; show eight ideas initially,
+  expand the full list and filter by criterion without changing plan order.
+- [x] Owner explicitly authorized Scripture relevance, theological soundness with
+  gospel coverage, and flow scores (0–10). Add optional scoped assessments with
+  concise reasons, reviewed citations and applicable/unknown states. No combined
+  worship score or individual-song rating changes. Preserve fast compact output.
+- [x] All 165 unit/database tests and the complete hosted/PWA browser suite pass.
+  Verify schema/history compatibility, applicability, score bounds, relevance
+  sorting/filtering/full-list controls, responsive cards and immutable history.
+  Real-SQL tests protect scored personal/shared history against older writers;
+  updated writers can explicitly restore/delete. Ignore wire-only capability
+  fields when comparing saved content, preserving pending-save protections.
+  Starting source/check count: 37,522; final: 37,766.
+- [ ] Publish and verify provider deployments, production history-guard metadata
+  and static HTTPS readback; suggest further features.
+
 ## Faster evaluation workflow (October 27, 2026)
 
 - [x] Use compact v3 grouped counts with one evidence explanation per section.

@@ -444,6 +444,8 @@ export function validateWorkspace(input) {
     },
   };
   if(input.evaluationHistory!==undefined)result.evaluationHistory=validateEvaluationHistory(input.evaluationHistory);
+  if(input.evaluationClient===4)result.evaluationClient=4;
+  if(result.evaluationHistory?.some(row=>JSON.parse(row.data).report.schema==='faithful-workspace-evaluation-v4')){result.evaluationSchema=4;result.evaluationClient=4;}
   if (profile.evaluationPurpose !== undefined) result.profile.evaluationPurpose = text(profile.evaluationPurpose, 'lens purpose', 2000);
   if (input.lenses !== undefined) {
     result.lenses = array(input.lenses, 'evaluation lenses', 12).map(lens => {

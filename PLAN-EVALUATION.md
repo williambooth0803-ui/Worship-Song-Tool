@@ -9,16 +9,17 @@ discussion of unrequested missing data.
 The slim header's corner **×** has a 44px target and stays outside the scrolling
 form/report, with its own space so it cannot cover content. **Done**
 and Escape also close it. Reports describe human choices without selecting songs,
-reordering plans, changing ratings or assigning a worship-quality score.
+reordering plans, changing song ratings or assigning an overall worship-quality score.
 
 ## Coverage and lyrical emphasis
 
-New requests use compact v3 responses: categories and line counts are grouped by
+Scored requests use compact v4 responses (unscored requests use v3): categories and line counts are grouped by
 criterion, with one supporting explanation per section. This removes repeated
 JSON fields and repeated prose without reducing selected criteria, overlapping
 ideas, brief coverage, repetition controls or source links. Imported v3 responses
 normalize to the existing v2 archive format so older history clients can still
-read saved reports. Earlier v1/v2 reports remain readable.
+read unscored saved reports. Scored v4 reports retain the three assessment records
+and require an updated app. Earlier v1/v2/v3 reports remain readable.
 
 Requests favor one reliable matching full-text source per song, batch lyric
 lookups, and stop once identity and text are established. Previously reviewed
@@ -56,9 +57,36 @@ song columns; aggregates still use the full scope. Libraries count distinct song
 and their combined pool is a union. Plans retain repeated occurrences. Missing or
 No Approval records remain unavailable.
 
+## Sorting and scope assessments
+
+Each idea list initially shows eight results. **Most relevant first** sorts by
+repeat-weighted lyrical emphasis, then distinct-song coverage. **Least relevant
+first** reverses those priorities; unknown proportions remain last. **By criterion**
+and **A–Z** are also available. Filter to one criterion or **Show all** ideas.
+The song-by-song map follows the same visible ideas; all aggregates still include
+the full selected scope. Sorting/filtering never changes plan order or saved data.
+
+**Include three 0–10 assessments** is checked by default and can be disabled for
+a descriptive-only report. Each selected plan/library gets separate results:
+
+- **Scripture relevance:** contextual alignment with a plan's recorded passage.
+  No passage means N/A; thematic overlap does not establish a quotation/allusion.
+- **Theological soundness & gospel:** explicit claims under the saved lens plus
+  gospel substance across the whole scope. Reasons distinguish omissions from
+  errors and explain gospel coverage; every song need not contain the whole gospel.
+- **Flow of ideas:** logical lyrical progression of the existing plan. Libraries
+  and plans with fewer than two non-heading items are N/A.
+
+Reasons are brief and cite reviewed records from their own scope. Missing evidence
+is **Not assessed**, never a zero. There is no composite worship score and these
+results do not change song ratings or approvals. Score definitions expand in place.
+Different scopes retain different scores; combined maps never invent an average.
+Report-only repetition edits recalculate proportions while preserving the original
+AI judgments. A fresh evaluation is needed to reassess those judgments.
+
 Old v1 workspace reports remain readable as presence evidence. Their single labels
 cannot establish section proportions; repeat-weighted emphasis needs a fresh
-section-based evaluation (v2 or v3). The old standalone library-audit parser remains for compatibility,
+section-based evaluation (v2/v3/v4). The old standalone library-audit parser remains for compatibility,
 while the main library entry uses the unified evaluator.
 
 ## Evaluation History
@@ -91,6 +119,13 @@ Supabase's connected GitHub integration. **Deploy workspace history** tests the
 guards on pushes; its manual dispatch can reapply the legacy history SQL using a
 valid encrypted deployment credential. That older token currently returns 401;
 it is not required for the connected integration or normal app history saving.
+
+`supabase/migrations/20261027230003_guard_scored_evaluations.sql` extends the
+row-local guard for scored history. New clients acknowledge support on personal,
+shared and restore writes; older clients cannot replace a scored workspace.
+Native permissions and revision checks remain in force. Backups retain scored
+reports and their original lens, passage and reasons. A rejected remote workspace
+cannot advance the account's save timestamp.
 
 ## Adding songs while planning
 

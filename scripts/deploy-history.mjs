@@ -16,7 +16,7 @@ async function api(path,body) {
   return response.json();
 }
 await api('');
-const query=(await Promise.all(['version-history.sql','migrations/20261027154912_preserve_evaluation_history.sql'].map(name=>readFile(new URL('../supabase/'+name,import.meta.url),'utf8')))).join('\n');
+const query=(await Promise.all(['version-history.sql','migrations/20261027154912_preserve_evaluation_history.sql','migrations/20261027230003_guard_scored_evaluations.sql'].map(name=>readFile(new URL('../supabase/'+name,import.meta.url),'utf8')))).join('\n');
 await api('/database/query',{query});
 const rows=await api('/database/query',{query:`select
   to_regclass('public.workspace_versions') is not null as history_table,

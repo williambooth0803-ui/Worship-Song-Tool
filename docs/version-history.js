@@ -126,7 +126,7 @@ export class CloudHistory {
   }
   capture(organization,label) {return this.rpc('checkpoint',{target_org:organization,version_label:label});}
   apply(organization,workspace,updatedAt,revision) {
-    return this.rpc('apply',{target_org:organization,new_workspace:workspace,
+    return this.rpc('apply',{target_org:organization,new_workspace:{...workspace,evaluationClient:4},
       expected_updated_at:updatedAt,expected_revision:revision});
   }
 }

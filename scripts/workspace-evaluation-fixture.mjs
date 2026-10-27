@@ -9,7 +9,7 @@ export async function checkWorkspaceEvaluationFlows(browser, base) {
   page.on("pageerror", (error) => errors.push(error.message));
   const state = () =>
     page.evaluate(() => JSON.parse(localStorage.getItem("hymn-heart-v1")));
-  const withoutHistory = w => {const copy=structuredClone(w);delete copy.evaluationHistory;return copy;};
+  const withoutHistory = w => {const copy=structuredClone(w);delete copy.evaluationHistory;delete copy.evaluationSchema;delete copy.evaluationClient;return copy;};
   const prepare = async () => {
     await page.locator("#prepare-scope-evaluation").click();
     const request = await page.locator("#scope-request").inputValue();
@@ -23,6 +23,7 @@ export async function checkWorkspaceEvaluationFlows(browser, base) {
     );
     response.summary =
       "Existing content <script>unsafe()</script> with missing evidence.";
+    for(const row of response.assessments||[])for(const key of ['scripture','theology','flow'])row[key].reason='No reviewed lyric evidence in this synthetic fixture.';
     response.strengths = ["Recorded key and estimated timing are available."];
     response.weaknesses = [
       "Insufficient text evidence to assess the stated gap.",
