@@ -43,7 +43,15 @@ blockers explicitly. Preserve personal assessments, recordings and workspaces.
   generated migrations use the working Supabase integration. The connected tool's
   earlier migration call stalled without applying SQL. No manual SQL or credential
   replacement is needed for this release.
-- [ ] Record final release-check and deployed-asset verification results.
+- [x] [Release checks](https://github.com/williambooth0803-ui/Worship-Song-Tool/actions/runs/40566065340)
+  passed: 157 unit/database tests, MCP type checks, scale, real PWA, complete
+  hosted browser workflows and generated-file parity. Workflow correction
+  `fe5966e` passed its history tests; Cloudflare Pages, Worker, Supabase and GitHub
+  Pages all reported successful deployments. HTTPS readback of app.js, history,
+  content/report modules, picker, CSS and service worker matches the tested build
+  on the reachable GitHub host. Cloudflare's hostname remains outside this
+  execution environment's allowlist; its provider result is verified. No personal
+  account or workspace data was used in fixtures.
 
 ## Installable web app (October 25, 2026)
 
