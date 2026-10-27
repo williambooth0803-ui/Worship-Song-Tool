@@ -16,7 +16,12 @@ blockers explicitly. Preserve personal assessments, recordings and workspaces.
   History reopening, Escape, picker and data-preservation regressions passed.
   Phone/desktop screenshots were visually inspected; regenerated docs/. Starting
   source/check count: 37,458; final: 37,462.
-- [ ] Publish and verify provider deployment and release checks.
+- [x] Published `9223efb`; Cloudflare Pages, Worker and GitHub Pages reported
+  success. HTTPS readback of the close/report module, evaluator, CSS and service
+  worker matches the tested build on GitHub's reachable host. [Release checks](https://github.com/williambooth0803-ui/Worship-Song-Tool/actions/runs/40591613181)
+  passed all 157 unit/database tests, MCP types, scale, PWA, full hosted browsers
+  and generated-file parity. Cloudflare's hostname remains outside the executor
+  allowlist; provider deployment success is verified.
 
 ## Lyrical evaluations, closing controls, song creation and Evaluation History (October 27, 2026)
 
