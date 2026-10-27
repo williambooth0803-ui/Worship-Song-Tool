@@ -3,6 +3,9 @@ const same=(a,b)=>workspaceSignature(a)===workspaceSignature(b);
 const copy=x=>x===undefined?undefined:structuredClone(x);
 export class MergeConflictError extends Error {constructor(path){super('Two people changed '+path+'. Your browser copy is preserved; review the shared copy before saving.');this.name='WorkspaceConflictError';this.path=path;}}
 export function mergeWorkspaces(base,local,remote) {
+ if([base,local,remote].some(w=>w?.evaluationHistory!==undefined)) {
+  [base,local,remote]=[base,local,remote].map(w=>({...w,evaluationHistory:w.evaluationHistory||[]}));
+ }
  function merge(b,l,r,path) {
   if(same(l,r))return copy(l);if(same(l,b))return copy(r);if(same(r,b))return copy(l);
   if(Array.isArray(b)&&Array.isArray(l)&&Array.isArray(r)) {

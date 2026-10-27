@@ -9,6 +9,7 @@ export async function checkWorkspaceEvaluationFlows(browser, base) {
   page.on("pageerror", (error) => errors.push(error.message));
   const state = () =>
     page.evaluate(() => JSON.parse(localStorage.getItem("hymn-heart-v1")));
+  const withoutHistory = w => {const copy=structuredClone(w);delete copy.evaluationHistory;return copy;};
   const prepare = async () => {
     await page.locator("#prepare-scope-evaluation").click();
     const request = await page.locator("#scope-request").inputValue();
@@ -170,7 +171,7 @@ export async function checkWorkspaceEvaluationFlows(browser, base) {
       await page.locator("#scope-preview [data-action*=add]").count(),
       0,
     );
-    assert.deepEqual(await state(), before);
+    assert.deepEqual(withoutHistory(await state()), withoutHistory(before));
     await page.screenshot({
       path: "/tmp/faithful-plan-evaluation-desktop.png",
       fullPage: true,
@@ -181,10 +182,10 @@ export async function checkWorkspaceEvaluationFlows(browser, base) {
     const report = JSON.parse(await readFile(await downloaded.path(), "utf8"));
     assert.equal(report.snapshot.scopes.length, 4);
     assert.equal(
-      report.charts.find((c) => c.id === "plan:fixture-morning").total,
+      report.content.find((c) => c.id === "plan:fixture-morning").total,
       3,
     );
-    assert.equal(report.charts.find((c) => c.id === "library-union").total, 2);
+    assert.equal(report.content.find((c) => c.id === "library-union").total, 2);
     await page
       .locator("#audit-json")
       .fill(
@@ -218,7 +219,7 @@ export async function checkWorkspaceEvaluationFlows(browser, base) {
     await page.locator("#audit-json").fill(JSON.stringify(fresh.response));
     await page.locator("#preview-scope-evaluation").click();
     assert.equal(await page.locator("#scope-error").textContent(), "");
-    assert.deepEqual(await state(), before);
+    assert.deepEqual(withoutHistory(await state()), withoutHistory(before));
     await page.setViewportSize({ width: 390, height: 844 });
     assert.ok(
       await page.evaluate(
@@ -233,7 +234,7 @@ export async function checkWorkspaceEvaluationFlows(browser, base) {
     await page.locator("#preview-scope-evaluation").click();
     const region = await page.locator("#scope-preview > h3").boundingBox(),
       bounds = await page.locator("#dialog").boundingBox(),
-      close = await page.locator(".modal-top").boundingBox();
+      close = await page.locator(".evaluation-dialog-header").boundingBox();
     assert.ok(
       region.y >= close.y + close.height + 4 &&
         region.y + region.height < bounds.y + bounds.height,
@@ -244,7 +245,7 @@ export async function checkWorkspaceEvaluationFlows(browser, base) {
       fullPage: true,
     });
     await page
-      .getByRole("button", { name: "Close dialog", exact: true })
+      .getByRole("button", { name: "Close evaluation", exact: true })
       .click();
     assert.ok(await page.locator(".plan-key").first().isVisible());
     await page.screenshot({
@@ -260,7 +261,6 @@ export async function checkWorkspaceEvaluationFlows(browser, base) {
     await page
       .getByRole("button", { name: "Run Library Audit", exact: true })
       .click();
-    await page.locator("#choose-evaluation-scopes").click();
     assert.equal(
       await page.locator('[data-evaluation-scope="library"]:checked').count(),
       1,
@@ -279,7 +279,7 @@ export async function checkWorkspaceEvaluationFlows(browser, base) {
     await page.locator("#preview-scope-evaluation").click();
     assert.equal(await page.locator("#scope-error").textContent(), "");
     assert.equal(await page.locator(".evaluation-cohort").count(), 3);
-    assert.deepEqual(await state(), before);
+    assert.deepEqual(withoutHistory(await state()), withoutHistory(before));
     // Exercise live-state guards independently of saved data using the real dialog module.
     await page.evaluate(async () => {
       const { openWorkspaceEvaluation } = await import(
@@ -307,7 +307,7 @@ export async function checkWorkspaceEvaluationFlows(browser, base) {
     });
     let guard = await prepare();
     await page.evaluate(() => {
-      window.evaluationFixture.workspace.plans[0].items[1].key = "E";
+      window.evaluationFixture.workspace.plans[0].theme = "Changed text context";
     });
     await page.locator("#audit-json").fill(JSON.stringify(guard.response));
     await page.locator("#preview-scope-evaluation").click();
@@ -330,7 +330,7 @@ export async function checkWorkspaceEvaluationFlows(browser, base) {
     await page.locator("#audit-json").fill(JSON.stringify(guard.response));
     await page.locator("#preview-scope-evaluation").click();
     assert.match(await page.locator("#scope-error").textContent(), /changed/);
-    assert.deepEqual(await state(), before);
+    assert.deepEqual(withoutHistory(await state()), withoutHistory(before));
     assert.deepEqual(errors, []);
     console.log(
       "PASS: plan evaluation, multiple plans/libraries and mixed scopes, selected/custom criteria, distinct library union and repeated plan counts, private/blacklisted exclusions, no edits, wrong-request/unsupported-field rejection, downloaded snapshot, focus and mobile layout.",

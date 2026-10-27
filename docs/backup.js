@@ -4,6 +4,7 @@ import { songTypes } from "./repertoire-data.js";
 import { parsePitch } from "./planning.js";
 import { validateIndexView } from "./index-views.js";
 import { validateRecordings } from "./recordings.js";
+import { validateEvaluationHistory } from "./evaluation-history.js";
 import { validateCriteria, validateCustomScores } from "./scoring.js";
 
 export const MAX_BACKUP_BYTES = 5 * 1024 * 1024;
@@ -442,6 +443,7 @@ export function validateWorkspace(input) {
       principles: text(profile.principles, "rating parameters", 6000, true),
     },
   };
+  if(input.evaluationHistory!==undefined)result.evaluationHistory=validateEvaluationHistory(input.evaluationHistory);
   if (profile.evaluationPurpose !== undefined) result.profile.evaluationPurpose = text(profile.evaluationPurpose, 'lens purpose', 2000);
   if (input.lenses !== undefined) {
     result.lenses = array(input.lenses, 'evaluation lenses', 12).map(lens => {

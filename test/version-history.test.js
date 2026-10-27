@@ -42,11 +42,11 @@ test('history deployment stops before writes on failed authentication and verifi
     assert.equal(calls.length,1);assert.equal(calls[0].options.method,'GET','Failed authentication must not reach a database write');
     calls.length=0;
     globalThis.fetch=async(url,options)=>{
-      calls.push({url,options});return {ok:true,json:async()=>calls.length===3?[{history_table:true,history_rpcs:true,history_triggers:true}]:{}};
+      calls.push({url,options});return {ok:true,json:async()=>calls.length===3?[{history_table:true,history_rpcs:true,history_triggers:true,evaluation_guards:true}]:{}};
     };
     await import('../scripts/deploy-history.mjs?verified');
     assert.equal(calls.length,3);assert.ok(calls[1].url.endsWith('/database/query'));
-    assert.equal(JSON.parse(calls[1].options.body).query,await readFile('supabase/version-history.sql','utf8'));
+    assert.equal(JSON.parse(calls[1].options.body).query,(await Promise.all(['version-history.sql','migrations/20261027154912_preserve_evaluation_history.sql'].map(name=>readFile('supabase/'+name,'utf8')))).join('\n'));
     assert.match(messages.join(' '),/installed and verified/);assert.ok(!messages.join(' ').includes(process.env.SUPABASE_ACCESS_TOKEN));
     globalThis.fetch=async()=>({ok:true,json:async()=>[]});
     await assert.rejects(import('../scripts/deploy-history.mjs?invalid-verification'),/verification failed/);

@@ -6,6 +6,38 @@ do not treat a new prompt as cancellation unless the owner says so. Mark an item
 complete only with implementation and meaningful verification. Record external
 blockers explicitly. Preserve personal assessments, recordings and workspaces.
 
+## Lyrical evaluations, closing controls, song creation and Evaluation History (October 27, 2026)
+
+- [x] Give evaluations a fixed header and labeled 44px Close control outside the
+  scrolling body. Done and Escape also close it; check mobile/desktop positioning.
+- [x] Replace single-category bars with overlapping section-level ideas. Show
+  distinct-song coverage separately from repeat-weighted reviewed-line emphasis;
+  one substantive line still establishes presence. Published repeats need source
+  evidence; unmarked sections count once. Per-occurrence controls support any
+  verse/chorus/bridge count, including omissions, without editing plans.
+- [x] Focus on words by default, add themes and reverence, and make tempo/timing
+  and key/range independently opt-in. Omit unselected musical fields and warnings.
+  Use the same evaluator for library and plan entry points.
+- [x] Add Libraries / All songs / New song to the Plans picker. Stage catalog and
+  unrated custom records until atomic insertion; retain selections/position and
+  cancel safely. New songs need no library membership.
+- [x] Save previews to workspace Evaluation History, retain immutable repetition
+  revisions and original context, reopen/download/delete reports, and preserve
+  them in backups/autosave/shared workspaces. Apply AI visibility and viewer roles;
+  never silently evict archives. Exclude raw lyrics. Add database guards against
+  older cached clients omitting history.
+- [x] All 157 unit/database tests, the complete hosted browser suite, real PWA
+  checks at both hosting paths and the 1,000-song/1,000-plan scale check passed.
+  Weighting, immutable history reload/rename/download, picker cancellation/atomic
+  insertion and four responsive widths passed. Real-SQL shared-history checks
+  passed across owner/editor/viewer clients. Final mobile spacing was visually
+  inspected and the lyrical workflow rechecked after that CSS polish.
+  Starting source/check count: 36,939; final: 37,458.
+- [ ] Publish frontend and database guards. The connected Supabase migration call
+  stalled without applying the guard (confirmed through read-only metadata).
+  Use the existing encrypted GitHub deployment workflow and verify its result;
+  no manual SQL or credentials are needed from the owner.
+
 ## Installable web app (October 25, 2026)
 
 - [x] Add a path-relative manifest, home-screen/Apple icons, standalone launch

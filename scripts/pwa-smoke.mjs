@@ -147,7 +147,12 @@ try{
     await other.close();
     await page.getByRole('button',{name:'Update app',exact:true}).click();
     await page.getByRole('heading',{name:'Discover songs',exact:true}).waitFor();
-    await page.locator('#pwa-notice').waitFor({state:'hidden'});
+    await page.locator('#pwa-notice').waitFor({state:'hidden'}).catch(async error=>{
+      console.log('PWA update diagnostic',await page.evaluate(async()=>{
+        const r=await navigator.serviceWorker.getRegistration();
+        return {online:navigator.onLine,notice:document.querySelector('#pwa-notice')?.textContent,waiting:r?.waiting?.state,active:r?.active?.state,installing:r?.installing?.state};
+      }));throw error;
+    });
     assert.deepEqual(validateWorkspace(await page.evaluate(()=>JSON.parse(localStorage.getItem('hymn-heart-v1')))),before);
     assert.equal(await page.evaluate(async()=>(await caches.keys()).length),1,'Old shell cache should be cleaned up');
     await page.evaluate(()=>window.dispatchEvent(new Event('appinstalled')));

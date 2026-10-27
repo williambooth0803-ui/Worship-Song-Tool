@@ -1,0 +1,56 @@
+import {evaluationContent,contentCohorts,ideaLabel,repeatKey} from './evaluation-content.js';
+const e=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const list=values=>values.length?`<ul>${values.map(v=>`<li>${e(v)}</li>`).join('')}</ul>`:'<p class="muted">None reported.</p>';
+const percent=n=>n===null?'—':n>0&&n<1?'&lt;1%':`${Number(n.toFixed(1))}%`;
+export function evaluationDialog({modal,dialog,title,html}) {
+  modal(`<div class="evaluation-dialog-body">${html}</div>`);
+  dialog.querySelector('.modal-top')?.remove();
+  const header=document.createElement('header');header.className='evaluation-dialog-header';
+  header.innerHTML=`<h2 id="scope-dialog-title">${e(title)}</h2><button class="button evaluation-close" type="button" aria-label="Close evaluation">Close <span aria-hidden="true">×</span></button>`;
+  header.querySelector('button').onclick=()=>dialog.close();dialog.prepend(header);
+  dialog.classList.add('workspace-evaluation-dialog');dialog.setAttribute('aria-labelledby','scope-dialog-title');
+  dialog.addEventListener('close',()=>{dialog.classList.remove('workspace-evaluation-dialog');if(dialog.getAttribute('aria-labelledby')==='scope-dialog-title')dialog.removeAttribute('aria-labelledby');},{once:true});
+  header.querySelector('button').focus({preventScroll:true});
+}
+export function renderEvaluationReport({container,report,snapshot,repeats:initial={},download,assertCurrent=()=>{},onSave,readOnly=false,preferredScope}) {
+  const repeats={...initial},pages=new Map();
+  const cohorts=contentCohorts(snapshot),primary=preferredScope||cohorts.find(c=>['plan-combined','library-union'].includes(c.id))?.id||cohorts[0]?.id;
+  cohorts.sort((a,b)=>Number(b.id===primary)-Number(a.id===primary));
+  const sectionMarkup=scope=>scope.entries.map((entry,index)=>{
+    const song=report.songs.find(s=>s.id===entry.id);if(!song?.sections?.length)return '';
+    return `<fieldset class="repetition-song"><legend>${scope.type==='plan'?index+1+'. ':''}${e(entry.title)}</legend>${song.sections.map(section=>{
+      const key=repeatKey(entry.originScope||scope.id,entry.itemId,section.id),value=repeats[key]??section.repetitions??1;
+      return `<label>${e(section.label)} <small>${section.lineCount} lyric lines${section.repetitions!==null?' · published repeats':''}</small>${readOnly?`<strong>× ${value}</strong>`:`<input type="number" min="0" max="50" step="1" value="${value}" data-repeat-key="${e(key)}" aria-label="${e(scope.name+' / '+(index+1)+'. '+entry.title+' / '+section.label+' repetitions')}">`}</label>`;
+    }).join('')}</fieldset>`;
+  }).join('');
+  container.innerHTML=`<h3>${readOnly?'Saved evaluation':'Evaluation report'}</h3><p class="evaluation-boundary">Lens: <strong>${e(snapshot.lens?.name||'Main lens')}</strong>${snapshot.lens?.purpose?' · '+e(snapshot.lens.purpose):''}</p><p>${e(report.summary)}</p><section class="lyrical-overview" aria-label="Lyrical coverage and emphasis"><h4>Coverage & lyrical emphasis</h4><p>An idea can appear alongside others. <strong>Coverage</strong> records where it is expressed, even briefly. <strong>Emphasis</strong> measures its share of reviewed lyric lines, weighted by the repetition pattern below. Overlapping ideas do not need to total 100%.</p>${cohorts.map(scope=>`<details class="evaluation-cohort" ${scope.id===primary?'open':''} data-cohort="${e(scope.id)}"><summary><strong>${e(scope.name)}</strong></summary><div class="idea-map" data-idea-map="${e(scope.id)}"></div>${report.schema.endsWith('-v2')&&sectionMarkup(scope)?`<details class="repetition-editor"><summary>${readOnly?'Saved repetition pattern':'Repetition pattern'}</summary><p>${readOnly?"This is the saved repetition pattern. Unmarked sections were counted once; 0 indicates an omitted section.":"Published counts are used when supplied; unmarked sections count once. Set actual repetitions for your performance, including 0 for an omitted section. These controls affect this report only."}</p>${sectionMarkup(scope)}</details>`:''}</details>`).join('')}</section><h4>Strong areas</h4>${list(report.strengths)}<h4>Areas with less coverage</h4>${list(report.weaknesses)}${report.limitations.length?`<details class="evaluation-limitations"><summary>Evidence limits (${report.limitations.length})</summary>${list(report.limitations)}</details>`:''}<h4>Selected criteria</h4>${report.criteria.map(row=>`<details class="evaluation-finding"><summary><strong>${e(snapshot.criteria.find(c=>c.id===row.id)?.label||row.id)}</strong></summary>${row.findings.map(f=>`<p><strong>${e(snapshot.scopes.find(s=>s.id===f.scopeId)?.name)}</strong> — ${e(f.observation)}</p>${f.evidenceSongIds.length?`<p class="muted">Evidence: ${f.evidenceSongIds.map(id=>e(snapshot.songs.find(s=>s.id===id)?.title)).join(' · ')}</p>`:''}`).join('')}${row.coverage.status!=='notApplicable'?`<p class="evaluation-coverage">${e(row.coverage.explanation)}</p>`:''}</details>`).join('')}<details><summary>Song and section evidence (${report.songs.length})</summary>${report.songs.map(song=>`<article class="evaluation-song-evidence"><h5>${e(snapshot.songs.find(s=>s.id===song.id)?.title)}</h5><p>${e(song.evidence)}</p>${(song.sections||[]).map(section=>`<details><summary>${e(section.label)} · ${section.lineCount} lyric lines</summary>${list(section.ideas.map(idea=>`${ideaLabel(idea.category)} (${idea.lineCount} lines): ${idea.evidence}`))}${section.repeatEvidence?`<p>${e(section.repeatEvidence)}</p>`:''}</details>`).join('')}${song.sources.map(source=>`<p><a href="${e(source.url)}" target="_blank" rel="noopener noreferrer">${e(source.label)}</a></p>`).join('')}</article>`).join('')}</details><div class="evaluation-report-actions"><button class="button" type="button" id="download-scope-evaluation">Download evaluation report</button>${onSave&&!readOnly?'<button class="button" type="button" id="save-scope-evaluation">Save evaluation</button>':''}<button class="button" type="button" data-report-done>Done</button></div><p class="evaluation-history-status" role="status"></p>`;
+  function renderMaps() {
+    for(const scope of evaluationContent(report,snapshot,repeats)){
+      const target=[...container.querySelectorAll('[data-idea-map]')].find(el=>el.dataset.ideaMap===scope.id);
+      const page=Math.min(pages.get(scope.id)||0,Math.max(0,Math.ceil(scope.entries.length/8)-1));pages.set(scope.id,page);
+      const start=page*8,entries=scope.entries.slice(start,start+8);
+      const detailOpen=target.querySelector('.idea-map-detail')?.open||false;
+      const ideaName=idea=>`<small>${e(snapshot.criteria.find(c=>c.id===idea.criterionId)?.label||idea.criterionId)}</small>${e(ideaLabel(idea.category))}`;
+      const coverage=idea=>`<strong>${idea.songCount}/${scope.distinctSongs}</strong> songs${scope.type==='plan'&&scope.total!==scope.distinctSongs?`<small>${idea.occurrenceCount} uses</small>`:''}`;
+      const emphasis=idea=>`<strong>${percent(idea.percent)}</strong><small>${idea.percent===null?'Presence only':`${idea.weightedLines}/${scope.totalLines} weighted lines`}</small>`;
+      target.innerHTML=`<p class="idea-map-summary">${scope.distinctSongs} distinct songs${scope.type==='plan'?` · ${scope.total} song occurrences`:''}${scope.minutes!==null?` · ${scope.minutes} estimated minutes`:''} · ${scope.reviewedSongs}/${scope.distinctSongs} lyric texts mapped${scope.partialSongs?` (${scope.partialSongs} partial)`:''}${scope.unavailable?` · ${scope.unavailable} unavailable`:''}</p>${scope.ideas.length?`
+        <table class="idea-table idea-summary-table"><thead><tr><th scope="col">Idea</th><th scope="col">Coverage</th><th scope="col">Lyric emphasis</th></tr></thead><tbody>${scope.ideas.map(idea=>`<tr><th scope="row">${ideaName(idea)}</th><td>${coverage(idea)}</td><td>${emphasis(idea)}</td></tr>`).join('')}</tbody></table>
+        <details class="idea-map-detail" ${detailOpen?'open':''}><summary>Song-by-song idea map</summary><p class="muted">Scroll across to compare the songs. A song can express several ideas at once.</p><div class="idea-map-scroll" role="region" aria-label="${e(scope.name)} song-by-song idea map" tabindex="0"><table class="idea-table"><thead><tr><th scope="col">Idea</th>${entries.map((entry,i)=>`<th scope="col">${scope.type==='plan'?start+i+1+'. ':''}${e(entry.title)}</th>`).join('')}</tr></thead><tbody>${scope.ideas.map(idea=>`<tr><th scope="row">${ideaName(idea)}</th>${idea.cells.slice(start,start+8).map(cell=>`<td class="idea-cell ${cell.present?'idea-present':''}">${cell.present?'<span aria-label="Present">●</span> Present':cell.status==='complete'?'Not evidenced':'Not established'}${cell.present&&cell.percent!==null?`<small>${percent(cell.percent)} of ${cell.status==='partial'?'reviewed lines':'this song'}</small>`:''}</td>`).join('')}</tr>`).join('')}</tbody></table></div>${scope.entries.length>8?`<div class="pagination"><button type="button" class="button" data-map-previous ${!page?'disabled':''}>Previous songs</button><span>${start+1}–${Math.min(start+8,scope.total)} of ${scope.total}</span><button type="button" class="button" data-map-next ${start+8>=scope.total?'disabled':''}>Next songs</button></div>`:''}</details>`:'<p class="muted">No section-level ideas have been established in this response.</p>'}<p class="idea-map-note">Presence is separate from prominence or adequacy. Proportions describe reviewed lyric lines, not time. Prose findings describe the source text; these proportions reflect the pattern currently shown.</p>`;
+      target.querySelector('[data-map-previous]')?.addEventListener('click',()=>{pages.set(scope.id,page-1);renderMaps();});
+      target.querySelector('[data-map-next]')?.addEventListener('click',()=>{pages.set(scope.id,page+1);renderMaps();});
+    }
+  }
+  const status=container.querySelector('.evaluation-history-status'),save=container.querySelector('#save-scope-evaluation');
+  function saveReport(){try{assertCurrent();onSave?.(report,snapshot,{...repeats});status.textContent='Saved to Evaluation History on this device.';if(save){save.disabled=true;save.textContent='Saved to history';}}catch(error){status.textContent=error.message;if(save)save.disabled=false;}}
+  for(const input of container.querySelectorAll('[data-repeat-key]'))input.onchange=()=>{
+    if(!input.checkValidity()||input.value===''){input.reportValidity();return;}
+    repeats[input.dataset.repeatKey]=Number(input.value);
+    for(const other of container.querySelectorAll('[data-repeat-key]'))if(other!==input&&other.dataset.repeatKey===input.dataset.repeatKey)other.value=input.value;
+    renderMaps();status.textContent='Repetition pattern changed. Save this version to retain it.';
+    if(save){save.disabled=false;save.textContent='Save repetition changes';}
+  };
+  if(save)save.onclick=saveReport;
+  container.querySelector('#download-scope-evaluation').onclick=()=>{try{assertCurrent();download('plan-library-evaluation.json',JSON.stringify({...report,snapshot,repeats,content:evaluationContent(report,snapshot,repeats)},null,2),'application/json');}catch(error){status.textContent=error.message;}};
+  container.querySelector('[data-report-done]').onclick=()=>container.closest('dialog').close();
+  renderMaps();if(onSave&&!readOnly)saveReport();
+}

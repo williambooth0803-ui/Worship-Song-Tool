@@ -20,6 +20,7 @@ export async function checkOrganizationFlows(browser,base) {
   await db.exec(await readFile('supabase/schema.sql','utf8'));
   await db.exec(await readFile('supabase/organizations.sql','utf8'));
   await db.exec(await readFile('supabase/version-history.sql','utf8'));
+  await db.exec(await readFile('supabase/migrations/20261027154912_preserve_evaluation_history.sql','utf8'));
   for(const user of users) {
    await db.query('insert into auth.users values($1,$2,now())',[user.id,user.email]);
    const state=syncCatalog({version:1,songs:structuredClone(seedSongs),libraries:[{id:'mine',name:'My private songs',songIds:[]}],plans:[],profile:{...defaultProfile,setupComplete:true,aiMode:user.name==='viewer'?'manual':'full'}});
@@ -116,7 +117,22 @@ export async function checkOrganizationFlows(browser,base) {
   const evaluationRequest=await viewer.locator('#scope-request').inputValue();
   assert.ok(evaluationRequest.includes('Shared Sunday'));assert.ok(!evaluationRequest.includes('PRIVATE viewer note'));assert.ok(!evaluationRequest.includes('PRIVATE owner note'));
   assert.equal((await db.query('select revision from public.organization_workspaces where organization_id=$1',[org])).rows[0].revision,auditRevision,'Read-only evaluation must not write shared data');
-  await viewer.getByRole('button',{name:'Close dialog',exact:true}).click();
+  await viewer.getByRole('button',{name:'Close evaluation',exact:true}).click();
+  // Evaluation History uses the existing real-SQL shared workspace save path.
+  await owner.getByRole('button',{name:'Evaluate plan',exact:true}).click();
+  await owner.locator('#prepare-scope-evaluation').click();
+  const savedRequest=await owner.locator('#scope-request').inputValue();
+  const savedReport=JSON.parse(savedRequest.split('Response shape:\n')[1].split('\nSelected snapshot')[0]);
+  savedReport.summary='Shared saved evaluation';
+  for(const criterion of savedReport.criteria){for(const finding of criterion.findings)finding.observation='Empty existing plan; no lyric evidence.';criterion.coverage.explanation='One selected plan.';}
+  await owner.locator('#audit-json').fill(JSON.stringify(savedReport));await owner.locator('#preview-scope-evaluation').click();
+  assert.equal(await owner.locator('#scope-error').textContent(),'');
+  await owner.getByRole('button',{name:'Close evaluation',exact:true}).click();
+  for(const [page,user] of [[editor,users[1]],[viewer,users[2]]])await page.waitForFunction(key=>JSON.parse(localStorage.getItem(key)||'{}').evaluationHistory?.length===1,`faithful-repertoire-organization:${user.id}:${org}`,{timeout:15000});
+  assert.equal((await db.query('select workspace from public.organization_workspaces where organization_id=$1',[org])).rows[0].workspace.evaluationHistory.length,1);
+  await viewer.getByRole('button',{name:'Evaluation History',exact:true}).click();await viewer.getByRole('button',{name:'Open report',exact:true}).click();
+  assert.equal(await viewer.locator('#save-scope-evaluation,[data-remove-evaluation]').count(),0);
+  await viewer.getByText('Shared saved evaluation',{exact:true}).waitFor();await viewer.getByRole('button',{name:'Close evaluation',exact:true}).click();
   const direct=await viewer.evaluate(async org=>{const response=await fetch('https://fixture.supabase.co/rest/v1/rpc/org_save',{method:'POST',headers:{'Content-Type':'application/json',Authorization:'Bearer fixture-00000000-0000-0000-0000-000000000093'},body:JSON.stringify({org,expected_revision:1,new_workspace:{version:1,songs:[],libraries:[],plans:[]}})});return response.status;},org);assert.equal(direct,403);
   // Cloud history runs against the same real PostgreSQL RPCs as shared saves.
   await navigate(owner,'settings');await owner.getByRole('button',{name:'Version history',exact:true}).click();

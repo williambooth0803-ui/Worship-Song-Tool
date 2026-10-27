@@ -1,3 +1,5 @@
+import {retainEvaluation} from './evaluation-history.js';
+import {openEvaluationHistory} from './evaluation-history-ui.js';
 import {startPWA} from './pwa.js';
 import {landingPage} from './landing.js';
 import {VersionHistory,CloudHistory} from './version-history.js';
@@ -17,7 +19,6 @@ import {songArtwork,hymnaryLink,addStarterLibraries,previousDecision} from "./so
 import {openPlanSongPicker,openPlanImport,insertionMarkup,insertPlanItems,movePlanItem} from "./plan-ui.js";
 import {exportPlanJSON} from "./plan-import.js";
 import { AutosaveQueue } from "./autosave.js";
-import { libraryAuditPrompt, parseLibraryAudit, auditToken, auditCharts, auditSongs, auditAxes, auditLabels } from "./library-audit.js";
 import { ratingCriteria, activeCriteria, criterionScore, scoringLabels, scoringRubrics, scoreAnchors, suggestedCriteria, validateCriteria } from "./scoring.js";
 import {
   detailAttributes,
@@ -454,6 +455,8 @@ function commitWorkspace(next) {
 }
 function modal(html) {
   unsavedForm = false;
+  dialog.classList.remove("workspace-evaluation-dialog");
+  if(dialog.getAttribute("aria-labelledby")==="scope-dialog-title")dialog.removeAttribute("aria-labelledby");
   dialog.innerHTML = `<div class="modal-top"><span class="eyebrow">FAITHFUL REPERTOIRE</span><button type="button" data-action="close" class="icon-button" aria-label="Close dialog">×</button></div>${html}`;
   if (!dialog.open) dialog.showModal();
   dialog.scrollTop = 0;
@@ -1035,7 +1038,7 @@ function importDialog() {
   );
 }
 function libraryToolbar(lib) {
-  return `${effectiveProfile().aiMode === "full" ? `<button class="button" data-action="library-audit" data-id="${e(lib?.id)}">Run Library Audit</button>` : `<p class="muted">Library interpretation requires Full AI content in your rating profile.</p>`}<details class="library-toolbar"><summary>Library tools</summary><div><button class="text-button" data-action="starter-libraries">Starter libraries</button><button class="text-button" data-action="rename-library" data-id="${e(lib?.id)}">Rename</button><button class="text-button" data-action="export-library" data-id="${e(lib?.id)}">Export song list</button><button class="text-button" data-action="csv-import">Import song list</button><button class="text-button danger" data-action="delete-library" data-id="${e(lib?.id)}" ${state.libraries.length === 1 ? "disabled" : ""}>Delete library</button></div></details>`;
+  return `${effectiveProfile().aiMode === "full" ? `<button class="button" data-action="library-audit" data-id="${e(lib?.id)}">Run Library Audit</button><button class="button" data-action="evaluation-history" data-scope-id="library:${e(lib?.id)}">Evaluation History</button>` : `<p class="muted">Library interpretation requires Full AI content in your rating profile.</p>`}<details class="library-toolbar"><summary>Library tools</summary><div><button class="text-button" data-action="starter-libraries">Starter libraries</button><button class="text-button" data-action="rename-library" data-id="${e(lib?.id)}">Rename</button><button class="text-button" data-action="export-library" data-id="${e(lib?.id)}">Export song list</button><button class="text-button" data-action="csv-import">Import song list</button><button class="text-button danger" data-action="delete-library" data-id="${e(lib?.id)}" ${state.libraries.length === 1 ? "disabled" : ""}>Delete library</button></div></details>`;
 }
 function songCard(s, active) {
   const displayedReview = reviewForDisplay(s, effectiveProfile().aiMode);
@@ -1502,9 +1505,22 @@ function planDisplay(plan) {
 function planPicker() {
   const plan=getPlan(),store=activeStore;
   if (!plan) return toast("Create a plan first.");
-  openPlanSongPicker({workspace:clone(state),plan:clone(plan),libraryId,modal,
-    stillCurrent:()=>activeStore===store && planId===plan.id,
-    onAdd:(items,after)=>{const next=clone(state),target=next.plans.find(p=>p.id===plan.id);if(!target)throw new Error("This plan is no longer available.");insertPlanItems(target,items,after);if(!commitWorkspace(validateWorkspace(next)))return;dialog.close();view="plans";render();toast(`${items.length} song${items.length===1?"":"s"} added to your plan.`);}});
+  openPlanSongPicker({workspace:clone(state),plan:clone(plan),libraryId,modal,catalog:availableCatalog(),
+    onDirty:dirty=>{unsavedForm=dirty;updateSaveStrip();},
+    stillCurrent:()=>activeStore===store && planId===plan.id && editableWorkspace(),
+    onAdd:(items,after,songs=[])=>{
+      const next=clone(state),target=next.plans.find(p=>p.id===plan.id);if(!target)throw new Error("This plan is no longer available.");
+      const mapping=new Map();
+      for(const song of songs){
+        const existing=next.songs.find(s=>s.id===song.id||s.title===song.title&&s.author===song.author&&s.version===song.version);
+        if(existing?.blacklisted)throw new Error("A selected song is now unavailable. Reopen the picker.");
+        if(!existing)next.songs.push(clone(song));else mapping.set(song.id,existing.id);
+      }
+      for(const item of items){item.songId=mapping.get(item.songId)||item.songId;if(next.songs.find(s=>s.id===item.songId)?.blacklisted)throw new Error("A selected song is now unavailable.");}
+      insertPlanItems(target,items,after);
+      if(!commitWorkspace(validateWorkspace(next)))throw new Error("The selection could not be saved. Your picker is still open; retry or download a backup.");
+      dialog.close();view="plans";render();toast(`${items.length} song${items.length===1?"":"s"} added to your plan.`);
+    }});
 }
 function planImportDialog() {
   const store=activeStore;
@@ -1520,56 +1536,28 @@ function plansPage() {
   const plan=state.plans.find(p=>p.id===planId)||state.plans[0];if(plan)planId=plan.id;
   let elapsed=0, number=0;
   const title=item=>planItemTitle(item,state.songs);
-  return `<div class="page-heading"><h1>Plans</h1><div class="index-heading-actions"><button class="button" data-action="import-plan">Import plan</button><button class="button" data-action="plan-templates">Plan templates</button><button class="button primary" data-action="new-plan">+ New plan</button></div></div>${!plan?`<section class="empty full-empty"><h2>No plans yet</h2><p>Create a plan, import an existing order or start from a saved template.</p><button class="button primary" data-action="new-plan">Create a plan</button></section>`:`<div class="plan-layout"><aside class="plan-list">${state.plans.map(p=>`<button data-action="plan-select" data-id="${e(p.id)}" class="${p.id===plan.id?"selected":""}"><strong>${e(p.title)}</strong><span>${e(p.date||"No date set")} · ${planDuration(p.items)} min</span></button>`).join("")}</aside><section class="plan-sheet"><div class="plan-sheet-header"><div><div class="eyebrow">${e(plan.date||"DATE TO BE CONFIRMED")}</div><h2>${e(plan.title)}</h2><p>${e(plan.theme||"")}</p>${plan.passage?`<span class="tag">${e(plan.passage)}</span>`:""}</div><div class="duration-total"><strong>${planDuration(plan.items)}</strong><span>minutes</span></div></div><div class="plan-toolbar">${effectiveProfile().aiMode==="full"?`<button class="button" data-action="workspace-evaluation" data-plan-id="${e(plan.id)}">Evaluate plan</button>`:""}<button class="text-button" data-action="edit-plan">Edit plan details</button><details class="more-menu"><summary>Plan tools</summary><div class="menu-items"><button class="text-button" data-action="copy-plan">Duplicate plan</button><button class="text-button" data-action="save-plan-template">Save as template</button><button class="text-button" data-action="export-plan-json">Export importable JSON</button><button class="text-button" data-action="print-plan">Print / Save PDF</button><button class="text-button danger" data-action="delete-plan">Delete plan</button></div></details><span class="plan-state">${e(plan.status||"draft")}</span></div><ol class="service-items">${plan.items.map((item,i)=>{const name=title(item),heading=item.type==="heading",offset=elapsedTime(elapsed);elapsed+=item.minutes;return `<li class="${heading?"plan-heading-item":""}" data-item-type="${e(item.type)}" data-plan-item="${e(item.id)}" draggable="true"><button class="plan-drag-handle icon-button" aria-label="Drag ${e(name)}" title="Drag to reorder">⠿</button><span class="item-number">${heading?"":String(++number).padStart(2,"0")}</span><div class="service-item-content">${heading?"":`<span class="eyebrow">${e(item.role||item.type)} · ${offset} from start</span>`}<h3>${e(name)}</h3>${item.type==="song"?`<small><span class="plan-key ${item.key?"":"key-unset"}">${e(item.key||"Key not set")}</span>${item.arrangementName?` · ${e(item.arrangementName)}`:""}</small>`:""}${item.notes?`<p>${e(item.notes)}</p>`:""}</div>${heading?"":`<span class="item-time">${e(item.minutes)} min</span>`}<div class="item-buttons"><button class="icon-button" data-action="move-item" data-id="${e(item.id)}" data-direction="-1" aria-label="Move ${e(name)} up" ${i===0?"disabled":""}>↑</button><button class="icon-button" data-action="move-item" data-id="${e(item.id)}" data-direction="1" aria-label="Move ${e(name)} down" ${i===plan.items.length-1?"disabled":""}>↓</button><button class="icon-button" data-action="edit-item" data-id="${e(item.id)}" aria-label="Edit ${e(name)}">✎</button><button class="icon-button danger" data-action="remove-item" data-id="${e(item.id)}" aria-label="Remove ${e(name)}">×</button></div></li>`;}).join("")}</ol>${!plan.items.length?'<div class="empty"><h3>No plan items yet</h3><p>Add songs, headings, readings, prayer or other items.</p></div>':""}<div class="plan-buttons"><button class="button primary" data-action="pick-plan-songs">Add songs</button><button class="button" data-action="new-heading">Add heading</button><button class="button" data-action="new-item">Add item</button><button class="text-button" data-action="export-plan">Export plan</button></div></section></div>`}`;
+  return `<div class="page-heading"><h1>Plans</h1><div class="index-heading-actions">${effectiveProfile().aiMode==="full"&&(state.evaluationHistory||[]).length?'<button class="button" data-action="evaluation-history">All evaluation history</button>':""}<button class="button" data-action="import-plan">Import plan</button><button class="button" data-action="plan-templates">Plan templates</button><button class="button primary" data-action="new-plan">+ New plan</button></div></div>${!plan?`<section class="empty full-empty"><h2>No plans yet</h2><p>Create a plan, import an existing order or start from a saved template.</p><button class="button primary" data-action="new-plan">Create a plan</button></section>`:`<div class="plan-layout"><aside class="plan-list">${state.plans.map(p=>`<button data-action="plan-select" data-id="${e(p.id)}" class="${p.id===plan.id?"selected":""}"><strong>${e(p.title)}</strong><span>${e(p.date||"No date set")} · ${planDuration(p.items)} min</span></button>`).join("")}</aside><section class="plan-sheet"><div class="plan-sheet-header"><div><div class="eyebrow">${e(plan.date||"DATE TO BE CONFIRMED")}</div><h2>${e(plan.title)}</h2><p>${e(plan.theme||"")}</p>${plan.passage?`<span class="tag">${e(plan.passage)}</span>`:""}</div><div class="duration-total"><strong>${planDuration(plan.items)}</strong><span>minutes</span></div></div><div class="plan-toolbar">${effectiveProfile().aiMode==="full"?`<button class="button" data-action="workspace-evaluation" data-plan-id="${e(plan.id)}">Evaluate plan</button><button class="button" data-action="evaluation-history" data-scope-id="plan:${e(plan.id)}">Evaluation History</button>`:""}<button class="text-button" data-action="edit-plan">Edit plan details</button><details class="more-menu"><summary>Plan tools</summary><div class="menu-items"><button class="text-button" data-action="copy-plan">Duplicate plan</button><button class="text-button" data-action="save-plan-template">Save as template</button><button class="text-button" data-action="export-plan-json">Export importable JSON</button><button class="text-button" data-action="print-plan">Print / Save PDF</button><button class="text-button danger" data-action="delete-plan">Delete plan</button></div></details><span class="plan-state">${e(plan.status||"draft")}</span></div><ol class="service-items">${plan.items.map((item,i)=>{const name=title(item),heading=item.type==="heading",offset=elapsedTime(elapsed);elapsed+=item.minutes;return `<li class="${heading?"plan-heading-item":""}" data-item-type="${e(item.type)}" data-plan-item="${e(item.id)}" draggable="true"><button class="plan-drag-handle icon-button" aria-label="Drag ${e(name)}" title="Drag to reorder">⠿</button><span class="item-number">${heading?"":String(++number).padStart(2,"0")}</span><div class="service-item-content">${heading?"":`<span class="eyebrow">${e(item.role||item.type)} · ${offset} from start</span>`}<h3>${e(name)}</h3>${item.type==="song"?`<small><span class="plan-key ${item.key?"":"key-unset"}">${e(item.key||"Key not set")}</span>${item.arrangementName?` · ${e(item.arrangementName)}`:""}</small>`:""}${item.notes?`<p>${e(item.notes)}</p>`:""}</div>${heading?"":`<span class="item-time">${e(item.minutes)} min</span>`}<div class="item-buttons"><button class="icon-button" data-action="move-item" data-id="${e(item.id)}" data-direction="-1" aria-label="Move ${e(name)} up" ${i===0?"disabled":""}>↑</button><button class="icon-button" data-action="move-item" data-id="${e(item.id)}" data-direction="1" aria-label="Move ${e(name)} down" ${i===plan.items.length-1?"disabled":""}>↓</button><button class="icon-button" data-action="edit-item" data-id="${e(item.id)}" aria-label="Edit ${e(name)}">✎</button><button class="icon-button danger" data-action="remove-item" data-id="${e(item.id)}" aria-label="Remove ${e(name)}">×</button></div></li>`;}).join("")}</ol>${!plan.items.length?'<div class="empty"><h3>No plan items yet</h3><p>Add songs, headings, readings, prayer or other items.</p></div>':""}<div class="plan-buttons"><button class="button primary" data-action="pick-plan-songs">Add songs</button><button class="button" data-action="new-heading">Add heading</button><button class="button" data-action="new-item">Add item</button><button class="text-button" data-action="export-plan">Export plan</button></div></section></div>`}`;
 }
 function workspaceEvaluationDialog(initialPlanId, initialLibraryId) {
   if(effectiveProfile().aiMode!=="full")return toast("Evaluations require Full AI content.");
   const owner=accounts.user?.id,store=activeStore;
   openWorkspaceEvaluation({workspace:clone({...state,profile:effectiveProfile()}),initialPlanId,initialLibraryId,modal,dialog,download,
+    onSave:editableWorkspace()?(report,snapshot,repeats)=>{
+      if(owner!==accounts.user?.id||store!==activeStore||effectiveProfile().aiMode!=="full"||!editableWorkspace())throw new Error("This workspace or access changed.");
+      const result=retainEvaluation(state,report,snapshot,repeats);
+      if(!result.duplicate&&!commitWorkspace(validateWorkspace(result.workspace)))throw new Error("The evaluation could not be saved. Download it or retry.");
+    }:undefined,
     getWorkspace:()=>({...state,profile:effectiveProfile()}),stillCurrent:()=>owner===accounts.user?.id&&store===activeStore&&effectiveProfile().aiMode==="full"});
 }
-function libraryAuditDialog(id) {
-  if (effectiveProfile().aiMode !== "full") return toast("Library audits require Full AI content.");
-  const library = state.libraries.find(l => l.id === id);
-  if (!library) return toast("This library is no longer available.");
-  if (!auditSongs(state,id).length) return workspaceEvaluationDialog(undefined,id);
-  const owner = accounts.user?.id, store = activeStore;
-  let requestToken = null, includedWords = false, report = null;
-  modal(`<h2>Run Library Audit</h2><p><button class="button" id="choose-evaluation-scopes">Choose more libraries / plans and criteria</button></p><p>${e(library.name)} · ${auditSongs(state,id).length} visible songs</p><p>Describe balance across this library. This does not score songs, select a service, or change your workspace. Unknowns stay visible; equal proportions are not an assumed ideal.</p><label>Audit purpose or desired balance<textarea id="audit-context" maxlength="2000" rows="3" placeholder="Optional: describe your congregation and what you want to understand."></textarea></label><label class="check-label"><input id="audit-words" type="checkbox">Include stored song words in the request</label><p class="muted">By default only titles, artists, versions and recorded tempo are copied. Notes, plans and account settings are excluded. Shared words must be yours to share.</p><button class="button primary" id="prepare-audit">Prepare ChatGPT request</button><details id="audit-request-section" hidden><summary>Review the request</summary><label>Library audit request<textarea id="audit-request" rows="7" readonly></textarea></label></details><div class="form-actions"><button class="button" id="copy-audit" disabled>Copy audit request</button><a class="button" href="https://chatgpt.com/" target="_blank" rel="noopener noreferrer">Open ChatGPT ↗</a></div><label>ChatGPT library audit JSON<textarea id="audit-json" rows="5" maxlength="2500000" placeholder="Paste the report JSON, then preview it."></textarea></label><p id="audit-error" role="alert"></p><p id="audit-status" role="status">Prepare a request before previewing the report.</p><button class="button primary" id="preview-audit" disabled>Preview audit report</button><section id="audit-preview" tabindex="-1" aria-label="Library audit report"></section>`);
-  dialog.querySelector("#choose-evaluation-scopes").onclick=()=>workspaceEvaluationDialog(undefined,id);
-  const input = dialog.querySelector("#audit-json"), preview = dialog.querySelector("#audit-preview"), error = dialog.querySelector("#audit-error"), status = dialog.querySelector("#audit-status");
-  const invalidate = () => { requestToken = null; report = null; preview.innerHTML = ""; dialog.querySelector("#copy-audit").disabled = true; dialog.querySelector("#preview-audit").disabled = true; status.textContent = "Request settings changed. Prepare a fresh request."; };
-  dialog.querySelector("#audit-context").oninput = invalidate;
-  dialog.querySelector("#audit-words").onchange = invalidate;
-  dialog.querySelector("#prepare-audit").onclick = () => {
-    try {
-      includedWords = dialog.querySelector("#audit-words").checked;
-      dialog.querySelector("#audit-request").value = libraryAuditPrompt({...state,profile:effectiveProfile()},id,dialog.querySelector("#audit-context").value,includedWords);
-      requestToken = auditToken(state,id,includedWords);
-      dialog.querySelector("#audit-request-section").hidden = false;
-      dialog.querySelector("#copy-audit").disabled = false; dialog.querySelector("#preview-audit").disabled = false;
-      error.textContent = ""; status.textContent = "Request ready. Copy it into ChatGPT, then paste its JSON report here.";
-    } catch (err) { error.textContent = err.message; }
-  };
-  dialog.querySelector("#copy-audit").onclick = async () => {
-    const request = dialog.querySelector("#audit-request");
-    try { await navigator.clipboard.writeText(request.value); status.textContent = "Copied. ChatGPT generates the report after you submit the request."; }
-    catch { request.closest("details").open = true; request.focus(); request.select(); status.textContent = "Copy the selected request using your browser's Copy command."; }
-  };
-  input.oninput = () => { report = null; preview.innerHTML = ""; status.textContent = "Response changed. Preview it again."; };
-  dialog.querySelector("#preview-audit").onclick = () => {
-    try {
-      if (!requestToken || owner !== accounts.user?.id || store !== activeStore || effectiveProfile().aiMode !== "full" || requestToken !== auditToken(state,id,includedWords)) throw new Error("The account, library, evidence or AI mode changed. Prepare a new request.");
-      report = parseLibraryAudit(input.value,state,id);
-      error.textContent = "";
-      const chartMarkup = auditCharts(report,state).map(chart => `<section class="audit-chart"><h4>${e(chart.label)}</h4><p>${chart.known}/${chart.total} with classified evidence. ${chart.multiple ? "Multiple references can overlap; percentages need not sum to 100%." : "One category per song."}${chart.key === "tempo" ? " BPM bands are descriptive; they do not establish perceived energy or suitability." : ""}</p>${Object.entries(chart.counts).map(([category,count]) => `<div class="audit-bar-row"><span>${e(auditLabels[category] || category)}</span><meter min="0" max="${Math.max(1,chart.total)}" value="${count}" aria-label="${e(chart.label + ': ' + (auditLabels[category] || category))}">${count}</meter><strong>${count} (${chart.total ? Math.round(count/chart.total*100) : 0}%)</strong></div>`).join("")}</section>`).join("");
-      preview.innerHTML = `<h3>Library audit report</h3><p class="muted">Provisional AI interpretation · verify the cited text and classifications. Charts are calculated from this response, not invented by the website.</p><p>${e(report.summary)}</p><div class="audit-charts">${chartMarkup}</div><h4>Strong areas</h4>${list(report.strengths)}<h4>Weak areas or imbalances</h4>${list(report.weaknesses)}<h4>Limitations and missing evidence</h4>${list(report.limitations)}<details><summary>Song evidence (${report.songs.length})</summary><ul>${report.songs.map(row => `<li><strong>${e(state.songs.find(s=>s.id===row.id)?.title)}</strong><p>${e(row.evidence)}</p><small>${Object.keys(auditAxes).map(key => e(auditAxes[key].label)+": "+e(Array.isArray(row[key]) ? row[key].map(v=>auditLabels[v]).join(", ") : auditLabels[row[key]])).join(" · ")}</small><ul>${row.sources.map(source => `<li><a href="${e(source.url)}" target="_blank" rel="noopener noreferrer">${e(source.label)}</a></li>`).join("")}</ul></li>`).join("")}</ul></details><p>No song evaluations, libraries or plans have been changed. Download the report to retain this snapshot.</p><button class="button" id="download-audit">Download audit report</button><button class="button" data-action="close">Close report</button>`;
-      status.textContent = "Report ready. Charts and explanations are below; nothing in your workspace has changed.";
-      preview.querySelector("#download-audit").onclick = () => download("library-audit.json",JSON.stringify({ ...report, libraryName: library.name, charts:auditCharts(report,state) },null,2),"application/json");
-      preview.focus({preventScroll:true}); preview.scrollIntoView({block:"start",behavior:"instant"});
-    } catch (err) { report = null; preview.innerHTML = ""; error.textContent = err.message; }
-  };
+function libraryAuditDialog(id) {return workspaceEvaluationDialog(undefined,id);}
+function evaluationHistoryDialog(scopeId) {
+  if(effectiveProfile().aiMode!=="full")return toast("Evaluation History requires Full AI content.");
+  const owner=accounts.user?.id,store=activeStore;
+  const current=()=>owner===accounts.user?.id&&store===activeStore&&effectiveProfile().aiMode==="full";
+  openEvaluationHistory({workspace:clone(state),scopeId,modal,dialog,download,stillCurrent:current,
+    onRemove:editableWorkspace()?id=>{if(!current())throw new Error("This workspace changed.");const next=clone(state);next.evaluationHistory=(next.evaluationHistory||[]).filter(row=>row.id!==id);if(!commitWorkspace(validateWorkspace(next)))throw new Error("The report could not be removed.");}:undefined});
 }
+
 function criterionRow(c) {
   return `<fieldset class="criterion-row" data-criterion="${e(c.id)}"><legend>${e(c.label)}</legend><label>Name<input name="criterion-label" maxlength="100" value="${e(c.label)}" required></label><label class="check-label"><input name="criterion-active" type="checkbox" ${c.active ? "checked" : ""}>Include in rating</label><label>Weight<input name="criterion-weight" aria-label="${e(c.label)} weight" type="number" min="0" max="100" value="${state.profile.weights[c.id] ?? 1}" required></label><details data-disclosure-key="criterion:${e(c.id)}"><summary>Evidence rubric</summary><label>Rules for this criterion<textarea name="criterion-rubric" rows="3" maxlength="2000">${e(c.rubric)}</textarea></label></details><button type="button" class="text-button danger" data-action="remove-criterion">Remove criterion</button></fieldset>`;
 }
@@ -1768,7 +1756,7 @@ document.addEventListener("click", async (event) => {
     id = button.dataset.id;
   let song = state.songs.find((s) => s.id === id);
   if(!editableWorkspace()) {
-    const allowed=new Set(["nav","account","close","song-select","song-tab","library-select","plan-select","index-open","catalog-open","clear-filters","song-page","index-page","first-song-page","last-song-page","collection-page","sync-profile","export","export-plan","export-plan-json","export-library","print-plan","download-song-file","song-files","song-recordings","backup","cloud-load","retry-autosave","signout","reset-index","remove-index-filter","apply-index-view","export-index","library-audit","workspace-evaluation","plan-templates","copy-criteria-prompt","prepare-chatgpt-criteria"]);
+    const allowed=new Set(["nav","account","close","song-select","song-tab","library-select","plan-select","index-open","catalog-open","clear-filters","song-page","index-page","first-song-page","last-song-page","collection-page","sync-profile","export","export-plan","export-plan-json","export-library","print-plan","download-song-file","song-files","song-recordings","backup","cloud-load","retry-autosave","signout","reset-index","remove-index-filter","apply-index-view","export-index","library-audit","workspace-evaluation","evaluation-history","plan-templates","copy-criteria-prompt","prepare-chatgpt-criteria"]);
     if(!allowed.has(action))return toast("This organization is view only. Switch to Personal to edit your own work.");
   }
 
@@ -2136,6 +2124,7 @@ document.addEventListener("click", async (event) => {
     }
     return;
   }
+  if(action==="evaluation-history")return evaluationHistoryDialog(button.dataset.scopeId);
   if(action==="workspace-evaluation")return workspaceEvaluationDialog(button.dataset.planId,button.dataset.libraryId);
   if (action === "library-audit") return libraryAuditDialog(id);
   if (action === "setup-profile") return wizard();
@@ -3631,7 +3620,7 @@ function organizationDraftsDialog() {
 }
 function restrictOrganizationControls() {
   if(editableWorkspace())return;
-  const readActions=new Set(["nav","account","organizations","organization-drafts","version-history","close","song-select","song-tab","library-select","plan-select","index-open","catalog-open","clear-filters","song-page","index-page","first-song-page","last-song-page","collection-page","sync-profile","sort","export","export-plan","export-plan-json","export-library","print-plan","download-song-file","song-files","song-recordings","backup","cloud-load","retry-autosave","toggle-ai-labels","signout","change-password","reset-index","remove-index-filter","apply-index-view","export-index","library-audit","workspace-evaluation","plan-templates","copy-criteria-prompt","prepare-chatgpt-criteria"]);
+  const readActions=new Set(["nav","account","organizations","organization-drafts","version-history","close","song-select","song-tab","library-select","plan-select","index-open","catalog-open","clear-filters","song-page","index-page","first-song-page","last-song-page","collection-page","sync-profile","sort","export","export-plan","export-plan-json","export-library","print-plan","download-song-file","song-files","song-recordings","backup","cloud-load","retry-autosave","toggle-ai-labels","signout","change-password","reset-index","remove-index-filter","apply-index-view","export-index","library-audit","workspace-evaluation","evaluation-history","plan-templates","copy-criteria-prompt","prepare-chatgpt-criteria"]);
   for(const button of app.querySelectorAll("button[data-action]"))if(!readActions.has(button.dataset.action)){button.disabled=true;button.title="View-only organization access";}
   for(const row of app.querySelectorAll("[data-plan-item]"))row.draggable=false;
 }

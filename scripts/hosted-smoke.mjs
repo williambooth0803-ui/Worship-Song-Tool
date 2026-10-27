@@ -1,3 +1,4 @@
+import {checkLyricalEvaluationFlows} from './lyrical-evaluation-fixture.mjs';
 import {checkLandingFlows} from './landing-fixture.mjs';
 import {checkVersionHistoryFlows} from './version-history-fixture.mjs';
 import {checkShortlistReviewFlows} from './shortlist-review-fixture.mjs';
@@ -336,6 +337,7 @@ try {
   await checkRememberAndSaveFlows(browser, `http://127.0.0.1:${server.address().port}/Worship-Song-Tool/`);
   await checkDiscoverResultsFlows(browser, `http://127.0.0.1:${server.address().port}/Worship-Song-Tool/`);
   await checkWorkspaceEvaluationFlows(browser, `http://127.0.0.1:${server.address().port}/Worship-Song-Tool/`);
+  await checkLyricalEvaluationFlows(browser, `http://127.0.0.1:${server.address().port}/Worship-Song-Tool/`);
   await checkPlanningUpgradeFlows(browser, `http://127.0.0.1:${server.address().port}/Worship-Song-Tool/`);
   await checkOrganizationFlows(browser, `http://127.0.0.1:${server.address().port}/Worship-Song-Tool/`);
   await checkSongTabsFlows(browser, `http://127.0.0.1:${server.address().port}/Worship-Song-Tool/`);

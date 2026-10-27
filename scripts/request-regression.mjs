@@ -105,19 +105,22 @@ try {
   const before=await state();const library=before.libraries[0];
   await page.getByRole("button",{name:"Run Library Audit",exact:true}).click();
   await page.getByRole("button",{name:"Prepare ChatGPT request",exact:true}).click();
-  assert.ok(!(await page.locator("#audit-request").inputValue()).includes('"notes"'));
-  const records=before.songs.filter(s=>library.songIds.includes(s.id)&&!s.blacklisted);
-  const report={schema:"faithful-library-audit-v1",libraryId:library.id,summary:"AUDIT READY",strengths:["Known direction"],weaknesses:["Sparse evidence"],limitations:["Fixture classifications"],songs:records.map(s=>({id:s.id,direction:"toGod",trinity:["son"],voice:"individual",mood:"trust",function:"petition",evidence:"Fixture: supplied text reference",sources:[]}))};
-  await page.locator("#audit-json").fill(JSON.stringify(report));await page.getByRole("button",{name:"Preview audit report",exact:true}).click();
-  assert.equal(await page.locator(".audit-chart").count(),6);assert.deepEqual(await state(),before);
-  assert.equal(await page.locator("#audit-preview").evaluate(n=>n===document.activeElement),true);
-  const downloading=page.waitForEvent("download");await page.getByRole("button",{name:"Download audit report",exact:true}).click();await downloading;
-  await page.getByRole("button",{name:"Close report",exact:true}).click();
+  const request=await page.locator("#scope-request").inputValue();
+  assert.ok(!request.includes('"notes"'));
+  const report=JSON.parse(request.split("Response shape:\n")[1].split("\nSelected snapshot")[0]);
+  report.summary="AUDIT READY";for(const song of report.songs)song.evidence="Fixture words not verified.";
+  for(const criterion of report.criteria){for(const finding of criterion.findings)finding.observation="No verified source text in fixture.";criterion.coverage.explanation="One library; no mixed comparison.";}
+  await page.locator("#audit-json").fill(JSON.stringify(report));await page.getByRole("button",{name:"Preview evaluation report",exact:true}).click();
+  assert.equal(await page.locator(".audit-chart").count(),0);
+  const after=await state();delete after.evaluationHistory;const original=structuredClone(before);delete original.evaluationHistory;assert.deepEqual(after,original);
+  assert.equal(await page.locator("#scope-preview").evaluate(n=>n===document.activeElement),true);
+  const downloading=page.waitForEvent("download");await page.getByRole("button",{name:"Download evaluation report",exact:true}).click();await downloading;
+  await page.getByRole("button",{name:"Close evaluation",exact:true}).click();
   await page.setViewportSize({width:390,height:844});await nav("profile");
   assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));
   await page.screenshot({path:"/tmp/faithful-rating-mobile.png",fullPage:true});
   assert.deepEqual(errors,[]);
-  console.log("PASS: login gate, forward collection typing/caret, visible selected details, page jump, focused AI preview, full isolated blacklist, custom scoring, library audit charts/export and mobile layout.");
+  console.log("PASS: login gate, forward collection typing/caret, visible selected details, page jump, focused AI preview, full isolated blacklist, custom scoring, lyrical library evaluation/history/export and mobile layout.");
 } finally {
   await browser.close();
   if (testProfile) await rm(testProfile, { recursive: true, force: true });

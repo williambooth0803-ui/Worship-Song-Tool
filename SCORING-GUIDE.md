@@ -56,17 +56,20 @@ making them mechanically objective.
 
 ## Library balance is a separate question
 
-A library audit describes direction (to/about God, to the church, testimony),
-named Father/Son/Spirit references, corporate/individual voice, lament and
-celebration, textual function and recorded tempo bands. These are distribution
-questions, not universal quality scores. No library must contain equal thirds of
-Trinitarian references or equal numbers of lament and celebration songs. State
-the congregation's purpose before deciding whether a distribution is a weakness.
+Plan and library evaluations describe overlapping themes, direction, named
+Father/Son/Spirit references, grammatical voices, emotional registers and textual
+functions. Musical timing and key/range checks are optional. No category or equal
+proportion is an automatic measure of worship quality.
 
-Run Library Audit prepares a ChatGPT request and imports a JSON response into a
-temporary visual report. Counts and percentages are calculated locally, including
-unknowns and evidence coverage. Trinity references may overlap; tempo uses only
-recorded BPM, which does not establish perceived energy. Sources and conclusions
-still require verification. Report download retains a snapshot; the report never
-changes scores, approvals, libraries or service plans. Private notes and plans are
-excluded; including stored song words requires explicit opt-in.
+Coverage records whether an idea is expressed, even in one substantive line.
+Lyrical emphasis counts reviewed lines weighted by section repetition. A chorus
+sung three times contributes three times its line count. Unmarked sections count
+once until the user adjusts the pattern; source counts never establish an actual
+performance. Several ideas can share a line, so percentages need not total 100.
+Coverage adequacy depends on the user's purpose and the substance of the words.
+
+The preview has a compact coverage/emphasis table, an expandable song-by-song map
+and editable repetitions per plan occurrence. Sources and classifications require
+review. Valid reports save to Evaluation History with their original context and
+can be downloaded. Reports never select songs, change ratings or edit plan order.
+See [plan evaluation](PLAN-EVALUATION.md) for details and history limits.

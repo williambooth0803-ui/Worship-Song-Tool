@@ -82,7 +82,7 @@ const workspace = () => ({
 const options = () => ({
   planIds: ["p1", "p2"],
   libraryIds: ["l1", "l2"],
-  criteria: ["direction", "trinity", "tempo"],
+  criteria: ["direction", "trinity", "tempo", "participation"],
   custom: ["What is evidenced about confession?"],
   purpose: "Understand lament coverage",
 });

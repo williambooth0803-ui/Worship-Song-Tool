@@ -12,7 +12,13 @@ no candidate song recommendations, replacements, reordering, quality scores or
 automatic edits. Count libraries as distinct songs and plans as ordered occurrences;
 separate unknown evidence from demonstrated gaps. Review copied scope/privacy and
 AI prose; validating a JSON shape does not prove its claims. Reports are downloadable
-snapshots, never workspace edits or approvals.
+snapshots and immutable Evaluation History entries, never plan/song edits or approvals.
+Valid previews save reports only in editable workspaces; shared viewers remain
+read-only. Coverage records presence separately from repeat-weighted lyrical
+emphasis. Multiple themes, voices and functions may overlap in one section.
+Never infer adequacy from a percentage or invent actual repetition patterns.
+Unmarked sections count once with editable report-level repetitions. Musical
+criteria and their data are opt-in; default reports focus on words.
 An explicitly requested AI search may list tentative matches to a user-defined
 subjective criterion within a selected personal library. It requires Full AI
 content, evidence and uncertainty labels. It does not rank songs or edit plans.
@@ -91,8 +97,9 @@ Users organize song readiness through their own libraries. Offer starter library
 names optionally, preserve prior decisions/notes as history, and never infer
 library placement from a score. Evaluation/scoring stays optional and separate.
 Use Plans, Plan templates, Plan items and Plan History consistently. Untimed
-headings separate portions of an order. The plan library picker stays on Plans,
-uses explicit multi-selection and relative insertion, and skips placement for an
+headings separate portions of an order. The song picker stays on Plans and offers
+library/catalog browsing and unrated new-song drafts. It uses explicit multi-selection
+and relative insertion, and skips placement for an
 empty plan. Retain keyboard reorder controls alongside dragging. Album images
 must come from matching recording metadata; blank artwork is better than guessing.
 Hymnary links are finding aids unless a specific entry was verified.

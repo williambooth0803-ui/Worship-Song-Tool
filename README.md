@@ -146,7 +146,10 @@ Objective details are plain text: attribution, populated key/tempo/duration and 
 
 ## Plan editing and import
 
-**Plans → Add songs** opens a library picker without navigating away. Search a
+**Plans → Add songs** offers Libraries, All songs and New song without navigating
+away. Search available catalog/workspace songs or stage a new unrated record.
+Library membership is optional; new records and plan items commit together only
+when adding the final selection. In Libraries, search a
 library, select several songs (selection carries across libraries), and add the
 selected count. Large libraries use 100-song pages with selections retained across
 pages and libraries. Existing plans offer an **Add after** position; empty plans skip
@@ -242,30 +245,36 @@ No OpenAI API key or paid API billing is required for this route.
 An optional private local AI service can still evaluate supplied record excerpts
 for 1–100 songs and return tentative matches with exact supporting snippets.
 Invalid IDs or invented quotations reject its response. The public static website
-does not call that service. **Run Library Audit** in a library prepares an explicit
-ChatGPT request in Full AI mode and previews a report with locally computed charts,
-evidence, strengths, weaknesses and unknowns. No library, song or plan is modified.
-Download the JSON report to keep it. See SCORING-GUIDE.md for its limits.
+does not call that service. **Run Library Audit** and **Evaluate plan** open the
+same words-first evaluation tool. Select existing plans/libraries, criteria and a
+purpose. Tempo/timing and key/range checks are independent opt-ins; unselected
+musical measurements and missing-data commentary stay out of the request.
 
-**Evaluate plan** on Plans evaluates an existing human-built order in Full AI mode.
-Choose additional plans and/or libraries, activate the criteria you want, add your
-own questions, and describe your purpose. Library audits also offer **Choose more
-libraries / plans and criteria**. Mixed reports compare evidenced coverage in the
-existing plans with the combined library content. Reports describe strengths,
-gaps and uncertainty; they do not select songs, propose replacements/order, score
-worship or modify any saved data. Charts count distinct library songs (deduplicated
-across libraries) and plan song occurrences (including repeats), with combined
-views and explicit unknowns. Keys/BPM alone cannot establish singability or energy.
+Reports use overlapping section-level themes, voices and functions. A compact
+preview separates **coverage** (including an idea expressed in one line) from
+**lyric emphasis**, calculated from reviewed line counts and repetitions. Expand
+**Song-by-song idea map** for detail. Published repeat counts need evidence;
+unmarked sections count once. Adjust the pattern per occurrence to reflect your
+performance, including omitted sections. Percentages do not measure adequacy or
+quality, and overlapping ideas need not total 100. Libraries use distinct-song
+unions; plans retain repeated occurrences.
 
-Review the request before copying: chosen plans include names, themes, Scripture
-context, headings/order, item titles, keys, recorded arrangement measurements and
-human-entered duration estimates. Song words require opt-in; private notes, files,
-song evaluations, unselected scopes, account settings and blacklisted song details
-are excluded. Nothing is sent automatically. Paste the returned JSON to preview
-and download a report with its snapshot. Changed scopes, criteria, evidence,
-workspace/account or AI mode require a fresh request. The importer rejects extra
-fields such as recommendations/scores/edits, but free-form AI prose still needs
-human review; schema validation does not establish the truth of an AI observation.
+Valid previews save automatically to **Evaluation History** in editable
+workspaces. Save changed repetition patterns as new versions. Reopen history from
+the plan/library or **All evaluation history** on Plans; original context survives
+later edits. History travels with backups and account/shared workspace saving.
+Shared viewers can read/download but cannot save/delete reports. No songs,
+ratings, library choices or plan order change. Old reports retain presence
+evidence; section proportions require a fresh evaluation.
+
+Review the copied snapshot: selected names, themes, Scripture context, headings,
+order and song identities are included. Words require opt-in. Private notes,
+files, unselected scopes, account settings and No Approval details stay excluded.
+Saved archives omit raw song words. Changed selections, evidence, lens or account
+require a fresh request. Import validation rejects recommendations/scores/edits;
+AI prose and sources still require human verification. The Close header stays
+outside the scrolling report. [Plan evaluation and history](PLAN-EVALUATION.md)
+documents the model, limits, compatibility and backend preservation guards.
 
 Custom and active rating criteria are supported by the production connector projection. Its function was updated from `supabase/mcp.sql` while preserving existing database policies and grants. Real-user authorization still requires each account's consent.
 

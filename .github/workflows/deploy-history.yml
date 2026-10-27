@@ -7,6 +7,8 @@ on:
       - .github/workflows/deploy-history.yml
       - scripts/deploy-history.mjs
       - supabase/version-history.sql
+      - supabase/migrations/20261027154912_preserve_evaluation_history.sql
+      - test/evaluation-history-database.test.js
 permissions:
   contents: read
 concurrency:
@@ -27,7 +29,7 @@ jobs:
           cache: npm
       - run: npm ci --no-audit --no-fund
       - name: Verify history permissions and atomic restores
-        run: node --test test/version-history.test.js
+        run: node --test test/version-history.test.js test/evaluation-history-database.test.js
       - name: Apply and verify the private history migration
         env:
           SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
