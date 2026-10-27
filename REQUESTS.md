@@ -24,7 +24,14 @@ blockers explicitly. Preserve personal assessments, recordings and workspaces.
   app successfully decoded a newly normalized archive. No private workspace was
   read or modified through a service. Final browser checks also confirm shared
   section evidence appears once. Starting source/check count: 37,462; final: 37,522.
-- [ ] Publish final build and record complete release/browser/PWA verification.
+- [x] Published `36ac8e4`; Cloudflare Pages, Worker and GitHub Pages reported
+  success. [Release checks](https://github.com/williambooth0803-ui/Worship-Song-Tool/actions/runs/40595535685)
+  passed all 159 unit/database tests, MCP types, scale, full browser workflows,
+  native PWA checks at both paths and generated-file parity. HTTPS readback of
+  content/report/evaluator/UI modules and the service worker matches the tested
+  build on GitHub's reachable host. Cloudflare's hostname remains outside the
+  executor allowlist; provider success is verified. Existing requests/reports
+  remain accepted; prepare a fresh request to use the faster response format.
 
 ## Compact evaluation close control (October 27, 2026)
 
