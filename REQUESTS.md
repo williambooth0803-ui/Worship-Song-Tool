@@ -6,6 +6,26 @@ do not treat a new prompt as cancellation unless the owner says so. Mark an item
 complete only with implementation and meaningful verification. Record external
 blockers explicitly. Preserve personal assessments, recordings and workspaces.
 
+## Faster evaluation workflow (October 27, 2026)
+
+- [x] Use compact v3 grouped counts with one evidence explanation per section.
+  Retain overlapping ideas, all selected criteria, sourced repeats and immutable
+  history; accept old v1/v2 reports. Normalize imports to the existing v2 archive
+  format for older clients; show shared supporting prose once in the UI.
+- [x] Focus the request on concise findings and sufficient matching lyric evidence.
+  Batch lookups, stop redundant research and allow reuse of already reviewed
+  source text in the same chat. Never replace missing evidence with estimates or
+  imply a fixed turnaround guarantee. Preserve existing privacy boundaries.
+- [x] All 159 unit/database tests and targeted browser/history/weighting checks
+  passed. A local comparison using the supplied six-song report retained every
+  measurement across all 29 sections: compact JSON was 29% smaller (41,743 to
+  29,738 UTF-8 bytes), even retaining all original prose. This measures response
+  size, not an established latency improvement. A frozen copy of the previous
+  app successfully decoded a newly normalized archive. No private workspace was
+  read or modified through a service. Final browser checks also confirm shared
+  section evidence appears once. Starting source/check count: 37,462; final: 37,522.
+- [ ] Publish final build and record complete release/browser/PWA verification.
+
 ## Compact evaluation close control (October 27, 2026)
 
 - [x] Replace the large Close pill with a quiet corner X and a slim title bar.

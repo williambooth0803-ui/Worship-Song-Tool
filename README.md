@@ -259,6 +259,12 @@ performance, including omitted sections. Percentages do not measure adequacy or
 quality, and overlapping ideas need not total 100. Libraries use distinct-song
 unions; plans retain repeated occurrences.
 
+New requests use a smaller response format with one supporting explanation per
+lyrical section and concise findings. They stop redundant lyric research once a
+matching text is established; opted-in stored words can avoid lookups. Coverage,
+overlapping ideas and repetition weighting are retained. Earlier reports work,
+and imports save in the existing history format for compatibility across devices.
+
 Valid previews save automatically to **Evaluation History** in editable
 workspaces. Save changed repetition patterns as new versions. Reopen history from
 the plan/library or **All evaluation history** on Plans; original context survives

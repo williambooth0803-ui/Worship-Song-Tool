@@ -13,7 +13,23 @@ reordering plans, changing ratings or assigning a worship-quality score.
 
 ## Coverage and lyrical emphasis
 
-The v2 response describes distinct lyrical sections and multiple ideas per section.
+New requests use compact v3 responses: categories and line counts are grouped by
+criterion, with one supporting explanation per section. This removes repeated
+JSON fields and repeated prose without reducing selected criteria, overlapping
+ideas, brief coverage, repetition controls or source links. Imported v3 responses
+normalize to the existing v2 archive format so older history clients can still
+read saved reports. Earlier v1/v2 reports remain readable.
+
+Requests favor one reliable matching full-text source per song, batch lyric
+lookups, and stop once identity and text are established. Previously reviewed
+source text in the same conversation can be reused; an earlier AI label alone is
+not verification. Missing evidence stays partial/unverified. Concise summaries
+and findings reduce generation and copying; elapsed time still depends on the
+ChatGPT model, selected scope and source availability. Opted-in stored lyrics
+avoid searches when they supply the needed text. No paid AI API or private report
+sharing is added.
+
+The section response describes distinct lyrical sections and multiple ideas per section.
 A song can address several themes, use multiple voices and combine functions.
 Source evidence may be complete, partial or unverified. Unsupported text cannot
 supply invented measurements. Evidence uses original prose, brief quotations,
@@ -41,8 +57,8 @@ and their combined pool is a union. Plans retain repeated occurrences. Missing o
 No Approval records remain unavailable.
 
 Old v1 workspace reports remain readable as presence evidence. Their single labels
-cannot establish section proportions; repeat-weighted emphasis needs a fresh v2
-evaluation. The old standalone library-audit parser remains for compatibility,
+cannot establish section proportions; repeat-weighted emphasis needs a fresh
+section-based evaluation (v2 or v3). The old standalone library-audit parser remains for compatibility,
 while the main library entry uses the unified evaluator.
 
 ## Evaluation History

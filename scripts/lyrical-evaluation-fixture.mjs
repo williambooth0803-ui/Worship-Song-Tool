@@ -28,14 +28,21 @@ export async function checkLyricalEvaluationFlows(browser,base) {
     response.summary='Overlapping ideas from verified fixture sections.';
     for(const song of response.songs){song.evidence='Synthetic fixture evidence.';if(song.id!==a.id)continue;
       song.textStatus='complete';song.sections=[
-        {id:'verse',label:'Verse 1',lineCount:4,repetitions:null,repeatEvidence:'',ideas:[{criterionId:'function',category:'confession',lineCount:1,evidence:'One substantive confession line.'},{criterionId:'voice',category:'individual',lineCount:4,evidence:'Singular grammar.'}]},
-        {id:'chorus',label:'Chorus',lineCount:2,repetitions:null,repeatEvidence:'',ideas:[{criterionId:'themes',category:'hope',lineCount:2,evidence:'Hope expressed throughout.'},{criterionId:'voice',category:'corporate',lineCount:2,evidence:'Plural grammar.'}]}
+        {id:'verse',label:'Verse 1',lineCount:4,repetitions:null,repeatEvidence:'',evidence:'One confession line within a verse using singular grammar.',ideas:{function:{confession:1},voice:{individual:4}}},
+        {id:'chorus',label:'Chorus',lineCount:2,repetitions:null,repeatEvidence:'',evidence:'Both chorus lines express hope with plural grammar.',ideas:{themes:{hope:2},voice:{corporate:2}}}
       ];
     }
     for(const criterion of response.criteria){for(const finding of criterion.findings)finding.observation='Text-based fixture finding.';criterion.coverage.explanation='One plan; no library comparison.';}
     await page.locator('#audit-json').fill(JSON.stringify(response));await page.locator('#preview-scope-evaluation').click();
     assert.equal(await page.locator('#scope-error').textContent(),'');assert.equal(await page.locator('meter,.audit-bar-row').count(),0);
     assert.equal((await state()).evaluationHistory.length,1);assert.ok(!(await state()).evaluationHistory[0].data.includes('Private opted-in words'));
+    const archived=JSON.parse((await state()).evaluationHistory[0].data).report;
+    assert.equal(archived.schema,'faithful-workspace-evaluation-v2');assert.equal(archived.songs[0].sections[0].ideas.find(i=>i.category==='confession').lineCount,1);
+    const evidenceToggle=page.getByText(/^Song and section evidence \(/);
+    await evidenceToggle.click();const evidence=page.locator('.evaluation-song-evidence').first();
+    await evidence.locator('details > summary').first().click();
+    assert.equal(await evidence.getByText('One confession line within a verse using singular grammar.',{exact:true}).count(),1,'Shared supporting prose is shown once');
+    await evidenceToggle.click();
     assert.deepEqual(human(await state()),human(before));
     const hope=page.locator('.idea-table tbody tr').filter({hasText:'hope'}).first();assert.match(await hope.locator('td').nth(1).textContent(),/33\.3%/);
     const confession=page.locator('.idea-table tbody tr').filter({hasText:'confession'}).first();assert.match(await confession.locator('td').first().textContent(),/1\/2/);

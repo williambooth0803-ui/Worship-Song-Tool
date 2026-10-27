@@ -1,4 +1,4 @@
-import {contentInstructions,parseContentSong} from './evaluation-content.js';
+import {contentInstructions,parseContentSong,sectionIdeas} from './evaluation-content.js';
 import { auditAxes, auditLabels } from "./library-audit.js";
 import { selectedArrangement } from "./planning.js";
 import { workspaceSignature } from "./saving.js";
@@ -180,7 +180,7 @@ export function workspaceEvaluationPrompt(workspace, options, requestId) {
     snapshot.scopes.some((s) => s.type === "plan") &&
     snapshot.scopes.some((s) => s.type === "library");
   const schema = {
-    schema: "faithful-workspace-evaluation-v2",
+    schema: "faithful-workspace-evaluation-v3",
     requestId,
     summary: "",
     strengths: [],
@@ -211,6 +211,8 @@ The user chooses the purpose and every criterion. Their purpose is not evidence 
 Evaluate each selected scope separately. Libraries count distinct songs; the combined library pool is a union, not the sum of overlapping libraries. Plans retain ordered occurrences (repeated songs count again) and non-song items. ${snapshot.criteria.some(c=>c.id==="tempo")?"Headings take zero minutes; human-entered durations are estimates.":""} Missing/blacklisted songs are unavailable: do not reconstruct them. Notes, private evaluations, files, account settings and unselected scopes are excluded.
 When both plans and libraries are selected, compare aggregate evidenced coverage of the user's criteria in the existing plans with the combined existing library content. Coverage status describes that comparison: evidenced, partial, noEvidence, or unknown. Do not identify candidate songs to add or remove. noEvidence means no supplied evidence, not proof of absence. Without mixed scope, use notApplicable. An evidenceSongIds list cites current records for an observation, never a proposed selection. Only cite IDs belonging to that finding's scope.
 Titles, artist names, genres, keys and tempo cannot establish lyrics, doctrine, voice, mood, energy or singability. Verify the exact version from opted-in words or a public source; otherwise keep classification unknown. Do not invent text, sources or measurements. Separate unknowns and limitations from imbalances. Song classifications concern text, not every possible arrangement. ${snapshot.criteria.some(c=>["tempo","participation"].includes(c.id))?"Recorded tempo/range for plan occurrences belongs to that selected arrangement; do not overwrite it with another recording.":""} Cite only public HTTPS sources with labels; keep quotations short.
+Efficient evaluation: use opted-in words when supplied. Batch public lyric lookups; prefer one reliable matching full-text source per song and use another only to resolve a material identity, completeness or wording issue. Stop researching a song once its reference text is established. Reuse previously reviewed source text already available in this conversation when it matches; previous AI labels alone are not verification. Do not research artist background or unrelated editions. If a source remains unresolved, retain partial/unverified status rather than inventing evidence or extending the search indefinitely.
+Keep the report focused: a summary of at most 80 words, normally up to four strengths and four weaknesses, and up to three material limitations. Each criterion finding should normally take two or three sentences. Cover all selected criteria and substantive ideas; do not omit evidence merely to shorten the report. Put section support once in section.evidence. Do not repeat category explanations, song descriptions or the same limitation across findings. Return compact JSON without decorative indentation; no surrounding commentary.
 ${contentInstructions(snapshot.criteria)}
 Return JSON only, in the exact shape below. Include every supplied song ID once (even if there are no songs), every criterion once and every scope once within each criterion. Do not add fields. Each prose field is at most 1500 characters; strengths/weaknesses/limitations have at most 12 entries each; sources at most 8 per song. State evidence or its absence for each song, each finding and coverage explanation. Human verification of AI prose and sources is required.
 Response shape:
@@ -247,7 +249,7 @@ export function parseWorkspaceEvaluation(raw, snapshot, requestId) {
     "Report",
   );
   if (
-    !["faithful-workspace-evaluation-v1","faithful-workspace-evaluation-v2"].includes(r.schema) ||
+    !["faithful-workspace-evaluation-v1","faithful-workspace-evaluation-v2","faithful-workspace-evaluation-v3"].includes(r.schema) ||
     r.requestId !== requestId
   )
     fail(
@@ -282,7 +284,7 @@ export function parseWorkspaceEvaluation(raw, snapshot, requestId) {
     snapshot.songs.map((s) => s.id),
     "song",
   ).map((row) => {
-    if(r.schema === "faithful-workspace-evaluation-v2") return parseContentSong(row,snapshot);
+    if(r.schema !== "faithful-workspace-evaluation-v1") return parseContentSong(row,snapshot,r.schema === "faithful-workspace-evaluation-v3");
     exactKeys(row, ["id", "evidence", "sources", ...axes], "Song evidence");
     for (const axis of axes) {
       const categories = auditAxes[axis].categories,
@@ -327,7 +329,7 @@ export function parseWorkspaceEvaluation(raw, snapshot, requestId) {
     });
     return row;
   });
-  if(r.schema === 'faithful-workspace-evaluation-v2' && new Set(songs.flatMap(s=>s.sections.flatMap(section=>section.ideas.filter(i=>i.criterionId==='themes').map(i=>i.category)))).size>60)
+  if(r.schema !== 'faithful-workspace-evaluation-v1' && new Set(songs.flatMap(s=>s.sections.flatMap(section=>sectionIdeas(section).filter(i=>i.criterionId==='themes').map(i=>i.category)))).size>60)
     fail('Use at most sixty consistent theme labels across the report.');
   const mixed =
     snapshot.scopes.some((s) => s.type === "plan") &&
@@ -379,7 +381,7 @@ export function parseWorkspaceEvaluation(raw, snapshot, requestId) {
     return row;
   });
   return {
-    schema: r.schema,
+    schema: r.schema === 'faithful-workspace-evaluation-v3' ? 'faithful-workspace-evaluation-v2' : r.schema,
     requestId: r.requestId,
     summary: requiredText(r.summary, "Summary"),
     strengths: textList(r.strengths, "Strengths"),

@@ -21,6 +21,37 @@ function response(snapshot){return {schema:'faithful-workspace-evaluation-v2',re
     {id:'chorus',label:'Chorus',lineCount:2,repetitions:3,repeatEvidence:'The reference explicitly repeats this chorus three times.',ideas:[{criterionId:'themes',category:'trust',lineCount:2,evidence:'Trust continues in the refrain.'},{criterionId:'themes',category:'hope',lineCount:2,evidence:'The same lines also express hope.'},{criterionId:'voice',category:'corporate',lineCount:2,evidence:'The refrain uses plural first-person grammar.'}]}
   ]})),criteria:snapshot.criteria.map(c=>({id:c.id,findings:snapshot.scopes.map(scope=>({scopeId:scope.id,observation:'Descriptive evidence.',evidenceSongIds:[]})),coverage:{status:'unknown',explanation:'Mixed-scope evidence comparison.'}}))};}
 function prepared(){const w=fixture(),snapshot=evaluationSnapshot(w,config),report=parseWorkspaceEvaluation(JSON.stringify(response(snapshot)),snapshot,'test');return {w,snapshot,report};}
+function compact(report){
+  const copy=structuredClone(report);copy.schema='faithful-workspace-evaluation-v3';
+  for(const song of copy.songs)for(const section of song.sections){
+    section.evidence=section.ideas.map(i=>i.evidence).join(' ');
+    section.ideas=Object.fromEntries([...new Set(section.ideas.map(i=>i.criterionId))].map(id=>[id,Object.fromEntries(section.ideas.filter(i=>i.criterionId===id).map(i=>[i.category,i.lineCount]))]));
+  }
+  return copy;
+}
+test('compact responses preserve measurements, sources, findings and existing history compatibility',()=>{
+  const {w,snapshot,report}=prepared(),input=compact(report),parsed=parseWorkspaceEvaluation(JSON.stringify(input),snapshot,'test');
+  assert.deepEqual(evaluationContent(parsed,snapshot),evaluationContent(report,snapshot));
+  assert.deepEqual(parsed.criteria,report.criteria);assert.deepEqual(parsed.songs[0].sources,report.songs[0].sources);
+  assert.equal(parsed.schema,'faithful-workspace-evaluation-v2');
+  assert.equal(parsed.songs[0].sections[0].ideas.find(i=>i.category==='confession').lineCount,1);
+  assert.ok(JSON.stringify(input).length<JSON.stringify(report).length,'The wire response removes repeated field names without dropping data');
+  const retained=retainEvaluation(w,parsed,snapshot,{},'2026-10-27T12:00:00Z',()=> 'compact');
+  const archive=decodeEvaluation(validateWorkspace(retained.workspace).evaluationHistory[0]);
+  assert.deepEqual(archive.report,parsed);assert.equal(Array.isArray(archive.report.songs[0].sections[0].ideas),true);
+  assert.ok(!retained.entry.data.includes('PRIVATE STORED WORDS'));
+  const unmapped=compact(report);unmapped.songs[0].sections[0].ideas={};
+  const note=unmapped.songs[0].sections[0].evidence;
+  assert.ok(parseWorkspaceEvaluation(JSON.stringify(unmapped),snapshot,'test').songs[0].evidence.includes(note),'Evidence remains available even when a section has no selected category');
+});
+test('compact reports reject unsupported groups, invented counts and absent section evidence',()=>{
+  const {snapshot,report}=prepared();
+  for(const mutate of [r=>r.songs[0].sections[0].ideas.tempo={},r=>r.songs[0].sections[0].ideas.function.unknown=1,r=>r.songs[0].sections[0].ideas.themes.trust=5,r=>r.songs[0].sections[0].ideas.themes.trust=0,r=>r.songs[0].sections[0].ideas.themes.trust='4',r=>r.songs[0].sections[0].ideas.voice=[],r=>r.songs[0].sections[0].ideas=[],r=>r.songs[0].sections[0].ideas.themes.Trust=2,r=>delete r.songs[0].sections[0].evidence,r=>r.songs[0].sections[0].evidence='',r=>r.songs[0].sections[0].scores={quality:10}]){
+    const raw=compact(report);mutate(raw);assert.throws(()=>parseWorkspaceEvaluation(JSON.stringify(raw),snapshot,'test'));
+  }
+  const request=workspaceEvaluationPrompt(fixture(),config,'test');
+  assert.match(request,/Stop researching a song once/);assert.match(request,/previous AI labels alone are not verification/);assert.match(request,/grouped count object/);
+});
 test('overlapping ideas separate one-line coverage from repeated emphasis, occurrence weights and distinct library union',()=>{
   const {w,snapshot,report}=prepared(),before=structuredClone(w),views=evaluationContent(report,snapshot),plan=views.find(v=>v.id==='plan:p'),union=views.find(v=>v.id==='library-union');
   assert.equal(plan.totalLines,20);assert.equal(plan.total,3);assert.equal(plan.reviewed,2);assert.equal(plan.reviewedSongs,1);
@@ -43,7 +74,7 @@ test('words-first requests omit musical data unless chosen, and bind only the sh
   w.plans[0].items[0].key='E';assert.equal(evaluationToken(w,config),token);
   const musical=evaluationSnapshot(w,{...config,criteria:[...config.criteria,'tempo']});assert.equal(musical.songs[0].tempo,92);assert.equal('key' in musical.scopes.find(s=>s.type==='plan').items[0],false);assert.equal('lowNote' in musical.songs[0],false);
   const vocal=evaluationSnapshot(w,{...config,criteria:[...config.criteria,'participation']});assert.equal(vocal.scopes.find(s=>s.type==='plan').items[0].key,'E');assert.equal('tempo' in vocal.songs[0],false);
-  assert.match(prompt,/faithful-workspace-evaluation-v2/);assert.match(prompt,/one clear line can establish/i);assert.match(prompt,/Never assume choruses or bridges/);assert.match(prompt,/Do not discuss missing tempo/);
+  assert.match(prompt,/faithful-workspace-evaluation-v3/);assert.match(prompt,/one clear line can establish/i);assert.match(prompt,/Never assume choruses or bridges/);assert.match(prompt,/Do not discuss missing tempo/);
 });
 test('section evidence rejects fabricated measurements, unsupported categories and executable report fields',()=>{
   const {snapshot}=prepared();
