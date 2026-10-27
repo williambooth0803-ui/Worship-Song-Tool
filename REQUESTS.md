@@ -6,6 +6,18 @@ do not treat a new prompt as cancellation unless the owner says so. Mark an item
 complete only with implementation and meaningful verification. Record external
 blockers explicitly. Preserve personal assessments, recordings and workspaces.
 
+## Compact evaluation close control (October 27, 2026)
+
+- [x] Replace the large Close pill with a quiet corner X and a slim title bar.
+  Reserve a separate layout row above the scrollable report, retaining a 44px
+  touch target, visible keyboard focus and Escape access in evaluations/history.
+- [x] Browser checks passed at 320/390/768/1440px: the compact header stays
+  separate from the body and the close target remains reachable after scrolling.
+  History reopening, Escape, picker and data-preservation regressions passed.
+  Phone/desktop screenshots were visually inspected; regenerated docs/. Starting
+  source/check count: 37,458; final: 37,462.
+- [ ] Publish and verify provider deployment and release checks.
+
 ## Lyrical evaluations, closing controls, song creation and Evaluation History (October 27, 2026)
 
 - [x] Give evaluations a fixed header and labeled 44px Close control outside the

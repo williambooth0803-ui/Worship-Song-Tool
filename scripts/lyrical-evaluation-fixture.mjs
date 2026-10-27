@@ -45,8 +45,11 @@ export async function checkLyricalEvaluationFlows(browser,base) {
     await page.locator('#save-scope-evaluation').click();assert.equal((await state()).evaluationHistory.length,2);
     for(const width of [320,390,768,1440]){
       await page.setViewportSize({width,height:900});await page.locator('.evaluation-dialog-body').evaluate(el=>el.scrollTop=el.scrollHeight);
-      const header=await page.locator('.evaluation-dialog-header').boundingBox(),close=await page.getByRole('button',{name:'Close evaluation',exact:true}).boundingBox(),bounds=await page.locator('#dialog').boundingBox();
+      const header=await page.locator('.evaluation-dialog-header').boundingBox(),close=await page.getByRole('button',{name:'Close evaluation',exact:true}).boundingBox(),bounds=await page.locator('#dialog').boundingBox(),body=await page.locator('.evaluation-dialog-body').boundingBox();
       assert.ok(close.height>=44&&close.y>=bounds.y&&close.y+close.height<=header.y+header.height+1,'Close remains in its own fixed header');
+      assert.ok(header.height<=64,'The header stays compact on phones and desktop');
+      assert.ok(body.y>=header.y+header.height-1,'The scrollable report has reserved space below the header');
+      assert.ok(await page.getByRole('button',{name:'Close evaluation',exact:true}).evaluate(el=>{const r=el.getBoundingClientRect();return el.contains(document.elementFromPoint(r.x+r.width/2,r.y+r.height/2));}),'The close control is reachable at the end of a long report');
       assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));
       assert.ok(await page.locator('#dialog').evaluate(el=>el.scrollWidth<=el.clientWidth));
       await page.screenshot({path:`/tmp/faithful-lyrical-report-${width}.png`,fullPage:true});

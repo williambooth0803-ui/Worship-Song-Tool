@@ -6,7 +6,8 @@ checks are separate opt-ins under **Optional musical checks**. Unselected musica
 measurements are absent from the copied snapshot, and the request excludes
 discussion of unrequested missing data.
 
-The header's **Close** button stays outside the scrolling form/report. **Done**
+The slim header's corner **×** has a 44px target and stays outside the scrolling
+form/report, with its own space so it cannot cover content. **Done**
 and Escape also close it. Reports describe human choices without selecting songs,
 reordering plans, changing ratings or assigning a worship-quality score.
 

@@ -6,7 +6,7 @@ export function evaluationDialog({modal,dialog,title,html}) {
   modal(`<div class="evaluation-dialog-body">${html}</div>`);
   dialog.querySelector('.modal-top')?.remove();
   const header=document.createElement('header');header.className='evaluation-dialog-header';
-  header.innerHTML=`<h2 id="scope-dialog-title">${e(title)}</h2><button class="button evaluation-close" type="button" aria-label="Close evaluation">Close <span aria-hidden="true">×</span></button>`;
+  header.innerHTML=`<h2 id="scope-dialog-title">${e(title)}</h2><button class="evaluation-close" type="button" aria-label="Close evaluation" aria-keyshortcuts="Escape" title="Close evaluation (Esc)"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" aria-hidden="true" focusable="false"><path d="m6 6 12 12M18 6 6 18"/></svg></button>`;
   header.querySelector('button').onclick=()=>dialog.close();dialog.prepend(header);
   dialog.classList.add('workspace-evaluation-dialog');dialog.setAttribute('aria-labelledby','scope-dialog-title');
   dialog.addEventListener('close',()=>{dialog.classList.remove('workspace-evaluation-dialog');if(dialog.getAttribute('aria-labelledby')==='scope-dialog-title')dialog.removeAttribute('aria-labelledby');},{once:true});

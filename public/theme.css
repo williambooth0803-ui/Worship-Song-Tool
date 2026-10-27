@@ -964,10 +964,11 @@ button.setting-row:disabled { opacity: .55; cursor: default; }
 }
 /* Evaluation dialogs keep their exit control outside the scrolling report. */
 dialog.workspace-evaluation-dialog[open] { display:grid; grid-template-rows:auto minmax(0,1fr); width:calc(100% - 32px); max-width:1100px; height:min(92dvh,1000px); max-height:92dvh; padding:0; overflow:hidden; scrollbar-gutter:auto; }
-.evaluation-dialog-header { display:flex; align-items:center; justify-content:space-between; gap:16px; padding:16px 24px; border-bottom:1px solid var(--line); background:var(--white); }
-.evaluation-dialog-header h2 { margin:0; font-size:28px; }
-.evaluation-dialog-header .evaluation-close { display:flex; align-items:center; gap:12px; flex-shrink:0; min-height:44px; font:600 14px/1.4 var(--sans); }
-.evaluation-close span { font-size:22px; font-weight:400; }
+.evaluation-dialog-header { display:grid; grid-template-columns:minmax(0,1fr) 44px; align-items:center; gap:12px; padding:6px 12px 6px 24px; border-bottom:1px solid var(--line); background:var(--white); }
+.evaluation-dialog-header h2 { min-width:0; margin:0; font-size:22px; line-height:1.25; }
+.evaluation-dialog-header .evaluation-close { display:grid; place-items:center; width:44px; height:44px; min-height:44px; padding:0; border:0; border-radius:8px; background:transparent; color:var(--muted); cursor:pointer; }
+.evaluation-close:hover { background:var(--green-light); color:var(--green); }
+.evaluation-close:focus-visible { outline:2px solid var(--green); outline-offset:2px; }
 .evaluation-dialog-body { min-height:0; overflow-y:auto; padding:24px; overscroll-behavior:contain; scrollbar-gutter:stable; overflow-wrap:anywhere; }
 .evaluation-dialog-body .form-actions { position:static; background:transparent; }
 .workspace-evaluation-dialog #scope-preview { scroll-margin-top:16px; }
@@ -1011,8 +1012,8 @@ dialog.workspace-evaluation-dialog[open] { display:grid; grid-template-rows:auto
 .picker-tabs button[aria-selected="true"] { border-bottom-color:var(--green); background:var(--green-light); color:var(--green); }
 #picker-create-form[hidden],#picker-browse-panel[hidden],#picker-library-label[hidden] { display:none; }
 @media screen and (max-width:550px) {
-  .evaluation-dialog-header { padding:12px 16px; gap:12px; }
-  .evaluation-dialog-header h2 { font-size:23px; }
+  .evaluation-dialog-header { padding:6px 8px 6px 16px; }
+  .evaluation-dialog-header h2 { font-size:20px; }
   .evaluation-dialog-body { padding:16px; }
   .evaluation-cohort { padding:12px; }
   .idea-table th,.idea-table td { padding:10px; }
